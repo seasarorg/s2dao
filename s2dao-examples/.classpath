@@ -1,0 +1,15 @@
+<classpath>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="var" rootpath="JRE_SRCROOT" path="JRE_LIB" sourcepath="JRE_SRC"/>
+  <classpathentry kind="var" path="M2_REPO/org/seasar/dao/s2-dao/1.0.29-SNAPSHOT/s2-dao-1.0.29-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javassist/javassist/3.0/javassist-3.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/ognl/ognl/2.6.5/ognl-2.6.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/seasar/extension/s2-extension/2.3.0/s2-extension-2.3.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/poi/poi-2.5.1-final/20040804/poi-2.5.1-final-20040804.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging-api/1.0.4/commons-logging-api-1.0.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/seasar/framework/s2-framework/2.3.0/s2-framework-2.3.0.jar"/>
+</classpath>
