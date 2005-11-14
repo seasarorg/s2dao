@@ -1,0 +1,36 @@
+S2Dao 変更履歴
+
+1.0.29
+-------------------------------------------------------------------------------
+org.seasar.dao.node.BindVariableNode
+* 関連先オブジェクトのプロパティをバインドできるように修正しました。(#6435)
+
+org.seasar.dao.impl パッケージ
+* DaoMetaDataFactoryImplのprivateフィールドをprotectedに変更しました。
+* EntityManager#findへ渡すSELECT文がスペースや改行始まりである場合にSQLが組み立てられなかった問題を修正しました。(#6491)
+
+org.seasar.dao.unit パッケージ
+* S2DaoTestCaseへデフォルトコンストラクタを追加しました。(#6438)
+
+project.xml
+* s2-framework・s2-extensionのバージョンを2.2.10へ上げました。
+
+1.0.28
+-------------------------------------------------------------------------------
+org.seasar.dao.impl.DaoMetaDataImpl
+* アノテーションの読み込みをAnnotationReaderに分離しました。
+* SQLアノテーションを新たに作りました。
+* QUERYアノテーションにSQLコメントの後にORDER BYを記述したときに
+　うまくSQLが組み立てられなかったのを修正しました。
+* DaoインターフェースにBean以外の引数でdeleteやupdateメソッドを
+　作成したときに、DAO を implements した抽象クラスを用意して、
+　該当するメソッドを実装してもExceptionが飛んでいたのを修正しました。 
+* インタセプタを抽象クラスに適用した場合、インタフェースからだけでなく
+　適用先のクラスからもアノテーションを取得できるように変更しました。
+
+1.0.27
+-------------------------------------------------------------------------------
+org.seasar.extension.dbcp.impl パッケージ
+* カラム名に_がついているプライマリキーがプライマリキーとして認識されないのを修正しました。
+* DaoMetaDataImpl,BeanMetaDataImpl,DtoMetaDataImplのprivateメソッドをprotectedにかえました。
+* RelationPropertyTypeImplのprivateフィールドをprotectedにかえました。
