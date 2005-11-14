@@ -1,0 +1,22 @@
+<project name="s2dao" default="dist" basedir=".">
+	<property name="ver" value="1.0.29-SNAPSHOT"/>
+
+	<target name="dist">
+		<mkdir dir="target"/>
+		<zip zipfile="target/s2dao-${ver}.zip">
+			<zipfileset prefix="s2dao" dir=".">
+				<exclude name="**/target/**"/>
+				<exclude name="**/.settings/**"/>
+			</zipfileset>
+			<zipfileset prefix="s2dao/lib" dir="s2-dao/target">
+				<include name="s2-dao-${ver}.jar"/>
+			</zipfileset>
+			<zipfileset prefix="s2dao/resources" dir="s2-dao/src/test/resources">
+				<include name="dao.dicon"/>
+				<include name="j2ee.dicon"/>
+				<include name="log4j.properties"/>
+			</zipfileset>
+		</zip>
+	</target>
+
+</project>
