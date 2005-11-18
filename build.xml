@@ -3,7 +3,7 @@
 
 	<target name="dist">
 		<mkdir dir="target"/>
-		<zip zipfile="target/s2dao-${ver}.zip">
+		<zip zipfile="target/S2DaoV${ver}.zip">
 			<zipfileset prefix="s2dao" dir=".">
 				<exclude name="**/target/**"/>
 				<exclude name="**/.settings/**"/>
