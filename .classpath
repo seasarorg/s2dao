@@ -5,7 +5,9 @@
 	<classpathentry output="s2-dao/target/test-classes" kind="src" path="s2-dao/src/test/java"/>
 	<classpathentry output="s2-dao/target/test-classes" kind="src" path="s2-dao/src/test/resources"/>
 	<classpathentry kind="src" path="s2-dao-examples/src/main/java"/>
+	<classpathentry kind="src" path="s2-dao-examples/src/main/resources"/>	
 	<classpathentry output="s2-dao/target/test-classes" kind="src" path="s2-dao-examples/src/test/java"/>
+	<classpathentry output="s2-dao/target/test-classes" kind="src" path="s2-dao-examples/src/test/resources"/>
 	<classpathentry kind="src" path="/seasar2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="s2-dao/target/classes"/>
