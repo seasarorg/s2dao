@@ -78,4 +78,8 @@ public class Standard implements Dbms {
 	public String getSequenceNextValString(String sequenceName) {
 		return null;
 	}
+    
+    public boolean isSelfGenerate() {
+        return true;
+    }
 }

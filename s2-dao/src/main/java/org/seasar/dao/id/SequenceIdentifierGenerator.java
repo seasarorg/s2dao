@@ -35,7 +35,7 @@ public class SequenceIdentifierGenerator extends
 	}
 	
 	public boolean isSelfGenerate() {
-		return true;
+		return getDbms().isSelfGenerate();
 	}
 
 }

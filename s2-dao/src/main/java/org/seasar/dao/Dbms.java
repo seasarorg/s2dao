@@ -13,4 +13,6 @@ public interface Dbms {
 	String getIdentitySelectString();
 	
 	String getSequenceNextValString(String sequenceName);
+    
+    boolean isSelfGenerate();
 }
