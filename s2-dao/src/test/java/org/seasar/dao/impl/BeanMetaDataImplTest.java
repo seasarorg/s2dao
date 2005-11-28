@@ -102,7 +102,7 @@ public abstract class BeanMetaDataImplTest extends S2DaoTestCase {
 	public void testNoPersistentPropsEmpty() throws Exception {
 		BeanMetaData bmd = new BeanMetaDataImpl(getBeanClass("Ddd"), getDatabaseMetaData(), getDbms(),readerFactory);
 		PropertyType pt = bmd.getPropertyType("name");
-		assertEquals("1", true, pt.isPersistent());
+		assertEquals("1", false, pt.isPersistent());
 	}
 	
 	public void testNoPersistentPropsDefined() throws Exception {
