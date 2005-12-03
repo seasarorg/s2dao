@@ -8,7 +8,7 @@
   <artifactId>s2-dao-project</artifactId>
   <packaging>pom</packaging>
   <name>S2Dao Project</name>
-  <version>1.0.29-SNAPSHOT</version>
+  <version>1.0.29</version>
   <description></description>
   <url>http://s2dao.seasar.org/</url>
   <inceptionYear>2004</inceptionYear>
@@ -62,22 +62,15 @@
   </repositories>
   <dependencies>
     <dependency>
-      <groupId>org.seasar.extension</groupId>
+      <groupId>org.seasar.container</groupId>
       <artifactId>s2-extension</artifactId>
-      <version>2.3.3</version>
+      <version>2.3.4</version>
       <type>jar</type>
     </dependency>
     <dependency>
       <groupId>geronimo-spec</groupId>
-      <artifactId>geronimo-spec-jta</artifactId>
-      <version>1.0.1B-rc4</version>
-      <type>jar</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.3</version>
+      <artifactId>geronimo-spec-j2ee</artifactId>
+      <version>1.4-rc4</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>

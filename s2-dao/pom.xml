@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.seasar.dao</groupId>
     <artifactId>s2-dao-project</artifactId>
-    <version>1.0.29-SNAPSHOT</version>
+    <version>1.0.29</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>s2-dao</artifactId>

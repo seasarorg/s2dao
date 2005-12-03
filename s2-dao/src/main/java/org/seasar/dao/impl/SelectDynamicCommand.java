@@ -3,10 +3,10 @@ package org.seasar.dao.impl;
 import javax.sql.DataSource;
 
 import org.seasar.dao.CommandContext;
-import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.SelectHandler;
+import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.impl.BasicSelectHandler;
 
 /**

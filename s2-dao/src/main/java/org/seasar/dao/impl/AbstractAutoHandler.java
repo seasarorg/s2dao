@@ -10,14 +10,14 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
-import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.PropertyType;
+import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.UpdateHandler;
 import org.seasar.extension.jdbc.impl.BasicHandler;
+import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.log.Logger;
-import org.seasar.framework.util.ConnectionUtil;
 import org.seasar.framework.util.IntegerConversionUtil;
 import org.seasar.framework.util.PreparedStatementUtil;
 import org.seasar.framework.util.StatementUtil;

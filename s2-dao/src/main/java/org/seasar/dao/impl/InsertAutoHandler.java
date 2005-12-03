@@ -4,8 +4,8 @@ import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.IdentifierGenerator;
-import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.PropertyType;
+import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa

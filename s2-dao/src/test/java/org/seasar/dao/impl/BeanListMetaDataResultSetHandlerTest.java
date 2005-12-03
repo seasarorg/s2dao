@@ -97,7 +97,8 @@ public class BeanListMetaDataResultSetHandlerTest extends S2DaoTestCase {
 		include("j2ee.dicon");
 	}
 
-	protected void setUpAfterContainerInit() throws Exception {
+	protected void setUpAfterContainerInit() throws Throwable {
+        super.setUpAfterContainerInit();
 		beanMetaData_ = new BeanMetaDataImpl(Employee.class, getDatabaseMetaData(), getDbms());
 	}
 

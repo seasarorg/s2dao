@@ -16,6 +16,7 @@ import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.id.IdentifierGeneratorFactory;
 import org.seasar.extension.jdbc.ColumnNotFoundRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
+import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.PropertyNotFoundRuntimeException;
@@ -23,7 +24,6 @@ import org.seasar.framework.beans.factory.BeanDescFactory;
 import org.seasar.framework.log.Logger;
 import org.seasar.framework.util.CaseInsensitiveMap;
 import org.seasar.framework.util.ClassUtil;
-import org.seasar.framework.util.DatabaseMetaDataUtil;
 import org.seasar.framework.util.StringUtil;
 
 /**

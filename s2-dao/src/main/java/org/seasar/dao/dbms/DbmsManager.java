@@ -10,10 +10,10 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.seasar.dao.Dbms;
+import org.seasar.extension.jdbc.util.ConnectionUtil;
+import org.seasar.extension.jdbc.util.DataSourceUtil;
+import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.util.ClassUtil;
-import org.seasar.framework.util.ConnectionUtil;
-import org.seasar.framework.util.DataSourceUtil;
-import org.seasar.framework.util.DatabaseMetaDataUtil;
 import org.seasar.framework.util.ResourceUtil;
 
 /**

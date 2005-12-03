@@ -8,8 +8,8 @@ import javax.sql.DataSource;
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoMetaDataFactory;
-import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.ResultSetFactory;
+import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa
