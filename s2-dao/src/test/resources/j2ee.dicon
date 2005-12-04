@@ -12,7 +12,7 @@
 		class="org.seasar.extension.tx.MandatoryInterceptor"/>
 	<component name="notSupportedTx"
 		class="org.seasar.extension.tx.NotSupportedInterceptor"/>
-		
+
 	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
 	<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
 	<!--
@@ -57,20 +57,23 @@
         <property name="password">"xxxx"</property>
     </component>
 	-->
-	
+
 	<component name="xaDataSource"
 		class="org.seasar.extension.dbcp.impl.XADataSourceImpl">
 		<property name="driverClassName">
 			"org.hsqldb.jdbcDriver"
 		</property>
 		<property name="URL">
+			<!--
 			"jdbc:hsqldb:hsql://localhost:9001"
+			-->
+			"jdbc:hsqldb:file:" + @org.seasar.framework.util.EclipseUtil@getProjectRoot("s2dao").getAbsolutePath() + "/s2-dao/target/test-classes/data/demo"
 		</property>
 		<property name="user">"sa"</property>
 		<property name="password">""</property>
-		<!--<initMethod>#out.println(@org.seasar.framework.util.EclipseUtil@getProjectRoot("seasar2").getAbsolutePath())</initMethod>-->
+		<!--<initMethod>#out.println(@org.seasar.framework.util.EclipseUtil@getProjectRoot("s2dao").getAbsolutePath())</initMethod>-->
 	</component>
-	
+
 	<component name="connectionPool"
 		class="org.seasar.extension.dbcp.impl.ConnectionPoolImpl">
 		<property name="timeout">600</property>
