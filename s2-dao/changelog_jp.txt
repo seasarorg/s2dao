@@ -12,8 +12,11 @@ org.seasar.dao.impl パッケージ
 org.seasar.dao.unit パッケージ
 * S2DaoTestCaseへデフォルトコンストラクタを追加しました。(#6438)
 
-project.xml
-* s2-framework・s2-extensionのバージョンを2.2.10へ上げました。
+Maven2
+* Maven2に対応しました。
+
+Derby対応
+* Apache Derbyデータベースに対応しました。
 
 1.0.28
 -------------------------------------------------------------------------------
