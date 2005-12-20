@@ -32,6 +32,19 @@ public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
 		fail();
 		return null;
 	}
+	protected Object getBean(String className) {
+		if(className.equals("Employee")){
+			return new Employee();
+		}else if(className.equals("Employee3")){
+			return new Employee3();
+		}else if(className.equals("EmployeeSearchCondition")){
+			return new EmployeeSearchCondition();
+		}else if(className.equals("Department")){
+			return new Department();
+		}
+		fail();
+		return null;
+	}
 	protected Class getDaoClass(String className) {
 		if(className.equals("EmployeeDao")){
 			return EmployeeDao.class;

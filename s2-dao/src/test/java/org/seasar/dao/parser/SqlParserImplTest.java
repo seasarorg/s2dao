@@ -68,6 +68,18 @@ public class SqlParserImplTest extends TestCase {
 			System.out.println(ex);
 		}
 	}
+	public void testParseBindVariable4() throws Exception {
+		String sql = "SELECT * FROM emp WHERE job = #*job*#'CLERK' AND deptno = #*deptno*#20";
+		SqlParser parser = new SqlParserImpl(sql);
+		CommandContext ctx = new CommandContextImpl();
+		String job = "CLERK";
+		Integer deptno = new Integer(20);
+		ctx.addArg("job", job, job.getClass());
+		ctx.addArg("deptno", deptno, deptno.getClass());
+		Node root = parser.parse();
+		root.accept(ctx);
+		System.out.println(ctx.getSql());
+	}
 	
 	public void testParseBindVariable() throws Exception {
 		String sql = "SELECT * FROM emp WHERE job = /*job*/'CLERK' AND deptno = /*deptno*/20";

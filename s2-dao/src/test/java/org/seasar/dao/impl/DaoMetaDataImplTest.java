@@ -8,20 +8,13 @@ import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.dbms.Oracle;
-import org.seasar.dao.impl.BeanArrayMetaDataResultSetHandler;
-import org.seasar.dao.impl.BeanListMetaDataResultSetHandler;
-import org.seasar.dao.impl.BeanMetaDataResultSetHandler;
-import org.seasar.dao.impl.DaoMetaDataImpl;
-import org.seasar.dao.impl.DeleteBatchAutoStaticCommand;
-import org.seasar.dao.impl.InsertAutoStaticCommand;
-import org.seasar.dao.impl.InsertBatchAutoStaticCommand;
-import org.seasar.dao.impl.SelectDynamicCommand;
-import org.seasar.dao.impl.UpdateBatchAutoStaticCommand;
-import org.seasar.dao.impl.UpdateDynamicCommand;
-import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
+import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 import org.seasar.extension.unit.S2TestCase;
+import org.seasar.framework.beans.BeanDesc;
+import org.seasar.framework.beans.PropertyDesc;
+import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
  * @author higa
@@ -45,6 +38,8 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 	protected abstract Class getDaoClass(String className);
 
 	protected abstract Class getBeanClass(String className);
+
+	protected abstract Object getBean(String className);
 	
 	public void testSelectBeanList() throws Exception {
 		DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeDao"),
@@ -112,9 +107,9 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 		InsertAutoStaticCommand cmd = (InsertAutoStaticCommand) dmd
 				.getSqlCommand("insert");
 		assertNotNull("1", cmd);
-		Employee emp = new Employee();
-		emp.setEmpno(99);
-		emp.setEname("hoge");
+		Object emp = getBean("Employee");
+		setProperty(emp,"empno",new Integer(99));
+		setProperty(emp,"ename","hoge");
 		cmd.execute(new Object[] { emp });
 	}
 
@@ -126,7 +121,16 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 				.getSqlCommand("insert");
 		assertNotNull("1", cmd);
 	}
-
+	private void setProperty(Object obj,String name,Object value){
+		BeanDesc desc = BeanDescFactory.getBeanDesc(obj.getClass());
+		PropertyDesc propertyDesc = desc.getPropertyDesc(name);
+		propertyDesc.setValue(obj,value);
+	}
+	private Object getProperty(Object obj,String name){
+		BeanDesc desc = BeanDescFactory.getBeanDesc(obj.getClass());
+		PropertyDesc propertyDesc = desc.getPropertyDesc(name);
+		return propertyDesc.getValue(obj);
+	}
 	public void testUpdateAutoTx() throws Exception {
 		DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
 				getDataSource(), BasicStatementFactory.INSTANCE,
@@ -135,9 +139,9 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 		assertNotNull("1", cmd);
 		SelectDynamicCommand cmd2 = (SelectDynamicCommand) dmd
 				.getSqlCommand("getEmployee");
-		Employee emp = (Employee) cmd2
+		Object emp = cmd2
 				.execute(new Object[] { new Integer(7788) });
-		emp.setEname("hoge2");
+		setProperty(emp,"ename","hoge2");
 		cmd.execute(new Object[] { emp });
 	}
 
@@ -149,7 +153,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 		assertNotNull("1", cmd);
 		SelectDynamicCommand cmd2 = (SelectDynamicCommand) dmd
 				.getSqlCommand("getEmployee");
-		Employee emp = (Employee) cmd2
+		Object emp = cmd2
 				.execute(new Object[] { new Integer(7788) });
 		cmd.execute(new Object[] { emp });
 	}
@@ -263,7 +267,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 				BasicResultSetFactory.INSTANCE,readerFactory);
 
 		SqlCommand cmd = dmd.createFindBeanCommand("empno = ?");
-		Employee employee = (Employee) cmd.execute(new Object[] { new Integer(
+		Object employee = cmd.execute(new Object[] { new Integer(
 				7788) });
 		System.out.println(employee);
 		assertNotNull("1", employee);
@@ -349,8 +353,8 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 				.getSqlCommand("getEmployeesByEmployee");
 		assertNotNull("1", cmd);
 		System.out.println(cmd.getSql());
-		Employee dto = new Employee();
-		dto.setJob("MANAGER");
+		Object dto = getBean("Employee");
+		setProperty(dto,"job","MANAGER");
 		List employees = (List) cmd.execute(new Object[] { dto });
 		System.out.println(employees);
 		//assertTrue("2", employees.size() > 0);
@@ -364,8 +368,10 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 				.getSqlCommand("getEmployees");
 		assertNotNull("1", cmd);
 		System.out.println(cmd.getSql());
-		Employee3 dto = new Employee3();
-		dto.setManager(new Short((short) 7902));
+		Object dto = getBean("Employee3");
+		BeanDesc desc = BeanDescFactory.getBeanDesc(dto.getClass());
+		PropertyDesc propertyDesc = desc.getPropertyDesc("manager");
+		propertyDesc.setValue(dto,(new Short((short) 7902)));
 		List employees = (List) cmd.execute(new Object[] { dto });
 		System.out.println(employees);
 		assertTrue("2", employees.size() > 0);
@@ -390,10 +396,10 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 				.getSqlCommand("getEmployeesBySearchCondition2");
 		assertNotNull("1", cmd);
 		System.out.println(cmd.getSql());
-		EmployeeSearchCondition dto = new EmployeeSearchCondition();
-		Department department = new Department();
-		department.setDname("RESEARCH");
-		dto.setDepartment(department);
+		Object dto =  getBean("EmployeeSearchCondition");
+		Object department = getBean("Department");
+		setProperty(department,"dname","RESEARCH");
+		setProperty(dto,"department",department);
 		List employees = (List) cmd.execute(new Object[] { dto });
 		assertTrue("2", employees.size() > 0);
 	}
@@ -406,8 +412,8 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 		.getSqlCommand("getEmployeesBySearchCondition2");
 		assertNotNull("1", cmd);
 		System.out.println(cmd.getSql());
-		EmployeeSearchCondition dto = new EmployeeSearchCondition();
-		dto.setDepartment(null);
+		Object dto = getBean("EmployeeSearchCondition");
+		setProperty(dto,"department",null);
 		List employees = (List) cmd.execute(new Object[] { dto });
 		assertEquals("2", 0, employees.size());
 	}
@@ -420,10 +426,11 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 				.getSqlCommand("getEmployee");
 		assertNotNull("1", cmd);
 		System.out.println(cmd.getSql());
-		Employee4 employee = (Employee4) cmd
+		Object employee = cmd
 				.execute(new Object[] { new Integer(7788) });
 		System.out.println(employee);
-		assertEquals("2", new Long(7566), employee.getParent().getEmpno());
+		Object parent = getProperty(employee,"parent");
+		assertEquals("2", new Long(7566),getProperty(parent,"empno"));
 	}
 
 	public void testSelfMultiPk() throws Exception {
@@ -460,14 +467,14 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 		DaoMetaDataImpl dmd = new DaoMetaDataImpl(getDaoClass("Employee6Dao"),
 				getDataSource(), BasicStatementFactory.INSTANCE,
 				BasicResultSetFactory.INSTANCE,readerFactory);
-		EmployeeSearchCondition condition = new EmployeeSearchCondition();
-		condition.setDname("RESEARCH");
+		Object condition = getBean("EmployeeSearchCondition");
+		setProperty(condition,"dname","RESEARCH");
 		SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
 				.getSqlCommand("getEmployees");
 		System.out.println(cmd.getSql());
-		Employee[] results = (Employee[]) cmd.execute(new Object[]{condition});
-		condition.setOrderByString("ENAME");
-		results = (Employee[]) cmd.execute(new Object[]{condition});
+		Object results = cmd.execute(new Object[]{condition});
+		setProperty(condition,"orderByString","ENAME");
+		results = cmd.execute(new Object[]{condition});
 	}
 	public void testQueryAnnotationTx() throws Exception {
 		DaoMetaDataImpl dmd = new DaoMetaDataImpl(getDaoClass("Employee7Dao"),

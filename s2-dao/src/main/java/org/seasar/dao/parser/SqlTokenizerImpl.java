@@ -78,6 +78,11 @@ public class SqlTokenizerImpl implements SqlTokenizer {
 
 	protected void parseSql() {
 		int commentStartPos = sql_.indexOf("/*", position_);
+		int commentStartPos2 = sql_.indexOf("#*", position_);
+		if( 0 < commentStartPos2 &&
+				commentStartPos2 < commentStartPos){
+			commentStartPos = commentStartPos2;
+		}
 		int lineCommentStartPos = sql_.indexOf("--", position_);
 		int bindVariableStartPos = sql_.indexOf("?", position_);
 		int elseCommentStartPos = -1;
@@ -141,6 +146,11 @@ public class SqlTokenizerImpl implements SqlTokenizer {
 
 	protected void parseComment() {
 		int commentEndPos = sql_.indexOf("*/", position_);
+		int commentEndPos2 = sql_.indexOf("*#", position_);
+		if( 0 < commentEndPos2 &&
+				commentEndPos2 < commentEndPos){
+			commentEndPos = commentEndPos2;
+		}
 		if (commentEndPos < 0) {
 			throw new TokenNotClosedRuntimeException("*/", sql_
 					.substring(position_));
