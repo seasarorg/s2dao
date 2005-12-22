@@ -48,6 +48,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
 	private static final Pattern startWithOrderByPattern = 
 			Pattern.compile("(/\\*[^*]+\\*/)*order by",Pattern.CASE_INSENSITIVE);
+	private static final Pattern startWithSelectPattern	=
+			Pattern.compile("^\\s*select\\s",Pattern.CASE_INSENSITIVE);
+	
 	private static final String[] INSERT_NAMES = new String[] { "insert",
 			"create", "add" };
 
@@ -207,10 +210,13 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	}
 
 	protected static boolean startsWithSelect(String query) {
-        if (query == null) {
-            return false;
-        }
-		return StringUtil.startsWith(query.trim(), "select");
+		if (query != null) {
+			Matcher m = startWithSelectPattern.matcher(query);
+			if (m.lookingAt()) {
+				return true;
+			}
+		}
+		return false;	
 	}
 
  	protected static boolean startsWithOrderBy(String query) {
