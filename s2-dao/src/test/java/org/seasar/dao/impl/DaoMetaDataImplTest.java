@@ -15,6 +15,7 @@ import org.seasar.extension.unit.S2TestCase;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
+import org.seasar.framework.util.TextUtil;
 
 /**
  * @author higa
@@ -490,5 +491,29 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 		assertEquals(new Integer(1),cmd2.execute(new Object[]{new Integer(7369)}));
 		assertEquals(new Integer(13),cmd1.execute(null));
 	}
+    
+    public void testDaoExtend1() throws Exception {
+        DaoMetaDataImpl dmd = new DaoMetaDataImpl(EmployeeDaoImpl.class,
+                getDataSource(), BasicStatementFactory.INSTANCE,
+                BasicResultSetFactory.INSTANCE, readerFactory);
+        SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
+                .getSqlCommand("getEmployee");
+        final String expected = TextUtil.readText(EmployeeDao.class
+                .getPackage().getName().replace('.', '/')
+                + "/" + "EmployeeDao_getEmployee.sql");
+        assertEquals(expected, cmd.getSql());
+    }
 
+    public void testDaoExtend2() throws Exception {
+        DaoMetaDataImpl dmd = new DaoMetaDataImpl(EmployeeExDao.class,
+                getDataSource(), BasicStatementFactory.INSTANCE,
+                BasicResultSetFactory.INSTANCE, readerFactory);
+        SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
+                .getSqlCommand("getEmployee");
+        final String expected = TextUtil.readText(EmployeeDao.class
+                .getPackage().getName().replace('.', '/')
+                + "/" + "EmployeeDao_getEmployee.sql");
+        assertEquals(expected, cmd.getSql());
+    }
+    
 }

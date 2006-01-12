@@ -34,6 +34,7 @@ import org.seasar.extension.jdbc.util.DataSourceUtil;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.MethodNotFoundRuntimeException;
 import org.seasar.framework.beans.factory.BeanDescFactory;
+import org.seasar.framework.exception.NoSuchMethodRuntimeException;
 import org.seasar.framework.util.ClassUtil;
 import org.seasar.framework.util.MethodUtil;
 import org.seasar.framework.util.ResourceUtil;
@@ -42,7 +43,7 @@ import org.seasar.framework.util.TextUtil;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class DaoMetaDataImpl implements DaoMetaData {
 
@@ -131,24 +132,83 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	}
 
 	protected void setupMethod(Method method) {
-		String sql = null; 
-		sql = annotationReader_.getSQL(method,dbms_.getSuffix());
-		if(sql!=null){
-			setupMethodByManual(method, sql);
-			return;
+		setupMethod(daoInterface_, method);
+	}
+	
+	protected void setupMethod(Class daoInterface, Method method) {
+		setupMethodByAnnotation(daoInterface, method);
+
+		if (!completedSetupMethod(method)) {
+			setupMethodBySqlFile(daoInterface, method);
 		}
-		String base = daoInterface_.getName().replace('.', '/') + "_"
-				+ method.getName();
+
+		if (!completedSetupMethod(method)) {
+			setupMethodByInterfaces(daoInterface, method);
+		}
+
+		if (!completedSetupMethod(method)) {
+			setupMethodBySuperClass(daoInterface, method);
+		}
+
+		if (!completedSetupMethod(method)) {
+			setupMethodByAuto(method);
+		}
+	}
+	
+	protected void setupMethodByAnnotation(Class daoInterface, Method method) {
+		String sql = annotationReader_.getSQL(method, dbms_.getSuffix());
+		if (sql != null) {
+			setupMethodByManual(method, sql);
+		}
+	}
+	
+	protected void setupMethodBySqlFile(Class daoInterface, Method method) {
+		String base = daoInterface.getName().replace('.', '/') + "_" + method.getName();
 		String dbmsPath = base + dbms_.getSuffix() + ".sql";
 		String standardPath = base + ".sql";
 		if (ResourceUtil.isExist(dbmsPath)) {
-			sql = TextUtil.readText(dbmsPath);
+			String sql = TextUtil.readText(dbmsPath);
 			setupMethodByManual(method, sql);
 		} else if (ResourceUtil.isExist(standardPath)) {
-			sql = TextUtil.readText(standardPath);
+			String sql = TextUtil.readText(standardPath);
 			setupMethodByManual(method, sql);
-		} else {
-			setupMethodByAuto(method);
+		}
+	}
+	
+	protected void setupMethodByInterfaces(Class daoInterface, Method method) {
+		Class[] interfaces = daoInterface.getInterfaces();
+		if (interfaces == null) {
+			return;
+		}
+		for (int i = 0; i < interfaces.length; i++) {
+			Method interfaceMethod = getSameSignatureMethod(interfaces[i], method);
+			if (interfaceMethod != null) {
+				setupMethod(interfaces[i], interfaceMethod);
+			}
+		}
+	}
+
+	protected void setupMethodBySuperClass(Class daoInterface, Method method) {
+		Class superDaoClass = daoInterface.getSuperclass();
+		if (superDaoClass != null && !Object.class.equals(superDaoClass)) {
+			Method superClassMethod = getSameSignatureMethod(superDaoClass, method);
+			if (superClassMethod != null) {
+				setupMethod(superDaoClass, method);
+			}
+		}
+	}
+
+	protected boolean completedSetupMethod(Method method) {
+		return sqlCommands_.get(method.getName()) != null;
+	}
+	
+	private Method getSameSignatureMethod(Class clazz, Method method) {
+		try {
+			String methodName = method.getName();
+			Class[] parameterTypes = method.getParameterTypes();
+			return ClassUtil.getMethod(clazz, methodName, parameterTypes);
+		} catch (NoSuchMethodRuntimeException e) {
+			return null;
 		}
 	}
 
