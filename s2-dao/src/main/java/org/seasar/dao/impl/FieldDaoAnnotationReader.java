@@ -16,6 +16,8 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
 	
 	public String BEAN = "BEAN";
 
+	public String PROCEDURE_SUFFIX = "_PROCEDURE";
+
 	public String ARGS_SUFFIX = "_ARGS";
 
 	public String SQL_SUFFIX = "_SQL";
@@ -54,7 +56,15 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
 			return null;
 		}
 	}
-	
+	public String getStoredProcedureName(Method method) {
+		String key = method.getName() + PROCEDURE_SUFFIX;
+		if (daoBeanDesc_.hasField(key)) {
+			Field queryField = daoBeanDesc_.getField(key);
+			return (String) FieldUtil.get(queryField, null);
+		} else {
+			return null;
+		}
+	}
 	public Class getBeanClass() {
 		Field beanField = daoBeanDesc_.getField(BEAN);
 		return (Class) FieldUtil.get(beanField, null);
