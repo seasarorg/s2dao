@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container//EN"
+"http://www.seasar.org/dtd/components.dtd">
+<components>
+	<include path="dao-postgres.dicon"/>
+	<component class="examples.dao.StoredProcedureTestDao">
+		<aspect>dao.interceptor</aspect>
+	</component>
+</components>

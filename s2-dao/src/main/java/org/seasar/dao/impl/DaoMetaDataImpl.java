@@ -160,6 +160,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
 		if (sql != null) {
 			setupMethodByManual(method, sql);
 		}
+		String procedureName = annotationReader_.getStoredProcedureName(method);
+		if(procedureName != null){
+			StaticStoredProcedureCommand cmd = new StaticStoredProcedureCommand(dataSource_,procedureName);
+			sqlCommands_.put(method.getName(),cmd);			
+		}
 	}
 	
 	protected void setupMethodBySqlFile(Class daoInterface, Method method) {
