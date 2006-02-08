@@ -129,8 +129,7 @@ public class BasicProcedureHandler implements ProcedureHandler{
 			int pos = 1;
 			while(rs.next()){
 				int columnType = rs.getInt(5);
-				if(columnType == DatabaseMetaData.procedureColumnReturn ||
-						columnType == DatabaseMetaData.procedureColumnOut
+				if(columnType == DatabaseMetaData.procedureColumnReturn 
 						){
 					if(returnColumnNum_>0){
 						throw new SRuntimeException("EDAO0010");
@@ -140,7 +139,8 @@ public class BasicProcedureHandler implements ProcedureHandler{
 					buff.append("{? = call ");
 					buff.append(procedureName_);
 					buff.append("(");
-				}else if(columnType == DatabaseMetaData.procedureColumnIn){
+				}else if(columnType == DatabaseMetaData.procedureColumnIn ||
+						columnType == DatabaseMetaData.procedureColumnOut){
 					buff.append("?,");
 				}else{
 					throw new SRuntimeException("EDAO0010",new Object[]{procedureName_});
