@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -36,41 +37,27 @@ import org.seasar.framework.exception.EmptyRuntimeException;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
 import org.seasar.framework.util.ResultSetUtil;
-import org.seasar.framework.util.StatementUtil;
 
 /**
  * @author higa
  *  
  */
-public class BasicProcedureHandler implements ProcedureHandler{
-	private boolean initialised = false;
+public abstract class AbstractBasicProcedureHandler implements ProcedureHandler{
+	protected boolean initialised = false;
 	
-	private int returnColumnNum_ = -1;
+	protected DataSource dataSource_;
+
+	protected String procedureName_;
 	
-	private Integer[] columnTypes_;
+	protected String sql_;
 	
-	private DataSource dataSource_;
+	protected Integer[] columnInOutTypes_;
 
-	private String procedureName_;
+	protected Integer[] columnTypes_;
 	
-	private String sql_;
-
-	private StatementFactory statementFactory_ = BasicStatementFactory.INSTANCE;
-
-	public BasicProcedureHandler() {
-	}
-
-	public BasicProcedureHandler(DataSource ds, String procedureName) {
-		this(ds, procedureName, BasicStatementFactory.INSTANCE);
-	}
-
-	public BasicProcedureHandler(DataSource ds, String procedureName,
-			StatementFactory statementFactory) {
-
-		setDataSource(ds);
-		setProcedureName(procedureName);
-		setStatementFactory(statementFactory);
-	}
+	protected String[] columnNames_;
+	
+	protected StatementFactory statementFactory_ = BasicStatementFactory.INSTANCE;
 
 	public DataSource getDataSource() {
 		return dataSource_;
@@ -116,82 +103,92 @@ public class BasicProcedureHandler implements ProcedureHandler{
 			ConnectionUtil.close(connection);
 		}
 	}
-	protected void initTypes(Connection connection) throws SQLException{
+	protected int initTypes(){
 		StringBuffer buff = new StringBuffer();
 		buff.append("{ call ");
 		buff.append(procedureName_);
 		buff.append("(");
-		ArrayList dataType = new ArrayList();
-		DatabaseMetaData dmd = ConnectionUtil.getMetaData(connection);
+		List columnNames = new ArrayList();
+		List dataType = new ArrayList();
+		List inOutTypes = new ArrayList();
 		ResultSet rs = null;
+		int outparameterNum = 0;
+		Connection connection = null;
 		try{
-			rs = dmd.getProcedureColumns(null,null,procedureName_,null);
-			int pos = 1;
+			connection = getConnection();
+			DatabaseMetaData dmd = ConnectionUtil.getMetaData(connection);
+			String[] names = procedureName_.split("\\.");
+			int namesLength = names.length;
+			if(namesLength == 1){
+				rs = dmd.getProcedureColumns(null,null,procedureName_,null);
+			}else if(namesLength == 2){
+				rs = dmd.getProcedureColumns(names[0],null,names[1],null);
+			}else if(namesLength == 3){
+				rs = dmd.getProcedureColumns(names[1],names[0],names[2],null);
+			}
 			while(rs.next()){
+				columnNames.add(rs.getObject(4));
 				int columnType = rs.getInt(5);
-				if(columnType == DatabaseMetaData.procedureColumnReturn 
-						){
-					if(returnColumnNum_>0){
-						throw new SRuntimeException("EDAO0010");
-					}
-					returnColumnNum_ = pos;
+				inOutTypes.add(new Integer(columnType));
+				dataType.add(rs.getObject(6));
+				if(columnType == DatabaseMetaData.procedureColumnIn){
+					buff.append("?,");
+				}else if(columnType == DatabaseMetaData.procedureColumnReturn){
 					buff.setLength(0);
 					buff.append("{? = call ");
 					buff.append(procedureName_);
 					buff.append("(");
-				}else if(columnType == DatabaseMetaData.procedureColumnIn ||
-						columnType == DatabaseMetaData.procedureColumnOut){
+				}else if(columnType == DatabaseMetaData.procedureColumnOut ||
+						columnType == DatabaseMetaData.procedureColumnInOut){
 					buff.append("?,");
+					outparameterNum++;
 				}else{
 					throw new SRuntimeException("EDAO0010",new Object[]{procedureName_});
 				}
-				dataType.add(rs.getObject(6));
-				pos++;
 			}			
+		} catch (SQLException e) {
+			throw new SQLRuntimeException(e);
 		}finally{
 			ResultSetUtil.close(rs);
+			ConnectionUtil.close(connection);
 		}
 		buff.setLength(buff.length() - 1 );
 		buff.append(")}");
 		sql_ = buff.toString();
+		columnNames_ = (String[])
+			columnNames.toArray(new String[columnNames.size()]);
 		columnTypes_ = (Integer[]) 
 			dataType.toArray(new Integer[dataType.size()]);
+		columnInOutTypes_ = (Integer[])
+			inOutTypes.toArray(new Integer[inOutTypes.size()]);
+		return outparameterNum;
 	}
-	protected Object execute(Connection connection, Object[] args) {
-
-		CallableStatement cs = null;
-		try {
-			if(!initialised){
-				initTypes(connection);
-				initialised = true;
-			}
-			cs = prepareCallableStatement(connection);
-			bindArgs(cs, args);
-			cs.execute();
-			return (returnColumnNum_>0)?cs.getObject(returnColumnNum_):null;
-		} catch (SQLException e) {
-			throw new SQLRuntimeException(e);
-		} finally {
-			StatementUtil.close(cs);
-		}
-	}
-
-	protected void bindArgs(CallableStatement ps, Object[] args
-			) throws SQLException {
-
+	
+	protected abstract Object execute(Connection connection, Object[] args);
+	
+	protected void bindArgs(CallableStatement ps, Object[] args) throws SQLException {
 		if (args == null) {
 			return;
 		}
 		int argPos = 0;
 		for (int i = 0; i < columnTypes_.length;i++) {
-			if(returnColumnNum_ == i + 1){
+			if(isOutputColum(columnInOutTypes_[i].intValue())){
 				ps.registerOutParameter(i+1,columnTypes_[i].intValue());
-			}else{
+			}
+			if(isInputColum(columnInOutTypes_[i].intValue())){
 				ps.setObject(i+1,args[argPos++],columnTypes_[i].intValue());
 			}
 		}
 	}
-
+	protected boolean isInputColum(int columnInOutType){
+		return columnInOutType == DatabaseMetaData.procedureColumnIn ||
+			columnInOutType == DatabaseMetaData.procedureColumnInOut;
+	}
+	protected boolean isOutputColum(int columnInOutType){
+		return columnInOutType == DatabaseMetaData.procedureColumnReturn ||
+			columnInOutType == DatabaseMetaData.procedureColumnOut ||
+			columnInOutType == DatabaseMetaData.procedureColumnInOut;
+	}
 	protected String getCompleteSql(Object[] args) {
 		if (args == null || args.length == 0) {
 			return sql_;

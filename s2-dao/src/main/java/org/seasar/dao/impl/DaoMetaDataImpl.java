@@ -24,6 +24,8 @@ import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.dbms.DbmsManager;
+import org.seasar.dao.handler.MapBasicProcedureHandler;
+import org.seasar.dao.handler.ObjectBasicProcedureHandler;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
@@ -162,8 +164,16 @@ public class DaoMetaDataImpl implements DaoMetaData {
 		}
 		String procedureName = annotationReader_.getStoredProcedureName(method);
 		if(procedureName != null){
-			StaticStoredProcedureCommand cmd = new StaticStoredProcedureCommand(dataSource_,procedureName);
-			sqlCommands_.put(method.getName(),cmd);			
+			Class returnType = method.getReturnType();
+			if(returnType.isAssignableFrom(Map.class)){
+				sqlCommands_.put(method.getName(),
+					new StaticStoredProcedureCommand(
+						new MapBasicProcedureHandler(dataSource_,procedureName)));
+			}else{
+				sqlCommands_.put(method.getName(),
+					new StaticStoredProcedureCommand(
+						new ObjectBasicProcedureHandler(dataSource_,procedureName)));				
+			}
 		}
 	}
 	
