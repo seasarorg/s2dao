@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container//EN"
+"http://www.seasar.org/dtd/components.dtd">
+<components namespace="dao">
+	<include path="j2ee.dicon"/>
+
+	<component
+		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
+		<arg>j2ee.dataSource</arg>
+		<arg>
+			<component class="org.seasar.dao.pager.PagerStatementFactory"/>
+		</arg>
+<!--
+		<arg>
+			<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
+		</arg>
+-->
+		<arg>
+			<component class="org.seasar.dao.pager.PagerResultSetFactoryWrapper">
+				<arg>
+					<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+				</arg>
+				<property name="useScrollCursor">true</property>
+			</component>
+		</arg>
+	</component>
+
+	<component name="interceptor"
+		class="org.seasar.dao.pager.PagerS2DaoInterceptorWrapper">
+		<arg>
+			<component name="s2dao"
+				class="org.seasar.dao.interceptors.S2DaoInterceptor">
+			</component>
+		</arg>
+	</component>
+
+<!--
+	<component
+		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl"/>
+	<component name="interceptor"
+		class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
+-->
+</components>
