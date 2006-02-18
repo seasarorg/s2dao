@@ -3,6 +3,9 @@
 "http://www.seasar.org/dtd/components.dtd">
 <components namespace="dao">
 	<include path="j2ee.dicon"/>
+	<component
+		name="annotationReaderFactory"
+		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"/>
 
 	<component
 		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
@@ -23,6 +26,7 @@
 				<property name="useScrollCursor">true</property>
 			</component>
 		</arg>
+		<arg>annotationReaderFactory</arg>
 	</component>
 
 	<component name="interceptor"
