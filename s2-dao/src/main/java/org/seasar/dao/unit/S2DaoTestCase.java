@@ -27,37 +27,37 @@ import org.seasar.extension.unit.S2TestCase;
  * @author higa
  * 
  */
-public class S2DaoTestCase extends S2TestCase {
+public abstract class S2DaoTestCase extends S2TestCase {
 
-	public S2DaoTestCase() {
-	}
+    public S2DaoTestCase() {
+    }
 
-	/**
-	 * @param name
-	 */
-	public S2DaoTestCase(String name) {
-		super(name);
-	}
+    /**
+     * @param name
+     */
+    public S2DaoTestCase(String name) {
+        super(name);
+    }
 
-	protected void assertBeanEquals(String message, DataSet expected,
-			Object bean) {
+    protected void assertBeanEquals(String message, DataSet expected,
+        Object bean) {
 
-		S2DaoBeanReader reader = new S2DaoBeanReader(bean,
-				getDatabaseMetaData());
-		assertEquals(message, expected, reader.read());
-	}
+        S2DaoBeanReader reader = new S2DaoBeanReader(bean,
+            getDatabaseMetaData());
+        assertEquals(message, expected, reader.read());
+    }
 
-	protected void assertBeanListEquals(String message, DataSet expected,
-			List list) {
+    protected void assertBeanListEquals(String message, DataSet expected,
+        List list) {
 
-		S2DaoBeanListReader reader = new S2DaoBeanListReader(list,
-				getDatabaseMetaData());
-		assertEquals(message, expected, reader.read());
-	}
+        S2DaoBeanListReader reader = new S2DaoBeanListReader(list,
+            getDatabaseMetaData());
+        assertEquals(message, expected, reader.read());
+    }
 
-	protected Dbms getDbms() {
-		DatabaseMetaData dbMetaData = getDatabaseMetaData();
-		return DbmsManager.getDbms(dbMetaData);
-	}
+    protected Dbms getDbms() {
+        DatabaseMetaData dbMetaData = getDatabaseMetaData();
+        return DbmsManager.getDbms(dbMetaData);
+    }
 
 }
