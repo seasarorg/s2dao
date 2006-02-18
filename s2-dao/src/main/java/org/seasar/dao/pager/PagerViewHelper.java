@@ -26,11 +26,10 @@ public class PagerViewHelper implements PagerCondition {
 
     /** 検索条件オブジェクト */
     private final PagerCondition condition;
-    
+
     /** 画面上でのページの最大表示数 */
     private final int displayPageMax;
-    
-    
+
     public PagerViewHelper(PagerCondition condition) {
         this(condition, DEFAULT_DISPLAY_PAGE_MAX);
     }
@@ -87,7 +86,7 @@ public class PagerViewHelper implements PagerCondition {
     public int getCurrentLastOffset() {
         return PagerUtil.getCurrentLastOffset(condition);
     }
-    
+
     /**
      * 次へリンクのoffsetを返します。
      * @return 次へリンクのoffset
@@ -95,7 +94,7 @@ public class PagerViewHelper implements PagerCondition {
     public int getNextOffset() {
         return PagerUtil.getNextOffset(condition);
     }
-    
+
     /**
      * 前へリンクのoffsetを返します。
      * @return 前へリンクのoffset
@@ -103,7 +102,7 @@ public class PagerViewHelper implements PagerCondition {
     public int getPrevOffset() {
         return PagerUtil.getPrevOffset(condition);
     }
-    
+
     /**
      * 現在ページのインデックスを返します。
      * @return 現在ページのインデックス
@@ -111,7 +110,7 @@ public class PagerViewHelper implements PagerCondition {
     public int getPageIndex() {
         return PagerUtil.getPageIndex(condition);
     }
-    
+
     /**
      * 現在ページのカウント(インデックス+1)を返します。
      * @return 現在ページのカウント(インデックス+1)
@@ -119,7 +118,7 @@ public class PagerViewHelper implements PagerCondition {
     public int getPageCount() {
         return PagerUtil.getPageCount(condition);
     }
-    
+
     /**
      * 最終ページのインデックスを返します。
      * @return 最終ページのインデックス
@@ -127,7 +126,7 @@ public class PagerViewHelper implements PagerCondition {
     public int getLastPageIndex() {
         return PagerUtil.getLastPageIndex(condition);
     }
-    
+
     /**
      * ページリンクの表示上限を元に、ページ番号リンクの表示開始位置を返します。
      * @return ページ番号リンクの表示開始位置

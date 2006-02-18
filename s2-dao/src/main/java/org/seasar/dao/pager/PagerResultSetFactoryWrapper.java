@@ -27,42 +27,44 @@ import org.seasar.extension.jdbc.ResultSetFactory;
  * @author Toshitaka Agata(Nulab,inc.)
  */
 public class PagerResultSetFactoryWrapper implements ResultSetFactory {
-	
+
     /** オリジナルのResultSetFactory */
-	private ResultSetFactory resultSetFactory_;
-	static boolean useScrollCursor = true;
+    private ResultSetFactory resultSetFactory_;
 
-	/**
-	 * コンストラクタ
-	 * @param resultSetFactory オリジナルのResultSetFactory
-	 */
-	public PagerResultSetFactoryWrapper(ResultSetFactory resultSetFactory) {
-		resultSetFactory_ = resultSetFactory;
-	}
+    static boolean useScrollCursor = true;
 
-	/**
-	 * @param b
-	 */
-	public void setUseScrollCursor(boolean useScrollCursor) {
-		PagerResultSetFactoryWrapper.useScrollCursor = useScrollCursor;
-	}
-	
-	/**
-	 * ResultSetを生成します。<p>
-	 * PagerContextにPagerConditionがセットされている場合、
-	 * ResultSetをPagerResultSetWrapperでラップして返します。
-	 * @param PreparedStatement
-	 * @return ResultSet
-	 */
-	public ResultSet createResultSet(PreparedStatement ps) {
-		ResultSet resultSet = resultSetFactory_.createResultSet(ps);
-		Object[] args = PagerContext.getContext().peekArgs();
-		if (PagerContext.isPagerCondition(args)) {
-		    PagerCondition condition = PagerContext.getPagerCondition(args);
-			return new PagerResultSetWrapper(resultSet, condition, useScrollCursor);
-		} else {
-	        return resultSet;
-		}
-	}
+    /**
+     * コンストラクタ
+     * @param resultSetFactory オリジナルのResultSetFactory
+     */
+    public PagerResultSetFactoryWrapper(ResultSetFactory resultSetFactory) {
+        resultSetFactory_ = resultSetFactory;
+    }
+
+    /**
+     * @param b
+     */
+    public void setUseScrollCursor(boolean useScrollCursor) {
+        PagerResultSetFactoryWrapper.useScrollCursor = useScrollCursor;
+    }
+
+    /**
+     * ResultSetを生成します。<p>
+     * PagerContextにPagerConditionがセットされている場合、
+     * ResultSetをPagerResultSetWrapperでラップして返します。
+     * @param PreparedStatement
+     * @return ResultSet
+     */
+    public ResultSet createResultSet(PreparedStatement ps) {
+        ResultSet resultSet = resultSetFactory_.createResultSet(ps);
+        Object[] args = PagerContext.getContext().peekArgs();
+        if (PagerContext.isPagerCondition(args)) {
+            PagerCondition condition = PagerContext.getPagerCondition(args);
+            return new PagerResultSetWrapper(resultSet, condition,
+                    useScrollCursor);
+        } else {
+            return resultSet;
+        }
+    }
 
 }

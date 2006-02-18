@@ -21,12 +21,13 @@ import junit.framework.TestCase;
  * @author Toshitaka Agata
  */
 public class PagerConditionBaseTest extends TestCase {
-    
+
     DefaultPagerCondition condition;
+
     protected void setUp() throws Exception {
         condition = new DefaultPagerCondition();
     }
-    
+
     public void testFirstPage() {
         setCondtion(0, 10, 95);
         assertCondtion(false, true, 0, 1, 0, 10, 10, 9);
@@ -57,12 +58,9 @@ public class PagerConditionBaseTest extends TestCase {
         assertCondtion(false, false, 0, 1, 0, 10, 10, 0);
     }
 
-    private void assertCondtion(
-            boolean isPrev, boolean isNext, 
-            int pageIndex, int pageCount, 
-            int prevOffset, int nextOffset, 
-            int currentLastOffset, int lastPageIndex)
-    {
+    private void assertCondtion(boolean isPrev, boolean isNext, int pageIndex,
+            int pageCount, int prevOffset, int nextOffset,
+            int currentLastOffset, int lastPageIndex) {
         PagerViewHelper helper = new PagerViewHelper(condition);
         assertEquals(isPrev, helper.isPrev());
         assertEquals(isNext, helper.isNext());

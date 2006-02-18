@@ -24,9 +24,11 @@ import junit.framework.TestCase;
  * @author agata
  */
 public class PagerUtilTest extends TestCase {
-    
+
     private List list;
+
     DefaultPagerCondition condition;
+
     protected void setUp() throws Exception {
         list = new ArrayList();
         for (int i = 0; i < 21; i++) {
@@ -34,7 +36,7 @@ public class PagerUtilTest extends TestCase {
         }
         condition = new DefaultPagerCondition();
     }
-    
+
     public void testFilter1() {
         condition.setLimit(10);
         condition.setOffset(0);
@@ -56,7 +58,7 @@ public class PagerUtilTest extends TestCase {
             assertEquals(String.valueOf(i + 10), result.get(i));
         }
     }
-    
+
     public void testFilter3() {
         condition.setLimit(10);
         condition.setOffset(20);
@@ -67,7 +69,7 @@ public class PagerUtilTest extends TestCase {
             assertEquals(String.valueOf(i + 20), result.get(i));
         }
     }
-    
+
     public void testFilter4() {
         condition.setLimit(PagerCondition.NONE_LIMIT);
         condition.setOffset(20);

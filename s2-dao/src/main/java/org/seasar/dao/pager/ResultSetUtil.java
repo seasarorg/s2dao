@@ -26,7 +26,7 @@ import org.seasar.framework.exception.SQLRuntimeException;
  * @author Toshitaka Agata(Nulab,inc.)
  */
 class ResultSetUtil {
-    
+
     /**
      * ResultSetを指定された位置まで進めます。
      * @param resultSet ResultSet
@@ -34,7 +34,8 @@ class ResultSetUtil {
      * @return ResultSet#nextを呼び出した回数
      * @throws SQLException
      */
-    public static int autoAbsolute(ResultSet resultSet, int offset) throws SQLException {
+    public static int autoAbsolute(ResultSet resultSet, int offset)
+            throws SQLException {
         if (isCursorSupport(resultSet)) {
             try {
                 if (offset != resultSet.getRow()) {
@@ -45,7 +46,7 @@ class ResultSetUtil {
                 return manualAbsolute(resultSet, offset);
             }
         } else {
-        	return manualAbsolute(resultSet, offset);
+            return manualAbsolute(resultSet, offset);
         }
         return 0;
     }
@@ -57,12 +58,13 @@ class ResultSetUtil {
      * @return ResultSet#nextを呼び出した回数
      * @throws SQLException
      */
-    private static int manualAbsolute(ResultSet resultSet, int offset) throws SQLException {
+    private static int manualAbsolute(ResultSet resultSet, int offset)
+            throws SQLException {
         int count = 0;
-    	while(resultSet.getRow() < offset &&  resultSet.next()) {
-    		count++;
+        while (resultSet.getRow() < offset && resultSet.next()) {
+            count++;
         }
-    	return count;
+        return count;
     }
 
     /**
@@ -92,11 +94,11 @@ class ResultSetUtil {
      * @throws SQLException
      */
     public static boolean isCursorSupport(ResultSet resultSet) {
-    	try {
+        try {
             return !(resultSet.getType() == ResultSet.TYPE_FORWARD_ONLY);
-    	} catch (SQLException e) {
-    		throw new SQLRuntimeException(e);
-    	}
+        } catch (SQLException e) {
+            throw new SQLRuntimeException(e);
+        }
     }
 
     /**
@@ -105,7 +107,7 @@ class ResultSetUtil {
      * @throws SQLException
      */
     private static void manualLast(ResultSet resultSet) throws SQLException {
-      	while (resultSet.next()) {
-      	}
+        while (resultSet.next()) {
+        }
     }
 }

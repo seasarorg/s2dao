@@ -51,19 +51,19 @@ import org.seasar.framework.util.ClassUtil;
  * @author Toshitaka Agata(Nulab,inc.)
  */
 public class PagerSupport {
-    
+
     /** 最大取得件数の初期値 */
     public static final int DEFAULT_LIMIT = PagerCondition.NONE_LIMIT;
-    
+
     /** 最大取得件数 */
     private int limit = DEFAULT_LIMIT;
-    
+
     /** ページャ検索条件クラス */
     private Class pagerConditionClass;
 
     /** 検索条件オブジェクトのセッション中の名前 */
     private String pagerConditionName;
-    
+
     /**
      * コンストラクタ<p>
      * 最大取得件数は無制限(-1)に設定されます。
@@ -73,19 +73,20 @@ public class PagerSupport {
     public PagerSupport(Class pagerConditionClass, String pagerConditionName) {
         this(DEFAULT_LIMIT, pagerConditionClass, pagerConditionName);
     }
-    
+
     /**
      * コンストラクタ
      * @param limit 最大取得件数
      * @param pagerConditionClass ページャ検索条件クラス
      * @param pagerConditionName 検索条件オブジェクトのセッション中の名前
      */
-    public PagerSupport(int limit, Class pagerConditionClass, String pagerConditionName) {
+    public PagerSupport(int limit, Class pagerConditionClass,
+            String pagerConditionName) {
         this.limit = limit;
         this.pagerConditionClass = pagerConditionClass;
         this.pagerConditionName = pagerConditionName;
     }
-    
+
     /**
      * リクエストパラメータ名を指定して、セッション中の検索条件オブジェクトの現在位置を更新します。<p>
      * 検索条件オブジェクトが存在しない場合、新規に検索条件オブジェクトを生成します。
@@ -97,7 +98,7 @@ public class PagerSupport {
         PagerCondition pagerCondition = getPagerCondition(request);
         pagerCondition.setOffset(offset);
     }
-    
+
     /**
      *  リクエストパラメータ名"offset"でセッション中の検索条件オブジェクトの現在位置を更新します。<p>
      * 検索条件オブジェクトが存在しない場合、新規に検索条件オブジェクトを生成します。
@@ -106,7 +107,7 @@ public class PagerSupport {
     public void updateOffset(HttpServletRequest request) {
         updateOffset(request, "offset");
     }
-    
+
     /**
      * リクエストパラメータ"offset"から現在位置を取得します。
      * @param request HttpServletRequest
@@ -125,7 +126,7 @@ public class PagerSupport {
             }
         }
     }
-    
+
     /**
      * セッション中の検索条件オブジェクトを取得します。<p>
      * 検索条件オブジェクトが存在しない場合、新規に検索条件オブジェクトを生成します。
@@ -136,11 +137,11 @@ public class PagerSupport {
         PagerCondition dto = (PagerCondition) request.getSession()
                 .getAttribute(pagerConditionName);
         if (dto == null) {
-            dto = (PagerCondition)ClassUtil.newInstance(pagerConditionClass);
+            dto = (PagerCondition) ClassUtil.newInstance(pagerConditionClass);
             dto.setLimit(limit);
             request.getSession().setAttribute(pagerConditionName, dto);
         }
         return dto;
     }
-    
+
 }

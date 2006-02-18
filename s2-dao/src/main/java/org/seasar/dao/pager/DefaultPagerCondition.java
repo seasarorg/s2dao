@@ -24,19 +24,22 @@ import java.io.Serializable;
  */
 public class DefaultPagerCondition implements PagerCondition, Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     /** 現在の位置 */
     private int offset;
-    
+
     /** 表示の最大値 */
     private int limit;
-    
+
     /** 取得した総数 */
     private int count;
-    
+
     /**
      * コンストラクタ
      */
-    public DefaultPagerCondition() {}
+    public DefaultPagerCondition() {
+    }
 
     /**
      * @return Returns the total.
@@ -44,30 +47,35 @@ public class DefaultPagerCondition implements PagerCondition, Serializable {
     public int getCount() {
         return count;
     }
+
     /**
      * @param total The total to set.
      */
     public void setCount(int total) {
         this.count = total;
     }
+
     /**
      * @return Returns the limit.
      */
     public int getLimit() {
         return limit;
     }
+
     /**
      * @param limit The limit to set.
      */
     public void setLimit(int limit) {
         this.limit = limit;
     }
+
     /**
      * @return Returns the offset.
      */
     public int getOffset() {
         return offset;
     }
+
     /**
      * @param offset The offset to set.
      */

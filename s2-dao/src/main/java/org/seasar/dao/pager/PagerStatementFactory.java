@@ -30,18 +30,19 @@ import org.seasar.framework.exception.SQLRuntimeException;
  *
  */
 public class PagerStatementFactory implements StatementFactory {
-	
-	public static final StatementFactory INSTANCE = new PagerStatementFactory();
-	
-	public PreparedStatement createPreparedStatement(Connection con, String sql) {
-		try {
-			return con.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		} catch (SQLException e) {
-			throw new SQLRuntimeException(e);
-		}
-	}
-	
-	public CallableStatement createCallableStatement(Connection con, String sql) {
-		return ConnectionUtil.prepareCall(con, sql);
-	}
+
+    public static final StatementFactory INSTANCE = new PagerStatementFactory();
+
+    public PreparedStatement createPreparedStatement(Connection con, String sql) {
+        try {
+            return con.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
+        } catch (SQLException e) {
+            throw new SQLRuntimeException(e);
+        }
+    }
+
+    public CallableStatement createCallableStatement(Connection con, String sql) {
+        return ConnectionUtil.prepareCall(con, sql);
+    }
 }

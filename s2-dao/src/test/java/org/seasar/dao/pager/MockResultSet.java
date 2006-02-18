@@ -21,18 +21,20 @@ import java.sql.SQLException;
  * @author agata
  */
 public class MockResultSet extends MockResultSetBase {
-    
+
     int total;
+
     int counter;
+
     int callNextCount;
-    
+
     public MockResultSet() {
     }
 
     public MockResultSet(int total) {
         this.total = total;
     }
-    
+
     /* (non-Javadoc)
      * @see org.seasar.dao.pager.MockResultSetBase#next()
      */
@@ -45,17 +47,17 @@ public class MockResultSet extends MockResultSetBase {
             return false;
         }
     }
-    
+
     public boolean absolute(int row) throws SQLException {
         counter = row;
         return true;
     }
-    
+
     public boolean last() throws SQLException {
         counter = total + 1;
         return true;
     }
-    
+
     public int getRow() throws SQLException {
         return counter;
     }

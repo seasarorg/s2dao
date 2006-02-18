@@ -32,95 +32,99 @@ import org.seasar.framework.exception.SQLRuntimeException;
  * @author Toshitaka Agata(Nulab,inc.)
  */
 class PagerResultSetWrapper extends ResultSetWrapper {
-    
-	/** ログ */
-	private static final Log log = LogFactory.getLog(PagerResultSetWrapper.class);
-	
+
+    /** ログ */
+    private static final Log log = LogFactory
+            .getLog(PagerResultSetWrapper.class);
+
     /** カウント */
-	private int counter = 0;
-	
+    private int counter = 0;
+
     /** オリジナルのResultSet */
     private ResultSet original;
 
     /** 検索条件オブジェクト */
     private PagerCondition condition;
-    
+
     /** absoluteメソッドを使用するかどうかのフラグ */
     private boolean useAbsolute = true;
-    
+
     public void setUseAbsolute(boolean useAbsolute) {
-    	this.useAbsolute = useAbsolute;
+        this.useAbsolute = useAbsolute;
     }
-    
-	/**
-	 * コンストラクタ
+
+    /**
+     * コンストラクタ
      * @param original オリジナルのResultSet 
      * @param condition 検索条件オブジェクト
-	 * @param useAbsolute
-	 * @throws SQLException
+     * @param useAbsolute
+     * @throws SQLException
      */
-    public PagerResultSetWrapper(ResultSet original, PagerCondition condition, boolean useAbsolute) {
-		super(original);
-		this.original = original;
-		this.condition = condition;
-		this.useAbsolute = useAbsolute;
-		moveOffset();
+    public PagerResultSetWrapper(ResultSet original, PagerCondition condition,
+            boolean useAbsolute) {
+        super(original);
+        this.original = original;
+        this.condition = condition;
+        this.useAbsolute = useAbsolute;
+        moveOffset();
     }
 
     /**
      * 開始位置までカーソルを進めます。
-	 * @throws SQLException
-	 */
-	private void moveOffset() {
-		if (useAbsolute && ResultSetUtil.isCursorSupport(original)) {
-			if(log.isDebugEnabled()) {
-				log.debug("[S2Pager]Use scroll cursor.");
-			}
-			try {
-				original.absolute(condition.getOffset());
-				counter = original.getRow();
-			} catch (SQLException e) {
-				throw new SQLRuntimeException(e);
-			}
-		} else {
-			if(log.isDebugEnabled()) {
-				log.debug("[S2Pager]Not use scroll cursor.");
-			}
-			try {
-		    	while(original.getRow() < condition.getOffset() 
-		    			&&  original.next()) {
-		    		counter++;
-		        }
-			} catch (SQLException e) {
-				throw new SQLRuntimeException(e);
-			}
-		}
-	}
+     * @throws SQLException
+     */
+    private void moveOffset() {
+        if (useAbsolute && ResultSetUtil.isCursorSupport(original)) {
+            if (log.isDebugEnabled()) {
+                log.debug("[S2Pager]Use scroll cursor.");
+            }
+            try {
+                original.absolute(condition.getOffset());
+                counter = original.getRow();
+            } catch (SQLException e) {
+                throw new SQLRuntimeException(e);
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("[S2Pager]Not use scroll cursor.");
+            }
+            try {
+                while (original.getRow() < condition.getOffset()
+                        && original.next()) {
+                    counter++;
+                }
+            } catch (SQLException e) {
+                throw new SQLRuntimeException(e);
+            }
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.seasar.dao.impl.ResultSetAdaptor#next()
-	 */
-	public boolean next() throws SQLException {
-		boolean next = super.next();
-		if ((condition.getLimit() == PagerCondition.NONE_LIMIT 
-				|| counter < condition.getOffset() + condition.getLimit()) && next) {
-			counter += 1;
-			return true;
-		} else {
-			if (useAbsolute && ResultSetUtil.isCursorSupport(original)) {
-	            original.last();
-				int count = original.getRow();
-				condition.setCount(count);
-			} else {
-				if (next) {
-					counter++; // 調整
-			    	while(original.next()) {
-			    		counter++;
-			        }
-				}
-				condition.setCount(counter);
-			}
-			return false;
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.seasar.dao.impl.ResultSetAdaptor#next()
+     */
+    public boolean next() throws SQLException {
+        boolean next = super.next();
+        if ((condition.getLimit() == PagerCondition.NONE_LIMIT || counter < condition
+                .getOffset()
+                + condition.getLimit())
+                && next) {
+            counter += 1;
+            return true;
+        } else {
+            if (useAbsolute && ResultSetUtil.isCursorSupport(original)) {
+                original.last();
+                int count = original.getRow();
+                condition.setCount(count);
+            } else {
+                if (next) {
+                    counter++; // 調整
+                    while (original.next()) {
+                        counter++;
+                    }
+                }
+                condition.setCount(counter);
+            }
+            return false;
+        }
+    }
 }

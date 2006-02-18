@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project
   xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -35,6 +36,37 @@
       <archive>http://ml.seasar.org/archives/seasar-user-en/</archive>
     </mailingList>
   </mailingLists>
+  <developers>
+    <developer>
+      <id>higa</id>
+      <name>HIGA Yasuo</name>
+      <email></email>
+      <url>http://d.hatena.ne.jp/higayasuo/</url>
+      <organization></organization>
+      <timezone>+9</timezone>
+    </developer>
+    <developer>
+      <id>keizou</id>
+      <name></name>
+      <email></email>
+      <url></url>
+      <timezone>+9</timezone>
+    </developer>
+    <developer>
+      <id>agata</id>
+      <name></name>
+      <email></email>
+      <url></url>
+      <timezone>+9</timezone>
+    </developer>
+    <developer>
+      <id>manhole</id>
+      <name>HONMA Hirotaka</name>
+      <email>manholex@gmail.com</email>
+      <url></url>
+      <timezone>+9</timezone>
+    </developer>
+  </developers>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -64,7 +96,7 @@
     <dependency>
       <groupId>org.seasar.container</groupId>
       <artifactId>s2-extension</artifactId>
-      <version>2.3.4</version>
+      <version>2.3.7-SNAPSHOT</version>
       <type>jar</type>
     </dependency>
     <dependency>

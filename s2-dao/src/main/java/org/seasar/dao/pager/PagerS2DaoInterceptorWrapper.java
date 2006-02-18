@@ -15,6 +15,8 @@
  */
 package org.seasar.dao.pager;
 
+import java.sql.PreparedStatement;
+
 import org.aopalliance.intercept.MethodInvocation;
 import org.seasar.dao.interceptors.S2DaoInterceptor;
 import org.seasar.framework.aop.interceptors.AbstractInterceptor;
@@ -39,26 +41,28 @@ import org.seasar.framework.aop.interceptors.AbstractInterceptor;
  */
 public class PagerS2DaoInterceptorWrapper extends AbstractInterceptor {
 
+    private static final long serialVersionUID = 1L;
+
     /** オリジナルのS2DaoInterceptor */
     private S2DaoInterceptor interceptor_;
-    
+
     /**
      * コンストラクタ
      * @param interceptor オリジナルのS2DaoInterceptor
      */
-	public PagerS2DaoInterceptorWrapper(S2DaoInterceptor interceptor) {
-	    this.interceptor_ = interceptor;
-	}
-	
-	/**
-	 * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
-	 */
-	public Object invoke(MethodInvocation invocation) throws Throwable {
-	    try {
-		    PagerContext.getContext().pushArgs(invocation.getArguments());
-		    return interceptor_.invoke(invocation);
-	    } finally {
-	        PagerContext.getContext().popArgs();
-	    }
-	}
+    public PagerS2DaoInterceptorWrapper(S2DaoInterceptor interceptor) {
+        this.interceptor_ = interceptor;
+    }
+
+    /**
+     * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
+     */
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        try {
+            PagerContext.getContext().pushArgs(invocation.getArguments());
+            return interceptor_.invoke(invocation);
+        } finally {
+            PagerContext.getContext().popArgs();
+        }
+    }
 }
