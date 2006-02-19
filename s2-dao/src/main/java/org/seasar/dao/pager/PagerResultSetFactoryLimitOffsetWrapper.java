@@ -19,6 +19,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
+import org.seasar.dao.Dbms;
+import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.log.Logger;
@@ -37,7 +41,20 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
 
     /** オリジナルのResultSetFactory */
     private ResultSetFactory resultSetFactory_;
-
+    
+    private Dbms dbms_;
+    
+    /**
+     * コンストラクタ(test only)
+     * 
+     * @param resultSetFactory
+     *            オリジナルのResultSetFactory
+     */
+    PagerResultSetFactoryLimitOffsetWrapper(
+            ResultSetFactory resultSetFactory, String productName) {
+        resultSetFactory_ = resultSetFactory;
+        dbms_ = DbmsManager.getDbms(productName);
+    }
     /**
      * コンストラクタ
      * 
@@ -45,8 +62,9 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
      *            オリジナルのResultSetFactory
      */
     public PagerResultSetFactoryLimitOffsetWrapper(
-            ResultSetFactory resultSetFactory) {
+            ResultSetFactory resultSetFactory, DataSource dataSource) {
         resultSetFactory_ = resultSetFactory;
+        dbms_ = DbmsManager.getDbms(dataSource);
     }
 
     /**
@@ -66,14 +84,24 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
 
         if (PagerContext.isPagerCondition(args)) {
             try {
-				String baseSQL = makeBaseSql(ps.toString());
+				if (LOGGER.isDebugEnabled()) {
+					String nativeSql = ps.toString();
+					LOGGER.debug("S2Pager native SQL : " + nativeSql);
+				}
+
+				String baseSQL = dbms_.getBaseSql(ps);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("S2Pager base SQL : " + baseSQL);
+				}
+				
                 PagerCondition dto = PagerContext.getPagerCondition(args);
 				dto.setCount(getCount(ps, baseSQL));
 				if (dto.getLimit() > 0 && dto.getOffset() > -1) {
 					String limitOffsetSql = 
                 		makeLimitOffsetSql(baseSQL, dto.getLimit(), dto.getOffset());
-					LOGGER.debug("S2Pager execute SQL : " + limitOffsetSql);
-
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("S2Pager execute SQL : " + limitOffsetSql);
+					}
                     return resultSetFactory_.createResultSet(ps
                             .getConnection().prepareStatement(
                                     limitOffsetSql));
@@ -103,16 +131,6 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
 		return sqlBuf.toString();
 	}
     /**
-     * JDBCドライバによっては、selectの前に余計な文字列が
-     * 付加されるためselectの前を除去してオリジナルのSQLを取得します。
-     * @param nativeSql JDBCドライバ固有のSQL
-     * @return オリジナルのSQL
-     */
-	String makeBaseSql(String nativeSql) {
-		return nativeSql.replaceFirst("^.*SELECT",
-		        "SELECT");
-	}
-    /**
      * 元のSQLによる結果総件数を取得します
      * @param ps 元のPreparedStatement
      * @param baseSQL 元のSQL
@@ -123,7 +141,9 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
 		StringBuffer sqlBuf = new StringBuffer("SELECT count(*) FROM (");
 		sqlBuf.append(baseSQL);
 		sqlBuf.append(") AS total");
-		LOGGER.debug("S2Pager execute SQL : " + sqlBuf.toString());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("S2Pager execute SQL : " + sqlBuf.toString());
+		}
 
 		PreparedStatement psCount = null;
 		ResultSet rs = null;
