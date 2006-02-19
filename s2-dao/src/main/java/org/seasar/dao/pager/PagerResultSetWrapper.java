@@ -79,7 +79,11 @@ class PagerResultSetWrapper extends ResultSetWrapper {
                 log.debug("[S2Pager]Use scroll cursor.");
             }
             try {
-                original.absolute(condition.getOffset());
+                if (0 == condition.getOffset()) {
+                    original.beforeFirst();
+                } else {
+                    original.absolute(condition.getOffset());
+                }
                 counter = original.getRow();
             } catch (SQLException e) {
                 throw new SQLRuntimeException(e);
