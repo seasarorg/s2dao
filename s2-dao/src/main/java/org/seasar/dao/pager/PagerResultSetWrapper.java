@@ -74,7 +74,7 @@ class PagerResultSetWrapper extends ResultSetWrapper {
      * @throws SQLException
      */
     private void moveOffset() {
-        if (useAbsolute && ResultSetUtil.isCursorSupport(original)) {
+        if (isUseCursor()) {
             if (log.isDebugEnabled()) {
                 log.debug("[S2Pager]Use scroll cursor.");
             }
@@ -99,9 +99,6 @@ class PagerResultSetWrapper extends ResultSetWrapper {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.seasar.dao.impl.ResultSetAdaptor#next()
-     */
     public boolean next() throws SQLException {
         boolean next = super.next();
         if ((condition.getLimit() == PagerCondition.NONE_LIMIT || counter < condition
@@ -111,7 +108,7 @@ class PagerResultSetWrapper extends ResultSetWrapper {
             counter += 1;
             return true;
         } else {
-            if (useAbsolute && ResultSetUtil.isCursorSupport(original)) {
+            if (isUseCursor()) {
                 original.last();
                 int count = original.getRow();
                 condition.setCount(count);
@@ -127,4 +124,9 @@ class PagerResultSetWrapper extends ResultSetWrapper {
             return false;
         }
     }
+
+    private boolean isUseCursor() {
+        return useAbsolute && ResultSetUtil.isCursorSupport(original);
+    }
+
 }

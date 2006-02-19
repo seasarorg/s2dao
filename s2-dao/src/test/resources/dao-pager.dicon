@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
-<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container//EN"
-"http://www.seasar.org/dtd/components.dtd">
+<!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
+	"http://www.seasar.org/dtd/components21.dtd">
 <components namespace="dao">
 	<include path="j2ee.dicon"/>
 	<component
 		name="annotationReaderFactory"
-		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"/>
+		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"
+	/>
 
+	<component 
+		name="resultSetFactory"
+		class="org.seasar.dao.pager.PagerResultSetFactoryWrapper">
+		<arg>
+			<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+		</arg>
+		<property name="useScrollCursor">true</property>
+	</component>
+	
 	<component
 		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
 		<arg>j2ee.dataSource</arg>
@@ -18,16 +28,7 @@
 			<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
 		</arg>
 -->
-		<arg>
-			<component class="org.seasar.dao.pager.PagerResultSetFactoryWrapper">
-				<arg>
-					<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
-				</arg>
-				<!--
-				<property name="useScrollCursor">true</property>
-				-->
-			</component>
-		</arg>
+		<arg>resultSetFactory</arg>
 		<arg>annotationReaderFactory</arg>
 	</component>
 

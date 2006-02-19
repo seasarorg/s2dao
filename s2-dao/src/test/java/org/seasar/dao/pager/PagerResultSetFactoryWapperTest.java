@@ -42,7 +42,6 @@ public class PagerResultSetFactoryWapperTest extends TestCase {
         } finally {
             PagerContext.getContext().popArgs();
         }
-
     }
 
     public void testCreateResultSetPagerCondition() throws Exception {

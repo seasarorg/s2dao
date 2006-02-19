@@ -35,9 +35,6 @@ public class MockResultSet extends MockResultSetBase {
         this.total = total;
     }
 
-    /* (non-Javadoc)
-     * @see org.seasar.dao.pager.MockResultSetBase#next()
-     */
     public boolean next() throws SQLException {
         callNextCount++;
         if (counter <= total) {

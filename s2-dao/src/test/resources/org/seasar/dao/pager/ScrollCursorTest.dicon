@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
+	"http://www.seasar.org/dtd/components21.dtd">
+<components>
+	<include path="dao-pager.dicon"/>
+	<component class="org.seasar.dao.pager.EmployeeDao">
+		<aspect>dao.interceptor</aspect>
+	</component>
+</components>
