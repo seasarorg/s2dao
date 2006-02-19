@@ -18,10 +18,9 @@ package org.seasar.dao.pager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.seasar.extension.jdbc.impl.ResultSetWrapper;
 import org.seasar.framework.exception.SQLRuntimeException;
+import org.seasar.framework.log.Logger;
 
 /**
  * ページャ用のResultSetラッパー。<p>
@@ -34,8 +33,8 @@ import org.seasar.framework.exception.SQLRuntimeException;
 class PagerResultSetWrapper extends ResultSetWrapper {
 
     /** ログ */
-    private static final Log log = LogFactory
-            .getLog(PagerResultSetWrapper.class);
+    private static final Logger LOGGER = Logger
+    .getLogger(PagerResultSetWrapper.class);
 
     /** カウント */
     private int counter = 0;
@@ -75,8 +74,8 @@ class PagerResultSetWrapper extends ResultSetWrapper {
      */
     private void moveOffset() {
         if (isUseCursor()) {
-            if (log.isDebugEnabled()) {
-                log.debug("[S2Pager]Use scroll cursor.");
+            if (LOGGER.isDebugEnabled()) {
+            	LOGGER.debug("[S2Pager]Use scroll cursor.");
             }
             try {
                 if (0 == condition.getOffset()) {
@@ -89,8 +88,8 @@ class PagerResultSetWrapper extends ResultSetWrapper {
                 throw new SQLRuntimeException(e);
             }
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug("[S2Pager]Not use scroll cursor.");
+            if (LOGGER.isDebugEnabled()) {
+            	LOGGER.debug("[S2Pager]Not use scroll cursor.");
             }
             try {
                 while (original.getRow() < condition.getOffset()
