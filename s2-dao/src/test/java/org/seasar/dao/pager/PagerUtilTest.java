@@ -80,4 +80,18 @@ public class PagerUtilTest extends TestCase {
             assertEquals(String.valueOf(i), result.get(i));
         }
     }
+
+    public void testGetCurrentLastOffset() {
+        condition.setLimit(10);
+        condition.setOffset(0);
+        condition.setCount(11);
+        assertEquals(9, PagerUtil.getCurrentLastOffset(condition));
+
+        condition.setOffset(1);
+        assertEquals(10, PagerUtil.getCurrentLastOffset(condition));
+
+        condition.setOffset(2);
+        assertEquals(10, PagerUtil.getCurrentLastOffset(condition));
+    }
+
 }
