@@ -23,7 +23,9 @@
 				<arg>
 					<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
 				</arg>
+				<!--
 				<property name="useScrollCursor">true</property>
+				-->
 			</component>
 		</arg>
 		<arg>annotationReaderFactory</arg>

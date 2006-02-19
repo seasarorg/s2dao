@@ -25,13 +25,14 @@ import org.seasar.extension.jdbc.ResultSetFactory;
  * ページャ用のResultSetを生成します。
  * 
  * @author Toshitaka Agata(Nulab,inc.)
+ * @author manhole
  */
 public class PagerResultSetFactoryWrapper implements ResultSetFactory {
 
     /** オリジナルのResultSetFactory */
     private ResultSetFactory resultSetFactory_;
 
-    static boolean useScrollCursor = true;
+    private boolean useScrollCursor_ = true;
 
     /**
      * コンストラクタ
@@ -45,7 +46,7 @@ public class PagerResultSetFactoryWrapper implements ResultSetFactory {
      * @param b
      */
     public void setUseScrollCursor(boolean useScrollCursor) {
-        PagerResultSetFactoryWrapper.useScrollCursor = useScrollCursor;
+        useScrollCursor_ = useScrollCursor;
     }
 
     /**
@@ -61,7 +62,7 @@ public class PagerResultSetFactoryWrapper implements ResultSetFactory {
         if (PagerContext.isPagerCondition(args)) {
             PagerCondition condition = PagerContext.getPagerCondition(args);
             return new PagerResultSetWrapper(resultSet, condition,
-                    useScrollCursor);
+                    useScrollCursor_);
         } else {
             return resultSet;
         }
