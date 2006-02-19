@@ -15,6 +15,8 @@
  */
 package org.seasar.dao;
 
+import java.sql.Statement;
+
 /**
  * @author higa
  *
@@ -30,4 +32,6 @@ public interface Dbms {
 	String getSequenceNextValString(String sequenceName);
     
     boolean isSelfGenerate();
+    
+    String getBaseSql(Statement st);
 }

@@ -15,6 +15,7 @@
  */
 package org.seasar.dao.dbms;
 
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,4 +98,9 @@ public class Standard implements Dbms {
     public boolean isSelfGenerate() {
         return true;
     }
+
+	public String getBaseSql(Statement st) {
+		String nativeSql = st.toString();
+		return nativeSql.replaceFirst("^.*SELECT", "SELECT");
+	}
 }
