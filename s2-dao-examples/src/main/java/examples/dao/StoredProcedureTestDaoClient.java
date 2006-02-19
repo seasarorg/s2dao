@@ -28,10 +28,10 @@ public class StoredProcedureTestDaoClient {
 		try {
 			StoredProcedureTestDao dao = (StoredProcedureTestDao) container
 					.getComponent(StoredProcedureTestDao.class);
-			System.out.println("sales_tax(1000) =" + dao.getSalesTax(1000));
-			System.out.println("sales_tax2(1000) =" + dao.getSalesTax2(1000));
-			System.out.println("sales_tax3(1000) =" + dao.getSalesTax3(1000));
-//			System.out.println("sales_tax4(1000) =" + dao.getSalesTax4(1000));
+			System.out.println("SALES_TAX(1000) =" + dao.getSalesTax(1000));
+			System.out.println("SALES_TAX2(1000) =" + dao.getSalesTax2(1000));
+			System.out.println("SALES_TAX3(1000) =" + dao.getSalesTax3(1000));
+			System.out.println("SALES_TAX4(1000) =" + dao.getSalesTax4(1000));
 		} finally {
 			container.destroy();
 		}

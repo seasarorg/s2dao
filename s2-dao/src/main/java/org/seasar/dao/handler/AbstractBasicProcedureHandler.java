@@ -33,6 +33,7 @@ import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.jdbc.types.ValueTypes;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
+import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.exception.EmptyRuntimeException;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
@@ -103,6 +104,38 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler{
 			ConnectionUtil.close(connection);
 		}
 	}
+	protected String[] confirmProcedureName(DatabaseMetaData dmd) throws SQLException{
+		String[] names = DatabaseMetaDataUtil.
+			convertIdentifier(dmd,procedureName_).split("\\.");
+		int namesLength = names.length;
+		ResultSet rs = null;
+		try{
+			if(namesLength == 1){
+				rs = dmd.getProcedures(null,null,names[0]);
+			}else if(namesLength == 2){
+				rs = dmd.getProcedures(names[0],null,names[1]);
+			}else if(namesLength == 3){
+				rs = dmd.getProcedures(names[0],names[1],names[2]);
+			}
+			int len = 0;
+			names = new String[3];
+			while(rs.next()){
+				names[0] = rs.getString(1);
+				names[1] = rs.getString(2);
+				names[2] = rs.getString(3);
+				len++;
+			}
+			if(len < 1){
+				throw new SRuntimeException("EDAO0012",new Object[]{procedureName_});
+			}
+			if(len > 1){
+				throw new SRuntimeException("EDAO0013",new Object[]{procedureName_});
+			}
+			return names;
+		}finally{
+			ResultSetUtil.close(rs);
+		}
+	}
 	protected int initTypes(){
 		StringBuffer buff = new StringBuffer();
 		buff.append("{ call ");
@@ -117,20 +150,13 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler{
 		try{
 			connection = getConnection();
 			DatabaseMetaData dmd = ConnectionUtil.getMetaData(connection);
-			String[] names = procedureName_.split("\\.");
-			int namesLength = names.length;
-			if(namesLength == 1){
-				rs = dmd.getProcedureColumns(null,null,procedureName_,null);
-			}else if(namesLength == 2){
-				rs = dmd.getProcedureColumns(names[0],null,names[1],null);
-			}else if(namesLength == 3){
-				rs = dmd.getProcedureColumns(names[1],names[0],names[2],null);
-			}
+			String[] names = confirmProcedureName(dmd);
+			rs = dmd.getProcedureColumns(names[0],names[1],names[2],null);
 			while(rs.next()){
 				columnNames.add(rs.getObject(4));
 				int columnType = rs.getInt(5);
 				inOutTypes.add(new Integer(columnType));
-				dataType.add(rs.getObject(6));
+				dataType.add(new Integer(rs.getInt(6)));
 				if(columnType == DatabaseMetaData.procedureColumnIn){
 					buff.append("?,");
 				}else if(columnType == DatabaseMetaData.procedureColumnReturn){
