@@ -75,7 +75,7 @@ class PagerResultSetWrapper extends ResultSetWrapper {
     private void moveOffset() {
         if (isUseCursor()) {
             if (LOGGER.isDebugEnabled()) {
-            	LOGGER.debug("[S2Pager]Use scroll cursor.");
+            	LOGGER.debug("S2Pager use scroll cursor.");
             }
             try {
                 if (0 == condition.getOffset()) {
@@ -89,7 +89,7 @@ class PagerResultSetWrapper extends ResultSetWrapper {
             }
         } else {
             if (LOGGER.isDebugEnabled()) {
-            	LOGGER.debug("[S2Pager]Not use scroll cursor.");
+            	LOGGER.debug("S2Pager not use scroll cursor.");
             }
             try {
                 while (original.getRow() < condition.getOffset()
