@@ -10,7 +10,6 @@
 	<component 
 		name="resultSetFactory"
 		class="org.seasar.dao.pager.PagerResultSetFactoryWrapper">
-		<description>limit offset句を利用しない場合。useScrollCursorはカーソルの使用有無</description>
 		<arg>
 			<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
 		</arg>
@@ -21,7 +20,6 @@
 	<component 
 		name="resultSetFactory"
 		class="org.seasar.dao.pager.PagerResultSetFactoryLimitOffsetWrapper">
-		<description>limit offset句を利用した高速取得。MySQL、PostgreSQLのみ動作確認済み</description>
 		<arg>
 			<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
 		</arg>
