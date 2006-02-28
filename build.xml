@@ -10,6 +10,7 @@
 			</zipfileset>
 			<zipfileset prefix="s2dao/lib" dir="s2-dao/target">
 				<include name="s2-dao-${ver}.jar"/>
+				<include name="s2-dao-${ver}-sources.jar"/>
 			</zipfileset>
 			<zipfileset prefix="s2dao/resources" dir="s2-dao/src/test/resources">
 				<include name="dao.dicon"/>
