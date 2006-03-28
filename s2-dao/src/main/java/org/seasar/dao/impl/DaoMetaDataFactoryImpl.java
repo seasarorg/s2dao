@@ -52,8 +52,19 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory {
 		resultSetFactory_ = resultSetFactory;
 		readerFactory_ = readerFactory;
 	}
-
-	public synchronized DaoMetaData getDaoMetaData(Class daoClass) {
+    public void setDaoSuffixes(String[] suffixes){
+        DaoMetaDataImpl.setDaoSuffixes(suffixes);
+    }
+    public void setInsertPrefixes(String[] prefixes){
+        DaoMetaDataImpl.setInsertPrefixes(prefixes);
+    }
+    public void setDeletePrefixes(String[] prefixes){
+        DaoMetaDataImpl.setDeletePrefixes(prefixes);
+    }
+    public void setUpdatePrefixes(String[] prefixes){
+        DaoMetaDataImpl.setUpdatePrefixes(prefixes);
+    }
+    public synchronized DaoMetaData getDaoMetaData(Class daoClass) {
 		String key = daoClass.getName();
 		DaoMetaData dmd = (DaoMetaData) daoMetaDataCache_.get(key);
 		if (dmd != null) {

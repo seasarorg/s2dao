@@ -80,7 +80,28 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
         assertEquals("2", getBeanClass("Employee"), rsh.getBeanMetaData()
                 .getBeanClass());
     }
-
+    public void testPrefixTest(){
+        try{
+            DaoMetaDataImpl.setDaoSuffixes(new String[]{"Manager"});
+            DaoMetaDataImpl.setInsertPrefixes(new String[]{"generate"});
+            DaoMetaDataImpl.setUpdatePrefixes(new String[]{"change"});
+            DaoMetaDataImpl.setDeletePrefixes(new String[]{"terminate"});            
+            DaoMetaData dmd = new DaoMetaDataImpl(Employee8Manager.class,
+                    getDataSource(), BasicStatementFactory.INSTANCE,
+                    BasicResultSetFactory.INSTANCE, readerFactory);
+            InsertAutoStaticCommand cmd = (InsertAutoStaticCommand) dmd.getSqlCommand("generate");
+            System.out.println(cmd.getSql());
+            UpdateAutoStaticCommand cmd2 = (UpdateAutoStaticCommand) dmd.getSqlCommand("change");
+            System.out.println(cmd2.getSql());
+            DeleteAutoStaticCommand cmd3 = (DeleteAutoStaticCommand) dmd.getSqlCommand("terminate");
+            System.out.println(cmd3.getSql());
+        }finally{
+            DaoMetaDataImpl.setDaoSuffixes(new String[]{"Dao"});
+            DaoMetaDataImpl.setInsertPrefixes(new String[] { "insert","create", "add" });
+            DaoMetaDataImpl.setUpdatePrefixes(new String[] { "update","modify", "store" });
+            DaoMetaDataImpl.setDeletePrefixes(new String[] { "delete","remove" });
+        }
+    }
     public void testSelectBean() throws Exception {
         DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeDao"),
                 getDataSource(), BasicStatementFactory.INSTANCE,

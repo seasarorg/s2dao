@@ -69,15 +69,6 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	private static final Pattern startWithSelectPattern	=
 			Pattern.compile("^\\s*select\\s",Pattern.CASE_INSENSITIVE);
 	
-	private static final String[] INSERT_NAMES = new String[] { "insert",
-			"create", "add" };
-
-	private static final String[] UPDATE_NAMES = new String[] { "update",
-			"modify", "store" };
-
-	private static final String[] DELETE_NAMES = new String[] { "delete",
-			"remove" };
-	
 	private static final String NOT_SINGLE_ROW_UPDATED = "NotSingleRowUpdated";
 
 	protected Class daoClass_;
@@ -103,6 +94,14 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	protected BeanMetaData beanMetaData_;
 
 	protected Map sqlCommands_ = new HashMap();
+    
+    protected static String[] daoSuffixes_ = new String[]{"Dao"};
+    
+    protected static String[] insertPrefixes_ = new String[] { "insert","create", "add" };
+    
+    protected static String[] updatePrefixes_ = new String[] { "update","modify", "store" };
+    
+    protected static String[] deletePrefixes_ = new String[] { "delete","remove" };
 
 	public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
 			StatementFactory statementFactory,
@@ -114,7 +113,6 @@ public class DaoMetaDataImpl implements DaoMetaData {
 			StatementFactory statementFactory,
 			ResultSetFactory resultSetFactory,
 			AnnotationReaderFactory annotationReaderFactory) {
-
 		daoClass_ = daoClass;
 		daoBeanDesc_ = BeanDescFactory.getBeanDesc(daoClass);
 		daoInterface_ = getDaoInterface(daoClass);
@@ -136,7 +134,21 @@ public class DaoMetaDataImpl implements DaoMetaData {
 		}
 		setupSqlCommand();
 	}
-
+    public static void setDaoSuffixes(String[] daoSuffixes_) {
+        DaoMetaDataImpl.daoSuffixes_ = daoSuffixes_;
+    }
+    
+    public static void setInsertPrefixes(String[] insertPrefixes_) {
+        DaoMetaDataImpl.insertPrefixes_ = insertPrefixes_;
+    }
+    
+    public static void setUpdatePrefixes(String[] updatePrefixes_) {
+        DaoMetaDataImpl.updatePrefixes_ = updatePrefixes_;
+    }
+    
+    public static void setDeletePrefixes(String[] deletePrefixes_) {
+        DaoMetaDataImpl.deletePrefixes_ = deletePrefixes_;
+    }
 	protected void setupSqlCommand() {
 		BeanDesc idbd = BeanDescFactory.getBeanDesc(daoInterface_);
 		String[] names = idbd.getMethodNames();
@@ -587,8 +599,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	}
 
 	protected boolean isInsert(String methodName) {
-		for (int i = 0; i < INSERT_NAMES.length; ++i) {
-			if (methodName.startsWith(INSERT_NAMES[i])) {
+		for (int i = 0; i < insertPrefixes_.length; ++i) {
+			if (methodName.startsWith(insertPrefixes_[i])) {
 				return true;
 			}
 		}
@@ -596,8 +608,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	}
 
 	protected boolean isUpdate(String methodName) {
-		for (int i = 0; i < UPDATE_NAMES.length; ++i) {
-			if (methodName.startsWith(UPDATE_NAMES[i])) {
+		for (int i = 0; i < updatePrefixes_.length; ++i) {
+			if (methodName.startsWith(updatePrefixes_[i])) {
 				return true;
 			}
 		}
@@ -605,8 +617,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	}
 
 	protected boolean isDelete(String methodName) {
-		for (int i = 0; i < DELETE_NAMES.length; ++i) {
-			if (methodName.startsWith(DELETE_NAMES[i])) {
+		for (int i = 0; i < deletePrefixes_.length; ++i) {
+			if (methodName.startsWith(deletePrefixes_[i])) {
 				return true;
 			}
 		}
@@ -686,9 +698,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
 			Class[] interfaces = target.getInterfaces();
 			for (int i = 0; i < interfaces.length; ++i) {
 				Class intf = interfaces[i];
-				if (intf.getName().endsWith("Dao")) {
-					return intf;
-				}
+                for (int j = 0; j < daoSuffixes_.length; j++) {
+                    if (intf.getName().endsWith(daoSuffixes_[j])) {
+                        return intf;
+                    }                    
+                }
 			}
 		}
 		throw new DaoNotFoundRuntimeException(clazz);
