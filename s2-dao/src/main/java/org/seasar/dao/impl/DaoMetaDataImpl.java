@@ -15,6 +15,8 @@
  */
 package org.seasar.dao.impl;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -53,10 +55,11 @@ import org.seasar.framework.beans.MethodNotFoundRuntimeException;
 import org.seasar.framework.beans.factory.BeanDescFactory;
 import org.seasar.framework.exception.NoSuchMethodRuntimeException;
 import org.seasar.framework.util.ClassUtil;
+import org.seasar.framework.util.InputStreamReaderUtil;
 import org.seasar.framework.util.MethodUtil;
+import org.seasar.framework.util.ReaderUtil;
 import org.seasar.framework.util.ResourceUtil;
 import org.seasar.framework.util.StringUtil;
-import org.seasar.framework.util.TextUtil;
 
 /**
  * @author higa
@@ -86,6 +89,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	protected ResultSetFactory resultSetFactory_;
 	
 	protected AnnotationReaderFactory annotationReaderFactory_;
+    
+    protected static String encoding ="JISAutoDetect";
 
 	protected Dbms dbms_;
 
@@ -134,6 +139,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
 		}
 		setupSqlCommand();
 	}
+    public static void setEncoding(String encoding) {
+        DaoMetaDataImpl.encoding = encoding;
+    }
     public static void setDaoSuffixes(String[] daoSuffixes_) {
         DaoMetaDataImpl.daoSuffixes_ = daoSuffixes_;
     }
@@ -203,16 +211,20 @@ public class DaoMetaDataImpl implements DaoMetaData {
 			}
 		}
 	}
-	
+	protected static String readText(String path){
+        InputStream is = ResourceUtil.getResourceAsStream(path);
+        Reader reader = InputStreamReaderUtil.create(is,encoding);
+        return ReaderUtil.readText(reader);
+    }
 	protected void setupMethodBySqlFile(Class daoInterface, Method method) {
 		String base = daoInterface.getName().replace('.', '/') + "_" + method.getName();
 		String dbmsPath = base + dbms_.getSuffix() + ".sql";
 		String standardPath = base + ".sql";
 		if (ResourceUtil.isExist(dbmsPath)) {
-			String sql = TextUtil.readText(dbmsPath);
+			String sql = readText(dbmsPath);
 			setupMethodByManual(method, sql);
 		} else if (ResourceUtil.isExist(standardPath)) {
-			String sql = TextUtil.readText(standardPath);
+			String sql = readText(standardPath);
 			setupMethodByManual(method, sql);
 		}
 	}

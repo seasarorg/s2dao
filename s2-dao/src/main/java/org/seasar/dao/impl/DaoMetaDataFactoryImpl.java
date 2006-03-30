@@ -52,6 +52,9 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory {
 		resultSetFactory_ = resultSetFactory;
 		readerFactory_ = readerFactory;
 	}
+    public void setSqlFileEncoding(String encoding){
+        DaoMetaDataImpl.setEncoding(encoding);
+    }
     public void setDaoSuffixes(String[] suffixes){
         DaoMetaDataImpl.setDaoSuffixes(suffixes);
     }
