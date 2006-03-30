@@ -9,7 +9,7 @@
   <artifactId>s2-dao-project</artifactId>
   <packaging>pom</packaging>
   <name>S2Dao Project</name>
-  <version>1.0.31</version>
+  <version>1.0.32</version>
   <description></description>
   <url>http://s2dao.seasar.org/</url>
   <inceptionYear>2004</inceptionYear>
@@ -47,7 +47,7 @@
     </developer>
     <developer>
       <id>keizou</id>
-      <name></name>
+      <name>Keizou uehara</name>
       <email></email>
       <url></url>
       <timezone>+9</timezone>
