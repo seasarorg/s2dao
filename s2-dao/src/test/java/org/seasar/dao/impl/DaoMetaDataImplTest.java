@@ -81,26 +81,17 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
                 .getBeanClass());
     }
     public void testPrefixTest(){
-        try{
-            DaoMetaDataImpl.setDaoSuffixes(new String[]{"Manager"});
-            DaoMetaDataImpl.setInsertPrefixes(new String[]{"generate"});
-            DaoMetaDataImpl.setUpdatePrefixes(new String[]{"change"});
-            DaoMetaDataImpl.setDeletePrefixes(new String[]{"terminate"});            
-            DaoMetaData dmd = new DaoMetaDataImpl(Employee8Manager.class,
-                    getDataSource(), BasicStatementFactory.INSTANCE,
-                    BasicResultSetFactory.INSTANCE, readerFactory);
-            InsertAutoStaticCommand cmd = (InsertAutoStaticCommand) dmd.getSqlCommand("generate");
-            System.out.println(cmd.getSql());
-            UpdateAutoStaticCommand cmd2 = (UpdateAutoStaticCommand) dmd.getSqlCommand("change");
-            System.out.println(cmd2.getSql());
-            DeleteAutoStaticCommand cmd3 = (DeleteAutoStaticCommand) dmd.getSqlCommand("terminate");
-            System.out.println(cmd3.getSql());
-        }finally{
-            DaoMetaDataImpl.setDaoSuffixes(new String[]{"Dao"});
-            DaoMetaDataImpl.setInsertPrefixes(new String[] { "insert","create", "add" });
-            DaoMetaDataImpl.setUpdatePrefixes(new String[] { "update","modify", "store" });
-            DaoMetaDataImpl.setDeletePrefixes(new String[] { "delete","remove" });
-        }
+        DaoMetaDataImpl dmd = new DaoMetaDataImpl(Employee8Manager.class,
+                getDataSource(), BasicStatementFactory.INSTANCE,
+                BasicResultSetFactory.INSTANCE, readerFactory,null,
+                new String[]{"Manager"},new String[]{"generate"},
+                new String[]{"change"},new String[]{"terminate"});
+        InsertAutoStaticCommand cmd = (InsertAutoStaticCommand) dmd.getSqlCommand("generate");
+        System.out.println(cmd.getSql());
+        UpdateAutoStaticCommand cmd2 = (UpdateAutoStaticCommand) dmd.getSqlCommand("change");
+        System.out.println(cmd2.getSql());
+        DeleteAutoStaticCommand cmd3 = (DeleteAutoStaticCommand) dmd.getSqlCommand("terminate");
+        System.out.println(cmd3.getSql());
     }
     public void testSelectBean() throws Exception {
         DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeDao"),
@@ -353,9 +344,12 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testGetDaoInterface() throws Exception {
-        assertEquals("1", EmployeeDao.class, DaoMetaDataImpl
+        DaoMetaDataImpl dmd = new DaoMetaDataImpl(Employee8Manager.class,
+                getDataSource(), BasicStatementFactory.INSTANCE,
+                BasicResultSetFactory.INSTANCE, readerFactory);
+       assertEquals("1", EmployeeDao.class, dmd
                 .getDaoInterface(EmployeeDao.class));
-        assertEquals("2", EmployeeDao.class, DaoMetaDataImpl
+        assertEquals("2", EmployeeDao.class, dmd
                 .getDaoInterface(EmployeeDaoImpl.class));
     }
 

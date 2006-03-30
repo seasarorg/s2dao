@@ -13,31 +13,15 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.dao;
+package examples.dao;
 
-import org.seasar.framework.beans.MethodNotFoundRuntimeException;
+public interface DepartmentManager {
 
-/**
- * @author higa
- *  
- */
-public interface DaoMetaData {
-
-	public Class getBeanClass();
-
-	public BeanMetaData getBeanMetaData();
-
-	public boolean hasSqlCommand(String methodName);
-
-	public SqlCommand getSqlCommand(String methodName)
-			throws MethodNotFoundRuntimeException;
-
-	public SqlCommand createFindCommand(String query);
-
-	public SqlCommand createFindArrayCommand(String query);
-
-	public SqlCommand createFindBeanCommand(String query);
-
-	public SqlCommand createFindObjectCommand(String query);
-
+	public Class BEAN = Department.class;
+	
+	public void generate(Department department);
+	
+	public void change(Department department);
+	
+	public void destory(Department department);
 }

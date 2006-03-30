@@ -42,6 +42,16 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory {
 	
 	protected AnnotationReaderFactory readerFactory_;
 
+    private String encoding;
+
+    private String[] daoSuffixes;
+
+    private String[] insertPrefixes;
+
+    private String[] deletePrefixes;
+
+    private String[] updatePrefixes;
+
 	public DaoMetaDataFactoryImpl(DataSource dataSource,
 			StatementFactory statementFactory,
 			ResultSetFactory resultSetFactory,
@@ -53,30 +63,31 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory {
 		readerFactory_ = readerFactory;
 	}
     public void setSqlFileEncoding(String encoding){
-        DaoMetaDataImpl.setEncoding(encoding);
+        this.encoding = encoding;
     }
     public void setDaoSuffixes(String[] suffixes){
-        DaoMetaDataImpl.setDaoSuffixes(suffixes);
+        this.daoSuffixes = suffixes;
     }
     public void setInsertPrefixes(String[] prefixes){
-        DaoMetaDataImpl.setInsertPrefixes(prefixes);
+        this.insertPrefixes = prefixes;
     }
     public void setDeletePrefixes(String[] prefixes){
-        DaoMetaDataImpl.setDeletePrefixes(prefixes);
+        this.deletePrefixes = prefixes;
     }
     public void setUpdatePrefixes(String[] prefixes){
-        DaoMetaDataImpl.setUpdatePrefixes(prefixes);
+        this.updatePrefixes = prefixes;
     }
     public synchronized DaoMetaData getDaoMetaData(Class daoClass) {
 		String key = daoClass.getName();
-		DaoMetaData dmd = (DaoMetaData) daoMetaDataCache_.get(key);
+		DaoMetaData dmd = (DaoMetaDataImpl) daoMetaDataCache_.get(key);
 		if (dmd != null) {
 			return dmd;
 		}
-		dmd = new DaoMetaDataImpl(daoClass, dataSource_,
-				statementFactory_, resultSetFactory_,readerFactory_);
-		daoMetaDataCache_.put(key, dmd);
-		return dmd;
+		DaoMetaDataImpl dmdi = new DaoMetaDataImpl(daoClass, dataSource_,
+				statementFactory_, resultSetFactory_,readerFactory_
+                ,encoding,daoSuffixes,insertPrefixes,updatePrefixes,deletePrefixes);
+		daoMetaDataCache_.put(key, dmdi);
+		return dmdi;
 	}
 
 }

@@ -90,7 +90,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	
 	protected AnnotationReaderFactory annotationReaderFactory_;
     
-    protected static String encoding ="JISAutoDetect";
+    protected String encoding ="JISAutoDetect";
 
 	protected Dbms dbms_;
 
@@ -100,25 +100,43 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
 	protected Map sqlCommands_ = new HashMap();
     
-    protected static String[] daoSuffixes_ = new String[]{"Dao"};
+    protected String[] daoSuffixes_ = new String[]{"Dao"};
     
-    protected static String[] insertPrefixes_ = new String[] { "insert","create", "add" };
+    protected String[] insertPrefixes_ = new String[] { "insert","create", "add" };
     
-    protected static String[] updatePrefixes_ = new String[] { "update","modify", "store" };
+    protected String[] updatePrefixes_ = new String[] { "update","modify", "store" };
     
-    protected static String[] deletePrefixes_ = new String[] { "delete","remove" };
+    protected String[] deletePrefixes_ = new String[] { "delete","remove" };
 
+    public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
+            StatementFactory statementFactory,
+            ResultSetFactory resultSetFactory) {
+        this(daoClass,dataSource,statementFactory,
+                resultSetFactory,new FieldAnnotationReaderFactory(),null,null,null,null,null);
+    }
 	public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
 			StatementFactory statementFactory,
-			ResultSetFactory resultSetFactory) {
+			ResultSetFactory resultSetFactory,
+            AnnotationReaderFactory annotationReaderFactory) {
 		this(daoClass,dataSource,statementFactory,
-				resultSetFactory,new FieldAnnotationReaderFactory());
+				resultSetFactory,annotationReaderFactory,null,null,null,null,null);
 	}
 	public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
 			StatementFactory statementFactory,
 			ResultSetFactory resultSetFactory,
-			AnnotationReaderFactory annotationReaderFactory) {
+			AnnotationReaderFactory annotationReaderFactory, 
+            String encoding, 
+            String[] daoSuffixes, 
+            String[] insertPrefixes, 
+            String[] updatePrefixes, 
+            String[] deletePrefixes) {
 		daoClass_ = daoClass;
+        if(encoding!=null){this.encoding = encoding;}
+        if(daoSuffixes!=null){this.daoSuffixes_ = daoSuffixes;}
+        if(insertPrefixes!=null){this.insertPrefixes_ = insertPrefixes;}
+        if(updatePrefixes!=null){this.updatePrefixes_ = updatePrefixes;}
+        if(deletePrefixes!=null){this.deletePrefixes_ = deletePrefixes;}
+        
 		daoBeanDesc_ = BeanDescFactory.getBeanDesc(daoClass);
 		daoInterface_ = getDaoInterface(daoClass);
 		annotationReaderFactory_ = annotationReaderFactory;
@@ -139,24 +157,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 		}
 		setupSqlCommand();
 	}
-    public static void setEncoding(String encoding) {
-        DaoMetaDataImpl.encoding = encoding;
-    }
-    public static void setDaoSuffixes(String[] daoSuffixes_) {
-        DaoMetaDataImpl.daoSuffixes_ = daoSuffixes_;
-    }
-    
-    public static void setInsertPrefixes(String[] insertPrefixes_) {
-        DaoMetaDataImpl.insertPrefixes_ = insertPrefixes_;
-    }
-    
-    public static void setUpdatePrefixes(String[] updatePrefixes_) {
-        DaoMetaDataImpl.updatePrefixes_ = updatePrefixes_;
-    }
-    
-    public static void setDeletePrefixes(String[] deletePrefixes_) {
-        DaoMetaDataImpl.deletePrefixes_ = deletePrefixes_;
-    }
+
 	protected void setupSqlCommand() {
 		BeanDesc idbd = BeanDescFactory.getBeanDesc(daoInterface_);
 		String[] names = idbd.getMethodNames();
@@ -211,7 +212,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 			}
 		}
 	}
-	protected static String readText(String path){
+	protected String readText(String path){
         InputStream is = ResourceUtil.getResourceAsStream(path);
         Reader reader = InputStreamReaderUtil.create(is,encoding);
         return ReaderUtil.readText(reader);
@@ -701,7 +702,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 		return createSelectDynamicCommand(new ObjectResultSetHandler(), query);
 	}
 
-	public static Class getDaoInterface(Class clazz) {
+	public Class getDaoInterface(Class clazz) {
 		if (clazz.isInterface()) {
 			return clazz;
 		}
