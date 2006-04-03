@@ -39,8 +39,12 @@ public class PagerUtil {
 
     public static int getCurrentLastOffset(PagerCondition condition) {
         int nextOffset = getNextOffset(condition);
-        return nextOffset < condition.getCount() - 1 ? nextOffset : condition
-                .getCount();
+        if (nextOffset <= 0 || condition.getCount() <= 0) {
+        	return 0;
+        } else {
+            return nextOffset < condition.getCount() ? nextOffset - 1: condition
+                    .getCount() - 1;
+        }
     }
 
     public static int getNextOffset(PagerCondition condition) {

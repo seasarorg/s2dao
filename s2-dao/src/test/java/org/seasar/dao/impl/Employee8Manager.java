@@ -13,25 +13,17 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.dao;
+package org.seasar.dao.impl;
 
-import java.sql.Statement;
 
-/**
- * @author higa
- *
- */
-public interface Dbms {
+public interface Employee8Manager {
 
-	String getAutoSelectSql(BeanMetaData beanMetaData);
-	
-	String getSuffix();
-	
-	String getIdentitySelectString();
-	
-	String getSequenceNextValString(String sequenceName);
+    public Class BEAN = Employee.class;
     
-    boolean isSelfGenerate();
+    public void terminate(Employee employee);
+
+    public void change(Employee employee);
     
-    String getBaseSql(Statement st);
+    public void generate(Employee employee);
+    
 }

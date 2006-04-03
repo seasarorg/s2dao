@@ -7,7 +7,6 @@
 		name="annotationReaderFactory"
 		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"
 	/>
-
 	<component 
 		name="resultSetFactory"
 		class="org.seasar.dao.pager.PagerResultSetFactoryWrapper">
@@ -16,7 +15,18 @@
 		</arg>
 		<property name="useScrollCursor">true</property>
 	</component>
-	
+
+<!--
+	<component 
+		name="resultSetFactory"
+		class="org.seasar.dao.pager.PagerResultSetFactoryLimitOffsetWrapper">
+		<arg>
+			<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+		</arg>
+		<arg>j2ee.dataSource</arg>
+	</component>
+-->
+
 	<component
 		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
 		<arg>j2ee.dataSource</arg>

@@ -15,8 +15,11 @@
  */
 package org.seasar.dao.dbms;
 
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
@@ -28,6 +31,9 @@ import org.seasar.dao.RelationPropertyType;
  */
 public class Standard implements Dbms {
 
+    private static final Pattern baseSqlPattern = Pattern.compile("^.*?(select)",
+            Pattern.CASE_INSENSITIVE);
+	
 	private Map autoSelectFromClauseCache_ = new HashMap();
 	
 	/**
@@ -97,4 +103,14 @@ public class Standard implements Dbms {
     public boolean isSelfGenerate() {
         return true;
     }
+    
+	public String getBaseSql(Statement st) {
+        String sql = st.toString();
+        Matcher matcher = baseSqlPattern.matcher(sql);
+        if (matcher.find()) {
+            return matcher.replaceFirst(matcher.group(1));
+        } else {
+            return sql;
+        }
+	}
 }

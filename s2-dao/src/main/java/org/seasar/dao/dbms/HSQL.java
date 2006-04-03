@@ -34,7 +34,7 @@ public class HSQL extends Standard {
 	}
 	
 	public String getSequenceNextValString(String sequenceName) {
-		return "SELECT NEXT VALUE FOR " + sequenceName + " FROM SYSTEM_TABLES WHERE table_name = 'SYSTEM_TABLES'";
+		return "SELECT NEXT VALUE FOR " + sequenceName + " FROM INFORMATION_SCHEMA.SYSTEM_TABLES WHERE table_name = 'SYSTEM_TABLES'";
 	}
 
 }

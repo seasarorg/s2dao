@@ -15,6 +15,8 @@
  */
 package org.seasar.dao.impl;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -53,10 +55,11 @@ import org.seasar.framework.beans.MethodNotFoundRuntimeException;
 import org.seasar.framework.beans.factory.BeanDescFactory;
 import org.seasar.framework.exception.NoSuchMethodRuntimeException;
 import org.seasar.framework.util.ClassUtil;
+import org.seasar.framework.util.InputStreamReaderUtil;
 import org.seasar.framework.util.MethodUtil;
+import org.seasar.framework.util.ReaderUtil;
 import org.seasar.framework.util.ResourceUtil;
 import org.seasar.framework.util.StringUtil;
-import org.seasar.framework.util.TextUtil;
 
 /**
  * @author higa
@@ -68,15 +71,6 @@ public class DaoMetaDataImpl implements DaoMetaData {
 			Pattern.compile("(/\\*[^*]+\\*/)*order by",Pattern.CASE_INSENSITIVE);
 	private static final Pattern startWithSelectPattern	=
 			Pattern.compile("^\\s*select\\s",Pattern.CASE_INSENSITIVE);
-	
-	private static final String[] INSERT_NAMES = new String[] { "insert",
-			"create", "add" };
-
-	private static final String[] UPDATE_NAMES = new String[] { "update",
-			"modify", "store" };
-
-	private static final String[] DELETE_NAMES = new String[] { "delete",
-			"remove" };
 	
 	private static final String NOT_SINGLE_ROW_UPDATED = "NotSingleRowUpdated";
 
@@ -95,6 +89,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	protected ResultSetFactory resultSetFactory_;
 	
 	protected AnnotationReaderFactory annotationReaderFactory_;
+    
+    protected String encoding ="JISAutoDetect";
 
 	protected Dbms dbms_;
 
@@ -103,19 +99,44 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	protected BeanMetaData beanMetaData_;
 
 	protected Map sqlCommands_ = new HashMap();
+    
+    protected String[] daoSuffixes_ = new String[]{"Dao"};
+    
+    protected String[] insertPrefixes_ = new String[] { "insert","create", "add" };
+    
+    protected String[] updatePrefixes_ = new String[] { "update","modify", "store" };
+    
+    protected String[] deletePrefixes_ = new String[] { "delete","remove" };
 
+    public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
+            StatementFactory statementFactory,
+            ResultSetFactory resultSetFactory) {
+        this(daoClass,dataSource,statementFactory,
+                resultSetFactory,new FieldAnnotationReaderFactory(),null,null,null,null,null);
+    }
 	public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
 			StatementFactory statementFactory,
-			ResultSetFactory resultSetFactory) {
+			ResultSetFactory resultSetFactory,
+            AnnotationReaderFactory annotationReaderFactory) {
 		this(daoClass,dataSource,statementFactory,
-				resultSetFactory,new FieldAnnotationReaderFactory());
+				resultSetFactory,annotationReaderFactory,null,null,null,null,null);
 	}
 	public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
 			StatementFactory statementFactory,
 			ResultSetFactory resultSetFactory,
-			AnnotationReaderFactory annotationReaderFactory) {
-
+			AnnotationReaderFactory annotationReaderFactory, 
+            String encoding, 
+            String[] daoSuffixes, 
+            String[] insertPrefixes, 
+            String[] updatePrefixes, 
+            String[] deletePrefixes) {
 		daoClass_ = daoClass;
+        if(encoding!=null){this.encoding = encoding;}
+        if(daoSuffixes!=null){this.daoSuffixes_ = daoSuffixes;}
+        if(insertPrefixes!=null){this.insertPrefixes_ = insertPrefixes;}
+        if(updatePrefixes!=null){this.updatePrefixes_ = updatePrefixes;}
+        if(deletePrefixes!=null){this.deletePrefixes_ = deletePrefixes;}
+        
 		daoBeanDesc_ = BeanDescFactory.getBeanDesc(daoClass);
 		daoInterface_ = getDaoInterface(daoClass);
 		annotationReaderFactory_ = annotationReaderFactory;
@@ -191,16 +212,20 @@ public class DaoMetaDataImpl implements DaoMetaData {
 			}
 		}
 	}
-	
+	protected String readText(String path){
+        InputStream is = ResourceUtil.getResourceAsStream(path);
+        Reader reader = InputStreamReaderUtil.create(is,encoding);
+        return ReaderUtil.readText(reader);
+    }
 	protected void setupMethodBySqlFile(Class daoInterface, Method method) {
 		String base = daoInterface.getName().replace('.', '/') + "_" + method.getName();
 		String dbmsPath = base + dbms_.getSuffix() + ".sql";
 		String standardPath = base + ".sql";
 		if (ResourceUtil.isExist(dbmsPath)) {
-			String sql = TextUtil.readText(dbmsPath);
+			String sql = readText(dbmsPath);
 			setupMethodByManual(method, sql);
 		} else if (ResourceUtil.isExist(standardPath)) {
-			String sql = TextUtil.readText(standardPath);
+			String sql = readText(standardPath);
 			setupMethodByManual(method, sql);
 		}
 	}
@@ -587,8 +612,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	}
 
 	protected boolean isInsert(String methodName) {
-		for (int i = 0; i < INSERT_NAMES.length; ++i) {
-			if (methodName.startsWith(INSERT_NAMES[i])) {
+		for (int i = 0; i < insertPrefixes_.length; ++i) {
+			if (methodName.startsWith(insertPrefixes_[i])) {
 				return true;
 			}
 		}
@@ -596,8 +621,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	}
 
 	protected boolean isUpdate(String methodName) {
-		for (int i = 0; i < UPDATE_NAMES.length; ++i) {
-			if (methodName.startsWith(UPDATE_NAMES[i])) {
+		for (int i = 0; i < updatePrefixes_.length; ++i) {
+			if (methodName.startsWith(updatePrefixes_[i])) {
 				return true;
 			}
 		}
@@ -605,8 +630,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 	}
 
 	protected boolean isDelete(String methodName) {
-		for (int i = 0; i < DELETE_NAMES.length; ++i) {
-			if (methodName.startsWith(DELETE_NAMES[i])) {
+		for (int i = 0; i < deletePrefixes_.length; ++i) {
+			if (methodName.startsWith(deletePrefixes_[i])) {
 				return true;
 			}
 		}
@@ -677,7 +702,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 		return createSelectDynamicCommand(new ObjectResultSetHandler(), query);
 	}
 
-	public static Class getDaoInterface(Class clazz) {
+	public Class getDaoInterface(Class clazz) {
 		if (clazz.isInterface()) {
 			return clazz;
 		}
@@ -686,9 +711,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
 			Class[] interfaces = target.getInterfaces();
 			for (int i = 0; i < interfaces.length; ++i) {
 				Class intf = interfaces[i];
-				if (intf.getName().endsWith("Dao")) {
-					return intf;
-				}
+                for (int j = 0; j < daoSuffixes_.length; j++) {
+                    if (intf.getName().endsWith(daoSuffixes_[j])) {
+                        return intf;
+                    }                    
+                }
 			}
 		}
 		throw new DaoNotFoundRuntimeException(clazz);

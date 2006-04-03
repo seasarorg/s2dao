@@ -2,8 +2,8 @@
 <!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container//EN"
 "http://www.seasar.org/dtd/components.dtd">
 <components>
-	<include path="dao-mysql.dicon"/>
-	<component class="examples.dao.StoredProcedureTestDao">
+	<include path="dao2.dicon"/>
+	<component class="examples.dao.DepartmentManager">
 		<aspect>dao.interceptor</aspect>
 	</component>
 </components>

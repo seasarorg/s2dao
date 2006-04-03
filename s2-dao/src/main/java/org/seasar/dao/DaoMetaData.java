@@ -39,4 +39,5 @@ public interface DaoMetaData {
 	public SqlCommand createFindBeanCommand(String query);
 
 	public SqlCommand createFindObjectCommand(String query);
+
 }

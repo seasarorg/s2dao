@@ -18,20 +18,25 @@ package examples.dao;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.container.factory.S2ContainerFactory;
 
-public class StoredProcedureTestDaoClient {
+public class DepartmentManagerClient {
 
-	private static final String PATH = "examples/dao/StoredProcedureTestDao.dicon";
+	private static final String PATH = "examples/dao/DepartmentManager.dicon";
 
 	public static void main(String[] args) {
 		S2Container container = S2ContainerFactory.create(PATH);
 		container.init();
 		try {
-			StoredProcedureTestDao dao = (StoredProcedureTestDao) container
-					.getComponent(StoredProcedureTestDao.class);
-			System.out.println("SALES_TAX(1000) =" + dao.getSalesTax(1000));
-//			System.out.println("SALES_TAX2(1000) =" + dao.getSalesTax2(1000));
-			System.out.println("SALES_TAX3(1000) =" + dao.getSalesTax3(1000));
-			System.out.println("SALES_TAX4(1000) =" + dao.getSalesTax4(1000));
+			DepartmentManager dao = (DepartmentManager) container
+					.getComponent(DepartmentManager.class);
+			Department dept = new Department();
+			dept.setDeptno(99);
+			dept.setDname("foo");
+			dao.generate(dept);
+			dept.setDname("bar");
+			System.out.println("before update versionNo:" + dept.getVersionNo());
+			dao.change(dept);
+			System.out.println("after update versionNo:" + dept.getVersionNo());
+			dao.destory(dept);
 		} finally {
 			container.destroy();
 		}

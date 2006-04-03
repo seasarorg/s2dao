@@ -13,25 +13,15 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.dao;
+package examples.dao;
 
-import java.sql.Statement;
+public interface DepartmentManager {
 
-/**
- * @author higa
- *
- */
-public interface Dbms {
-
-	String getAutoSelectSql(BeanMetaData beanMetaData);
+	public Class BEAN = Department.class;
 	
-	String getSuffix();
+	public void generate(Department department);
 	
-	String getIdentitySelectString();
+	public void change(Department department);
 	
-	String getSequenceNextValString(String sequenceName);
-    
-    boolean isSelfGenerate();
-    
-    String getBaseSql(Statement st);
+	public void destory(Department department);
 }

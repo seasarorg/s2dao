@@ -30,7 +30,7 @@ public class DefaultPagerCondition implements PagerCondition, Serializable {
     private int offset;
 
     /** •\¦‚ÌÅ‘å’l */
-    private int limit;
+    private int limit = NONE_LIMIT;
 
     /** æ“¾‚µ‚½‘” */
     private int count;
