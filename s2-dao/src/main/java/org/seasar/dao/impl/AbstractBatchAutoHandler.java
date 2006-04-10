@@ -74,7 +74,7 @@ public abstract class AbstractBatchAutoHandler extends AbstractAutoHandler {
 		if (getLogger().isDebugEnabled()) {
 			getLogger().debug(getCompleteSql(getBindVariables()));
 		}
-		bindArgs(ps, getBindVariables(), getBindVariableTypes());
+		bindArgs(ps, getBindVariables(), getBindVariableValueTypes());
 		PreparedStatementUtil.addBatch(ps);
 	}
 }

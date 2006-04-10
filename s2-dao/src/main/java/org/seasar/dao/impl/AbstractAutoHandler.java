@@ -17,6 +17,7 @@ package org.seasar.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,6 +29,7 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.UpdateHandler;
+import org.seasar.extension.jdbc.ValueType;
 import org.seasar.extension.jdbc.impl.BasicHandler;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.framework.beans.PropertyDesc;
@@ -39,218 +41,234 @@ import org.seasar.framework.util.StatementUtil;
 
 /**
  * @author higa
- *  
+ * @author manhole
  */
 public abstract class AbstractAutoHandler extends BasicHandler implements
-		UpdateHandler {
+        UpdateHandler {
 
-	private static Logger logger_ = Logger.getLogger(AbstractAutoHandler.class);
+    private static Logger logger_ = Logger.getLogger(AbstractAutoHandler.class);
 
-	private BeanMetaData beanMetaData_;
+    private BeanMetaData beanMetaData_;
 
-	private Object[] bindVariables_;
+    private Object[] bindVariables_;
 
-	private Class[] bindVariableTypes_;
+    private ValueType[] bindVariableValueTypes_;
 
-	private Timestamp timestamp_;
+    private Timestamp timestamp_;
 
-	private Integer versionNo_;
+    private Integer versionNo_;
 
-	private PropertyType[] propertyTypes_;
+    private PropertyType[] propertyTypes_;
 
-	public AbstractAutoHandler(DataSource dataSource,
-			StatementFactory statementFactory,
-			BeanMetaData beanMetaData, PropertyType[] propertyTypes) {
+    public AbstractAutoHandler(DataSource dataSource,
+            StatementFactory statementFactory, BeanMetaData beanMetaData,
+            PropertyType[] propertyTypes) {
 
-		setDataSource(dataSource);
-		setStatementFactory(statementFactory);
-		beanMetaData_ = beanMetaData;
-		propertyTypes_ = propertyTypes;
-	}
+        setDataSource(dataSource);
+        setStatementFactory(statementFactory);
+        beanMetaData_ = beanMetaData;
+        propertyTypes_ = propertyTypes;
+    }
 
-	public BeanMetaData getBeanMetaData() {
-		return beanMetaData_;
-	}
+    public BeanMetaData getBeanMetaData() {
+        return beanMetaData_;
+    }
 
-	protected static Logger getLogger() {
-		return logger_;
-	}
+    protected static Logger getLogger() {
+        return logger_;
+    }
 
-	protected Object[] getBindVariables() {
-		return bindVariables_;
-	}
+    protected Object[] getBindVariables() {
+        return bindVariables_;
+    }
 
-	protected void setBindVariables(Object[] bindVariables) {
-		bindVariables_ = bindVariables;
-	}
+    protected void setBindVariables(Object[] bindVariables) {
+        bindVariables_ = bindVariables;
+    }
 
-	protected Class[] getBindVariableTypes() {
-		return bindVariableTypes_;
-	}
+    protected ValueType[] getBindVariableValueTypes() {
+        return bindVariableValueTypes_;
+    }
 
-	protected void setBindVariableTypes(Class[] types) {
-		bindVariableTypes_ = types;
-	}
+    protected void setBindVariableValueTypes(ValueType[] bindVariableValueTypes) {
+        bindVariableValueTypes_ = bindVariableValueTypes;
+    }
 
-	protected Timestamp getTimestamp() {
-		return timestamp_;
-	}
+    protected Timestamp getTimestamp() {
+        return timestamp_;
+    }
 
-	protected void setTimestamp(Timestamp timestamp) {
-		timestamp_ = timestamp;
-	}
+    protected void setTimestamp(Timestamp timestamp) {
+        timestamp_ = timestamp;
+    }
 
-	protected Integer getVersionNo() {
-		return versionNo_;
-	}
+    protected Integer getVersionNo() {
+        return versionNo_;
+    }
 
-	protected void setVersionNo(Integer versionNo) {
-		versionNo_ = versionNo;
-	}
+    protected void setVersionNo(Integer versionNo) {
+        versionNo_ = versionNo;
+    }
 
-	protected PropertyType[] getPropertyTypes() {
-		return propertyTypes_;
-	}
+    protected PropertyType[] getPropertyTypes() {
+        return propertyTypes_;
+    }
 
-	protected void setPropertyTypes(PropertyType[] propertyTypes) {
-		propertyTypes_ = propertyTypes;
-	}
+    protected void setPropertyTypes(PropertyType[] propertyTypes) {
+        propertyTypes_ = propertyTypes;
+    }
 
-	public int execute(Object[] args) throws SQLRuntimeException {
-		Connection connection = getConnection();
-		try {
-			return execute(connection, args[0]);
-		} finally {
-			ConnectionUtil.close(connection);
-		}
-	}
+    public int execute(Object[] args) throws SQLRuntimeException {
+        Connection connection = getConnection();
+        try {
+            return execute(connection, args[0]);
+        } finally {
+            ConnectionUtil.close(connection);
+        }
+    }
 
-	public int execute(Object[] args, Class[] argTypes)
-			throws SQLRuntimeException {
-		return execute(args);
-	}
+    public int execute(Object[] args, Class[] argTypes)
+            throws SQLRuntimeException {
+        return execute(args);
+    }
 
-	protected int execute(Connection connection, Object bean) {
-		preUpdateBean(bean);
-		setupBindVariables(bean);
-		if (logger_.isDebugEnabled()) {
-			logger_.debug(getCompleteSql(bindVariables_));
-		}
-		PreparedStatement ps = prepareStatement(connection);
-		int ret = -1;
-		try {
-			bindArgs(ps, bindVariables_, bindVariableTypes_);
-			ret = PreparedStatementUtil.executeUpdate(ps);
-		} finally {
-			StatementUtil.close(ps);
-		}
-		postUpdateBean(bean);
-		return ret;
-	}
+    protected int execute(Connection connection, Object bean) {
+        preUpdateBean(bean);
+        setupBindVariables(bean);
+        if (logger_.isDebugEnabled()) {
+            logger_.debug(getCompleteSql(bindVariables_));
+        }
+        PreparedStatement ps = prepareStatement(connection);
+        int ret = -1;
+        try {
+            bindArgs(ps, bindVariables_, bindVariableValueTypes_);
+            ret = PreparedStatementUtil.executeUpdate(ps);
+        } finally {
+            StatementUtil.close(ps);
+        }
+        postUpdateBean(bean);
+        return ret;
+    }
 
-	protected void preUpdateBean(Object bean) {
-	}
+    protected void bindArgs(PreparedStatement ps, Object[] args,
+            ValueType[] valueTypes) {
+        if (args == null) {
+            return;
+        }
+        for (int i = 0; i < args.length; ++i) {
+            ValueType valueType = valueTypes[i];
+            try {
+                valueType.bindValue(ps, i + 1, args[i]);
+            } catch (SQLException ex) {
+                throw new SQLRuntimeException(ex);
+            }
+        }
+    }
 
-	protected void postUpdateBean(Object bean) {
-	}
+    protected void preUpdateBean(Object bean) {
+    }
 
-	protected abstract void setupBindVariables(Object bean);
+    protected void postUpdateBean(Object bean) {
+    }
 
-	protected void setupInsertBindVariables(Object bean) {
-		List varList = new ArrayList();
-		List varTypeList = new ArrayList();
-		for (int i = 0; i < propertyTypes_.length; ++i) {
-			PropertyType pt = propertyTypes_[i];
-			if (pt.getPropertyName().equalsIgnoreCase(
-					getBeanMetaData().getTimestampPropertyName())) {
-				setTimestamp(new Timestamp(new Date().getTime()));
-				varList.add(getTimestamp());
-			} else if (pt.getPropertyName().equals(
-					getBeanMetaData().getVersionNoPropertyName())) {
-				setVersionNo(new Integer(0));
-				varList.add(getVersionNo());
-			} else {
-				varList.add(pt.getPropertyDesc().getValue(bean));
-			}
-			varTypeList.add(pt.getPropertyDesc().getPropertyType());
-		}
-		setBindVariables(varList.toArray());
-		setBindVariableTypes((Class[]) varTypeList
-				.toArray(new Class[varTypeList.size()]));
-	}
+    protected abstract void setupBindVariables(Object bean);
 
-	protected void setupUpdateBindVariables(Object bean) {
-		List varList = new ArrayList();
-		List varTypeList = new ArrayList();
-		for (int i = 0; i < propertyTypes_.length; ++i) {
-			PropertyType pt = propertyTypes_[i];
-			if (pt.getPropertyName().equalsIgnoreCase(
-					getBeanMetaData().getTimestampPropertyName())) {
-				setTimestamp(new Timestamp(new Date().getTime()));
-				varList.add(getTimestamp());
-			} else if (pt.getPropertyName().equals(
-					getBeanMetaData().getVersionNoPropertyName())) {
-				Object value = pt.getPropertyDesc().getValue(bean);
-				int intValue = IntegerConversionUtil.toPrimitiveInt(value) + 1;
-				setVersionNo(new Integer(intValue));
-				varList.add(getVersionNo());
-			} else {
-				varList.add(pt.getPropertyDesc().getValue(bean));
-			}
-			varTypeList.add(pt.getPropertyDesc().getPropertyType());
-		}
-		addAutoUpdateWhereBindVariables(varList, varTypeList, bean);
-		setBindVariables(varList.toArray());
-		setBindVariableTypes((Class[]) varTypeList
-				.toArray(new Class[varTypeList.size()]));
-	}
+    protected void setupInsertBindVariables(Object bean) {
+        List varList = new ArrayList();
+        List varValueTypeList = new ArrayList();
+        for (int i = 0; i < propertyTypes_.length; ++i) {
+            PropertyType pt = propertyTypes_[i];
+            if (pt.getPropertyName().equalsIgnoreCase(
+                    getBeanMetaData().getTimestampPropertyName())) {
+                setTimestamp(new Timestamp(new Date().getTime()));
+                varList.add(getTimestamp());
+            } else if (pt.getPropertyName().equals(
+                    getBeanMetaData().getVersionNoPropertyName())) {
+                setVersionNo(new Integer(0));
+                varList.add(getVersionNo());
+            } else {
+                varList.add(pt.getPropertyDesc().getValue(bean));
+            }
+            varValueTypeList.add(pt.getValueType());
+        }
+        setBindVariables(varList.toArray());
+        setBindVariableValueTypes((ValueType[]) varValueTypeList
+                .toArray(new ValueType[varValueTypeList.size()]));
+    }
 
-	protected void setupDeleteBindVariables(Object bean) {
-		List varList = new ArrayList();
-		List varTypeList = new ArrayList();
-		addAutoUpdateWhereBindVariables(varList, varTypeList, bean);
-		setBindVariables(varList.toArray());
-		setBindVariableTypes((Class[]) varTypeList
-				.toArray(new Class[varTypeList.size()]));
-	}
+    protected void setupUpdateBindVariables(Object bean) {
+        List varList = new ArrayList();
+        List varValueTypeList = new ArrayList();
+        for (int i = 0; i < propertyTypes_.length; ++i) {
+            PropertyType pt = propertyTypes_[i];
+            if (pt.getPropertyName().equalsIgnoreCase(
+                    getBeanMetaData().getTimestampPropertyName())) {
+                setTimestamp(new Timestamp(new Date().getTime()));
+                varList.add(getTimestamp());
+            } else if (pt.getPropertyName().equals(
+                    getBeanMetaData().getVersionNoPropertyName())) {
+                Object value = pt.getPropertyDesc().getValue(bean);
+                int intValue = IntegerConversionUtil.toPrimitiveInt(value) + 1;
+                setVersionNo(new Integer(intValue));
+                varList.add(getVersionNo());
+            } else {
+                varList.add(pt.getPropertyDesc().getValue(bean));
+            }
+            varValueTypeList.add(pt.getValueType());
+        }
+        addAutoUpdateWhereBindVariables(varList, varValueTypeList, bean);
+        setBindVariables(varList.toArray());
+        setBindVariableValueTypes((ValueType[]) varValueTypeList
+                .toArray(new ValueType[varValueTypeList.size()]));
+    }
 
-	protected void addAutoUpdateWhereBindVariables(List varList,
-			List varTypeList, Object bean) {
-		BeanMetaData bmd = getBeanMetaData();
-		for (int i = 0; i < bmd.getPrimaryKeySize(); ++i) {
-			PropertyType pt = bmd.getPropertyTypeByColumnName(bmd
-					.getPrimaryKey(i));
-			PropertyDesc pd = pt.getPropertyDesc();
-			varList.add(pd.getValue(bean));
-			varTypeList.add(pd.getPropertyType());
-		}
-		if (bmd.hasVersionNoPropertyType()) {
-			PropertyType pt = bmd.getVersionNoPropertyType();
-			PropertyDesc pd = pt.getPropertyDesc();
-			varList.add(pd.getValue(bean));
-			varTypeList.add(pd.getPropertyType());
-		}
-		if (bmd.hasTimestampPropertyType()) {
-			PropertyType pt = bmd.getTimestampPropertyType();
-			PropertyDesc pd = pt.getPropertyDesc();
-			varList.add(pd.getValue(bean));
-			varTypeList.add(pd.getPropertyType());
-		}
-	}
+    protected void setupDeleteBindVariables(Object bean) {
+        List varList = new ArrayList();
+        List varValueTypeList = new ArrayList();
+        addAutoUpdateWhereBindVariables(varList, varValueTypeList, bean);
+        setBindVariables(varList.toArray());
+        setBindVariableValueTypes((ValueType[]) varValueTypeList
+                .toArray(new ValueType[varValueTypeList.size()]));
+    }
 
-	protected void updateTimestampIfNeed(Object bean) {
-		if (getTimestamp() != null) {
-			PropertyDesc pd = getBeanMetaData().getTimestampPropertyType()
-					.getPropertyDesc();
-			pd.setValue(bean, getTimestamp());
-		}
-	}
+    protected void addAutoUpdateWhereBindVariables(List varList,
+            List varValueTypeList, Object bean) {
+        BeanMetaData bmd = getBeanMetaData();
+        for (int i = 0; i < bmd.getPrimaryKeySize(); ++i) {
+            PropertyType pt = bmd.getPropertyTypeByColumnName(bmd
+                    .getPrimaryKey(i));
+            PropertyDesc pd = pt.getPropertyDesc();
+            varList.add(pd.getValue(bean));
+            varValueTypeList.add(pt.getValueType());
+        }
+        if (bmd.hasVersionNoPropertyType()) {
+            PropertyType pt = bmd.getVersionNoPropertyType();
+            PropertyDesc pd = pt.getPropertyDesc();
+            varList.add(pd.getValue(bean));
+            varValueTypeList.add(pt.getValueType());
+        }
+        if (bmd.hasTimestampPropertyType()) {
+            PropertyType pt = bmd.getTimestampPropertyType();
+            PropertyDesc pd = pt.getPropertyDesc();
+            varList.add(pd.getValue(bean));
+            varValueTypeList.add(pt.getValueType());
+        }
+    }
 
-	protected void updateVersionNoIfNeed(Object bean) {
-		if (getVersionNo() != null) {
-			PropertyDesc pd = getBeanMetaData().getVersionNoPropertyType()
-					.getPropertyDesc();
-			pd.setValue(bean, getVersionNo());
-		}
-	}
+    protected void updateTimestampIfNeed(Object bean) {
+        if (getTimestamp() != null) {
+            PropertyDesc pd = getBeanMetaData().getTimestampPropertyType()
+                    .getPropertyDesc();
+            pd.setValue(bean, getTimestamp());
+        }
+    }
+
+    protected void updateVersionNoIfNeed(Object bean) {
+        if (getVersionNo() != null) {
+            PropertyDesc pd = getBeanMetaData().getVersionNoPropertyType()
+                    .getPropertyDesc();
+            pd.setValue(bean, getVersionNo());
+        }
+    }
+
 }

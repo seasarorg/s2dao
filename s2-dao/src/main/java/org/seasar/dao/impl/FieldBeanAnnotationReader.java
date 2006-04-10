@@ -25,98 +25,112 @@ import org.seasar.framework.util.FieldUtil;
 import org.seasar.framework.util.StringUtil;
 
 public class FieldBeanAnnotationReader implements BeanAnnotationReader {
-	public String TABLE = "TABLE";
 
-	public String RELNO_SUFFIX = "_RELNO";
+    public String TABLE = "TABLE";
 
-	public String RELKEYS_SUFFIX = "_RELKEYS";
-	
-	public String ID_SUFFIX = "_ID";
-	
-	public String NO_PERSISTENT_PROPS = "NO_PERSISTENT_PROPS";
+    public String RELNO_SUFFIX = "_RELNO";
 
-	public String VERSION_NO_PROPERTY = "VERSION_NO_PROPERTY";
+    public String RELKEYS_SUFFIX = "_RELKEYS";
 
-	public String TIMESTAMP_PROPERTY = "TIMESTAMP_PROPERTY";
+    public String ID_SUFFIX = "_ID";
 
-	public String COLUMN_SUFFIX = "_COLUMN";
+    public String NO_PERSISTENT_PROPS = "NO_PERSISTENT_PROPS";
 
-	private BeanDesc beanDesc_;
-	
-	public FieldBeanAnnotationReader(Class beanClass_) {
-		beanDesc_ = BeanDescFactory.getBeanDesc(beanClass_);
-	}
+    public String VERSION_NO_PROPERTY = "VERSION_NO_PROPERTY";
 
-	public String getColumnAnnotation(PropertyDesc pd) {
-		String propertyName = pd.getPropertyName();
-		String columnNameKey = propertyName 
-			+ COLUMN_SUFFIX;
-		String columnName = propertyName;
-		if (beanDesc_.hasField(columnNameKey)) {
-			Field field = beanDesc_.getField(columnNameKey);
-			columnName = (String) FieldUtil.get(field, null);
-		}
-		return columnName;
-	}
+    public String TIMESTAMP_PROPERTY = "TIMESTAMP_PROPERTY";
 
-	public String getTableAnnotation() {
-		if (beanDesc_.hasField(TABLE)) {
-			Field field = beanDesc_.getField(TABLE);
-			return (String) FieldUtil.get(field, null);
-		}
-		return null;
-	}
+    public String COLUMN_SUFFIX = "_COLUMN";
 
-	public String getVersionNoProteryNameAnnotation() {
-		if (beanDesc_.hasField(VERSION_NO_PROPERTY)) {
-			Field field = beanDesc_.getField(VERSION_NO_PROPERTY);
-			return (String) FieldUtil.get(field, null);
-		}
-		return null;
-	}
+    public String VALUE_TYPE_SUFFIX = "_VALUE_TYPE";
 
-	public String getTimestampPropertyName() {
-		if (beanDesc_.hasField(TIMESTAMP_PROPERTY)) {
-			Field field = beanDesc_.getField(TIMESTAMP_PROPERTY);
-			return (String) FieldUtil.get(field, null);
-		}
-		return null;
-	}
+    private BeanDesc beanDesc_;
 
-	public String getId(PropertyDesc pd) {
-		String idKey = pd.getPropertyName() + ID_SUFFIX;
-		if (beanDesc_.hasField(idKey)) {
-			Field field = beanDesc_.getField(idKey);
-			return (String) FieldUtil.get(field, null);
-		}
-		return null;
-	}
+    public FieldBeanAnnotationReader(Class beanClass_) {
+        beanDesc_ = BeanDescFactory.getBeanDesc(beanClass_);
+    }
 
-	public String[] getNoPersisteneProps() {
-		if (beanDesc_.hasField(NO_PERSISTENT_PROPS)) {
-			Field field = beanDesc_.getField(NO_PERSISTENT_PROPS);
-			String str = (String) FieldUtil.get(field, null);
-			return StringUtil.split(str, ", ");
-		}
-		return null;
-	}
+    public String getColumnAnnotation(PropertyDesc pd) {
+        String propertyName = pd.getPropertyName();
+        String columnNameKey = propertyName + COLUMN_SUFFIX;
+        String columnName = propertyName;
+        if (beanDesc_.hasField(columnNameKey)) {
+            Field field = beanDesc_.getField(columnNameKey);
+            columnName = (String) FieldUtil.get(field, null);
+        }
+        return columnName;
+    }
 
-	public String getRelationKey(PropertyDesc pd) {
-		String propertyName = pd.getPropertyName();
-		String relkeysKey = propertyName  + RELKEYS_SUFFIX;
-		if (beanDesc_.hasField(relkeysKey)) {
-			Field field = beanDesc_.getField(relkeysKey);
-			return (String) FieldUtil.get(field, null);
-		}
-		return null;
-	}
-	public int getRelationNo(PropertyDesc pd) {
-		String relnoKey = pd.getPropertyName() + RELNO_SUFFIX;
-		Field field = beanDesc_.getField(relnoKey);
-		return FieldUtil.getInt(field, null);
-	}
-	public boolean hasRelationNo(PropertyDesc pd) {
-		String relnoKey = pd.getPropertyName() + RELNO_SUFFIX;
-		return beanDesc_.hasField(relnoKey);
-	}
+    public String getTableAnnotation() {
+        if (beanDesc_.hasField(TABLE)) {
+            Field field = beanDesc_.getField(TABLE);
+            return (String) FieldUtil.get(field, null);
+        }
+        return null;
+    }
+
+    public String getVersionNoProteryNameAnnotation() {
+        if (beanDesc_.hasField(VERSION_NO_PROPERTY)) {
+            Field field = beanDesc_.getField(VERSION_NO_PROPERTY);
+            return (String) FieldUtil.get(field, null);
+        }
+        return null;
+    }
+
+    public String getTimestampPropertyName() {
+        if (beanDesc_.hasField(TIMESTAMP_PROPERTY)) {
+            Field field = beanDesc_.getField(TIMESTAMP_PROPERTY);
+            return (String) FieldUtil.get(field, null);
+        }
+        return null;
+    }
+
+    public String getId(PropertyDesc pd) {
+        String idKey = pd.getPropertyName() + ID_SUFFIX;
+        if (beanDesc_.hasField(idKey)) {
+            Field field = beanDesc_.getField(idKey);
+            return (String) FieldUtil.get(field, null);
+        }
+        return null;
+    }
+
+    public String[] getNoPersisteneProps() {
+        if (beanDesc_.hasField(NO_PERSISTENT_PROPS)) {
+            Field field = beanDesc_.getField(NO_PERSISTENT_PROPS);
+            String str = (String) FieldUtil.get(field, null);
+            return StringUtil.split(str, ", ");
+        }
+        return null;
+    }
+
+    public String getRelationKey(PropertyDesc pd) {
+        String propertyName = pd.getPropertyName();
+        String relkeysKey = propertyName + RELKEYS_SUFFIX;
+        if (beanDesc_.hasField(relkeysKey)) {
+            Field field = beanDesc_.getField(relkeysKey);
+            return (String) FieldUtil.get(field, null);
+        }
+        return null;
+    }
+
+    public int getRelationNo(PropertyDesc pd) {
+        String relnoKey = pd.getPropertyName() + RELNO_SUFFIX;
+        Field field = beanDesc_.getField(relnoKey);
+        return FieldUtil.getInt(field, null);
+    }
+
+    public boolean hasRelationNo(PropertyDesc pd) {
+        String relnoKey = pd.getPropertyName() + RELNO_SUFFIX;
+        return beanDesc_.hasField(relnoKey);
+    }
+
+    public Class getValueType(PropertyDesc pd) {
+        String valueTypeKey = pd.getPropertyName() + VALUE_TYPE_SUFFIX;
+        if (beanDesc_.hasField(valueTypeKey)) {
+            Field field = beanDesc_.getField(valueTypeKey);
+            return (Class) FieldUtil.get(field, null);
+        }
+        return null;
+    }
+
 }

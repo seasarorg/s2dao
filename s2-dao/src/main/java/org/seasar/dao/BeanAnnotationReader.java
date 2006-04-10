@@ -19,9 +19,6 @@ import org.seasar.framework.beans.PropertyDesc;
 
 /**
  * @author uehara keizou
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public interface BeanAnnotationReader {
 
@@ -42,5 +39,7 @@ public interface BeanAnnotationReader {
 	int getRelationNo(PropertyDesc pd);
 
 	String getRelationKey(PropertyDesc pd);
+
+    Class getValueType(PropertyDesc pd);
 
 }
