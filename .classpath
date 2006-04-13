@@ -5,10 +5,11 @@
 	<classpathentry output="s2-dao/target/test-classes" kind="src" path="s2-dao/src/test/java"/>
 	<classpathentry output="s2-dao/target/test-classes" kind="src" path="s2-dao/src/test/resources"/>
 	<classpathentry output="s2-dao-examples/target/classes" kind="src" path="s2-dao-examples/src/main/java"/>
-	<classpathentry output="s2-dao-examples/target/classes" kind="src" path="s2-dao-examples/src/main/resources"/>	
+	<classpathentry output="s2-dao-examples/target/classes" kind="src" path="s2-dao-examples/src/main/resources"/>
 	<classpathentry output="s2-dao-examples/target/test-classes" kind="src" path="s2-dao-examples/src/test/java"/>
 	<classpathentry output="s2-dao-examples/target/test-classes" kind="src" path="s2-dao-examples/src/test/resources"/>
 	<classpathentry kind="src" path="/seasar2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/derby-10.1.2.1.jar"/>
 	<classpathentry kind="output" path="s2-dao/target/classes"/>
 </classpath>

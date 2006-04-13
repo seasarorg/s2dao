@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
+	"http://www.seasar.org/dtd/components21.dtd">
+<components namespace="j2ee">
+	<component name="transactionManager"
+		class="org.seasar.extension.jta.TransactionManagerImpl"/>
+	<component name="requiredTx"
+		class="org.seasar.extension.tx.RequiredInterceptor"/>
+	<component name="requiresNewTx"
+		class="org.seasar.extension.tx.RequiresNewInterceptor"/>
+	<component name="mandatoryTx"
+		class="org.seasar.extension.tx.MandatoryInterceptor"/>
+	<component name="notSupportedTx"
+		class="org.seasar.extension.tx.NotSupportedInterceptor"/>
+
+	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+	<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
+
+	<component name="xaDataSource"
+		class="org.seasar.extension.dbcp.impl.XADataSourceImpl">
+		<property name="driverClassName">
+			"org.apache.derby.jdbc.EmbeddedDriver"
+		</property>
+		<property name="URL">
+			"jdbc:derby:" 
+				+ @org.seasar.framework.util.ResourceUtil@getBuildDir(@org.seasar.dao.impl.ClobTest@class).getCanonicalPath() 
+				+ "/data-derby"
+		</property>
+		<property name="user">"seasar"</property>
+		<property name="password">"seasarpwd"</property>
+	</component>
+
+	<component name="connectionPool"
+		class="org.seasar.extension.dbcp.impl.ConnectionPoolImpl">
+		<property name="timeout">600</property>
+		<property name="maxPoolSize">10</property>
+		<property name="allowLocalTx">true</property>
+		<destroyMethod name="close"/>
+	</component>
+	<component name="dataSource"
+		class="org.seasar.extension.dbcp.impl.DataSourceImpl"/>
+
+</components>
