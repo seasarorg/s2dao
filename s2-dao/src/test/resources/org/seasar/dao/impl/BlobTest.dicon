@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container//EN"
+"http://www.seasar.org/dtd/components.dtd">
+<components>
+	<include path="dao-derby.dicon"/>
+	<component class="org.seasar.dao.impl.BlobTest$LargeBinaryDao">
+		<aspect>dao.interceptor</aspect>
+	</component>
+	<component class="org.seasar.dao.impl.BlobTest$LargeBinaryStreamDao">
+		<aspect>dao.interceptor</aspect>
+	</component>
+</components>
