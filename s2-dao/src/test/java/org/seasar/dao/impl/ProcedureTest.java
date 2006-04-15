@@ -42,10 +42,20 @@ public class ProcedureTest extends S2TestCase {
         procedureParam = new HashMap();
     }
 
-    public void testMetaData() throws Exception {
+    public void testMetaDataForProcesures() throws Exception {
         final DatabaseMetaData metaData = getConnection().getMetaData();
         final ResultSet rset = metaData.getProcedures(null, null, null);
+        MapListResultSetHandler handler = new MapListResultSetHandler();
+        List l = (List) handler.handle(rset);
+        for (Iterator it = l.iterator(); it.hasNext();) {
+            Map m = (Map) it.next();
+            System.out.println(m);
+        }
+    }
 
+    public void testMetaDataForTables() throws Exception {
+        final DatabaseMetaData metaData = getConnection().getMetaData();
+        final ResultSet rset = metaData.getTables(null, null, null, null);
         MapListResultSetHandler handler = new MapListResultSetHandler();
         List l = (List) handler.handle(rset);
         for (Iterator it = l.iterator(); it.hasNext();) {
