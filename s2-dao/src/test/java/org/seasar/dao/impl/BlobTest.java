@@ -37,16 +37,6 @@ public class BlobTest extends S2TestCase {
         include("BlobTest.dicon");
     }
 
-    public void testDerbyMetaData() throws Exception {
-        final DatabaseMetaData metaData = getConnection().getMetaData();
-        System.out.println("DatabaseProductName="
-                + metaData.getDatabaseProductName());
-        System.out.println("DatabaseProductVersion="
-                + metaData.getDatabaseProductVersion());
-        System.out.println("DriverName=" + metaData.getDriverName());
-        System.out.println("DriverVersion=" + metaData.getDriverVersion());
-    }
-
     public void testBinary1Tx() throws Exception {
         assertNotNull(largeBinaryByteArrayDao);
         final LargeBinary largeBinary = largeBinaryByteArrayDao

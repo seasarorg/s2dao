@@ -42,6 +42,16 @@ public class ProcedureTest extends S2TestCase {
         procedureParam = new HashMap();
     }
 
+    public void testMetaData() throws Exception {
+        final DatabaseMetaData metaData = getConnection().getMetaData();
+        System.out.println("DatabaseProductName="
+                + metaData.getDatabaseProductName());
+        System.out.println("DatabaseProductVersion="
+                + metaData.getDatabaseProductVersion());
+        System.out.println("DriverName=" + metaData.getDriverName());
+        System.out.println("DriverVersion=" + metaData.getDriverVersion());
+    }
+
     public void testMetaDataForProcesures() throws Exception {
         final DatabaseMetaData metaData = getConnection().getMetaData();
         final ResultSet rset = metaData.getProcedures(null, null, null);

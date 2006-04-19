@@ -35,14 +35,6 @@ public class ClobTest extends S2TestCase {
 
     public void test1Tx() throws Exception {
         assertNotNull(largeTextDao);
-        final DatabaseMetaData metaData = getConnection().getMetaData();
-        System.out.println("DatabaseProductName="
-                + metaData.getDatabaseProductName());
-        System.out.println("DatabaseProductVersion="
-                + metaData.getDatabaseProductVersion());
-        System.out.println("DriverName=" + metaData.getDriverName());
-        System.out.println("DriverVersion=" + metaData.getDriverVersion());
-
         final LargeText largeText = largeTextDao.getLargeText(123);
         assertEquals(null, largeText);
     }
