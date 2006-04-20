@@ -16,7 +16,6 @@
 package org.seasar.dao.impl;
 
 import java.io.Serializable;
-import java.sql.DatabaseMetaData;
 
 import org.seasar.extension.jdbc.types.StringClobType;
 import org.seasar.extension.unit.S2TestCase;
