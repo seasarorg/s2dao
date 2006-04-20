@@ -176,14 +176,15 @@ public abstract class AbstractAutoHandler extends BasicHandler implements
     protected void setupInsertBindVariables(Object bean) {
         List varList = new ArrayList();
         List varValueTypeList = new ArrayList();
+        final BeanMetaData bmd = getBeanMetaData();
+        final String timestampPropertyName = bmd.getTimestampPropertyName();
+        final String versionNoPropertyName = bmd.getVersionNoPropertyName();
         for (int i = 0; i < propertyTypes_.length; ++i) {
             PropertyType pt = propertyTypes_[i];
-            if (pt.getPropertyName().equalsIgnoreCase(
-                    getBeanMetaData().getTimestampPropertyName())) {
+            if (pt.getPropertyName().equalsIgnoreCase(timestampPropertyName)) {
                 setTimestamp(new Timestamp(new Date().getTime()));
                 varList.add(getTimestamp());
-            } else if (pt.getPropertyName().equals(
-                    getBeanMetaData().getVersionNoPropertyName())) {
+            } else if (pt.getPropertyName().equals(versionNoPropertyName)) {
                 setVersionNo(new Integer(0));
                 varList.add(getVersionNo());
             } else {
@@ -199,14 +200,15 @@ public abstract class AbstractAutoHandler extends BasicHandler implements
     protected void setupUpdateBindVariables(Object bean) {
         List varList = new ArrayList();
         List varValueTypeList = new ArrayList();
+        final BeanMetaData bmd = getBeanMetaData();
+        final String timestampPropertyName = bmd.getTimestampPropertyName();
+        final String versionNoPropertyName = bmd.getVersionNoPropertyName();
         for (int i = 0; i < propertyTypes_.length; ++i) {
             PropertyType pt = propertyTypes_[i];
-            if (pt.getPropertyName().equalsIgnoreCase(
-                    getBeanMetaData().getTimestampPropertyName())) {
+            if (pt.getPropertyName().equalsIgnoreCase(timestampPropertyName)) {
                 setTimestamp(new Timestamp(new Date().getTime()));
                 varList.add(getTimestamp());
-            } else if (pt.getPropertyName().equals(
-                    getBeanMetaData().getVersionNoPropertyName())) {
+            } else if (pt.getPropertyName().equals(versionNoPropertyName)) {
                 Object value = pt.getPropertyDesc().getValue(bean);
                 int intValue = IntegerConversionUtil.toPrimitiveInt(value) + 1;
                 setVersionNo(new Integer(intValue));
