@@ -1,9 +1,9 @@
 INSERT INTO DEFAULT_TABLE (
-	ID,
-	/*IF dto.defaultColumn != null*/DEFAULT_COLUMN,/*END*/
-	VERSIONNO
+    /*IF dto.aaa != null*/AAA,/*END*/
+    /*IF dto.bbb != null*/BBB,/*END*/
+    VERSIONNO
 ) VALUES (
-	/*dto.id*/null,
-	/*IF dto.defaultColumn != null*//*dto.defaultColumn*/null,/*END*/
+	/*IF dto.aaa != null*//*dto.aaa*/null,/*END*/
+	/*IF dto.bbb != null*//*dto.bbb*/null,/*END*/
 	/*dto.versionNo*/null
 )

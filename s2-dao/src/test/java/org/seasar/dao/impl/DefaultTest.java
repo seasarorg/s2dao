@@ -35,14 +35,12 @@ public class DefaultTest extends S2TestCase {
 
     private DefaultTableDao defaultTableDao;
 
-    private DefaultTable2Dao defaultTable2Dao;
-
     protected void setUp() throws Exception {
         super.setUp();
         include("DefaultTest.dicon");
     }
 
-    public void testMetaDataForColumnsTx() throws Exception {
+    public void testLearningMetaDataForColumnsTx() throws Exception {
         final DatabaseMetaData metaData = getConnection().getMetaData();
         String userName = metaData.getUserName();
         userName = DatabaseMetaDataUtil.convertIdentifier(metaData, userName);
@@ -69,20 +67,24 @@ public class DefaultTest extends S2TestCase {
         final ResultSet rset = metaData.getColumns(null, userName,
                 "DEFAULT_TABLE", null);
 
-        int[] columns = { 0, 0, 0 };
+        int[] columns = { 0, 0, 0, 0 };
         while (rset.next()) {
             final String columnName = rset.getString("COLUMN_NAME");
             final String columnDef = rset.getString("COLUMN_DEF");
+            System.out.println(columnName + "[" + columnDef + "]");
             if ("ID".equals(columnName)) {
                 columns[0]++;
-                assertEquals((String) null, columnDef);
-            } else if ("DEFAULT_COLUMN".equals(columnName)) {
+                //assertEquals((String) null, columnDef);
+            } else if ("AAA".equals(columnName)) {
                 columns[1]++;
                 //assertEquals("'ABC'", columnDef);
                 assertEquals(columnDef, true, columnDef.indexOf("ABC") > -1);
-            } else if ("VERSIONNO".equals(columnName)) {
+            } else if ("BBB".equals(columnName)) {
                 columns[2]++;
-                assertEquals((String) null, columnDef);
+                assertEquals(columnDef, (String) null, columnDef);
+            } else if ("VERSIONNO".equals(columnName)) {
+                columns[3]++;
+                assertEquals(columnDef, (String) null, columnDef);
             } else {
                 fail(columnName);
             }
@@ -90,67 +92,47 @@ public class DefaultTest extends S2TestCase {
         assertEquals(1, columns[0]);
         assertEquals(1, columns[1]);
         assertEquals(1, columns[2]);
+        assertEquals(1, columns[3]);
     }
 
     public void testInsertByAutoSqlTx() throws Exception {
+        Integer id;
         {
             DefaultTable bean = new DefaultTable();
-            bean.setId(new Integer(345));
-            bean.setDefaultColumn("1234567");
+            bean.setAaa("1234567");
+            bean.setBbb("890");
             defaultTableDao.insert(bean);
+            id = bean.getId();
         }
         {
-            final DefaultTable bean = defaultTableDao.getDefaultTable(345);
-            assertEquals("1234567", bean.getDefaultColumn());
+            final DefaultTable bean = defaultTableDao.getDefaultTable(id);
+            assertEquals("1234567", bean.getAaa());
+            assertEquals("890", bean.getBbb());
             assertEquals(new Integer(0), bean.getVersionNo());
         }
     }
 
     public void testInsertDefaultByAutoSqlTx() throws Exception {
-        {
-            DefaultTable bean = new DefaultTable();
-            bean.setId(new Integer(334));
-            defaultTableDao.insert(bean);
-        }
-        {
-            final DefaultTable bean = defaultTableDao.getDefaultTable(334);
-            assertEquals("ABC", bean.getDefaultColumn());
-            assertEquals(new Integer(0), bean.getVersionNo());
-        }
-    }
-
-    public void testInsertByAutoSql2Tx() throws Exception {
         Integer id;
         {
-            DefaultTable2 bean = new DefaultTable2();
-            bean.setDefaultColumn("bar");
-            defaultTable2Dao.insert(bean);
+            DefaultTable bean = new DefaultTable();
+            bean.setBbb("bbbb");
+            defaultTableDao.insert(bean);
             id = bean.getId();
         }
-        System.out.println("id=" + id);
         {
-            final DefaultTable2 bean = defaultTable2Dao.getDefaultTable(id);
-            assertEquals("bar", bean.getDefaultColumn());
+            final DefaultTable bean = defaultTableDao.getDefaultTable(id);
+            assertEquals("ABC", bean.getAaa());
+            assertEquals("bbbb", bean.getBbb());
             assertEquals(new Integer(0), bean.getVersionNo());
         }
     }
 
-    public void testThrownExceptionWhenOnlyNullDataTx() throws Exception {
+    public void testThrownExceptionWhenNullDataOnlyTx() throws Exception {
         DefaultTable bean = new DefaultTable();
         try {
             defaultTableDao.insert(bean);
-            fail();
-        } catch (SRuntimeException e) {
-            e.printStackTrace();
-            assertEquals("EDAO0014", e.getMessageCode());
-        }
-    }
-
-    public void testThrownExceptionWhenOnlyNullData2Tx() throws Exception {
-        DefaultTable2 bean = new DefaultTable2();
-        try {
-            defaultTable2Dao.insert(bean);
-            fail();
+            fail("should be thrown SRuntimeException, when only null properties");
         } catch (SRuntimeException e) {
             e.printStackTrace();
             assertEquals("EDAO0014", e.getMessageCode());
@@ -158,28 +140,33 @@ public class DefaultTest extends S2TestCase {
     }
 
     public void testInsertByManualSqlTx() throws Exception {
+        Integer id;
         {
             DefaultTable bean = new DefaultTable();
-            bean.setId(new Integer(101));
-            bean.setDefaultColumn("foooo");
+            bean.setAaa("foooo");
             defaultTableDao.insertBySql(bean);
+            id = bean.getId();
         }
         {
-            final DefaultTable bean = defaultTableDao.getDefaultTable(101);
-            assertEquals("foooo", bean.getDefaultColumn());
+            final DefaultTable bean = defaultTableDao.getDefaultTable(id);
+            assertEquals("foooo", bean.getAaa());
+            assertEquals((String) null, bean.getBbb());
             //assertEquals(new Integer(0), bean.getVersionNo());
         }
     }
 
     public void testInsertDefaultByManualSqlTx() throws Exception {
+        Integer id;
         {
             DefaultTable bean = new DefaultTable();
-            bean.setId(new Integer(7710));
+            bean.setBbb("ttt");
             defaultTableDao.insertBySql(bean);
+            id = bean.getId();
         }
         {
-            final DefaultTable bean = defaultTableDao.getDefaultTable(7710);
-            assertEquals("ABC", bean.getDefaultColumn());
+            final DefaultTable bean = defaultTableDao.getDefaultTable(id);
+            assertEquals("ABC", bean.getAaa());
+            assertEquals("ttt", bean.getBbb());
             //assertEquals(new Integer(0), bean.getVersionNo());
         }
     }
@@ -190,29 +177,13 @@ public class DefaultTest extends S2TestCase {
 
         public String getDefaultTable_ARGS = "id";
 
-        public DefaultTable getDefaultTable(int id);
+        public DefaultTable getDefaultTable(Integer id);
 
         public void insert(DefaultTable largeBinary);
 
         public void insertBySql(DefaultTable largeBinary);
 
         public void update(DefaultTable largeBinary);
-
-    }
-
-    public static interface DefaultTable2Dao {
-
-        public Class BEAN = DefaultTable2.class;
-
-        public String getDefaultTable_ARGS = "id";
-
-        public DefaultTable2 getDefaultTable(Integer id);
-
-        public void insert(DefaultTable2 largeBinary);
-
-        public void insertBySql(DefaultTable2 largeBinary);
-
-        public void update(DefaultTable2 largeBinary);
 
     }
 
@@ -224,7 +195,9 @@ public class DefaultTest extends S2TestCase {
 
         private Integer id;
 
-        private String defaultColumn;
+        private String aaa;
+
+        private String bbb;
 
         private Integer versionNo;
 
@@ -236,51 +209,20 @@ public class DefaultTest extends S2TestCase {
             this.id = id;
         }
 
-        public String getDefaultColumn() {
-            return defaultColumn;
+        public String getAaa() {
+            return aaa;
         }
 
-        public void setDefaultColumn(String defaultColumn) {
-            this.defaultColumn = defaultColumn;
+        public void setAaa(String defaultColumn) {
+            this.aaa = defaultColumn;
         }
 
-        public Integer getVersionNo() {
-            return versionNo;
+        public String getBbb() {
+            return bbb;
         }
 
-        public void setVersionNo(Integer versionNo) {
-            this.versionNo = versionNo;
-        }
-    }
-
-    public static class DefaultTable2 implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        public static final String TABLE = "DEFAULT_TABLE2";
-
-        public static final String id_ID = "identity";
-
-        private Integer id;
-
-        private String defaultColumn;
-
-        private Integer versionNo;
-
-        public Integer getId() {
-            return id;
-        }
-
-        public void setId(Integer id) {
-            this.id = id;
-        }
-
-        public String getDefaultColumn() {
-            return defaultColumn;
-        }
-
-        public void setDefaultColumn(String defaultColumn) {
-            this.defaultColumn = defaultColumn;
+        public void setBbb(String bbb) {
+            this.bbb = bbb;
         }
 
         public Integer getVersionNo() {

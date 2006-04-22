@@ -6,7 +6,4 @@
 	<component class="org.seasar.dao.impl.DefaultTest$DefaultTableDao">
 		<aspect>dao.interceptor</aspect>
 	</component>
-	<component class="org.seasar.dao.impl.DefaultTest$DefaultTable2Dao">
-		<aspect>dao.interceptor</aspect>
-	</component>
 </components>
