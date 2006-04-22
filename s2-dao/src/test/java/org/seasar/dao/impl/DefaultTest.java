@@ -67,7 +67,7 @@ public class DefaultTest extends S2TestCase {
         final ResultSet rset = metaData.getColumns(null, userName,
                 "DEFAULT_TABLE", null);
 
-        int[] columns = { 0, 0, 0, 0 };
+        final int[] columns = { 0, 0, 0, 0 };
         while (rset.next()) {
             final String columnName = rset.getString("COLUMN_NAME");
             final String columnDef = rset.getString("COLUMN_DEF");
@@ -82,7 +82,7 @@ public class DefaultTest extends S2TestCase {
             } else if ("BBB".equals(columnName)) {
                 columns[2]++;
                 assertEquals(columnDef, (String) null, columnDef);
-            } else if ("VERSIONNO".equals(columnName)) {
+            } else if ("VERSION_NO".equals(columnName)) {
                 columns[3]++;
                 assertEquals(columnDef, (String) null, columnDef);
             } else {
@@ -106,7 +106,7 @@ public class DefaultTest extends S2TestCase {
         }
         {
             final DefaultTable bean = defaultTableDao.getDefaultTable(id);
-            assertEquals("1234567", bean.getAaa());
+            assertEquals("inserted setted value", "1234567", bean.getAaa());
             assertEquals("890", bean.getBbb());
             assertEquals(new Integer(0), bean.getVersionNo());
         }
@@ -122,7 +122,7 @@ public class DefaultTest extends S2TestCase {
         }
         {
             final DefaultTable bean = defaultTableDao.getDefaultTable(id);
-            assertEquals("ABC", bean.getAaa());
+            assertEquals("inserted DEFAULT value", "ABC", bean.getAaa());
             assertEquals("bbbb", bean.getBbb());
             assertEquals(new Integer(0), bean.getVersionNo());
         }
@@ -151,7 +151,7 @@ public class DefaultTest extends S2TestCase {
             final DefaultTable bean = defaultTableDao.getDefaultTable(id);
             assertEquals("foooo", bean.getAaa());
             assertEquals((String) null, bean.getBbb());
-            //assertEquals(new Integer(0), bean.getVersionNo());
+            assertEquals(new Integer(0), bean.getVersionNo());
         }
     }
 
@@ -167,7 +167,7 @@ public class DefaultTest extends S2TestCase {
             final DefaultTable bean = defaultTableDao.getDefaultTable(id);
             assertEquals("ABC", bean.getAaa());
             assertEquals("ttt", bean.getBbb());
-            //assertEquals(new Integer(0), bean.getVersionNo());
+            assertEquals(new Integer(0), bean.getVersionNo());
         }
     }
 

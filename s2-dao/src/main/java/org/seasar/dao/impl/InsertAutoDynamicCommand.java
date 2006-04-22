@@ -47,10 +47,10 @@ public class InsertAutoDynamicCommand implements SqlCommand {
 
     public Object execute(Object[] args) {
         final Object bean = args[0];
-        final PropertyType[] propertyTypes = createInsertPropertyTypes(bean,
-                getPropertyNames());
         final BeanMetaData bmd = getBeanMetaData();
-        final String sql = createInsertSql(bmd, bean, propertyTypes);
+        final PropertyType[] propertyTypes = createInsertPropertyTypes(bmd,
+                bean, getPropertyNames());
+        final String sql = createInsertSql(bmd, propertyTypes);
 
         InsertAutoHandler handler = new InsertAutoHandler(getDataSource(),
                 getStatementFactory(), bmd, propertyTypes);
@@ -62,12 +62,11 @@ public class InsertAutoDynamicCommand implements SqlCommand {
         return new Integer(rows);
     }
 
-    protected String createInsertSql(BeanMetaData bmd, Object bean,
+    protected String createInsertSql(BeanMetaData bmd,
             PropertyType[] propertyTypes) {
-        final String tableName = bmd.getTableName();
         StringBuffer buf = new StringBuffer(100);
         buf.append("INSERT INTO ");
-        buf.append(tableName);
+        buf.append(bmd.getTableName());
         buf.append(" (");
         for (int i = 0; i < propertyTypes.length; ++i) {
             PropertyType pt = propertyTypes[i];
@@ -88,14 +87,13 @@ public class InsertAutoDynamicCommand implements SqlCommand {
         return buf.toString();
     }
 
-    protected PropertyType[] createInsertPropertyTypes(Object bean,
-            String[] propertyNames) {
+    protected PropertyType[] createInsertPropertyTypes(BeanMetaData bmd,
+            Object bean, String[] propertyNames) {
         List types = new ArrayList();
-        final BeanMetaData bmd = getBeanMetaData();
         final String timestampPropertyName = bmd.getTimestampPropertyName();
         final String versionNoPropertyName = bmd.getVersionNoPropertyName();
 
-        int validColumns = 0;
+        int notNullColumns = 0;
         for (int i = 0; i < propertyNames.length; ++i) {
             PropertyType pt = bmd.getPropertyType(propertyNames[i]);
             if (pt.isPrimaryKey()
@@ -110,11 +108,11 @@ public class InsertAutoDynamicCommand implements SqlCommand {
                     continue;
                 }
             } else {
-                validColumns++;
+                notNullColumns++;
             }
             types.add(pt);
         }
-        if (validColumns == 0) {
+        if (notNullColumns == 0) {
             throw new SRuntimeException("EDAO0014");
         }
         PropertyType[] propertyTypes = (PropertyType[]) types
