@@ -102,9 +102,8 @@ public class InsertAutoDynamicCommand implements SqlCommand {
             }
             if (pt.getPropertyDesc().getValue(bean) == null) {
                 final String propertyName = pt.getPropertyName();
-                if (propertyName.equalsIgnoreCase(timestampPropertyName)
-                        || propertyName.equals(versionNoPropertyName)) {
-                } else {
+                if (!propertyName.equalsIgnoreCase(timestampPropertyName)
+                        && !propertyName.equals(versionNoPropertyName)) {
                     continue;
                 }
             } else {
