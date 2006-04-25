@@ -9,7 +9,7 @@
   <artifactId>s2-dao-project</artifactId>
   <packaging>pom</packaging>
   <name>S2Dao Project</name>
-  <version>1.0.33-SNAPSHOT</version>
+  <version>1.0.33</version>
   <description></description>
   <url>http://s2dao.seasar.org/</url>
   <inceptionYear>2004</inceptionYear>
@@ -142,7 +142,7 @@
     <dependency>
       <groupId>org.seasar.container</groupId>
       <artifactId>s2-extension</artifactId>
-      <version>2.3.8-SNAPSHOT</version>
+      <version>2.3.8</version>
       <type>jar</type>
     </dependency>
     <dependency>
