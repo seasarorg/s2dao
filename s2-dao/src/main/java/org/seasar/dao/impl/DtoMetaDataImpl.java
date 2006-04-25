@@ -113,17 +113,20 @@ public class DtoMetaDataImpl implements DtoMetaData {
         if (ca != null) {
             columnName = ca;
         }
-        final Class valueTypeClass = beanAnnotationReader_
-                .getValueType(propertyDesc);
-        ValueType valueType;
-        if (valueTypeClass != null) {
-            valueType = (ValueType) ClassUtil.newInstance(valueTypeClass);
-        } else {
-            valueType = ValueTypes.getValueType(propertyDesc.getPropertyType());
-        }
+        ValueType valueType = getValueType(propertyDesc);
         PropertyType pt = new PropertyTypeImpl(propertyDesc, valueType,
                 columnName);
         return pt;
+    }
+
+    protected ValueType getValueType(PropertyDesc propertyDesc) {
+        final Class valueTypeClass = beanAnnotationReader_
+                .getValueType(propertyDesc);
+        if (valueTypeClass != null) {
+            return (ValueType) ClassUtil.newInstance(valueTypeClass);
+        } else {
+            return ValueTypes.getValueType(propertyDesc.getPropertyType());
+        }
     }
 
     protected void addPropertyType(PropertyType propertyType) {
