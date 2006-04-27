@@ -22,24 +22,24 @@ import org.seasar.framework.beans.PropertyDesc;
  */
 public interface BeanAnnotationReader {
 
-	String getColumnAnnotation(PropertyDesc pd);
+    String getColumnAnnotation(PropertyDesc pd);
 
-	String getTableAnnotation();
+    String getTableAnnotation();
 
-	String getVersionNoProteryNameAnnotation();
+    String getVersionNoProteryNameAnnotation();
 
-	String getTimestampPropertyName();
+    String getTimestampPropertyName();
 
-	String getId(PropertyDesc pd);
+    String getId(PropertyDesc pd);
 
-	String[] getNoPersisteneProps();
+    String[] getNoPersisteneProps();
 
-	boolean hasRelationNo(PropertyDesc pd);
+    boolean hasRelationNo(PropertyDesc pd);
 
-	int getRelationNo(PropertyDesc pd);
+    int getRelationNo(PropertyDesc pd);
 
-	String getRelationKey(PropertyDesc pd);
+    String getRelationKey(PropertyDesc pd);
 
-    Class getValueType(PropertyDesc pd);
+    String getValueType(PropertyDesc pd);
 
 }

@@ -19,7 +19,6 @@ import java.util.Date;
 
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanAnnotationReader;
-import org.seasar.extension.jdbc.types.BigDecimalType;
 import org.seasar.extension.unit.S2TestCase;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
@@ -137,10 +136,10 @@ public class FieldBeanAnnotationReaderTest extends S2TestCase {
         BeanAnnotationReader annotationReader = readerFactory
                 .createBeanAnnotationReader(clazz);
         PropertyDesc aaaPd = beanDesc.getPropertyDesc("aaa");
-        assertEquals(null, annotationReader.getValueType(aaaPd));
+        assertEquals((String) null, annotationReader.getValueType(aaaPd));
 
         PropertyDesc bbbPd = beanDesc.getPropertyDesc("bbb");
-        assertEquals(BigDecimalType.class, annotationReader.getValueType(bbbPd));
+        assertEquals("fooType", annotationReader.getValueType(bbbPd));
     }
 
     public static class AnnotationTestBean1 {
@@ -222,7 +221,7 @@ public class FieldBeanAnnotationReaderTest extends S2TestCase {
 
         private String bbb;
 
-        public static Class bbb_VALUE_TYPE = BigDecimalType.class;
+        public static String bbb_VALUE_TYPE = "fooType";
 
         public String getAaa() {
             return aaa;

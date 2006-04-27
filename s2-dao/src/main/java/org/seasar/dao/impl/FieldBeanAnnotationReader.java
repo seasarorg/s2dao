@@ -124,11 +124,11 @@ public class FieldBeanAnnotationReader implements BeanAnnotationReader {
         return beanDesc_.hasField(relnoKey);
     }
 
-    public Class getValueType(PropertyDesc pd) {
+    public String getValueType(PropertyDesc pd) {
         String valueTypeKey = pd.getPropertyName() + VALUE_TYPE_SUFFIX;
         if (beanDesc_.hasField(valueTypeKey)) {
             Field field = beanDesc_.getField(valueTypeKey);
-            return (Class) FieldUtil.get(field, null);
+            return (String) FieldUtil.get(field, null);
         }
         return null;
     }

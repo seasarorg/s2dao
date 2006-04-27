@@ -17,7 +17,6 @@ package org.seasar.dao.impl;
 
 import java.io.Serializable;
 
-import org.seasar.extension.jdbc.types.StringClobType;
 import org.seasar.extension.unit.S2TestCase;
 
 /**
@@ -82,7 +81,7 @@ public class ClobTest extends S2TestCase {
 
         private int id;
 
-        public static Class largeString_VALUE_TYPE = StringClobType.class;
+        public static String largeString_VALUE_TYPE = "stringClobType";
 
         private String largeString;
 

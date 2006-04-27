@@ -25,6 +25,7 @@ import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.PropertyNotFoundRuntimeException;
 import org.seasar.framework.beans.factory.BeanDescFactory;
+import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 import org.seasar.framework.util.CaseInsensitiveMap;
 import org.seasar.framework.util.ClassUtil;
 
@@ -120,10 +121,12 @@ public class DtoMetaDataImpl implements DtoMetaData {
     }
 
     protected ValueType getValueType(PropertyDesc propertyDesc) {
-        final Class valueTypeClass = beanAnnotationReader_
+        final String valueTypeName = beanAnnotationReader_
                 .getValueType(propertyDesc);
-        if (valueTypeClass != null) {
-            return (ValueType) ClassUtil.newInstance(valueTypeClass);
+        if (valueTypeName != null) {
+            // TODO
+            return (ValueType) SingletonS2ContainerFactory.getContainer()
+                    .getComponent(valueTypeName);
         } else {
             return ValueTypes.getValueType(propertyDesc.getPropertyType());
         }

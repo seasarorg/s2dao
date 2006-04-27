@@ -6,4 +6,5 @@
 	<component class="org.seasar.dao.impl.ClobTest$LargeTextDao">
 		<aspect>dao.interceptor</aspect>
 	</component>
+	<component name="stringClobType" class="org.seasar.extension.jdbc.types.StringClobType"/>
 </components>
