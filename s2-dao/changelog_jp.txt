@@ -1,5 +1,19 @@
 S2Dao 変更履歴
 
+1.0.34
+-------------------------------------------------------------------------------
+
+
+1.0.33
+-------------------------------------------------------------------------------
+CLOB型をサポートしました。このためにVALUE_TYPEアノテーションを導入しました。
+自動生成されるINSERT文から、beanのプロパティがnullのカラムを除外するようにしました。これにより、Tableへ定義してあるDEFAULT値を活かすことができます。
+更新行数が0件の場合に例外を投げるAssertAtLeastOneRowInterceptorと、更新行数が1件以外の場合に例外を投げるAssertExactlyOneRowInterceptorを追加しました。[Seasar-user:3508]
+UpdateDynamicCommandとUpdateAutoDynamicCommandが同一だったため、UpdateAutoDynamicCommandを削除しました。
+
+S2Dao 1.0.33の動作にはSeasar 2.3.8が必要です。
+(CLOB型サポートを利用しなければ2.3.7でも動作すると思います。)
+
 1.0.32
 -------------------------------------------------------------------------------
 DaoのSuffixとinsert,update,delete自動生成のprefixの指定ができるようになりました。　([Seasar-user:3226])
