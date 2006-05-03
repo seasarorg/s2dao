@@ -73,6 +73,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
     private static final Pattern startWithSelectPattern = Pattern.compile(
             "^\\s*select\\s", Pattern.CASE_INSENSITIVE);
 
+    private static final Pattern startWithBeginCommentPattern = Pattern
+            .compile("/\\*BEGIN\\*/\\s*WHERE .+", Pattern.CASE_INSENSITIVE);
+
     private static final String NOT_SINGLE_ROW_UPDATED = "NotSingleRowUpdated";
 
     protected Class daoClass_;
@@ -334,6 +337,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
             if (query != null) {
                 if (startsWithOrderBy(query)) {
                     buf.append(" ");
+                } else if (startsWithBeginComment(query)) {
+                    buf.append(" ");
                 } else if (sql.lastIndexOf("WHERE") < 0) {
                     buf.append(" WHERE ");
                 } else {
@@ -344,6 +349,14 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
         cmd.setSql(buf.toString());
         return cmd;
+    }
+
+    protected boolean startsWithBeginComment(String query) {
+        Matcher m = startWithBeginCommentPattern.matcher(query);
+        if (m.lookingAt()) {
+            return true;
+        }
+        return false;
     }
 
     protected static boolean startsWithSelect(String query) {

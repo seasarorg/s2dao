@@ -37,16 +37,8 @@ import org.seasar.framework.util.TextUtil;
  *  
  */
 public abstract class DaoMetaDataImplTest extends S2TestCase {
-    protected AnnotationReaderFactory readerFactory;
 
-    /**
-     * Constructor for InvocationImplTest.
-     * 
-     * @param arg0
-     */
-    public DaoMetaDataImplTest(String arg0) {
-        super(arg0);
-    }
+    protected AnnotationReaderFactory readerFactory;
 
     protected abstract Class getDaoClass(String className);
 
@@ -502,6 +494,50 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
         Object results = cmd.execute(new Object[] { condition });
         setProperty(condition, "orderByString", "ENAME");
         results = cmd.execute(new Object[] { condition });
+    }
+
+    public void testStartsWithBeginComment() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Employee8Dao.class);
+        SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
+                .getSqlCommand("getEmployees");
+        System.out.println(cmd.getSql());
+        {
+            Employee emp = new Employee();
+            List results = (List) cmd.execute(new Object[] { emp });
+            assertEquals(14, results.size());
+        }
+        {
+            Employee emp = new Employee();
+            emp.setEname("SMITH");
+            List results = (List) cmd.execute(new Object[] { emp });
+            assertEquals(1, results.size());
+        }
+        {
+            Employee emp = new Employee();
+            emp.setJob("SALESMAN");
+            List results = (List) cmd.execute(new Object[] { emp });
+            assertEquals(4, results.size());
+        }
+        {
+            Employee emp = new Employee();
+            emp.setEname("SMITH");
+            emp.setJob("CLERK");
+            List results = (List) cmd.execute(new Object[] { emp });
+            assertEquals(1, results.size());
+        }
+        {
+            Employee emp = new Employee();
+            emp.setEname("a");
+            emp.setJob("b");
+            List results = (List) cmd.execute(new Object[] { emp });
+            assertEquals(0, results.size());
+        }
+    }
+
+    private DaoMetaData createDaoMetaData(Class daoClass) {
+        return new DaoMetaDataImpl(daoClass, getDataSource(),
+                BasicStatementFactory.INSTANCE, BasicResultSetFactory.INSTANCE,
+                readerFactory);
     }
 
     public void testQueryAnnotationTx() throws Exception {

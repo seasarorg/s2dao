@@ -22,16 +22,6 @@ import org.seasar.dao.AnnotationReaderFactory;
  *  
  */
 public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
-    private AnnotationReaderFactory readerFactory;
-
-    /**
-     * Constructor for InvocationImplTest.
-     * 
-     * @param arg0
-     */
-    public FieldDaoMetaDataImplTest(String arg0) {
-        super(arg0);
-    }
 
     public void setUp() {
         include("FieldDaoMetaDataImplTest.dicon");
@@ -78,6 +68,8 @@ public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
             return Employee6Dao.class;
         } else if (className.equals("Employee7Dao")) {
             return Employee7Dao.class;
+        } else if (className.equals("Employee8Dao")) {
+            return Employee8Dao.class;
         } else if (className.equals("DepartmentTotalSalaryDao")) {
             return DepartmentTotalSalaryDao.class;
         }
