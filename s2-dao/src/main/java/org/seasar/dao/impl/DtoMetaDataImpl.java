@@ -27,11 +27,10 @@ import org.seasar.framework.beans.PropertyNotFoundRuntimeException;
 import org.seasar.framework.beans.factory.BeanDescFactory;
 import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 import org.seasar.framework.util.CaseInsensitiveMap;
-import org.seasar.framework.util.ClassUtil;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class DtoMetaDataImpl implements DtoMetaData {
 
