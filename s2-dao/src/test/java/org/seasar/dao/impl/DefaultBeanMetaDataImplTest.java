@@ -50,14 +50,21 @@ public class DefaultBeanMetaDataImplTest extends BeanMetaDataImplTest {
 
     public static class MyBean {
         public static final String TABLE = "MyBean";
+
         public static final String aaa_ID = "assigned";
+
         public static final String bbb_COLUMN = "myBbb";
+
         public static final int ccc_RELNO = 0;
+
         public static final String ccc_RELKEYS = "ddd:id";
 
         private Integer aaa_;
+
         private String bbb_;
+
         private Ccc ccc_;
+
         private Integer ddd_;
 
         public Integer getAaa() {
@@ -95,6 +102,7 @@ public class DefaultBeanMetaDataImplTest extends BeanMetaDataImplTest {
 
     public static class Ccc {
         public static final String id_ID = "assigned";
+
         private Integer id_;
 
         public Integer getId() {
@@ -108,6 +116,7 @@ public class DefaultBeanMetaDataImplTest extends BeanMetaDataImplTest {
 
     public static class Ddd extends Ccc {
         public static final String NO_PERSISTENT_PROPS = "";
+
         private String name_;
 
         public String getName() {
@@ -121,6 +130,7 @@ public class DefaultBeanMetaDataImplTest extends BeanMetaDataImplTest {
 
     public static class Eee extends Ccc {
         public static final String NO_PERSISTENT_PROPS = "name";
+
         private String name_;
 
         public String getName() {
@@ -134,9 +144,13 @@ public class DefaultBeanMetaDataImplTest extends BeanMetaDataImplTest {
 
     public static class Fff {
         public static final String VERSION_NO_PROPERTY = "version";
+
         public static final String TIMESTAMP_PROPERTY = "updated";
+
         private int version_;
+
         private Integer id_;
+
         private Timestamp updated_;
 
         public Integer getId() {

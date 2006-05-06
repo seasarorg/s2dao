@@ -15,7 +15,6 @@
  */
 package org.seasar.dao.impl;
 
-import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.unit.S2DaoTestCase;
@@ -27,15 +26,8 @@ import org.seasar.extension.jdbc.PropertyType;
  */
 public abstract class BeanMetaDataImplTest extends S2DaoTestCase {
 
-    protected AnnotationReaderFactory readerFactory;
-
     protected void setUp() throws Exception {
         include("j2ee.dicon");
-    }
-
-    protected void setUpAfterBindFields() throws Throwable {
-        super.setUpAfterBindFields();
-        setAnnotationReaderFactory(readerFactory);
     }
 
     protected abstract Class getBeanClass(String className);

@@ -18,7 +18,6 @@ package org.seasar.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.SqlCommand;
@@ -37,8 +36,6 @@ import org.seasar.framework.util.TextUtil;
  *  
  */
 public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
-
-    protected AnnotationReaderFactory readerFactory;
 
     protected abstract Class getDaoClass(String className);
 
@@ -75,7 +72,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         dmd.setDataSource(getDataSource());
         dmd.setStatementFactory(BasicStatementFactory.INSTANCE);
         dmd.setResultSetFactory(BasicResultSetFactory.INSTANCE);
-        dmd.setAnnotationReaderFactory(readerFactory);
+        dmd.setAnnotationReaderFactory(getAnnotationReaderFactory());
         dmd.setDaoSuffixes(new String[] { "Manager" });
         dmd.setInsertPrefixes(new String[] { "generate" });
         dmd.setUpdatePrefixes(new String[] { "change" });
@@ -433,7 +430,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
     }
 
     public void testStartsWithBeginComment() throws Exception {
-        DaoMetaData dmd = createDaoMetaData(Employee8Dao.class);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee8Dao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployees");
         System.out.println(cmd.getSql());
@@ -502,11 +499,6 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
                 .getPackage().getName().replace('.', '/')
                 + "/" + "EmployeeDao_getEmployee.sql");
         assertEquals(expected, cmd.getSql());
-    }
-
-    protected void setUpAfterBindFields() throws Throwable {
-        super.setUpAfterBindFields();
-        setAnnotationReaderFactory(readerFactory);
     }
 
 }
