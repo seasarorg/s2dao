@@ -17,15 +17,14 @@ package org.seasar.dao.impl;
 
 import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.DtoMetaData;
+import org.seasar.dao.ValueTypeFactory;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.extension.jdbc.impl.PropertyTypeImpl;
-import org.seasar.extension.jdbc.types.ValueTypes;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.PropertyNotFoundRuntimeException;
 import org.seasar.framework.beans.factory.BeanDescFactory;
-import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 import org.seasar.framework.util.CaseInsensitiveMap;
 
 /**
@@ -40,14 +39,23 @@ public class DtoMetaDataImpl implements DtoMetaData {
 
     protected BeanAnnotationReader beanAnnotationReader_;
 
-    protected DtoMetaDataImpl() {
+    private ValueTypeFactory valueTypeFactory;
+
+    public DtoMetaDataImpl() {
     }
 
+    /**
+     * @deprecated
+     */
     public DtoMetaDataImpl(Class beanClass,
             BeanAnnotationReader beanAnnotationReader) {
-        beanClass_ = beanClass;
-        beanAnnotationReader_ = beanAnnotationReader;
-        BeanDesc beanDesc = BeanDescFactory.getBeanDesc(beanClass);
+        setBeanClass(beanClass);
+        setBeanAnnotationReader(beanAnnotationReader);
+        initialize();
+    }
+
+    public void initialize() {
+        BeanDesc beanDesc = BeanDescFactory.getBeanDesc(getBeanClass());
         setupPropertyType(beanDesc);
     }
 
@@ -58,7 +66,7 @@ public class DtoMetaDataImpl implements DtoMetaData {
         return beanClass_;
     }
 
-    protected void setBeanClass(Class beanClass) {
+    public void setBeanClass(Class beanClass) {
         beanClass_ = beanClass;
     }
 
@@ -123,15 +131,28 @@ public class DtoMetaDataImpl implements DtoMetaData {
         final String valueTypeName = beanAnnotationReader_
                 .getValueType(propertyDesc);
         if (valueTypeName != null) {
-            // TODO
-            return (ValueType) SingletonS2ContainerFactory.getContainer()
-                    .getComponent(valueTypeName);
+            return getValueTypeFactory().getValueTypeByName(valueTypeName);
         } else {
-            return ValueTypes.getValueType(propertyDesc.getPropertyType());
+            return getValueTypeFactory().getValueTypeByClass(
+                    propertyDesc.getPropertyType());
         }
     }
 
     protected void addPropertyType(PropertyType propertyType) {
         propertyTypes_.put(propertyType.getPropertyName(), propertyType);
     }
+
+    public void setBeanAnnotationReader(
+            BeanAnnotationReader beanAnnotationReader) {
+        beanAnnotationReader_ = beanAnnotationReader;
+    }
+
+    protected ValueTypeFactory getValueTypeFactory() {
+        return valueTypeFactory;
+    }
+
+    public void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {
+        this.valueTypeFactory = valueTypeFactory;
+    }
+
 }

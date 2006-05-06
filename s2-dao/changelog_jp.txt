@@ -3,7 +3,9 @@ S2Dao 変更履歴
 1.0.34
 -------------------------------------------------------------------------------
 QUERYアノテーションにBEGINコメントを書けるようにしました。[Seasar-user:3558]
-
+VALUE_TYPEアノテーションへはコンポーネント名を記述するよう変更しました。[Seasar-user:3556]
+dao.diconへValueTypeFactoryImplとStringClobTypeを追加しました。
+BeanMetaDataImpl, DaoMetaDataImpl, DtoMetaDataImplへデフォルトコンストラクタを追加し、既存のコンストラクタをdeprecatedにしました。
 
 1.0.33
 -------------------------------------------------------------------------------

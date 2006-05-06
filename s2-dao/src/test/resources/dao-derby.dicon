@@ -9,4 +9,9 @@
 		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl"/>
 	<component name="interceptor"
 		class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
+	<component
+		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
+	<component 
+		name="stringClobType" 
+		class="org.seasar.extension.jdbc.types.StringClobType"/>
 </components>

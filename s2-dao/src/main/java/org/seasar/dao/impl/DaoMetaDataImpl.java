@@ -40,6 +40,7 @@ import org.seasar.dao.Dbms;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.SqlCommand;
+import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.dao.handler.MapBasicProcedureHandler;
 import org.seasar.dao.handler.ObjectBasicProcedureHandler;
@@ -104,6 +105,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected Map sqlCommands_ = new HashMap();
 
+    private ValueTypeFactory valueTypeFactory;
+
     protected String[] daoSuffixes_ = new String[] { "Dao" };
 
     protected String[] insertPrefixes_ = new String[] { "insert", "create",
@@ -114,6 +117,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected String[] deletePrefixes_ = new String[] { "delete", "remove" };
 
+    public DaoMetaDataImpl() {
+    }
+
+    /**
+     * @deprecated
+     */
     public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
             StatementFactory statementFactory, ResultSetFactory resultSetFactory) {
         this(daoClass, dataSource, statementFactory, resultSetFactory,
@@ -121,6 +130,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 null);
     }
 
+    /**
+     * @deprecated
+     */
     public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
             StatementFactory statementFactory,
             ResultSetFactory resultSetFactory,
@@ -129,45 +141,59 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 annotationReaderFactory, null, null, null, null, null);
     }
 
+    /**
+     * @deprecated
+     */
     public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
             StatementFactory statementFactory,
             ResultSetFactory resultSetFactory,
             AnnotationReaderFactory annotationReaderFactory, String encoding,
             String[] daoSuffixes, String[] insertPrefixes,
             String[] updatePrefixes, String[] deletePrefixes) {
-        daoClass_ = daoClass;
+        setDaoClass(daoClass);
+        setDataSource(dataSource);
+        setStatementFactory(statementFactory);
+        setResultSetFactory(resultSetFactory);
+        setAnnotationReaderFactory(annotationReaderFactory);
+        setValueTypeFactory(new ValueTypeFactoryImpl());
         if (encoding != null) {
-            this.encoding = encoding;
+            setSqlFileEncoding(encoding);
         }
         if (daoSuffixes != null) {
-            this.daoSuffixes_ = daoSuffixes;
+            setDaoSuffixes(daoSuffixes);
         }
         if (insertPrefixes != null) {
-            this.insertPrefixes_ = insertPrefixes;
+            setInsertPrefixes(insertPrefixes);
         }
         if (updatePrefixes != null) {
-            this.updatePrefixes_ = updatePrefixes;
+            setUpdatePrefixes(updatePrefixes);
         }
         if (deletePrefixes != null) {
-            this.deletePrefixes_ = deletePrefixes;
+            setDeletePrefixes(deletePrefixes);
         }
+        initialize();
+    }
 
-        daoBeanDesc_ = BeanDescFactory.getBeanDesc(daoClass);
+    public void initialize() {
+        Class daoClass = getDaoClass();
         daoInterface_ = getDaoInterface(daoClass);
-        annotationReaderFactory_ = annotationReaderFactory;
-        annotationReader_ = annotationReaderFactory
+        daoBeanDesc_ = BeanDescFactory.getBeanDesc(daoClass);
+        annotationReader_ = getAnnotationReaderFactory()
                 .createDaoAnnotationReader(daoBeanDesc_);
-        beanClass_ = annotationReader_.getBeanClass();
-        dataSource_ = dataSource;
-        statementFactory_ = statementFactory;
-        resultSetFactory_ = resultSetFactory;
+        setBeanClass(annotationReader_.getBeanClass());
         Connection con = DataSourceUtil.getConnection(dataSource_);
         try {
             DatabaseMetaData dbMetaData = ConnectionUtil.getMetaData(con);
             dbms_ = DbmsManager.getDbms(dbMetaData);
-
-            beanMetaData_ = new BeanMetaDataImpl(beanClass_, dbMetaData, dbms_,
-                    annotationReaderFactory);
+            BeanMetaDataImpl beanMetaDataImpl = new BeanMetaDataImpl();
+            beanMetaDataImpl.setBeanClass(getBeanClass());
+            beanMetaDataImpl.setDatabaseMetaData(dbMetaData);
+            beanMetaDataImpl.setDbms(dbms_);
+            beanMetaDataImpl
+                    .setAnnotationReaderFactory(getAnnotationReaderFactory());
+            beanMetaDataImpl.setValueTypeFactory(getValueTypeFactory());
+            beanMetaDataImpl.initialize();
+            beanMetaData_ = beanMetaDataImpl;
         } finally {
             ConnectionUtil.close(con);
         }
@@ -233,7 +259,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected String readText(String path) {
         InputStream is = ResourceUtil.getResourceAsStream(path);
-        Reader reader = InputStreamReaderUtil.create(is, encoding);
+        Reader reader = InputStreamReaderUtil.create(is, getSqlFileEncoding());
         return ReaderUtil.readText(reader);
     }
 
@@ -563,8 +589,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         if (dtoClass.isPrimitive()) {
             return sql;
         }
-        DtoMetaData dmd = new DtoMetaDataImpl(dtoClass,
-                annotationReaderFactory_.createBeanAnnotationReader(dtoClass));
+        DtoMetaData dmd = createDtoMetaData(dtoClass);
         boolean began = false;
         if (!(sql.lastIndexOf("WHERE") > 0)) {
             buf.append("/*BEGIN*/ WHERE ");
@@ -599,6 +624,16 @@ public class DaoMetaDataImpl implements DaoMetaData {
             buf.append("/*END*/");
         }
         return buf.toString();
+    }
+
+    private DtoMetaDataImpl createDtoMetaData(Class dtoClass) {
+        final DtoMetaDataImpl dtoMetaData = new DtoMetaDataImpl();
+        dtoMetaData.setBeanClass(dtoClass);
+        dtoMetaData.setBeanAnnotationReader(getAnnotationReaderFactory()
+                .createBeanAnnotationReader(dtoClass));
+        dtoMetaData.setValueTypeFactory(getValueTypeFactory());
+        dtoMetaData.initialize();
+        return dtoMetaData;
     }
 
     protected String createAutoSelectSql(String[] argNames) {
@@ -687,7 +722,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
      * @see org.seasar.dao.DaoMetaData#getBeanClass()
      */
     public Class getBeanClass() {
-        return daoClass_;
+        return beanClass_;
+    }
+
+    protected void setBeanClass(Class beanClass) {
+        beanClass_ = beanClass;
     }
 
     /**
@@ -768,4 +807,66 @@ public class DaoMetaDataImpl implements DaoMetaData {
     public void setDbms(Dbms dbms) {
         dbms_ = dbms;
     }
+
+    protected AnnotationReaderFactory getAnnotationReaderFactory() {
+        return annotationReaderFactory_;
+    }
+
+    public void setAnnotationReaderFactory(
+            AnnotationReaderFactory annotationReaderFactory) {
+        annotationReaderFactory_ = annotationReaderFactory;
+    }
+
+    public void setResultSetFactory(ResultSetFactory resultSetFactory) {
+        resultSetFactory_ = resultSetFactory;
+    }
+
+    public void setStatementFactory(StatementFactory statementFactory) {
+        statementFactory_ = statementFactory;
+    }
+
+    public void setDaoSuffixes(String[] daoSuffixes) {
+        daoSuffixes_ = daoSuffixes;
+    }
+
+    public void setDeletePrefixes(String[] deletePrefixes) {
+        deletePrefixes_ = deletePrefixes;
+    }
+
+    protected String getSqlFileEncoding() {
+        return encoding;
+    }
+
+    public void setSqlFileEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public void setInsertPrefixes(String[] insertPrefixes) {
+        insertPrefixes_ = insertPrefixes;
+    }
+
+    public void setUpdatePrefixes(String[] updatePrefixes) {
+        updatePrefixes_ = updatePrefixes;
+    }
+
+    protected ValueTypeFactory getValueTypeFactory() {
+        return valueTypeFactory;
+    }
+
+    public void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {
+        this.valueTypeFactory = valueTypeFactory;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        dataSource_ = dataSource;
+    }
+
+    protected Class getDaoClass() {
+        return daoClass_;
+    }
+
+    public void setDaoClass(Class daoClass) {
+        daoClass_ = daoClass;
+    }
+
 }

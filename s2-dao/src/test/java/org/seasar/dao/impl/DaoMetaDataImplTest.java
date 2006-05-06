@@ -23,10 +23,10 @@ import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.dbms.Oracle;
+import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
-import org.seasar.extension.unit.S2TestCase;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
@@ -36,7 +36,7 @@ import org.seasar.framework.util.TextUtil;
  * @author higa
  *  
  */
-public abstract class DaoMetaDataImplTest extends S2TestCase {
+public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
 
     protected AnnotationReaderFactory readerFactory;
 
@@ -47,9 +47,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     protected abstract Object getBean(String className);
 
     public void testSelectBeanList() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getAllEmployees");
         assertNotNull("1", cmd);
@@ -61,9 +59,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testSelectBeanArray() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getAllEmployeeArray");
         assertNotNull("1", cmd);
@@ -74,11 +70,19 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testPrefixTest() {
-        DaoMetaDataImpl dmd = new DaoMetaDataImpl(Employee8Manager.class,
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory, null,
-                new String[] { "Manager" }, new String[] { "generate" },
-                new String[] { "change" }, new String[] { "terminate" });
+        DaoMetaDataImpl dmd = new DaoMetaDataImpl();
+        dmd.setDaoClass(Employee8Manager.class);
+        dmd.setDataSource(getDataSource());
+        dmd.setStatementFactory(BasicStatementFactory.INSTANCE);
+        dmd.setResultSetFactory(BasicResultSetFactory.INSTANCE);
+        dmd.setAnnotationReaderFactory(readerFactory);
+        dmd.setDaoSuffixes(new String[] { "Manager" });
+        dmd.setInsertPrefixes(new String[] { "generate" });
+        dmd.setUpdatePrefixes(new String[] { "change" });
+        dmd.setDeletePrefixes(new String[] { "terminate" });
+        dmd.setValueTypeFactory(getValueTypeFactory());
+        dmd.initialize();
+
         InsertAutoDynamicCommand cmd = (InsertAutoDynamicCommand) dmd
                 .getSqlCommand("generate");
         //System.out.println(cmd.getSql());
@@ -91,9 +95,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testSelectBean() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployee");
         assertNotNull("1", cmd);
@@ -103,9 +105,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testSelectObject() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getCount");
         assertNotNull("1", cmd);
@@ -115,9 +115,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testUpdate() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeDao"));
         UpdateDynamicCommand cmd = (UpdateDynamicCommand) dmd
                 .getSqlCommand("update");
         assertNotNull("1", cmd);
@@ -125,9 +123,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testInsertAutoTx() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SqlCommand cmd = dmd.getSqlCommand("insert");
         assertNotNull("1", cmd);
         Object emp = getBean("Employee");
@@ -149,9 +145,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testUpdateAutoTx() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SqlCommand cmd = dmd.getSqlCommand("update");
         assertNotNull("1", cmd);
         SelectDynamicCommand cmd2 = (SelectDynamicCommand) dmd
@@ -162,9 +156,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testDeleteAutoTx() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SqlCommand cmd = dmd.getSqlCommand("delete");
         assertNotNull("1", cmd);
         SelectDynamicCommand cmd2 = (SelectDynamicCommand) dmd
@@ -175,9 +167,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
 
     public void testIllegalAutoUpdateMethod() throws Exception {
         try {
-            new DaoMetaDataImpl(getDaoClass("IllegalEmployeeAutoDao"),
-                    getDataSource(), BasicStatementFactory.INSTANCE,
-                    BasicResultSetFactory.INSTANCE, readerFactory);
+            createDaoMetaData(getDaoClass("IllegalEmployeeAutoDao"));
             fail("1");
         } catch (IllegalSignatureRuntimeException ex) {
             System.out.println(ex.getSignature());
@@ -186,45 +176,35 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testSelectAuto() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployeeByDeptno");
         System.out.println(cmd.getSql());
     }
 
     public void testInsertBatchAuto() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         InsertBatchAutoStaticCommand cmd = (InsertBatchAutoStaticCommand) dmd
                 .getSqlCommand("insertBatch");
         assertNotNull("1", cmd);
     }
 
     public void testUpdateBatchAuto() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         UpdateBatchAutoStaticCommand cmd = (UpdateBatchAutoStaticCommand) dmd
                 .getSqlCommand("updateBatch");
         assertNotNull("1", cmd);
     }
 
     public void testDeleteBatchAuto() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         DeleteBatchAutoStaticCommand cmd = (DeleteBatchAutoStaticCommand) dmd
                 .getSqlCommand("deleteBatch");
         assertNotNull("1", cmd);
     }
 
     public void testCreateFindCommand() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
 
         SqlCommand cmd = dmd.createFindCommand(null);
         List employees = (List) cmd.execute(null);
@@ -233,9 +213,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testCreateFindCommand2() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SqlCommand cmd = dmd.createFindCommand(null);
         List employees = (List) cmd.execute(null);
         System.out.println(employees);
@@ -243,9 +221,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testCreateFindCommand3() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
 
         SqlCommand cmd = dmd.createFindCommand("select * from emp");
         List employees = (List) cmd.execute(null);
@@ -254,9 +230,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testCreateFindCommand4() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
 
         SqlCommand cmd = dmd.createFindCommand("order by empno");
         List employees = (List) cmd.execute(null);
@@ -265,10 +239,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testCreateFindCommand5() throws Exception {
-        DaoMetaDataImpl dmd = new DaoMetaDataImpl(
-                getDaoClass("EmployeeAutoDao"), getDataSource(),
-                BasicStatementFactory.INSTANCE, BasicResultSetFactory.INSTANCE,
-                readerFactory);
+        DaoMetaDataImpl dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
 
         dmd.setDbms(new Oracle());
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
@@ -278,9 +249,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testCreateFindBeanCommand() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
 
         SqlCommand cmd = dmd.createFindBeanCommand("empno = ?");
         Object employee = cmd.execute(new Object[] { new Integer(7788) });
@@ -289,9 +258,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testCreateObjectBeanCommand() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
 
         SqlCommand cmd = dmd
                 .createFindObjectCommand("select count(*) from emp");
@@ -300,9 +267,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testSelectAutoByQuery() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SqlCommand cmd = dmd.getSqlCommand("getEmployeesBySal");
         List employees = (List) cmd.execute(new Object[] { new Integer(0),
                 new Integer(1000) });
@@ -311,9 +276,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testSelectAutoByQueryMultiIn() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployeesByEnameJob");
         System.out.println(cmd.getSql());
@@ -329,9 +292,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testRelation() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("Employee2Dao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee2Dao"));
 
         SqlCommand cmd = dmd.getSqlCommand("getAllEmployees");
         List emps = (List) cmd.execute(null);
@@ -340,9 +301,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testGetDaoInterface() throws Exception {
-        DaoMetaDataImpl dmd = new DaoMetaDataImpl(Employee8Manager.class,
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaDataImpl dmd = createDaoMetaData(Employee8Manager.class);
         assertEquals("1", EmployeeDao.class, dmd
                 .getDaoInterface(EmployeeDao.class));
         assertEquals("2", EmployeeDao.class, dmd
@@ -350,9 +309,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testAutoSelectSqlByDto() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployeesBySearchCondition");
         assertNotNull("1", cmd);
@@ -364,9 +321,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testAutoSelectSqlByDto2() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployeesByEmployee");
         assertNotNull("1", cmd);
@@ -379,9 +334,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testAutoSelectSqlByDto3() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("Employee3Dao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee3Dao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployees");
         assertNotNull("1", cmd);
@@ -396,9 +349,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testAutoSelectSqlByDto4() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("Employee3Dao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee3Dao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployees2");
         assertNotNull("1", cmd);
@@ -407,9 +358,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testAutoSelectSqlByDto5() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployeesBySearchCondition2");
         assertNotNull("1", cmd);
@@ -423,9 +372,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testAutoSelectSqlByDto6() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployeesBySearchCondition2");
         assertNotNull("1", cmd);
@@ -437,9 +384,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testSelfReference() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("Employee4Dao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee4Dao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployee");
         assertNotNull("1", cmd);
@@ -451,9 +396,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testSelfMultiPk() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("Employee5Dao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee5Dao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployee");
         assertNotNull("1", cmd);
@@ -461,10 +404,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testNotHavePrimaryKey() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(
-                getDaoClass("DepartmentTotalSalaryDao"), getDataSource(),
-                BasicStatementFactory.INSTANCE, BasicResultSetFactory.INSTANCE,
-                readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("DepartmentTotalSalaryDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getTotalSalaries");
         assertNotNull("1", cmd);
@@ -474,18 +414,14 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testSelectAutoFullColumnName() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(getDaoClass("EmployeeAutoDao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployee");
         System.out.println(cmd.getSql());
     }
 
     public void testStartsWithOrderBy() throws Exception {
-        DaoMetaDataImpl dmd = new DaoMetaDataImpl(getDaoClass("Employee6Dao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaDataImpl dmd = createDaoMetaData(getDaoClass("Employee6Dao"));
         Object condition = getBean("EmployeeSearchCondition");
         setProperty(condition, "dname", "RESEARCH");
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
@@ -534,16 +470,8 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
         }
     }
 
-    private DaoMetaData createDaoMetaData(Class daoClass) {
-        return new DaoMetaDataImpl(daoClass, getDataSource(),
-                BasicStatementFactory.INSTANCE, BasicResultSetFactory.INSTANCE,
-                readerFactory);
-    }
-
     public void testQueryAnnotationTx() throws Exception {
-        DaoMetaDataImpl dmd = new DaoMetaDataImpl(getDaoClass("Employee7Dao"),
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaDataImpl dmd = createDaoMetaData(getDaoClass("Employee7Dao"));
         SelectDynamicCommand cmd1 = (SelectDynamicCommand) dmd
                 .getSqlCommand("getCount");
         UpdateDynamicCommand cmd2 = (UpdateDynamicCommand) dmd
@@ -557,9 +485,7 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testDaoExtend1() throws Exception {
-        DaoMetaDataImpl dmd = new DaoMetaDataImpl(EmployeeDaoImpl.class,
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaDataImpl dmd = createDaoMetaData(EmployeeDaoImpl.class);
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployee");
         final String expected = TextUtil.readText(EmployeeDao.class
@@ -569,15 +495,18 @@ public abstract class DaoMetaDataImplTest extends S2TestCase {
     }
 
     public void testDaoExtend2() throws Exception {
-        DaoMetaDataImpl dmd = new DaoMetaDataImpl(EmployeeExDao.class,
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE, readerFactory);
+        DaoMetaDataImpl dmd = createDaoMetaData(EmployeeExDao.class);
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployee");
         final String expected = TextUtil.readText(EmployeeDao.class
                 .getPackage().getName().replace('.', '/')
                 + "/" + "EmployeeDao_getEmployee.sql");
         assertEquals(expected, cmd.getSql());
+    }
+
+    protected void setUpAfterBindFields() throws Throwable {
+        super.setUpAfterBindFields();
+        setAnnotationReaderFactory(readerFactory);
     }
 
 }

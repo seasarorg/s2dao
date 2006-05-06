@@ -18,8 +18,6 @@ package org.seasar.dao.impl;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
-import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
-import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 
 public class InsertAutoStaticCommandTest extends S2DaoTestCase {
 
@@ -28,9 +26,7 @@ public class InsertAutoStaticCommandTest extends S2DaoTestCase {
     }
 
     public void testExecuteTx() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(EmployeeAutoDao.class,
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE);
+        DaoMetaData dmd = createDaoMetaData(EmployeeAutoDao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert");
         Employee emp = new Employee();
         emp.setEmpno(99);
@@ -40,9 +36,7 @@ public class InsertAutoStaticCommandTest extends S2DaoTestCase {
     }
 
     public void testExecute2Tx() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(IdentityTableAutoDao.class,
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE);
+        DaoMetaData dmd = createDaoMetaData(IdentityTableAutoDao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert");
         IdentityTable table = new IdentityTable();
         table.setIdName("hoge");
@@ -59,9 +53,7 @@ public class InsertAutoStaticCommandTest extends S2DaoTestCase {
     }
 
     public void testExecute3Tx() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(SeqTableAutoDao.class,
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE);
+        DaoMetaData dmd = createDaoMetaData(SeqTableAutoDao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert");
         SeqTable table = new SeqTable();
         table.setName("hoge");
@@ -72,9 +64,7 @@ public class InsertAutoStaticCommandTest extends S2DaoTestCase {
     }
 
     public void testExecute4Tx() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(EmployeeAutoDao.class,
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE);
+        DaoMetaData dmd = createDaoMetaData(EmployeeAutoDao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert2");
         Employee emp = new Employee();
         emp.setEmpno(99);
@@ -84,9 +74,7 @@ public class InsertAutoStaticCommandTest extends S2DaoTestCase {
     }
 
     public void testExecute5Tx() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(EmployeeAutoDao.class,
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE);
+        DaoMetaData dmd = createDaoMetaData(EmployeeAutoDao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert3");
         Employee emp = new Employee();
         emp.setEmpno(99);

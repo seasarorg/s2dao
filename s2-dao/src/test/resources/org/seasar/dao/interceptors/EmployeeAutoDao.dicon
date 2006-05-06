@@ -6,6 +6,8 @@
 	<component
 		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"/>
 	<component
+		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
+	<component
 		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl"/>
 	<component class="org.seasar.dao.interceptors.EmployeeAutoDao">
 		<aspect>

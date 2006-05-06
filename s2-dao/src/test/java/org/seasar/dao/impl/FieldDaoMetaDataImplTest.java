@@ -15,7 +15,6 @@
  */
 package org.seasar.dao.impl;
 
-import org.seasar.dao.AnnotationReaderFactory;
 
 /**
  * @author higa

@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 
 /**
  * @author higa
- *
+ * 
  */
 public class DefaultBeanMetaDataImplTest extends BeanMetaDataImplTest {
 

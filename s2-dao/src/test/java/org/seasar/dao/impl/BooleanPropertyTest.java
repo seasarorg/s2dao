@@ -17,24 +17,20 @@ package org.seasar.dao.impl;
 
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.SqlCommand;
-import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
-import org.seasar.extension.jdbc.impl.BasicStatementFactory;
-import org.seasar.extension.unit.S2TestCase;
+import org.seasar.dao.unit.S2DaoTestCase;
 
 /**
  * @author higa
  *  
  */
-public class BooleanPropertyTest extends S2TestCase {
+public class BooleanPropertyTest extends S2DaoTestCase {
 
     public void setUp() {
         include("j2ee.dicon");
     }
 
     public void testInsertAndSelectTx() throws Exception {
-        DaoMetaData dmd = new DaoMetaDataImpl(Department2AutoDao.class,
-                getDataSource(), BasicStatementFactory.INSTANCE,
-                BasicResultSetFactory.INSTANCE);
+        DaoMetaData dmd = createDaoMetaData(Department2AutoDao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert");
         Department2 dept = new Department2();
         dept.setDeptno(99);
@@ -47,4 +43,5 @@ public class BooleanPropertyTest extends S2TestCase {
                 .execute(new Object[] { new Integer(99) });
         assertEquals("1", true, dept2.isActive());
     }
+
 }

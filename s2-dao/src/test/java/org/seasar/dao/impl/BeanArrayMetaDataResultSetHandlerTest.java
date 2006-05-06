@@ -19,13 +19,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.ResultSetHandler;
 
 public class BeanArrayMetaDataResultSetHandlerTest extends S2DaoTestCase {
-
-    private BeanMetaData beanMetaData_;
 
     public BeanArrayMetaDataResultSetHandlerTest(String arg0) {
         super(arg0);
@@ -33,7 +30,7 @@ public class BeanArrayMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle() throws Exception {
         ResultSetHandler handler = new BeanArrayMetaDataResultSetHandler(
-                beanMetaData_);
+                createBeanMetaData(Employee.class));
         String sql = "select * from emp";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -61,8 +58,6 @@ public class BeanArrayMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     protected void setUpAfterContainerInit() throws Throwable {
         super.setUpAfterContainerInit();
-        beanMetaData_ = new BeanMetaDataImpl(Employee.class,
-                getDatabaseMetaData(), getDbms());
     }
 
     public static void main(String[] args) {

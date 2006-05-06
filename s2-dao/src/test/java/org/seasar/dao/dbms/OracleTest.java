@@ -17,48 +17,61 @@ package org.seasar.dao.dbms;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
-import org.seasar.dao.dbms.Oracle;
 import org.seasar.dao.impl.BeanMetaDataImpl;
-import org.seasar.extension.unit.S2TestCase;
+import org.seasar.dao.impl.FieldAnnotationReaderFactory;
+import org.seasar.dao.impl.ValueTypeFactoryImpl;
+import org.seasar.dao.unit.S2DaoTestCase;
 
 /**
  * @author higa
  *  
  */
-public class OracleTest extends S2TestCase {
+public class OracleTest extends S2DaoTestCase {
 
-	/**
-	 * Constructor for InvocationImplTest.
-	 * 
-	 * @param arg0
-	 */
-	public OracleTest(String arg0) {
-		super(arg0);
-	}
+    /**
+     * Constructor for InvocationImplTest.
+     * 
+     * @param arg0
+     */
+    public OracleTest(String arg0) {
+        super(arg0);
+    }
 
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(OracleTest.class);
-	}
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(OracleTest.class);
+    }
 
-	protected void setUp() throws Exception {
-		include("j2ee.dicon");
-	}
+    protected void setUp() throws Exception {
+        include("j2ee.dicon");
+    }
 
-	protected void tearDown() throws Exception {
-	}
+    protected void tearDown() throws Exception {
+    }
 
-	public void testCreateAutoSelectList() throws Exception {
-		Dbms dbms = new Oracle();
-		BeanMetaData bmd = new BeanMetaDataImpl(Employee.class, getDatabaseMetaData(), dbms);
-		String sql = dbms.getAutoSelectSql(bmd);
-		System.out.println(sql);
-	}
-	
-	public void testCreateAutoSelectList2() throws Exception {
-		Dbms dbms = new Oracle();
-		BeanMetaData bmd = new BeanMetaDataImpl(Department.class, getDatabaseMetaData(), dbms);
-		String sql = dbms.getAutoSelectSql(bmd);
-		System.out.println(sql);
-		assertTrue("1", sql.endsWith("FROM DEPT"));
-	}
+    public void testCreateAutoSelectList() throws Exception {
+        Dbms dbms = new Oracle();
+        BeanMetaData bmd = createBeanMetaData(Employee.class, dbms);
+        String sql = dbms.getAutoSelectSql(bmd);
+        System.out.println(sql);
+    }
+
+    public void testCreateAutoSelectList2() throws Exception {
+        Dbms dbms = new Oracle();
+        BeanMetaData bmd = createBeanMetaData(Department.class, dbms);
+        String sql = dbms.getAutoSelectSql(bmd);
+        System.out.println(sql);
+        assertTrue("1", sql.endsWith("FROM DEPT"));
+    }
+
+    private BeanMetaData createBeanMetaData(Class beanClass, Dbms dbms) {
+        BeanMetaDataImpl beanMetaData = new BeanMetaDataImpl();
+        beanMetaData.setBeanClass(beanClass);
+        beanMetaData.setDatabaseMetaData(getDatabaseMetaData());
+        beanMetaData.setDbms(dbms);
+        beanMetaData.setAnnotationReaderFactory(getAnnotationReaderFactory());
+        beanMetaData.setValueTypeFactory(getValueTypeFactory());
+        beanMetaData.initialize();
+        return beanMetaData;
+    }
+
 }

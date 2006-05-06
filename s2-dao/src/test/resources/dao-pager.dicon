@@ -7,6 +7,11 @@
 		name="annotationReaderFactory"
 		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"
 	/>
+	<component
+		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
+	<component 
+		name="stringClobType" 
+		class="org.seasar.extension.jdbc.types.StringClobType"/>
 	<component 
 		name="resultSetFactory"
 		class="org.seasar.dao.pager.PagerResultSetFactoryWrapper">

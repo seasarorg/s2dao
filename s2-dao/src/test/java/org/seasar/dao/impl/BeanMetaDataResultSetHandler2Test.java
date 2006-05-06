@@ -57,10 +57,9 @@ public class BeanMetaDataResultSetHandler2Test extends S2DaoTestCase {
         include("j2ee.dicon");
     }
 
-    protected void setUpAfterContainerInit() throws Throwable {
-        super.setUpAfterContainerInit();
-        beanMetaData_ = new BeanMetaDataImpl(MyEmp.class,
-                getDatabaseMetaData(), getDbms());
+    protected void setUpAfterBindFields() throws Throwable {
+        super.setUpAfterBindFields();
+        beanMetaData_ = createBeanMetaData(MyEmp.class);
     }
 
     public static void main(String[] args) {
