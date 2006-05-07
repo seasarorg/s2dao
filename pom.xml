@@ -74,6 +74,11 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <scm>
+    <connection>scm:svn:https://www.seasar.org/svn/s2dao/trunk/s2dao/</connection>
+    <developerConnection>scm:svn:https://www.seasar.org/svn/s2dao/trunk/s2dao/</developerConnection>
+    <url>http://www.seasar.org/websvn/listing.php?repname=s2dao</url>
+  </scm>
   <organization>
     <name>The Seasar Foundation</name>
     <url>http://www.seasar.org/</url>
