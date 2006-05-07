@@ -21,6 +21,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.IdentifierGenerator;
 import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.extension.jdbc.PropertyType;
@@ -92,12 +93,13 @@ public class InsertAutoDynamicCommand implements SqlCommand {
         List types = new ArrayList();
         final String timestampPropertyName = bmd.getTimestampPropertyName();
         final String versionNoPropertyName = bmd.getVersionNoPropertyName();
+        final IdentifierGenerator identifierGenerator = bmd
+                .getIdentifierGenerator();
 
         int notNullColumns = 0;
         for (int i = 0; i < propertyNames.length; ++i) {
             PropertyType pt = bmd.getPropertyType(propertyNames[i]);
-            if (pt.isPrimaryKey()
-                    && !bmd.getIdentifierGenerator().isSelfGenerate()) {
+            if (pt.isPrimaryKey() && !identifierGenerator.isSelfGenerate()) {
                 continue;
             }
             if (pt.getPropertyDesc().getValue(bean) == null) {

@@ -112,6 +112,18 @@ public class DefaultTest extends S2TestCase {
         }
     }
 
+    public void testInsertBatchByAutoSqlTx() throws Exception {
+        DefaultTable bean1 = new DefaultTable();
+        bean1.setAaa("11");
+        bean1.setBbb("12");
+        DefaultTable bean2 = new DefaultTable();
+        bean2.setAaa("21");
+        bean2.setBbb("22");
+        int ret = defaultTableDao
+                .insertBatch(new DefaultTable[] { bean1, bean2 });
+        assertEquals(2, ret);
+    }
+
     public void testInsertDefaultByAutoSqlTx() throws Exception {
         Integer id;
         {
@@ -185,6 +197,8 @@ public class DefaultTest extends S2TestCase {
 
         public void update(DefaultTable largeBinary);
 
+        public int insertBatch(DefaultTable[] largeBinaries);
+
     }
 
     public static class DefaultTable implements Serializable {
@@ -192,6 +206,8 @@ public class DefaultTest extends S2TestCase {
         private static final long serialVersionUID = 1L;
 
         public static final String TABLE = "DEFAULT_TABLE";
+
+        public static final String id_ID = "identity";
 
         private Integer id;
 
