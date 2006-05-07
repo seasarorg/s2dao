@@ -68,8 +68,8 @@
 			"jdbc:hsqldb:hsql://localhost:9001"
 			-->
 			"jdbc:hsqldb:file:"
-				 + @org.seasar.framework.util.EclipseUtil@getProjectRoot("s2dao").getAbsolutePath()
-				 + "/s2-dao/target/test-classes/data/demo"
+				+ @org.seasar.framework.util.ResourceUtil@getBuildDir(@org.seasar.dao.impl.ClobTest@class).getCanonicalPath() 
+				+ "/data/demo"
 		</property>
 		<property name="user">"sa"</property>
 		<property name="password">""</property>
