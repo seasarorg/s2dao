@@ -461,20 +461,18 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected void setupInsertMethodByAuto(Method method) {
         checkAutoUpdateMethod(method);
         String[] propertyNames = getPersistentPropertyNames(method);
-        SqlCommand cmd = null;
+        InsertAutoDynamicCommand cmd = null;
         if (isUpdateSignatureForBean(method)) {
-            InsertAutoDynamicCommand command = new InsertAutoDynamicCommand();
-            command.setBeanMetaData(getBeanMetaData());
-            command.setDataSource(dataSource_);
-            command
-                    .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
-            command.setPropertyNames(propertyNames);
-            command.setStatementFactory(statementFactory_);
-            cmd = command;
+            cmd = new InsertAutoDynamicCommand();
         } else {
-            cmd = new InsertBatchAutoStaticCommand(dataSource_,
-                    statementFactory_, beanMetaData_, propertyNames);
+            cmd = new InsertBatchAutoDynamicCommand();
         }
+        cmd.setBeanMetaData(getBeanMetaData());
+        cmd.setDataSource(dataSource_);
+        cmd
+                .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
+        cmd.setPropertyNames(propertyNames);
+        cmd.setStatementFactory(statementFactory_);
         sqlCommands_.put(method.getName(), cmd);
     }
 

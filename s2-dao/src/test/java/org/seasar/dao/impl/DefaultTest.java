@@ -151,6 +151,17 @@ public class DefaultTest extends S2TestCase {
         }
     }
 
+    public void testThrownExceptionWhenNullDataOnlyByBatchTx() throws Exception {
+        DefaultTable bean = new DefaultTable();
+        try {
+            defaultTableDao.insertBatch(new DefaultTable[] { bean });
+            fail("should be thrown SRuntimeException, when only null properties");
+        } catch (SRuntimeException e) {
+            e.printStackTrace();
+            assertEquals("EDAO0014", e.getMessageCode());
+        }
+    }
+
     public void testInsertByManualSqlTx() throws Exception {
         Integer id;
         {

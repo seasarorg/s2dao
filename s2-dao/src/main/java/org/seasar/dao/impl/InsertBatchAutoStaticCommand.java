@@ -22,7 +22,8 @@ import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa
- *  
+ * 
+ * @deprecated
  */
 public class InsertBatchAutoStaticCommand extends
 		AbstractBatchAutoStaticCommand {
