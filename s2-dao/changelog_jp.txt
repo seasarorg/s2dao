@@ -7,6 +7,7 @@ VALUE_TYPEアノテーションへはコンポーネント名を記述するよう変更しました。[Seasar-
 dao.diconへValueTypeFactoryImplとStringClobTypeを追加しました。
 BeanMetaDataImpl, DaoMetaDataImpl, DtoMetaDataImplへデフォルトコンストラクタを追加し、既存のコンストラクタをdeprecatedにしました。
 ID="identity"の場合にバッチ更新でのinsertがエラーになる問題に対応しました。
+s2dao-examplesのEmployeeDaoClientが例外となる問題に対応しました。[Seasar-user:3465]
 
 1.0.33
 -------------------------------------------------------------------------------
