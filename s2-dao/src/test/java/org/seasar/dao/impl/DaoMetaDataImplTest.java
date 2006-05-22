@@ -68,7 +68,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
 
     public void testPrefixTest() {
         DaoMetaDataImpl dmd = new DaoMetaDataImpl();
-        dmd.setDaoClass(Employee8Manager.class);
+        dmd.setDaoClass(getDaoClass("Employee8Manager"));
         dmd.setDataSource(getDataSource());
         dmd.setStatementFactory(BasicStatementFactory.INSTANCE);
         dmd.setResultSetFactory(BasicResultSetFactory.INSTANCE);
@@ -298,7 +298,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
     }
 
     public void testGetDaoInterface() throws Exception {
-        DaoMetaDataImpl dmd = createDaoMetaData(Employee8Manager.class);
+        DaoMetaDataImpl dmd = createDaoMetaData(getDaoClass("Employee8Manager"));
         assertEquals("1", EmployeeDao.class, dmd
                 .getDaoInterface(EmployeeDao.class));
         assertEquals("2", EmployeeDao.class, dmd

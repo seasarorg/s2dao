@@ -15,10 +15,9 @@
  */
 package org.seasar.dao.impl;
 
-
 /**
  * @author higa
- *  
+ * 
  */
 public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
 
@@ -69,6 +68,8 @@ public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
             return Employee7Dao.class;
         } else if (className.equals("Employee8Dao")) {
             return Employee8Dao.class;
+        } else if (className.equals("Employee8Manager")) {
+            return Employee8Manager.class;
         } else if (className.equals("DepartmentTotalSalaryDao")) {
             return DepartmentTotalSalaryDao.class;
         }
