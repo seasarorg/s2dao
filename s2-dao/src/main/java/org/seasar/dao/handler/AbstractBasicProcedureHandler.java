@@ -152,13 +152,18 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler{
 			DatabaseMetaData dmd = ConnectionUtil.getMetaData(connection);
 			String[] names = confirmProcedureName(dmd);
 			rs = dmd.getProcedureColumns(names[0],names[1],names[2],null);
+            boolean commaRequired = false;
 			while(rs.next()){
 				columnNames.add(rs.getObject(4));
 				int columnType = rs.getInt(5);
 				inOutTypes.add(new Integer(columnType));
 				dataType.add(new Integer(rs.getInt(6)));
 				if(columnType == DatabaseMetaData.procedureColumnIn){
-					buff.append("?,");
+                    if(commaRequired){
+                        buff.append(",");
+                    }
+					buff.append("?");
+                    commaRequired = true;
 				}else if(columnType == DatabaseMetaData.procedureColumnReturn){
 					buff.setLength(0);
 					buff.append("{? = call ");
@@ -166,7 +171,11 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler{
 					buff.append("(");
 				}else if(columnType == DatabaseMetaData.procedureColumnOut ||
 						columnType == DatabaseMetaData.procedureColumnInOut){
-					buff.append("?,");
+                    if(commaRequired){
+                        buff.append(",");
+                    }
+					buff.append("?");
+                    commaRequired = true;
 					outparameterNum++;
 				}else{
 					throw new SRuntimeException("EDAO0010",new Object[]{procedureName_});
@@ -178,7 +187,6 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler{
 			ResultSetUtil.close(rs);
 			ConnectionUtil.close(connection);
 		}
-		buff.setLength(buff.length() - 1 );
 		buff.append(")}");
 		sql_ = buff.toString();
 		columnNames_ = (String[])

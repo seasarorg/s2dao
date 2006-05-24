@@ -92,6 +92,12 @@ public class ProcedureTest extends S2TestCase {
         assertEquals(true, t1 <= timestamp.getTime());
         assertEquals(true, timestamp.getTime() <= t2);
     }
+    private static boolean isAaa3Invoked;
+    public void testAaa3() throws Exception {
+        assertNotNull(procedureDao);
+        procedureDao.aaa3();
+        assertTrue(isAaa3Invoked);
+    }
 
     public void testBbb1() throws Exception {
         assertNotNull(procedureDao);
@@ -152,6 +158,10 @@ public class ProcedureTest extends S2TestCase {
 
         public Map aaa2();
 
+        public String aaa3_PROCEDURE = "PROCEDURE_TEST_AAA3";
+
+        public Map aaa3();
+
         public String bbb1_PROCEDURE = "PROCEDURE_TEST_BBB1";
 
         public void bbb1(String ccc);
@@ -184,6 +194,9 @@ public class ProcedureTest extends S2TestCase {
     public static void procedureAaa2(String[] s, Timestamp[] t) {
         s[0] = "aaaaa2";
         t[0] = new Timestamp(System.currentTimeMillis());
+    }
+    public static void procedureAaa3() {
+        isAaa3Invoked = true;
     }
 
     public static void procedureBbb1(String ccc) {
