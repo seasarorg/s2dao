@@ -399,7 +399,10 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
             for (int j = 0; j < getPropertyTypeSize(); ++j) {
                 PropertyType pt = getPropertyType(j);
                 if (pt.getColumnName().equalsIgnoreCase(columnName2)) {
-                    pt.setColumnName(columnName);
+                    final PropertyDesc pd = pt.getPropertyDesc();
+                    if (beanAnnotationReader_.getColumnAnnotation(pd) == null) {
+                        pt.setColumnName(columnName);
+                    }
                     break;
                 }
             }

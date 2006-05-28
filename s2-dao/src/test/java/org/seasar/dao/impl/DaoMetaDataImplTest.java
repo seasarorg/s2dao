@@ -23,6 +23,7 @@ import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.dbms.Oracle;
 import org.seasar.dao.unit.S2DaoTestCase;
+import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
@@ -129,13 +130,13 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         cmd.execute(new Object[] { emp });
     }
 
-    private void setProperty(Object obj, String name, Object value) {
+    protected void setProperty(Object obj, String name, Object value) {
         BeanDesc desc = BeanDescFactory.getBeanDesc(obj.getClass());
         PropertyDesc propertyDesc = desc.getPropertyDesc(name);
         propertyDesc.setValue(obj, value);
     }
 
-    private Object getProperty(Object obj, String name) {
+    protected Object getProperty(Object obj, String name) {
         BeanDesc desc = BeanDescFactory.getBeanDesc(obj.getClass());
         PropertyDesc propertyDesc = desc.getPropertyDesc(name);
         return propertyDesc.getValue(obj);
@@ -499,6 +500,56 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
                 .getPackage().getName().replace('.', '/')
                 + "/" + "EmployeeDao_getEmployee.sql");
         assertEquals(expected, cmd.getSql());
+    }
+
+    public void testUsingColumnAnnotationForSql_Insert() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee9Dao"));
+        InsertAutoDynamicCommand cmd = (InsertAutoDynamicCommand) dmd
+                .getSqlCommand("insert");
+        Object bean = getBean("Employee9");
+        setProperty(bean, "empno", new Integer(321));
+        setProperty(bean, "ename", "foo");
+        final PropertyType[] propertyTypes = cmd.createInsertPropertyTypes(cmd
+                .getBeanMetaData(), bean, cmd.getPropertyNames());
+        final String sql = cmd.createInsertSql(cmd.getBeanMetaData(),
+                propertyTypes);
+        System.out.println(sql);
+        assertEquals(sql, true, sql.indexOf("eNaMe") > -1);
+    }
+
+    public void testUsingColumnAnnotationForSql_Update() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee9Dao"));
+        UpdateAutoStaticCommand cmd = (UpdateAutoStaticCommand) dmd
+                .getSqlCommand("update");
+        final String sql = cmd.getSql();
+        System.out.println(sql);
+        assertEquals(sql, true, sql.indexOf("eNaMe") > -1);
+    }
+
+    public void testUsingColumnAnnotationForSql_Select() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee9Dao"));
+        SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
+                .getSqlCommand("findBy");
+        final String sql = cmd.getSql();
+        System.out.println(sql);
+        final int pos = sql.indexOf("WHERE");
+        final String before = sql.substring(0, pos);
+        final String after = sql.substring(pos);
+        assertEquals(before, true, before.indexOf("EMP.eNaMe") > -1);
+        assertEquals(after, true, after.indexOf("EMP.eNaMe") > -1);
+    }
+
+    public void testUsingColumnAnnotationForSql_SelectDto() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee9Dao"));
+        SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
+                .getSqlCommand("findByEname");
+        final String sql = cmd.getSql();
+        System.out.println(sql);
+        final int pos = sql.indexOf("WHERE");
+        final String before = sql.substring(0, pos);
+        final String after = sql.substring(pos);
+        assertEquals(before, true, before.indexOf("EMP.eNaMe") > -1);
+        assertEquals(after, true, after.indexOf("EMP.eName") > -1);
     }
 
 }

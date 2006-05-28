@@ -17,78 +17,56 @@ package org.seasar.dao.impl;
 
 import java.util.Date;
 
-import org.seasar.dao.AnnotationReaderFactory;
+import junit.framework.TestCase;
+
 import org.seasar.dao.BeanAnnotationReader;
-import org.seasar.extension.unit.S2TestCase;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
 
-public class FieldBeanAnnotationReaderTest extends S2TestCase {
+public class FieldBeanAnnotationReaderTest extends TestCase {
 
-    protected AnnotationReaderFactory readerFactory;
-
-    /**
-     * Constructor for InvocationImplTest.
-     * 
-     * @param arg0
-     */
-    public FieldBeanAnnotationReaderTest(String arg0) {
-        super(arg0);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(FieldBeanAnnotationReaderTest.class);
-    }
-
-    public void setUp() {
-        include("FieldBeanAnnotationReaderTest.dicon");
+    private BeanAnnotationReader createBeanAnnotationReader(Class clazz) {
+        return new FieldBeanAnnotationReader(clazz);
     }
 
     public void testGetColumnAnnotation() {
         Class clazz = AnnotationTestBean1.class;
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz);
-        BeanAnnotationReader reader = readerFactory
-                .createBeanAnnotationReader(clazz);
+        BeanAnnotationReader reader = createBeanAnnotationReader(clazz);
         assertEquals("1", "Cprop1", reader.getColumnAnnotation(beanDesc
                 .getPropertyDesc("prop1")));
-        assertEquals("2", "prop2", reader.getColumnAnnotation(beanDesc
+        assertEquals("2", (String) null, reader.getColumnAnnotation(beanDesc
                 .getPropertyDesc("prop2")));
     }
 
     public void testGetTableAnnotation() {
         Class clazz1 = AnnotationTestBean1.class;
-        BeanAnnotationReader reader1 = readerFactory
-                .createBeanAnnotationReader(clazz1);
+        BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
         assertEquals("1", "TABLE", reader1.getTableAnnotation());
         Class clazz2 = AnnotationTestBean2.class;
-        BeanAnnotationReader reader2 = readerFactory
-                .createBeanAnnotationReader(clazz2);
+        BeanAnnotationReader reader2 = createBeanAnnotationReader(clazz2);
         assertNull("2", reader2.getTableAnnotation());
     }
 
     public void testGetVersionNoProteryNameAnnotation() {
         Class clazz1 = AnnotationTestBean1.class;
-        BeanAnnotationReader reader1 = readerFactory
-                .createBeanAnnotationReader(clazz1);
+        BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
         String str1 = reader1.getVersionNoProteryNameAnnotation();
         assertEquals("1", "myVersionNo", str1);
         Class clazz2 = AnnotationTestBean2.class;
-        BeanAnnotationReader reader2 = readerFactory
-                .createBeanAnnotationReader(clazz2);
+        BeanAnnotationReader reader2 = createBeanAnnotationReader(clazz2);
         String str2 = reader2.getVersionNoProteryNameAnnotation();
         assertNull("1", str2);
     }
 
     public void testGetTimestampPropertyName() {
         Class clazz1 = AnnotationTestBean1.class;
-        BeanAnnotationReader reader1 = readerFactory
-                .createBeanAnnotationReader(clazz1);
+        BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
         String str1 = reader1.getTimestampPropertyName();
         assertEquals("1", "myTimestamp", str1);
         Class clazz2 = AnnotationTestBean2.class;
-        BeanAnnotationReader reader2 = readerFactory
-                .createBeanAnnotationReader(clazz2);
+        BeanAnnotationReader reader2 = createBeanAnnotationReader(clazz2);
         String str2 = reader2.getTimestampPropertyName();
         assertNull("1", str2);
     }
@@ -96,8 +74,7 @@ public class FieldBeanAnnotationReaderTest extends S2TestCase {
     public void testGetId() {
         Class clazz1 = AnnotationTestBean1.class;
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz1);
-        BeanAnnotationReader reader1 = readerFactory
-                .createBeanAnnotationReader(clazz1);
+        BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
         String str1 = reader1.getId(beanDesc.getPropertyDesc("prop1"));
         assertEquals("1", "sequence, sequenceName=myseq", str1);
         String str2 = reader1.getId(beanDesc.getPropertyDesc("prop2"));
@@ -106,13 +83,11 @@ public class FieldBeanAnnotationReaderTest extends S2TestCase {
 
     public void testGetNoPersisteneProps() {
         Class clazz1 = AnnotationTestBean1.class;
-        BeanAnnotationReader reader1 = readerFactory
-                .createBeanAnnotationReader(clazz1);
+        BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
         String[] strings1 = reader1.getNoPersisteneProps();
         assertEquals("1", "prop2", strings1[0]);
         Class clazz2 = AnnotationTestBean2.class;
-        BeanAnnotationReader reader2 = readerFactory
-                .createBeanAnnotationReader(clazz2);
+        BeanAnnotationReader reader2 = createBeanAnnotationReader(clazz2);
         String[] strings2 = reader2.getNoPersisteneProps();
         assertNull("1", strings2);
     }
@@ -120,8 +95,7 @@ public class FieldBeanAnnotationReaderTest extends S2TestCase {
     public void testGetRelationKey() {
         Class clazz1 = AnnotationTestBean1.class;
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz1);
-        BeanAnnotationReader reader1 = readerFactory
-                .createBeanAnnotationReader(clazz1);
+        BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
         PropertyDesc pd = beanDesc.getPropertyDesc("department");
         assertTrue("1", reader1.hasRelationNo(pd));
         assertEquals("1", 0, reader1.getRelationNo(pd));
@@ -133,8 +107,7 @@ public class FieldBeanAnnotationReaderTest extends S2TestCase {
     public void testGetValueType() throws Exception {
         Class clazz = AnnotationTestBean3.class;
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz);
-        BeanAnnotationReader annotationReader = readerFactory
-                .createBeanAnnotationReader(clazz);
+        BeanAnnotationReader annotationReader = createBeanAnnotationReader(clazz);
         PropertyDesc aaaPd = beanDesc.getPropertyDesc("aaa");
         assertEquals((String) null, annotationReader.getValueType(aaaPd));
 

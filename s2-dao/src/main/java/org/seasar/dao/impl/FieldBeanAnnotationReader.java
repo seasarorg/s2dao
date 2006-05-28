@@ -53,12 +53,11 @@ public class FieldBeanAnnotationReader implements BeanAnnotationReader {
     public String getColumnAnnotation(PropertyDesc pd) {
         String propertyName = pd.getPropertyName();
         String columnNameKey = propertyName + COLUMN_SUFFIX;
-        String columnName = propertyName;
         if (beanDesc_.hasField(columnNameKey)) {
             Field field = beanDesc_.getField(columnNameKey);
-            columnName = (String) FieldUtil.get(field, null);
+            return (String) FieldUtil.get(field, null);
         }
-        return columnName;
+        return null;
     }
 
     public String getTableAnnotation() {
