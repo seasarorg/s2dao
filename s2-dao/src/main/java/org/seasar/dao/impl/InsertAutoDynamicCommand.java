@@ -99,13 +99,15 @@ public class InsertAutoDynamicCommand implements SqlCommand {
         int notNullColumns = 0;
         for (int i = 0; i < propertyNames.length; ++i) {
             PropertyType pt = bmd.getPropertyType(propertyNames[i]);
-            if (pt.isPrimaryKey() && !identifierGenerator.isSelfGenerate()) {
-                continue;
-            }
-            if (pt.getPropertyDesc().getValue(bean) == null) {
+            if (pt.isPrimaryKey()) {
+                if (!identifierGenerator.isSelfGenerate()) {
+                    continue;
+                }
+            } else if (pt.getPropertyDesc().getValue(bean) == null) {
                 final String propertyName = pt.getPropertyName();
                 if (!propertyName.equalsIgnoreCase(timestampPropertyName)
-                        && !propertyName.equals(versionNoPropertyName)) {
+                        && !propertyName
+                                .equalsIgnoreCase(versionNoPropertyName)) {
                     continue;
                 }
             } else {

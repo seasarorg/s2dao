@@ -19,15 +19,12 @@ import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
 
-public class InsertAutoStaticCommandTest extends S2DaoTestCase {
-
-    public InsertAutoStaticCommandTest(String arg0) {
-        super(arg0);
-    }
+public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
 
     public void testExecuteTx() throws Exception {
         DaoMetaData dmd = createDaoMetaData(EmployeeAutoDao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert");
+        assertTrue(cmd instanceof InsertAutoDynamicCommand);
         Employee emp = new Employee();
         emp.setEmpno(99);
         emp.setEname("hoge");
@@ -52,15 +49,33 @@ public class InsertAutoStaticCommandTest extends S2DaoTestCase {
         assertEquals("2", 1, id2 - id1);
     }
 
-    public void testExecute3Tx() throws Exception {
+    public void testExecute3_1Tx() throws Exception {
         DaoMetaData dmd = createDaoMetaData(SeqTableAutoDao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert");
-        SeqTable table = new SeqTable();
-        table.setName("hoge");
-        Integer count = (Integer) cmd.execute(new Object[] { table });
+        SeqTable table1 = new SeqTable();
+        table1.setName("hoge");
+        Integer count = (Integer) cmd.execute(new Object[] { table1 });
         assertEquals("1", new Integer(1), count);
-        System.out.println(table.getId());
-        assertTrue("2", table.getId() > 0);
+        System.out.println(table1.getId());
+        assertTrue("2", table1.getId() > 0);
+    }
+
+    public void testExecute3_2Tx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(SeqTableAuto2Dao.class);
+        SqlCommand cmd = dmd.getSqlCommand("insert");
+        SeqTable2 table1 = new SeqTable2();
+        table1.setName("hoge");
+        Integer count = (Integer) cmd.execute(new Object[] { table1 });
+        assertEquals("1", new Integer(1), count);
+        System.out.println(table1.getId());
+        assertTrue("2", table1.getId().intValue() > 0);
+
+        SeqTable2 table2 = new SeqTable2();
+        table2.setName("foo");
+        cmd.execute(new Object[] { table2 });
+        System.out.println(table2.getId());
+        assertEquals(true, table2.getId().intValue() > table1.getId()
+                .intValue());
     }
 
     public void testExecute4Tx() throws Exception {
@@ -89,7 +104,7 @@ public class InsertAutoStaticCommandTest extends S2DaoTestCase {
     }
 
     public static void main(String[] args) {
-        junit.textui.TestRunner.run(InsertAutoStaticCommandTest.class);
+        junit.textui.TestRunner.run(InsertAutoDynamicCommandTest.class);
     }
 
 }
