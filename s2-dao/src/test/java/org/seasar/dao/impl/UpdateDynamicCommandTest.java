@@ -15,7 +15,6 @@
  */
 package org.seasar.dao.impl;
 
-import org.seasar.dao.impl.UpdateDynamicCommand;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.unit.S2TestCase;
 

@@ -18,8 +18,6 @@ package org.seasar.dao.dbms;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.impl.BeanMetaDataImpl;
-import org.seasar.dao.impl.FieldAnnotationReaderFactory;
-import org.seasar.dao.impl.ValueTypeFactoryImpl;
 import org.seasar.dao.unit.S2DaoTestCase;
 
 /**

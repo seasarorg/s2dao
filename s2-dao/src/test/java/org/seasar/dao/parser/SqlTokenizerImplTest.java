@@ -19,7 +19,6 @@ import junit.framework.TestCase;
 
 import org.seasar.dao.SqlTokenizer;
 import org.seasar.dao.TokenNotClosedRuntimeException;
-import org.seasar.dao.parser.SqlTokenizerImpl;
 
 /**
  * @author higa

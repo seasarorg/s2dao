@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaDataFactory;
-import org.seasar.dao.impl.AbstractDao;
 import org.seasar.extension.unit.S2TestCase;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;

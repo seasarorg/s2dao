@@ -20,8 +20,6 @@ import ognl.Ognl;
 import ognl.OgnlRuntime;
 
 import org.seasar.dao.CommandContext;
-import org.seasar.dao.context.CommandContextImpl;
-import org.seasar.dao.context.CommandContextPropertyAccessor;
 
 /**
  * @author higa

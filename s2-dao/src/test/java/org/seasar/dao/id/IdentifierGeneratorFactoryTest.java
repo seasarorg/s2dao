@@ -18,10 +18,6 @@ package org.seasar.dao.id;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.IdentifierGenerator;
 import org.seasar.dao.dbms.HSQL;
-import org.seasar.dao.id.AssignedIdentifierGenerator;
-import org.seasar.dao.id.IdentifierGeneratorFactory;
-import org.seasar.dao.id.IdentityIdentifierGenerator;
-import org.seasar.dao.id.SequenceIdentifierGenerator;
 import org.seasar.extension.unit.S2TestCase;
 
 /**

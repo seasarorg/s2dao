@@ -16,7 +16,6 @@
 package org.seasar.dao.id;
 
 import org.seasar.dao.dbms.HSQL;
-import org.seasar.dao.id.IdentityIdentifierGenerator;
 import org.seasar.extension.jdbc.impl.BasicUpdateHandler;
 import org.seasar.extension.unit.S2TestCase;
 

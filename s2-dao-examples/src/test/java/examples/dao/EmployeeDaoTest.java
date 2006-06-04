@@ -20,8 +20,6 @@ import java.util.List;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.dataset.DataSet;
 
-import examples.dao.EmployeeDao;
-
 /**
  * @author higa
  *

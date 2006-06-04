@@ -29,7 +29,6 @@ import org.seasar.dao.context.CommandContextImpl;
 import org.seasar.dao.node.BindVariableNode;
 import org.seasar.dao.node.IfNode;
 import org.seasar.dao.node.SqlNode;
-import org.seasar.dao.parser.SqlParserImpl;
 
 /**
  * @author higa

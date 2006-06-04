@@ -17,8 +17,6 @@ package org.seasar.dao.impl;
 
 import junit.framework.TestCase;
 
-import org.seasar.dao.impl.RelationKey;
-
 /**
  * @author higa
  *

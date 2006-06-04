@@ -16,7 +16,6 @@
 package org.seasar.dao.id;
 
 import org.seasar.dao.dbms.HSQL;
-import org.seasar.dao.id.SequenceIdentifierGenerator;
 import org.seasar.extension.unit.S2TestCase;
 
 /**

@@ -18,7 +18,6 @@ package org.seasar.dao.unit;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.dataset.DataRow;
 import org.seasar.extension.dataset.DataSet;
 import org.seasar.extension.dataset.DataTable;

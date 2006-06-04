@@ -17,8 +17,6 @@ package org.seasar.dao.dbms;
 
 import junit.framework.TestCase;
 
-import org.seasar.dao.dbms.DbmsManager;
-
 /**
  * @author higa
  *  

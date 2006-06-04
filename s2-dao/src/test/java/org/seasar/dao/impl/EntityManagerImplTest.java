@@ -20,7 +20,6 @@ import java.util.List;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoMetaDataFactory;
 import org.seasar.dao.EntityManager;
-import org.seasar.dao.impl.EntityManagerImpl;
 import org.seasar.extension.unit.S2TestCase;
 
 public class EntityManagerImplTest extends S2TestCase {
