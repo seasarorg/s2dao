@@ -19,10 +19,10 @@ import org.seasar.framework.exception.SQLRuntimeException;
 
 /**
  * @author higa
- *  
+ * 
  */
 public interface ProcedureHandler {
 
-	public Object execute(Object[] args) throws SQLRuntimeException;
+    public Object execute(Object[] args) throws SQLRuntimeException;
 
 }

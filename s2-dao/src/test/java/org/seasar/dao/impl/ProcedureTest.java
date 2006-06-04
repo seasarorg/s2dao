@@ -92,7 +92,9 @@ public class ProcedureTest extends S2TestCase {
         assertEquals(true, t1 <= timestamp.getTime());
         assertEquals(true, timestamp.getTime() <= t2);
     }
+
     private static boolean isAaa3Invoked;
+
     public void testAaa3() throws Exception {
         assertNotNull(procedureDao);
         procedureDao.aaa3();
@@ -195,6 +197,7 @@ public class ProcedureTest extends S2TestCase {
         s[0] = "aaaaa2";
         t[0] = new Timestamp(System.currentTimeMillis());
     }
+
     public static void procedureAaa3() {
         isAaa3Invoked = true;
     }

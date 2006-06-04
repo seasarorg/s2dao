@@ -49,7 +49,8 @@ public class DefaultPagerCondition implements PagerCondition, Serializable {
     }
 
     /**
-     * @param total The total to set.
+     * @param total
+     *            The total to set.
      */
     public void setCount(int total) {
         this.count = total;
@@ -63,7 +64,8 @@ public class DefaultPagerCondition implements PagerCondition, Serializable {
     }
 
     /**
-     * @param limit The limit to set.
+     * @param limit
+     *            The limit to set.
      */
     public void setLimit(int limit) {
         this.limit = limit;
@@ -77,7 +79,8 @@ public class DefaultPagerCondition implements PagerCondition, Serializable {
     }
 
     /**
-     * @param offset The offset to set.
+     * @param offset
+     *            The offset to set.
      */
     public void setOffset(int offset) {
         this.offset = offset;

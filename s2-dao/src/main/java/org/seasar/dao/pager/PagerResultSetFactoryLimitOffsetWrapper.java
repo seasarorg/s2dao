@@ -41,20 +41,21 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
 
     /** オリジナルのResultSetFactory */
     private ResultSetFactory resultSetFactory_;
-    
+
     private Dbms dbms_;
-    
+
     /**
      * コンストラクタ(test only)
      * 
      * @param resultSetFactory
      *            オリジナルのResultSetFactory
      */
-    PagerResultSetFactoryLimitOffsetWrapper(
-            ResultSetFactory resultSetFactory, String productName) {
+    PagerResultSetFactoryLimitOffsetWrapper(ResultSetFactory resultSetFactory,
+            String productName) {
         resultSetFactory_ = resultSetFactory;
         dbms_ = DbmsManager.getDbms(productName);
     }
+
     /**
      * コンストラクタ
      * 
@@ -84,27 +85,26 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
 
         if (PagerContext.isPagerCondition(args)) {
             try {
-				if (LOGGER.isDebugEnabled()) {
-					String nativeSql = ps.toString();
-					LOGGER.debug("S2Pager native SQL : " + nativeSql);
-				}
+                if (LOGGER.isDebugEnabled()) {
+                    String nativeSql = ps.toString();
+                    LOGGER.debug("S2Pager native SQL : " + nativeSql);
+                }
 
-				String baseSQL = dbms_.getBaseSql(ps);
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("S2Pager base SQL : " + baseSQL);
-				}
-				
+                String baseSQL = dbms_.getBaseSql(ps);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("S2Pager base SQL : " + baseSQL);
+                }
+
                 PagerCondition dto = PagerContext.getPagerCondition(args);
-				dto.setCount(getCount(ps, baseSQL));
-				if (dto.getLimit() > 0 && dto.getOffset() > -1) {
-					String limitOffsetSql = 
-                		makeLimitOffsetSql(baseSQL, dto.getLimit(), dto.getOffset());
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("S2Pager execute SQL : " + limitOffsetSql);
-					}
-                    return resultSetFactory_.createResultSet(ps
-                            .getConnection().prepareStatement(
-                                    limitOffsetSql));
+                dto.setCount(getCount(ps, baseSQL));
+                if (dto.getLimit() > 0 && dto.getOffset() > -1) {
+                    String limitOffsetSql = makeLimitOffsetSql(baseSQL, dto
+                            .getLimit(), dto.getOffset());
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("S2Pager execute SQL : " + limitOffsetSql);
+                    }
+                    return resultSetFactory_.createResultSet(ps.getConnection()
+                            .prepareStatement(limitOffsetSql));
                 } else {
                     return resultSetFactory_.createResultSet(ps);
                 }
@@ -115,51 +115,57 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
             return resultSetFactory_.createResultSet(ps);
         }
     }
+
     /**
      * limit offsetを付加したSQLを作成します。
+     * 
      * @param baseSQL
      * @param limit
      * @param offset
      * @return
      */
-	String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
-		StringBuffer sqlBuf = new StringBuffer(baseSQL);
-		sqlBuf.append(" LIMIT ");
-		sqlBuf.append(limit);
-		sqlBuf.append(" OFFSET ");
-		sqlBuf.append(offset);
-		return sqlBuf.toString();
-	}
+    String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
+        StringBuffer sqlBuf = new StringBuffer(baseSQL);
+        sqlBuf.append(" LIMIT ");
+        sqlBuf.append(limit);
+        sqlBuf.append(" OFFSET ");
+        sqlBuf.append(offset);
+        return sqlBuf.toString();
+    }
+
     /**
      * 元のSQLによる結果総件数を取得します
-     * @param ps 元のPreparedStatement
-     * @param baseSQL 元のSQL
+     * 
+     * @param ps
+     *            元のPreparedStatement
+     * @param baseSQL
+     *            元のSQL
      * @return 結果総件数
      * @throws SQLException
      */
-	private int getCount(PreparedStatement ps, String baseSQL) throws SQLException {
-		StringBuffer sqlBuf = new StringBuffer("SELECT count(*) FROM (");
-		sqlBuf.append(baseSQL);
-		sqlBuf.append(") AS total");
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("S2Pager execute SQL : " + sqlBuf.toString());
-		}
+    private int getCount(PreparedStatement ps, String baseSQL)
+            throws SQLException {
+        StringBuffer sqlBuf = new StringBuffer("SELECT count(*) FROM (");
+        sqlBuf.append(baseSQL);
+        sqlBuf.append(") AS total");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("S2Pager execute SQL : " + sqlBuf.toString());
+        }
 
-		PreparedStatement psCount = null;
-		ResultSet rs = null;
-		try {
-			psCount = ps.getConnection()
-	        .prepareStatement(sqlBuf.toString());
-			rs = resultSetFactory_.createResultSet(psCount);
-			if (rs.next()) {
-			    return rs.getInt(1);
-			} else {
-			    throw new SQLException("[S2Pager]Result not found.");
-			}
-		} finally {
-			ResultSetUtil.close(rs);
-			StatementUtil.close(psCount);
-		}
-	}
+        PreparedStatement psCount = null;
+        ResultSet rs = null;
+        try {
+            psCount = ps.getConnection().prepareStatement(sqlBuf.toString());
+            rs = resultSetFactory_.createResultSet(psCount);
+            if (rs.next()) {
+                return rs.getInt(1);
+            } else {
+                throw new SQLException("[S2Pager]Result not found.");
+            }
+        } finally {
+            ResultSetUtil.close(rs);
+            StatementUtil.close(psCount);
+        }
+    }
 
 }

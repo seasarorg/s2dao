@@ -22,7 +22,7 @@ import org.seasar.dao.unit.S2DaoTestCase;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class OracleTest extends S2DaoTestCase {
 

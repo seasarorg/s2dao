@@ -20,10 +20,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.seasar.framework.util.ClassUtil;
 
 /**
- * ページャ管理ユーティリティクラス。<p>
- * セッション中のページャ検索条件オブジェクトを管理します。<p>
+ * ページャ管理ユーティリティクラス。
+ * <p>
+ * セッション中のページャ検索条件オブジェクトを管理します。
+ * <p>
  * <p>
  * 使用方法は以下のようになります。
+ * 
  * <pre>
  * public class XXXXAction extends Action {
  *   private PagerSupport pager = new Pager(20, MyPagerCondition.class, "myPagerCondition");
@@ -48,6 +51,7 @@ import org.seasar.framework.util.ClassUtil;
  *   }
  * }
  * </pre>
+ * 
  * @author Toshitaka Agata(Nulab,inc.)
  */
 public class PagerSupport {
@@ -65,10 +69,14 @@ public class PagerSupport {
     private String pagerConditionName;
 
     /**
-     * コンストラクタ<p>
+     * コンストラクタ
+     * <p>
      * 最大取得件数は無制限(-1)に設定されます。
-     * @param pagerConditionClass ページャ検索条件クラス
-     * @param pagerConditionName 検索条件オブジェクトのセッション中の名前
+     * 
+     * @param pagerConditionClass
+     *            ページャ検索条件クラス
+     * @param pagerConditionName
+     *            検索条件オブジェクトのセッション中の名前
      */
     public PagerSupport(Class pagerConditionClass, String pagerConditionName) {
         this(DEFAULT_LIMIT, pagerConditionClass, pagerConditionName);
@@ -76,9 +84,13 @@ public class PagerSupport {
 
     /**
      * コンストラクタ
-     * @param limit 最大取得件数
-     * @param pagerConditionClass ページャ検索条件クラス
-     * @param pagerConditionName 検索条件オブジェクトのセッション中の名前
+     * 
+     * @param limit
+     *            最大取得件数
+     * @param pagerConditionClass
+     *            ページャ検索条件クラス
+     * @param pagerConditionName
+     *            検索条件オブジェクトのセッション中の名前
      */
     public PagerSupport(int limit, Class pagerConditionClass,
             String pagerConditionName) {
@@ -88,10 +100,14 @@ public class PagerSupport {
     }
 
     /**
-     * リクエストパラメータ名を指定して、セッション中の検索条件オブジェクトの現在位置を更新します。<p>
+     * リクエストパラメータ名を指定して、セッション中の検索条件オブジェクトの現在位置を更新します。
+     * <p>
      * 検索条件オブジェクトが存在しない場合、新規に検索条件オブジェクトを生成します。
-     * @param request HttpServletRequest
-     * @param offsetParamName 現在位置を表すリクエストパラメータ名
+     * 
+     * @param request
+     *            HttpServletRequest
+     * @param offsetParamName
+     *            現在位置を表すリクエストパラメータ名
      */
     public void updateOffset(HttpServletRequest request, String offsetParamName) {
         int offset = getOffset(request, offsetParamName);
@@ -100,9 +116,12 @@ public class PagerSupport {
     }
 
     /**
-     *  リクエストパラメータ名"offset"でセッション中の検索条件オブジェクトの現在位置を更新します。<p>
+     * リクエストパラメータ名"offset"でセッション中の検索条件オブジェクトの現在位置を更新します。
+     * <p>
      * 検索条件オブジェクトが存在しない場合、新規に検索条件オブジェクトを生成します。
-     * @param request HttpServletRequest
+     * 
+     * @param request
+     *            HttpServletRequest
      */
     public void updateOffset(HttpServletRequest request) {
         updateOffset(request, "offset");
@@ -110,9 +129,12 @@ public class PagerSupport {
 
     /**
      * リクエストパラメータ"offset"から現在位置を取得します。
-     * @param request HttpServletRequest
-     * @param offsetParamName 現在位置を表すリクエストパラメータ名
-     * @return　現在位置
+     * 
+     * @param request
+     *            HttpServletRequest
+     * @param offsetParamName
+     *            現在位置を表すリクエストパラメータ名
+     * @return 現在位置
      */
     private int getOffset(HttpServletRequest request, String offsetParamName) {
         String value = request.getParameter(offsetParamName);
@@ -128,9 +150,12 @@ public class PagerSupport {
     }
 
     /**
-     * セッション中の検索条件オブジェクトを取得します。<p>
+     * セッション中の検索条件オブジェクトを取得します。
+     * <p>
      * 検索条件オブジェクトが存在しない場合、新規に検索条件オブジェクトを生成します。
-     * @param request HttpServletRequest
+     * 
+     * @param request
+     *            HttpServletRequest
      * @return 検索条件オブジェクト
      */
     public PagerCondition getPagerCondition(HttpServletRequest request) {

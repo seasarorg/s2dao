@@ -16,7 +16,7 @@
 package org.seasar.dao.impl;
 
 public class SeqTable2 {
-    
+
     public static final String TABLE = "SEQTABLE";
 
     public static final String id_ID = "sequence, sequenceName=myseq";

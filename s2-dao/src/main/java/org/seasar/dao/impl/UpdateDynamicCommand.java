@@ -23,19 +23,21 @@ import org.seasar.extension.jdbc.impl.BasicUpdateHandler;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class UpdateDynamicCommand extends AbstractDynamicCommand {
-	
-	public UpdateDynamicCommand(DataSource dataSource, StatementFactory statementFactory) {
-		super(dataSource, statementFactory);
-	}
 
-	public Object execute(Object[] args) {
-		CommandContext ctx = apply(args);
-		BasicUpdateHandler updateHandler = new BasicUpdateHandler(
-				getDataSource(), ctx.getSql(), getStatementFactory());
-		return new Integer(updateHandler.execute(ctx.getBindVariables(), ctx.getBindVariableTypes()));
-	}
+    public UpdateDynamicCommand(DataSource dataSource,
+            StatementFactory statementFactory) {
+        super(dataSource, statementFactory);
+    }
+
+    public Object execute(Object[] args) {
+        CommandContext ctx = apply(args);
+        BasicUpdateHandler updateHandler = new BasicUpdateHandler(
+                getDataSource(), ctx.getSql(), getStatementFactory());
+        return new Integer(updateHandler.execute(ctx.getBindVariables(), ctx
+                .getBindVariableTypes()));
+    }
 
 }

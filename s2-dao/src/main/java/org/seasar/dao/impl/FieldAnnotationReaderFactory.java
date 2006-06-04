@@ -22,10 +22,11 @@ import org.seasar.framework.beans.BeanDesc;
 
 public class FieldAnnotationReaderFactory implements AnnotationReaderFactory {
 
-	public DaoAnnotationReader createDaoAnnotationReader(BeanDesc daoBeanDesc) {
-		return new FieldDaoAnnotationReader(daoBeanDesc);
-	}
-	public BeanAnnotationReader createBeanAnnotationReader(Class beanClass_) {
-		return new FieldBeanAnnotationReader(beanClass_);
-	}
+    public DaoAnnotationReader createDaoAnnotationReader(BeanDesc daoBeanDesc) {
+        return new FieldDaoAnnotationReader(daoBeanDesc);
+    }
+
+    public BeanAnnotationReader createBeanAnnotationReader(Class beanClass_) {
+        return new FieldBeanAnnotationReader(beanClass_);
+    }
 }

@@ -65,6 +65,7 @@ public class PagerViewHelper implements PagerCondition {
 
     /**
      * 前へのリンクが表示できるかどうかを判定します。
+     * 
      * @param ture/false
      */
     public boolean isPrev() {
@@ -73,6 +74,7 @@ public class PagerViewHelper implements PagerCondition {
 
     /**
      * 次へのリンクが表示できるかどうかを判定します。
+     * 
      * @param ture/false
      */
     public boolean isNext() {
@@ -81,6 +83,7 @@ public class PagerViewHelper implements PagerCondition {
 
     /**
      * 現在表示中の一覧の最後のoffsetを取得します。
+     * 
      * @param 現在表示中の一覧の最後のoffset
      */
     public int getCurrentLastOffset() {
@@ -89,6 +92,7 @@ public class PagerViewHelper implements PagerCondition {
 
     /**
      * 次へリンクのoffsetを返します。
+     * 
      * @return 次へリンクのoffset
      */
     public int getNextOffset() {
@@ -97,6 +101,7 @@ public class PagerViewHelper implements PagerCondition {
 
     /**
      * 前へリンクのoffsetを返します。
+     * 
      * @return 前へリンクのoffset
      */
     public int getPrevOffset() {
@@ -105,6 +110,7 @@ public class PagerViewHelper implements PagerCondition {
 
     /**
      * 現在ページのインデックスを返します。
+     * 
      * @return 現在ページのインデックス
      */
     public int getPageIndex() {
@@ -113,6 +119,7 @@ public class PagerViewHelper implements PagerCondition {
 
     /**
      * 現在ページのカウント(インデックス+1)を返します。
+     * 
      * @return 現在ページのカウント(インデックス+1)
      */
     public int getPageCount() {
@@ -121,6 +128,7 @@ public class PagerViewHelper implements PagerCondition {
 
     /**
      * 最終ページのインデックスを返します。
+     * 
      * @return 最終ページのインデックス
      */
     public int getLastPageIndex() {
@@ -129,6 +137,7 @@ public class PagerViewHelper implements PagerCondition {
 
     /**
      * ページリンクの表示上限を元に、ページ番号リンクの表示開始位置を返します。
+     * 
      * @return ページ番号リンクの表示開始位置
      */
     public int getDisplayPageIndexBegin() {
@@ -137,6 +146,7 @@ public class PagerViewHelper implements PagerCondition {
 
     /**
      * ページリンクの表示上限を元に、ページ番号リンクの表示終了位置を返します。
+     * 
      * @return ページ番号リンクの表示終了位置
      */
     public int getDisplayPageIndexEnd() {

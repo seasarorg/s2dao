@@ -19,27 +19,27 @@ import java.util.List;
 
 public interface EmployeeAutoDao {
 
-	public Class BEAN = Employee.class;
+    public Class BEAN = Employee.class;
 
-	public List getAllEmployees();
+    public List getAllEmployees();
 
-	public String getEmployeeByJobDeptno_ARGS = "job, deptno";
+    public String getEmployeeByJobDeptno_ARGS = "job, deptno";
 
-	public List getEmployeeByJobDeptno(String job, Integer deptno);
-	
-	public String getEmployeeByEmpno_ARGS = "empno";
+    public List getEmployeeByJobDeptno(String job, Integer deptno);
 
-	public Employee getEmployeeByEmpno(int empno);
+    public String getEmployeeByEmpno_ARGS = "empno";
 
-	public String getEmployeesBySal_QUERY = "sal BETWEEN ? AND ? ORDER BY empno";
+    public Employee getEmployeeByEmpno(int empno);
 
-	public List getEmployeesBySal(float minSal, float maxSal);
+    public String getEmployeesBySal_QUERY = "sal BETWEEN ? AND ? ORDER BY empno";
 
-	public String getEmployeeByDname_ARGS = "dname_0";
+    public List getEmployeesBySal(float minSal, float maxSal);
 
-	public List getEmployeeByDname(String dname);
-	
-	public List getEmployeesBySearchCondition(EmployeeSearchCondition dto);
-	
-	public void update(Employee employee);
+    public String getEmployeeByDname_ARGS = "dname_0";
+
+    public List getEmployeeByDname(String dname);
+
+    public List getEmployeesBySearchCondition(EmployeeSearchCondition dto);
+
+    public void update(Employee employee);
 }

@@ -33,7 +33,8 @@ public class FunctionTest extends TestCase {
         assertEquals(10.3d, result, 0);
     }
 
-    // Apache Derby does'nt returns FUNCTION from DatabaseMetaData#getProcedures.  
+    // Apache Derby does'nt returns FUNCTION from
+    // DatabaseMetaData#getProcedures.
     public void pending_testCallFunctionViaDao() throws Exception {
         final S2Container container = S2ContainerFactory.create(getClass()
                 .getName().replace('.', '/')

@@ -26,7 +26,7 @@ import org.seasar.extension.dataset.states.RowStates;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class S2DaoBeanReaderTest extends S2DaoTestCase {
 

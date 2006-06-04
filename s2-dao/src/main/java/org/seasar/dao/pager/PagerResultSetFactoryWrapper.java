@@ -21,8 +21,7 @@ import java.sql.ResultSet;
 import org.seasar.extension.jdbc.ResultSetFactory;
 
 /**
- * ResultSetFactoryをラップして、
- * ページャ用のResultSetを生成します。
+ * ResultSetFactoryをラップして、 ページャ用のResultSetを生成します。
  * 
  * @author Toshitaka Agata(Nulab,inc.)
  * @author manhole
@@ -36,7 +35,9 @@ public class PagerResultSetFactoryWrapper implements ResultSetFactory {
 
     /**
      * コンストラクタ
-     * @param resultSetFactory オリジナルのResultSetFactory
+     * 
+     * @param resultSetFactory
+     *            オリジナルのResultSetFactory
      */
     public PagerResultSetFactoryWrapper(ResultSetFactory resultSetFactory) {
         resultSetFactory_ = resultSetFactory;
@@ -50,9 +51,11 @@ public class PagerResultSetFactoryWrapper implements ResultSetFactory {
     }
 
     /**
-     * ResultSetを生成します。<p>
+     * ResultSetを生成します。
+     * <p>
      * PagerContextにPagerConditionがセットされている場合、
      * ResultSetをPagerResultSetWrapperでラップして返します。
+     * 
      * @param PreparedStatement
      * @return ResultSet
      */

@@ -25,7 +25,7 @@ import org.seasar.framework.util.StringUtil;
 
 /**
  * @author uehara keizou
- *
+ * 
  */
 public class FieldDaoAnnotationReader implements DaoAnnotationReader {
 

@@ -26,36 +26,45 @@ public interface PagerCondition {
 
     /**
      * 検索結果の総件数を取得します。
+     * 
      * @return 総件数
      */
     public int getCount();
 
     /**
      * 検索結果の総件数をセットします。
-     * @param count 総件数
+     * 
+     * @param count
+     *            総件数
      */
     public void setCount(int count);
 
     /**
      * 検索結果から一度に取得する最大件数を取得します。
+     * 
      * @return 最大件数
      */
     public int getLimit();
 
     /**
      * 検索結果から一度に取得する最大件数をセットします。
-     * @param limit 最大件数
+     * 
+     * @param limit
+     *            最大件数
      */
     public void setLimit(int limit);
 
     /**
      * 検索結果の取得開始位置ををセットします。
-     * @param offset 取得開始位置
+     * 
+     * @param offset
+     *            取得開始位置
      */
     public void setOffset(int offset);
 
     /**
      * 検索結果の取得開始位置をを取得します。
+     * 
      * @return 取得開始位置
      */
     public int getOffset();

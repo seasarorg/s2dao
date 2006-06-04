@@ -17,11 +17,11 @@ package examples.dao;
 
 public interface DepartmentManager {
 
-	public Class BEAN = Department.class;
-	
-	public void generate(Department department);
-	
-	public void change(Department department);
-	
-	public void destory(Department department);
+    public Class BEAN = Department.class;
+
+    public void generate(Department department);
+
+    public void change(Department department);
+
+    public void destory(Department department);
 }

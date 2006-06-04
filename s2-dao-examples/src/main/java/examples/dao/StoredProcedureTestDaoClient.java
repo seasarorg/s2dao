@@ -20,21 +20,22 @@ import org.seasar.framework.container.factory.S2ContainerFactory;
 
 public class StoredProcedureTestDaoClient {
 
-	private static final String PATH = "examples/dao/StoredProcedureTestDao.dicon";
+    private static final String PATH = "examples/dao/StoredProcedureTestDao.dicon";
 
-	public static void main(String[] args) {
-		S2Container container = S2ContainerFactory.create(PATH);
-		container.init();
-		try {
-			StoredProcedureTestDao dao = (StoredProcedureTestDao) container
-					.getComponent(StoredProcedureTestDao.class);
-			System.out.println("SALES_TAX(1000) =" + dao.getSalesTax(1000));
-//			System.out.println("SALES_TAX2(1000) =" + dao.getSalesTax2(1000));
-			System.out.println("SALES_TAX3(1000) =" + dao.getSalesTax3(1000));
-			System.out.println("SALES_TAX4(1000) =" + dao.getSalesTax4(1000));
-		} finally {
-			container.destroy();
-		}
+    public static void main(String[] args) {
+        S2Container container = S2ContainerFactory.create(PATH);
+        container.init();
+        try {
+            StoredProcedureTestDao dao = (StoredProcedureTestDao) container
+                    .getComponent(StoredProcedureTestDao.class);
+            System.out.println("SALES_TAX(1000) =" + dao.getSalesTax(1000));
+            // System.out.println("SALES_TAX2(1000) =" +
+            // dao.getSalesTax2(1000));
+            System.out.println("SALES_TAX3(1000) =" + dao.getSalesTax3(1000));
+            System.out.println("SALES_TAX4(1000) =" + dao.getSalesTax4(1000));
+        } finally {
+            container.destroy();
+        }
 
-	}
+    }
 }

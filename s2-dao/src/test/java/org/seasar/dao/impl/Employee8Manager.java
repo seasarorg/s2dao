@@ -15,15 +15,14 @@
  */
 package org.seasar.dao.impl;
 
-
 public interface Employee8Manager {
 
     public Class BEAN = Employee.class;
-    
+
     public void terminate(Employee employee);
 
     public void change(Employee employee);
-    
+
     public void generate(Employee employee);
-    
+
 }

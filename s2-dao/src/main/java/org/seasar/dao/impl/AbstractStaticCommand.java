@@ -22,21 +22,20 @@ import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa
- *  
+ * 
  */
 public abstract class AbstractStaticCommand extends AbstractSqlCommand {
 
-	private BeanMetaData beanMetaData_;
+    private BeanMetaData beanMetaData_;
 
-	public AbstractStaticCommand(DataSource dataSource,
-			StatementFactory statementFactory,
-			BeanMetaData beanMetaData) {
+    public AbstractStaticCommand(DataSource dataSource,
+            StatementFactory statementFactory, BeanMetaData beanMetaData) {
 
-		super(dataSource, statementFactory);
-		beanMetaData_ = beanMetaData;
-	}
+        super(dataSource, statementFactory);
+        beanMetaData_ = beanMetaData;
+    }
 
-	public BeanMetaData getBeanMetaData() {
-		return beanMetaData_;
-	}
+    public BeanMetaData getBeanMetaData() {
+        return beanMetaData_;
+    }
 }

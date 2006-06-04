@@ -19,7 +19,7 @@ import java.util.List;
 
 public interface Employee2Dao {
 
-	public Class BEAN = Employee2.class;
+    public Class BEAN = Employee2.class;
 
-	public List getAllEmployees();
+    public List getAllEmployees();
 }

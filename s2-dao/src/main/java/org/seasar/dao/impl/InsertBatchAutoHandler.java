@@ -23,18 +23,18 @@ import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class InsertBatchAutoHandler extends AbstractBatchAutoHandler {
 
-	public InsertBatchAutoHandler(DataSource dataSource,
-			StatementFactory statementFactory,
-			BeanMetaData beanMetaData, PropertyType[] propertyTypes) {
+    public InsertBatchAutoHandler(DataSource dataSource,
+            StatementFactory statementFactory, BeanMetaData beanMetaData,
+            PropertyType[] propertyTypes) {
 
-		super(dataSource, statementFactory, beanMetaData, propertyTypes);
-	}
+        super(dataSource, statementFactory, beanMetaData, propertyTypes);
+    }
 
-	protected void setupBindVariables(Object bean) {
-		setupInsertBindVariables(bean);
-	}
+    protected void setupBindVariables(Object bean) {
+        setupInsertBindVariables(bean);
+    }
 }

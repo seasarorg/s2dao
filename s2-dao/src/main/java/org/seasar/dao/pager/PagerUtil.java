@@ -40,10 +40,10 @@ public class PagerUtil {
     public static int getCurrentLastOffset(PagerCondition condition) {
         int nextOffset = getNextOffset(condition);
         if (nextOffset <= 0 || condition.getCount() <= 0) {
-        	return 0;
+            return 0;
         } else {
-            return nextOffset < condition.getCount() ? nextOffset - 1: condition
-                    .getCount() - 1;
+            return nextOffset < condition.getCount() ? nextOffset - 1
+                    : condition.getCount() - 1;
         }
     }
 
@@ -104,8 +104,11 @@ public class PagerUtil {
 
     /**
      * Listの内容をPagerConditionの条件でフィルタリングします。
-     * @param list List
-     * @param condition 条件
+     * 
+     * @param list
+     *            List
+     * @param condition
+     *            条件
      * @return フィルタリング後のList
      */
     public static List filter(List list, PagerCondition condition) {

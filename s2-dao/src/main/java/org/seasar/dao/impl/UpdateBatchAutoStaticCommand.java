@@ -22,30 +22,29 @@ import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class UpdateBatchAutoStaticCommand extends
-		AbstractBatchAutoStaticCommand {
+        AbstractBatchAutoStaticCommand {
 
-	public UpdateBatchAutoStaticCommand(DataSource dataSource,
-			StatementFactory statementFactory,
-			BeanMetaData beanMetaData, String[] propertyNames) {
+    public UpdateBatchAutoStaticCommand(DataSource dataSource,
+            StatementFactory statementFactory, BeanMetaData beanMetaData,
+            String[] propertyNames) {
 
-		super(dataSource, statementFactory, beanMetaData, propertyNames);
-	}
+        super(dataSource, statementFactory, beanMetaData, propertyNames);
+    }
 
-	protected AbstractAutoHandler createAutoHandler() {
-		return new UpdateBatchAutoHandler(getDataSource(),
-				getStatementFactory(), getBeanMetaData(),
-				getPropertyTypes());
-	}
+    protected AbstractAutoHandler createAutoHandler() {
+        return new UpdateBatchAutoHandler(getDataSource(),
+                getStatementFactory(), getBeanMetaData(), getPropertyTypes());
+    }
 
-	protected void setupSql() {
-		setupUpdateSql();
-	}
+    protected void setupSql() {
+        setupUpdateSql();
+    }
 
-	protected void setupPropertyTypes(String[] propertyNames) {
-		setupUpdatePropertyTypes(propertyNames);
+    protected void setupPropertyTypes(String[] propertyNames) {
+        setupUpdatePropertyTypes(propertyNames);
 
-	}
+    }
 }

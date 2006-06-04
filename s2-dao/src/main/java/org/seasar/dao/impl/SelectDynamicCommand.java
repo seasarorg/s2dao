@@ -26,32 +26,33 @@ import org.seasar.extension.jdbc.impl.BasicSelectHandler;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class SelectDynamicCommand extends AbstractDynamicCommand {
 
-	private ResultSetHandler resultSetHandler_;
+    private ResultSetHandler resultSetHandler_;
 
-	private ResultSetFactory resultSetFactory_;
+    private ResultSetFactory resultSetFactory_;
 
-	public SelectDynamicCommand(DataSource dataSource,
-			StatementFactory statementFactory,
-			ResultSetHandler resultSetHandler, ResultSetFactory resultSetFactory) {
+    public SelectDynamicCommand(DataSource dataSource,
+            StatementFactory statementFactory,
+            ResultSetHandler resultSetHandler, ResultSetFactory resultSetFactory) {
 
-		super(dataSource, statementFactory);
-		resultSetHandler_ = resultSetHandler;
-		resultSetFactory_ = resultSetFactory;
-	}
+        super(dataSource, statementFactory);
+        resultSetHandler_ = resultSetHandler;
+        resultSetFactory_ = resultSetFactory;
+    }
 
-	public ResultSetHandler getResultSetHandler() {
-		return resultSetHandler_;
-	}
+    public ResultSetHandler getResultSetHandler() {
+        return resultSetHandler_;
+    }
 
-	public Object execute(Object[] args) {
-		CommandContext ctx = apply(args);
-		SelectHandler selectHandler = new BasicSelectHandler(getDataSource(),
-				ctx.getSql(), resultSetHandler_, getStatementFactory(),
-				resultSetFactory_);
-		return selectHandler.execute(ctx.getBindVariables(), ctx.getBindVariableTypes());
-	}
+    public Object execute(Object[] args) {
+        CommandContext ctx = apply(args);
+        SelectHandler selectHandler = new BasicSelectHandler(getDataSource(),
+                ctx.getSql(), resultSetHandler_, getStatementFactory(),
+                resultSetFactory_);
+        return selectHandler.execute(ctx.getBindVariables(), ctx
+                .getBindVariableTypes());
+    }
 }

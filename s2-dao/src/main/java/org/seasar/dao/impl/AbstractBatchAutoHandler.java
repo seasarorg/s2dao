@@ -31,50 +31,50 @@ import org.seasar.framework.util.StatementUtil;
 
 /**
  * @author higa
- *  
+ * 
  */
 public abstract class AbstractBatchAutoHandler extends AbstractAutoHandler {
 
-	public AbstractBatchAutoHandler(DataSource dataSource,
-			StatementFactory statementFactory,
-			BeanMetaData beanMetaData, PropertyType[] propertyTypes) {
+    public AbstractBatchAutoHandler(DataSource dataSource,
+            StatementFactory statementFactory, BeanMetaData beanMetaData,
+            PropertyType[] propertyTypes) {
 
-		super(dataSource, statementFactory, beanMetaData, propertyTypes);
-	}
+        super(dataSource, statementFactory, beanMetaData, propertyTypes);
+    }
 
-	public int execute(Object[] args) throws SQLRuntimeException {
-		Connection connection = getConnection();
-		try {
-			Object[] beans = null;
-			if (args[0] instanceof Object[]) {
-				beans = (Object[]) args[0];
-			} else if (args[0] instanceof List) {
-				beans = ((List) args[0]).toArray();
-			}
-			if (beans == null) {
-				throw new IllegalArgumentException("args[0]");
-			}
-			PreparedStatement ps = prepareStatement(connection);
-			try {
-				for (int i = 0; i < beans.length; ++i) {
-					execute(ps, beans[i]);
-				}
-				PreparedStatementUtil.executeBatch(ps);
-			} finally {
-				StatementUtil.close(ps);
-			}
-			return beans.length;
-		} finally {
-			ConnectionUtil.close(connection);
-		}
-	}
+    public int execute(Object[] args) throws SQLRuntimeException {
+        Connection connection = getConnection();
+        try {
+            Object[] beans = null;
+            if (args[0] instanceof Object[]) {
+                beans = (Object[]) args[0];
+            } else if (args[0] instanceof List) {
+                beans = ((List) args[0]).toArray();
+            }
+            if (beans == null) {
+                throw new IllegalArgumentException("args[0]");
+            }
+            PreparedStatement ps = prepareStatement(connection);
+            try {
+                for (int i = 0; i < beans.length; ++i) {
+                    execute(ps, beans[i]);
+                }
+                PreparedStatementUtil.executeBatch(ps);
+            } finally {
+                StatementUtil.close(ps);
+            }
+            return beans.length;
+        } finally {
+            ConnectionUtil.close(connection);
+        }
+    }
 
-	protected void execute(PreparedStatement ps, Object bean) {
-		setupBindVariables(bean);
-		if (getLogger().isDebugEnabled()) {
-			getLogger().debug(getCompleteSql(getBindVariables()));
-		}
-		bindArgs(ps, getBindVariables(), getBindVariableValueTypes());
-		PreparedStatementUtil.addBatch(ps);
-	}
+    protected void execute(PreparedStatement ps, Object bean) {
+        setupBindVariables(bean);
+        if (getLogger().isDebugEnabled()) {
+            getLogger().debug(getCompleteSql(getBindVariables()));
+        }
+        bindArgs(ps, getBindVariables(), getBindVariableValueTypes());
+        PreparedStatementUtil.addBatch(ps);
+    }
 }

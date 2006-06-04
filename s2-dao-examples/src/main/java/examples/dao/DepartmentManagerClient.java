@@ -20,26 +20,27 @@ import org.seasar.framework.container.factory.S2ContainerFactory;
 
 public class DepartmentManagerClient {
 
-	private static final String PATH = "examples/dao/DepartmentManager.dicon";
+    private static final String PATH = "examples/dao/DepartmentManager.dicon";
 
-	public static void main(String[] args) {
-		S2Container container = S2ContainerFactory.create(PATH);
-		container.init();
-		try {
-			DepartmentManager dao = (DepartmentManager) container
-					.getComponent(DepartmentManager.class);
-			Department dept = new Department();
-			dept.setDeptno(99);
-			dept.setDname("foo");
-			dao.generate(dept);
-			dept.setDname("bar");
-			System.out.println("before update versionNo:" + dept.getVersionNo());
-			dao.change(dept);
-			System.out.println("after update versionNo:" + dept.getVersionNo());
-			dao.destory(dept);
-		} finally {
-			container.destroy();
-		}
+    public static void main(String[] args) {
+        S2Container container = S2ContainerFactory.create(PATH);
+        container.init();
+        try {
+            DepartmentManager dao = (DepartmentManager) container
+                    .getComponent(DepartmentManager.class);
+            Department dept = new Department();
+            dept.setDeptno(99);
+            dept.setDname("foo");
+            dao.generate(dept);
+            dept.setDname("bar");
+            System.out
+                    .println("before update versionNo:" + dept.getVersionNo());
+            dao.change(dept);
+            System.out.println("after update versionNo:" + dept.getVersionNo());
+            dao.destory(dept);
+        } finally {
+            container.destroy();
+        }
 
-	}
+    }
 }

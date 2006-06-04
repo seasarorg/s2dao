@@ -18,15 +18,15 @@ package org.seasar.dao.interceptors;
 import java.io.Serializable;
 
 public class Department implements Serializable {
-	
-	public static final String TABLE = "DEPT";
+
+    public static final String TABLE = "DEPT";
 
     private int deptno;
 
     private String dname;
 
     private String loc;
-    
+
     private int versionNo;
 
     public Department() {
@@ -55,7 +55,7 @@ public class Department implements Serializable {
     public void setLoc(java.lang.String loc) {
         this.loc = loc;
     }
-    
+
     public int getVersionNo() {
         return this.versionNo;
     }
@@ -65,17 +65,18 @@ public class Department implements Serializable {
     }
 
     public boolean equals(Object other) {
-        if ( !(other instanceof Department) ) return false;
+        if (!(other instanceof Department))
+            return false;
         Department castOther = (Department) other;
         return this.getDeptno() == castOther.getDeptno();
     }
-    
+
     public String toString() {
-    	StringBuffer buf = new StringBuffer();
-    	buf.append(deptno).append(", ");
-		buf.append(dname).append(", ");
-		buf.append(loc);
-    	return buf.toString();
+        StringBuffer buf = new StringBuffer();
+        buf.append(deptno).append(", ");
+        buf.append(dname).append(", ");
+        buf.append(loc);
+        return buf.toString();
     }
 
     public int hashCode() {

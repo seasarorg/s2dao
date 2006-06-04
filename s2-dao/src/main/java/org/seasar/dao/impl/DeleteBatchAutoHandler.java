@@ -23,18 +23,18 @@ import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class DeleteBatchAutoHandler extends AbstractBatchAutoHandler {
 
-	public DeleteBatchAutoHandler(DataSource dataSource,
-			StatementFactory statementFactory,
-			BeanMetaData beanMetaData, PropertyType[] propertyTypes) {
+    public DeleteBatchAutoHandler(DataSource dataSource,
+            StatementFactory statementFactory, BeanMetaData beanMetaData,
+            PropertyType[] propertyTypes) {
 
-		super(dataSource, statementFactory, beanMetaData, propertyTypes);
-	}
+        super(dataSource, statementFactory, beanMetaData, propertyTypes);
+    }
 
-	protected void setupBindVariables(Object bean) {
-		setupDeleteBindVariables(bean);
-	}
+    protected void setupBindVariables(Object bean) {
+        setupDeleteBindVariables(bean);
+    }
 }

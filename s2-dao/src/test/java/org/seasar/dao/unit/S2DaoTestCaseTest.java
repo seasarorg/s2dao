@@ -25,112 +25,112 @@ import org.seasar.extension.dataset.impl.DataSetImpl;
 
 public class S2DaoTestCaseTest extends S2DaoTestCase {
 
-	public S2DaoTestCaseTest(String arg0) {
-		super(arg0);
-	}
+    public S2DaoTestCaseTest(String arg0) {
+        super(arg0);
+    }
 
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(S2DaoTestCaseTest.class);
-	}
-	
-	protected void setUp() {
-		include("j2ee.dicon");
-	}
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(S2DaoTestCaseTest.class);
+    }
 
-	public void testAssertBeanEquals() {
-		DataSet expected = new DataSetImpl();
-		DataTable table = expected.addTable("emp");
-		table.addColumn("aaa");
-		table.addColumn("bbb_0");
-		DataRow row = table.addRow();
-		row.setValue("aaa", "111");
-		row.setValue("bbb_0", "222");
-		Hoge bean = new Hoge();
-		bean.setAaa("111");
-		Foo foo = new Foo();
-		foo.setBbb("222");
-		bean.setFoo(foo);
-		assertEquals("1", expected, bean);
-	}
+    protected void setUp() {
+        include("j2ee.dicon");
+    }
 
-	public void testAssertBeanListEquals() {
-		DataSet expected = new DataSetImpl();
-		DataTable table = expected.addTable("emp");
-		table.addColumn("aaa");
-		table.addColumn("bbb_0");
-		DataRow row = table.addRow();
-		row.setValue("aaa", "111");
-		row.setValue("bbb_0", "222");
-		Hoge bean = new Hoge();
-		bean.setAaa("111");
-		Foo foo = new Foo();
-		foo.setBbb("222");
-		bean.setFoo(foo);
-		List list = new ArrayList();
-		list.add(bean);
-		assertEquals("1", expected, list);
-	}
+    public void testAssertBeanEquals() {
+        DataSet expected = new DataSetImpl();
+        DataTable table = expected.addTable("emp");
+        table.addColumn("aaa");
+        table.addColumn("bbb_0");
+        DataRow row = table.addRow();
+        row.setValue("aaa", "111");
+        row.setValue("bbb_0", "222");
+        Hoge bean = new Hoge();
+        bean.setAaa("111");
+        Foo foo = new Foo();
+        foo.setBbb("222");
+        bean.setFoo(foo);
+        assertEquals("1", expected, bean);
+    }
 
-	public static class Hoge {
+    public void testAssertBeanListEquals() {
+        DataSet expected = new DataSetImpl();
+        DataTable table = expected.addTable("emp");
+        table.addColumn("aaa");
+        table.addColumn("bbb_0");
+        DataRow row = table.addRow();
+        row.setValue("aaa", "111");
+        row.setValue("bbb_0", "222");
+        Hoge bean = new Hoge();
+        bean.setAaa("111");
+        Foo foo = new Foo();
+        foo.setBbb("222");
+        bean.setFoo(foo);
+        List list = new ArrayList();
+        list.add(bean);
+        assertEquals("1", expected, list);
+    }
 
-		public static final int foo_RELNO = 0;
-		
-		public static final String aaa_ID = "assigned";
+    public static class Hoge {
 
-		private String aaa;
+        public static final int foo_RELNO = 0;
 
-		private Foo foo;
+        public static final String aaa_ID = "assigned";
 
-		/**
-		 * @return Returns the aaa.
-		 */
-		public String getAaa() {
-			return aaa;
-		}
+        private String aaa;
 
-		/**
-		 * @param aaa
-		 *            The aaa to set.
-		 */
-		public void setAaa(String aaa) {
-			this.aaa = aaa;
-		}
+        private Foo foo;
 
-		/**
-		 * @return Returns the foo.
-		 */
-		public Foo getFoo() {
-			return foo;
-		}
+        /**
+         * @return Returns the aaa.
+         */
+        public String getAaa() {
+            return aaa;
+        }
 
-		/**
-		 * @param foo
-		 *            The foo to set.
-		 */
-		public void setFoo(Foo foo) {
-			this.foo = foo;
-		}
-	}
+        /**
+         * @param aaa
+         *            The aaa to set.
+         */
+        public void setAaa(String aaa) {
+            this.aaa = aaa;
+        }
 
-	public static class Foo {
+        /**
+         * @return Returns the foo.
+         */
+        public Foo getFoo() {
+            return foo;
+        }
 
-		public static final String bbb_ID = "assigned";
-		
-		private String bbb;
+        /**
+         * @param foo
+         *            The foo to set.
+         */
+        public void setFoo(Foo foo) {
+            this.foo = foo;
+        }
+    }
 
-		/**
-		 * @return Returns the bbb.
-		 */
-		public String getBbb() {
-			return bbb;
-		}
+    public static class Foo {
 
-		/**
-		 * @param bbb
-		 *            The bbb to set.
-		 */
-		public void setBbb(String bbb) {
-			this.bbb = bbb;
-		}
-	}
+        public static final String bbb_ID = "assigned";
+
+        private String bbb;
+
+        /**
+         * @return Returns the bbb.
+         */
+        public String getBbb() {
+            return bbb;
+        }
+
+        /**
+         * @param bbb
+         *            The bbb to set.
+         */
+        public void setBbb(String bbb) {
+            this.bbb = bbb;
+        }
+    }
 }

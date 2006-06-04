@@ -29,8 +29,11 @@ class ResultSetUtil {
 
     /**
      * ResultSetを指定された位置まで進めます。
-     * @param resultSet ResultSet
-     * @param offset 位置
+     * 
+     * @param resultSet
+     *            ResultSet
+     * @param offset
+     *            位置
      * @return ResultSet#nextを呼び出した回数
      * @throws SQLException
      */
@@ -53,8 +56,11 @@ class ResultSetUtil {
 
     /**
      * ResultSetを指定された位置まで進めます。
-     * @param resultSet ResultSet
-     * @param offset 位置
+     * 
+     * @param resultSet
+     *            ResultSet
+     * @param offset
+     *            位置
      * @return ResultSet#nextを呼び出した回数
      * @throws SQLException
      */
@@ -69,7 +75,9 @@ class ResultSetUtil {
 
     /**
      * ResultSetを最後の位置まで進めます。
-     * @param resultSet ResultSet
+     * 
+     * @param resultSet
+     *            ResultSet
      * @throws SQLException
      */
     public static boolean autoLast(ResultSet resultSet) throws SQLException {
@@ -89,7 +97,9 @@ class ResultSetUtil {
 
     /**
      * ResultSetがカーソルをサポートしているかどうかを判定します。
-     * @param resultSet ResultSet
+     * 
+     * @param resultSet
+     *            ResultSet
      * @return カーソルをサポートしていればtrue、それ以外はfalse
      * @throws SQLException
      */
@@ -103,7 +113,9 @@ class ResultSetUtil {
 
     /**
      * ResultSetを最後の位置まで進めます。
-     * @param resultSet ResultSet
+     * 
+     * @param resultSet
+     *            ResultSet
      * @throws SQLException
      */
     private static void manualLast(ResultSet resultSet) throws SQLException {

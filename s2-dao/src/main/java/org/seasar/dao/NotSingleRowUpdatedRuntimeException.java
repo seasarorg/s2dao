@@ -17,17 +17,17 @@ package org.seasar.dao;
 
 /**
  * @author higa
- *
+ * 
  */
 public class NotSingleRowUpdatedRuntimeException extends
-		UpdateFailureRuntimeException {
+        UpdateFailureRuntimeException {
 
-	/**
-	 * @param bean
-	 * @param rows
-	 */
-	public NotSingleRowUpdatedRuntimeException(Object bean, int rows) {
-		super(bean, rows);
-	}
+    /**
+     * @param bean
+     * @param rows
+     */
+    public NotSingleRowUpdatedRuntimeException(Object bean, int rows) {
+        super(bean, rows);
+    }
 
 }

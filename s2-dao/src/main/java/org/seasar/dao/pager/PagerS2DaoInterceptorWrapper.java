@@ -22,9 +22,8 @@ import org.seasar.dao.interceptors.S2DaoInterceptor;
 import org.seasar.framework.aop.interceptors.AbstractInterceptor;
 
 /**
- * ページャ用のS2DaoInterceptorのラッパー。
- * PagerContextに引数をセットして、
- * S2DaoInterceptorを呼び出します。<p>
+ * ページャ用のS2DaoInterceptorのラッパー。 PagerContextに引数をセットして、 S2DaoInterceptorを呼び出します。
+ * <p>
  * 
  * 次のシーケンスにより、ページング処理が実行されます。
  * <ol>
@@ -48,7 +47,9 @@ public class PagerS2DaoInterceptorWrapper extends AbstractInterceptor {
 
     /**
      * コンストラクタ
-     * @param interceptor オリジナルのS2DaoInterceptor
+     * 
+     * @param interceptor
+     *            オリジナルのS2DaoInterceptor
      */
     public PagerS2DaoInterceptorWrapper(S2DaoInterceptor interceptor) {
         this.interceptor_ = interceptor;

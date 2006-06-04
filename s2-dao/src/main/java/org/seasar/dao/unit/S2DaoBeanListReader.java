@@ -27,7 +27,7 @@ import org.seasar.dao.impl.ValueTypeFactoryImpl;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class S2DaoBeanListReader extends S2DaoBeanReader {
 

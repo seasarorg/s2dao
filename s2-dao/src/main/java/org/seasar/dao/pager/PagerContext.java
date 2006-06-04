@@ -26,7 +26,7 @@ class PagerContext {
 
     private static final Object[] EMPTY_ARGS = new Object[0];
 
-    /**　スレッドローカル */
+    /** スレッドローカル */
     private static ThreadLocal threadLocal = new ThreadLocal() {
         protected Object initialValue() {
             return new PagerContext();
@@ -44,6 +44,7 @@ class PagerContext {
 
     /**
      * 現在のスレッドに結びついたPagerContextを取得します。
+     * 
      * @return PagerContext
      */
     public static PagerContext getContext() {
@@ -68,7 +69,9 @@ class PagerContext {
 
     /**
      * メソッドの引数にPagerConditionが含まれているかどうかを判定します。
-     * @param args 引数
+     * 
+     * @param args
+     *            引数
      * @return true/false
      */
     public static boolean isPagerCondition(Object[] args) {
@@ -83,7 +86,9 @@ class PagerContext {
 
     /**
      * メソッドの引数からPagerConditionを取得します。
-     * @param args 引数
+     * 
+     * @param args
+     *            引数
      * @return PagerCondition
      */
     public static PagerCondition getPagerCondition(Object[] args) {

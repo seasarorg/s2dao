@@ -25,7 +25,7 @@ import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa
- *  
+ * 
  */
 public abstract class AbstractDynamicCommand extends AbstractSqlCommand {
 

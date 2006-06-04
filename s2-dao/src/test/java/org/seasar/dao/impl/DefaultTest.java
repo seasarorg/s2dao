@@ -74,10 +74,10 @@ public class DefaultTest extends S2TestCase {
             System.out.println(columnName + "[" + columnDef + "]");
             if ("ID".equals(columnName)) {
                 columns[0]++;
-                //assertEquals((String) null, columnDef);
+                // assertEquals((String) null, columnDef);
             } else if ("AAA".equals(columnName)) {
                 columns[1]++;
-                //assertEquals("'ABC'", columnDef);
+                // assertEquals("'ABC'", columnDef);
                 assertEquals(columnDef, true, columnDef.indexOf("ABC") > -1);
             } else if ("BBB".equals(columnName)) {
                 columns[2]++;

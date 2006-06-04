@@ -19,11 +19,14 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class Employee5 implements Serializable {
-	
-	public static final String TABLE = "EMP";
-	public static final int department_RELNO = 0;
-	public static final String department_RELKEYS = "deptno:deptno, ename:dname";
-	public static final String timestamp_COLUMN = "tstamp";
+
+    public static final String TABLE = "EMP";
+
+    public static final int department_RELNO = 0;
+
+    public static final String department_RELKEYS = "deptno:deptno, ename:dname";
+
+    public static final String timestamp_COLUMN = "tstamp";
 
     private long empno;
 
@@ -40,13 +43,13 @@ public class Employee5 implements Serializable {
     private Float comm;
 
     private int deptno;
-    
+
     private byte[] password;
-    
+
     private String dummy;
-    
+
     private Department department;
-    
+
     private Timestamp timestamp;
 
     public Employee5() {
@@ -119,41 +122,42 @@ public class Employee5 implements Serializable {
     public void setDeptno(int deptno) {
         this.deptno = deptno;
     }
-    
+
     public byte[] getPassword() {
-    	return this.password;
+        return this.password;
     }
-    
+
     public void setPassword(byte[] password) {
-    	this.password = password;
+        this.password = password;
     }
-    
+
     public String getDummy() {
-    	return this.dummy;
+        return this.dummy;
     }
-    
+
     public void setDummy(String dummy) {
-    	this.dummy = dummy;
+        this.dummy = dummy;
     }
-    
+
     public Department getDepartment() {
-    	return this.department;
+        return this.department;
     }
-    
+
     public void setDepartment(Department department) {
-    	this.department = department;
+        this.department = department;
     }
-    
+
     public Timestamp getTimestamp() {
-		return timestamp;
-	}
-	
+        return timestamp;
+    }
+
     public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	}
+        this.timestamp = timestamp;
+    }
 
     public boolean equals(Object other) {
-        if ( !(other instanceof Employee5) ) return false;
+        if (!(other instanceof Employee5))
+            return false;
         Employee5 castOther = (Employee5) other;
         return this.getEmpno() == castOther.getEmpno();
     }
@@ -161,19 +165,19 @@ public class Employee5 implements Serializable {
     public int hashCode() {
         return (int) this.getEmpno();
     }
-    
+
     public String toString() {
-    	StringBuffer buf = new StringBuffer();
-    	buf.append(empno).append(", ");
-		buf.append(ename).append(", ");
-		buf.append(job).append(", ");
-		buf.append(mgr).append(", ");
-		buf.append(hiredate).append(", ");
-		buf.append(sal).append(", ");
-		buf.append(comm).append(", ");
-		buf.append(deptno).append(", ");
-		buf.append(timestamp).append(" {");
-		buf.append(department).append("}");
-    	return buf.toString();
+        StringBuffer buf = new StringBuffer();
+        buf.append(empno).append(", ");
+        buf.append(ename).append(", ");
+        buf.append(job).append(", ");
+        buf.append(mgr).append(", ");
+        buf.append(hiredate).append(", ");
+        buf.append(sal).append(", ");
+        buf.append(comm).append(", ");
+        buf.append(deptno).append(", ");
+        buf.append(timestamp).append(" {");
+        buf.append(department).append("}");
+        return buf.toString();
     }
 }

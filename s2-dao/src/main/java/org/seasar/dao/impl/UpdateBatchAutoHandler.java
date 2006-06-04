@@ -23,18 +23,18 @@ import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa
- *  
+ * 
  */
 public class UpdateBatchAutoHandler extends AbstractBatchAutoHandler {
 
-	public UpdateBatchAutoHandler(DataSource dataSource,
-			StatementFactory statementFactory,
-			BeanMetaData beanMetaData, PropertyType[] propertyTypes) {
+    public UpdateBatchAutoHandler(DataSource dataSource,
+            StatementFactory statementFactory, BeanMetaData beanMetaData,
+            PropertyType[] propertyTypes) {
 
-		super(dataSource, statementFactory, beanMetaData, propertyTypes);
-	}
+        super(dataSource, statementFactory, beanMetaData, propertyTypes);
+    }
 
-	protected void setupBindVariables(Object bean) {
-		setupUpdateBindVariables(bean);
-	}
+    protected void setupBindVariables(Object bean) {
+        setupUpdateBindVariables(bean);
+    }
 }

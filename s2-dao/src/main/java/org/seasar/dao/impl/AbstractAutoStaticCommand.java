@@ -29,7 +29,7 @@ import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa
- *  
+ * 
  */
 public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
 

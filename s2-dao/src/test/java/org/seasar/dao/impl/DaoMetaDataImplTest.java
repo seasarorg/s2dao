@@ -34,7 +34,7 @@ import org.seasar.framework.util.TextUtil;
 
 /**
  * @author higa
- *  
+ * 
  */
 public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
 
@@ -83,7 +83,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
 
         InsertAutoDynamicCommand cmd = (InsertAutoDynamicCommand) dmd
                 .getSqlCommand("generate");
-        //System.out.println(cmd.getSql());
+        // System.out.println(cmd.getSql());
         UpdateAutoStaticCommand cmd2 = (UpdateAutoStaticCommand) dmd
                 .getSqlCommand("change");
         System.out.println(cmd2.getSql());
@@ -286,7 +286,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         jobs.add("FREE");
         List employees = (List) cmd.execute(new Object[] { enames, jobs });
         System.out.println(employees);
-        //assertEquals("1", 2, employees.size());
+        // assertEquals("1", 2, employees.size());
     }
 
     public void testRelation() throws Exception {
@@ -328,7 +328,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         setProperty(dto, "job", "MANAGER");
         List employees = (List) cmd.execute(new Object[] { dto });
         System.out.println(employees);
-        //assertTrue("2", employees.size() > 0);
+        // assertTrue("2", employees.size() > 0);
     }
 
     public void testAutoSelectSqlByDto3() throws Exception {

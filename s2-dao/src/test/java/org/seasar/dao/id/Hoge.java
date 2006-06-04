@@ -17,26 +17,27 @@ package org.seasar.dao.id;
 
 /**
  * @author higa
- *
+ * 
  */
 public class Hoge {
 
-	private int id = -1;
-	
-	public Hoge() {
-	}
+    private int id = -1;
 
-	/**
-	 * @return Returns the id.
-	 */
-	public int getId() {
-		return id;
-	}
-	
-	/**
-	 * @param id The id to set.
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
+    public Hoge() {
+    }
+
+    /**
+     * @return Returns the id.
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param id
+     *            The id to set.
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
 }

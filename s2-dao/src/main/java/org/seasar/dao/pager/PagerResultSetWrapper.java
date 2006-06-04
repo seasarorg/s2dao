@@ -23,9 +23,10 @@ import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.log.Logger;
 
 /**
- * ページャ用のResultSetラッパー。<p>
- * 検索条件オブジェクトのoffset位置から、limitまでの範囲の結果を
- * nextメソッドで返します。<p>
+ * ページャ用のResultSetラッパー。
+ * <p>
+ * 検索条件オブジェクトのoffset位置から、limitまでの範囲の結果を nextメソッドで返します。
+ * <p>
  * limitが-1の場合、全ての結果をnextメソッドで返します。
  * 
  * @author Toshitaka Agata(Nulab,inc.)
@@ -34,7 +35,7 @@ class PagerResultSetWrapper extends ResultSetWrapper {
 
     /** ログ */
     private static final Logger LOGGER = Logger
-    .getLogger(PagerResultSetWrapper.class);
+            .getLogger(PagerResultSetWrapper.class);
 
     /** カウント */
     private int counter = 0;
@@ -54,8 +55,11 @@ class PagerResultSetWrapper extends ResultSetWrapper {
 
     /**
      * コンストラクタ
-     * @param original オリジナルのResultSet 
-     * @param condition 検索条件オブジェクト
+     * 
+     * @param original
+     *            オリジナルのResultSet
+     * @param condition
+     *            検索条件オブジェクト
      * @param useAbsolute
      * @throws SQLException
      */
@@ -70,12 +74,13 @@ class PagerResultSetWrapper extends ResultSetWrapper {
 
     /**
      * 開始位置までカーソルを進めます。
+     * 
      * @throws SQLException
      */
     private void moveOffset() {
         if (isUseCursor()) {
             if (LOGGER.isDebugEnabled()) {
-            	LOGGER.debug("S2Pager use scroll cursor.");
+                LOGGER.debug("S2Pager use scroll cursor.");
             }
             try {
                 if (0 == condition.getOffset()) {
@@ -89,7 +94,7 @@ class PagerResultSetWrapper extends ResultSetWrapper {
             }
         } else {
             if (LOGGER.isDebugEnabled()) {
-            	LOGGER.debug("S2Pager not use scroll cursor.");
+                LOGGER.debug("S2Pager not use scroll cursor.");
             }
             try {
                 while (original.getRow() < condition.getOffset()
