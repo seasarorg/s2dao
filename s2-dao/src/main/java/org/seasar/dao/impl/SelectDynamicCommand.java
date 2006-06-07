@@ -20,7 +20,6 @@ import javax.sql.DataSource;
 import org.seasar.dao.CommandContext;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
-import org.seasar.extension.jdbc.SelectHandler;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.impl.BasicSelectHandler;
 
@@ -49,9 +48,10 @@ public class SelectDynamicCommand extends AbstractDynamicCommand {
 
     public Object execute(Object[] args) {
         CommandContext ctx = apply(args);
-        SelectHandler selectHandler = new BasicSelectHandler(getDataSource(),
-                ctx.getSql(), resultSetHandler_, getStatementFactory(),
-                resultSetFactory_);
+        BasicSelectHandler selectHandler = new BasicSelectHandler(
+                getDataSource(), ctx.getSql(), resultSetHandler_,
+                getStatementFactory(), resultSetFactory_);
+        selectHandler.setFetchSize(-1);
         return selectHandler.execute(ctx.getBindVariables(), ctx
                 .getBindVariableTypes());
     }
