@@ -143,6 +143,42 @@ public class ConfigurableStatementFactoryTest extends TestCase {
         assertEquals(221, maxRows[0]);
     }
 
+    public void testConfigureCallableStatement() throws Exception {
+        // ## Arrange ##
+        final int[] fetchSize = new int[1];
+        final int[] maxRows = new int[1];
+        final CallableStatement mockCallableStatement = new MockCallableStatement() {
+            public void setFetchSize(int arg0) throws SQLException {
+                fetchSize[0] = arg0;
+            }
+
+            public void setMaxRows(int arg0) throws SQLException {
+                maxRows[0] = arg0;
+            }
+        };
+
+        ConfigurableStatementFactory statementFactory = new ConfigurableStatementFactory(
+                new MockStatementFactory() {
+
+                    public CallableStatement createCallableStatement(
+                            Connection con, String sql) {
+                        return mockCallableStatement;
+                    }
+
+                });
+
+        statementFactory.setFetchSize(new Integer(1123));
+        statementFactory.setMaxRows(new Integer(5535));
+
+        // ## Act ##
+        statementFactory.createCallableStatement(new MockConnection(),
+                "select ...");
+
+        // ## Assert ##
+        assertEquals(1123, fetchSize[0]);
+        assertEquals(5535, maxRows[0]);
+    }
+
     private static class MockStatementFactory implements StatementFactory {
 
         public PreparedStatement createPreparedStatement(Connection con,

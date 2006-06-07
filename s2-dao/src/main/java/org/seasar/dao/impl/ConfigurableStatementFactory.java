@@ -47,6 +47,13 @@ public class ConfigurableStatementFactory implements StatementFactory {
         return ps;
     }
 
+    public CallableStatement createCallableStatement(Connection con, String sql) {
+        CallableStatement cs = statementFactory.createCallableStatement(con,
+                sql);
+        configurePreparedStatement(cs);
+        return cs;
+    }
+
     protected void configurePreparedStatement(PreparedStatement ps) {
         if (fetchSize != null) {
             StatementUtil.setFetchSize(ps, fetchSize.intValue());
@@ -54,10 +61,6 @@ public class ConfigurableStatementFactory implements StatementFactory {
         if (maxRows != null) {
             StatementUtil.setMaxRows(ps, maxRows.intValue());
         }
-    }
-
-    public CallableStatement createCallableStatement(Connection con, String sql) {
-        return statementFactory.createCallableStatement(con, sql);
     }
 
     public void setFetchSize(Integer fetchSize) {

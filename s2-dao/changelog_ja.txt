@@ -7,6 +7,12 @@ AbstractDaoを継承したクラスでは、Daoインタフェースへ付けたbeanアノテーションを取
 SQL文へ使用するカラム名は、DatabaseMetaDataよりもCOLUMNアノテーションを優先するようにしました。[Seasar-user:3693]
 S2Dao 1.0.33以降からIDアノテーションのSEQUENCEで作成されたIDが、INSERT文に含まれなくなってしまった問題に対応しました。[Seasar-user:3711]
 S2Dao TigerのExampleに置かれていたdao.diconにValueTypeFactoryが抜けていたのを修正しました。
+"スキーマ名.プロシージャ名"形式でプロシージャを取得する際に、スキーマ名がカタログ名として扱われていたのを修正しました。[DAO-5]
+StatementのfetchSizeを変更できるようにしました。[DAO-2]
+
+[DAO-2]の対応でj2ee.diconを変更しています。
+前バージョンのままでも動作はしますが、その場合はfetchSizeを変更しないため、JDBCドライバのデフォルト値になります。
+(1.0.34まではBasicSelectHandlerによって100を設定していた)
 
 1.0.34
 -------------------------------------------------------------------------------
