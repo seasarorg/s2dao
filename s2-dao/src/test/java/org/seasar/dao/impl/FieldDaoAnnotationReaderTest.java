@@ -32,6 +32,10 @@ public class FieldDaoAnnotationReaderTest extends TestCase {
         final BeanDesc daoDesc = BeanDescFactory.getBeanDesc(AaaDao.class);
         FieldDaoAnnotationReader reader = new FieldDaoAnnotationReader(daoDesc);
         assertEquals(Aaa.class, reader.getBeanClass());
+
+        String query = reader.getQuery(AaaDao.class.getMethod("getAaaById2",
+                new Class[] { int.class }));
+        assertEquals("A > B", query);
     }
 
     protected void setUp() throws Exception {
