@@ -44,6 +44,7 @@ import org.seasar.framework.util.ResultSetUtil;
  * 
  */
 public abstract class AbstractBasicProcedureHandler implements ProcedureHandler {
+
     protected boolean initialised = false;
 
     protected DataSource dataSource_;
@@ -111,13 +112,13 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
             throws SQLException {
         String[] names = DatabaseMetaDataUtil.convertIdentifier(dmd,
                 procedureName_).split("\\.");
-        int namesLength = names.length;
+        final int namesLength = names.length;
         ResultSet rs = null;
         try {
             if (namesLength == 1) {
                 rs = dmd.getProcedures(null, null, names[0]);
             } else if (namesLength == 2) {
-                rs = dmd.getProcedures(names[0], null, names[1]);
+                rs = dmd.getProcedures(null, names[0], names[1]);
             } else if (namesLength == 3) {
                 rs = dmd.getProcedures(names[0], names[1], names[2]);
             }
