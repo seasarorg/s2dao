@@ -22,7 +22,7 @@ import org.seasar.extension.jdbc.PropertyType;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public abstract class BeanMetaDataImplTest extends S2DaoTestCase {
 
@@ -128,6 +128,79 @@ public abstract class BeanMetaDataImplTest extends S2DaoTestCase {
     public void testGetTimestampPropertyName() throws Exception {
         BeanMetaData bmd = createBeanMetaData(getBeanClass("Fff"));
         assertEquals("1", "updated", bmd.getTimestampPropertyName());
+    }
+
+    public void testGetPrimaryKeyWithoutIdAnnotation() throws Exception {
+        runTestEmployee(createBeanMetaData(Employee3A.class));
+    }
+
+    public void testGetPrimaryKeyWithIdAnnotation() throws Exception {
+        runTestEmployee(createBeanMetaData(Employee3B.class));
+    }
+
+    private void runTestEmployee(BeanMetaData bmd) {
+        assertEquals(3, bmd.getPropertyTypeSize());
+        {
+            PropertyType pt = bmd.getPropertyType("employeeId");
+            assertEquals("employeeId", pt.getPropertyName());
+            assertEquals("employee_id", pt.getColumnName());
+        }
+        {
+            PropertyType pt = bmd.getPropertyType("employeeName");
+            assertEquals("employeeName", pt.getPropertyName());
+            assertEquals("employee_name", pt.getColumnName());
+        }
+        {
+            PropertyType pt = bmd.getPropertyType("departmentId");
+            assertEquals("departmentId", pt.getPropertyName());
+            assertEquals("department_id", pt.getColumnName());
+        }
+        assertEquals(1, bmd.getPrimaryKeySize());
+        assertEquals("employee_id", bmd.getPrimaryKey(0));
+    }
+
+    public static class Employee3A {
+
+        private static final long serialVersionUID = 1L;
+
+        public static final String TABLE = "EMP3";
+
+        private Integer employeeId;
+
+        private String employeeName;
+
+        private Integer departmentId;
+
+        public Integer getDepartmentId() {
+            return departmentId;
+        }
+
+        public void setDepartmentId(Integer departmentId) {
+            this.departmentId = departmentId;
+        }
+
+        public Integer getEmployeeId() {
+            return employeeId;
+        }
+
+        public void setEmployeeId(Integer employeeId) {
+            this.employeeId = employeeId;
+        }
+
+        public String getEmployeeName() {
+            return employeeName;
+        }
+
+        public void setEmployeeName(String employeeName) {
+            this.employeeName = employeeName;
+        }
+
+    }
+
+    public static class Employee3B extends Employee3A {
+
+        public static final String employeeId_ID = "assigned";
+
     }
 
 }

@@ -17,6 +17,7 @@ package org.seasar.dao.impl;
 
 import java.sql.Timestamp;
 
+
 /**
  * @author higa
  * 

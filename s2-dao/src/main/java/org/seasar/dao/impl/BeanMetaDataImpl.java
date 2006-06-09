@@ -55,7 +55,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     private List relationPropertyTypes_ = new ArrayList();
 
-    private String[] primaryKeys_ = new String[0];
+    private PropertyType[] primaryKeys_ = new PropertyType[0];
 
     private String autoSelectList_;
 
@@ -350,7 +350,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
                     identifierGenerator_ = IdentifierGeneratorFactory
                             .createIdentifierGenerator(pd.getPropertyName(),
                                     dbms, idAnnotation);
-                    primaryKeys_ = new String[] { pt.getColumnName() };
+                    primaryKeys_ = new PropertyType[] { pt };
                     pt.setPrimaryKey(true);
                 }
             }
@@ -372,13 +372,13 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
                 PropertyType pt = getPropertyType(i);
                 if (primaryKeySet.contains(pt.getColumnName())) {
                     pt.setPrimaryKey(true);
-                    pkeyList.add(pt.getColumnName());
+                    pkeyList.add(pt);
                 } else {
                     pt.setPrimaryKey(false);
                 }
             }
-            primaryKeys_ = (String[]) pkeyList.toArray(new String[pkeyList
-                    .size()]);
+            primaryKeys_ = (PropertyType[]) pkeyList
+                    .toArray(new PropertyType[pkeyList.size()]);
             identifierGenerator_ = IdentifierGeneratorFactory
                     .createIdentifierGenerator(null, dbms);
         }
@@ -488,7 +488,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
      * @see org.seasar.dao.BeanMetaData#getPrimaryKey(int)
      */
     public String getPrimaryKey(int index) {
-        return primaryKeys_[index];
+        return primaryKeys_[index].getColumnName();
     }
 
     public IdentifierGenerator getIdentifierGenerator() {
