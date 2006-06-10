@@ -17,51 +17,75 @@ package org.seasar.dao.handler;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.framework.exception.SQLRuntimeException;
+import org.seasar.framework.exception.SRuntimeException;
+import org.seasar.framework.util.ResultSetUtil;
 import org.seasar.framework.util.StatementUtil;
 
-public class MapBasicProcedureHandler extends AbstractBasicProcedureHandler {
+/**
+ * @author Satoshi Kimura
+ * @author manhole
+ */
+public class ReturnsResultsetProcedureHandler extends
+        AbstractBasicProcedureHandler {
 
-    public MapBasicProcedureHandler(DataSource ds, String procedureName) {
-        this(ds, procedureName, BasicStatementFactory.INSTANCE);
+    protected ResultSetHandler resultSetHandler_;
+
+    public ResultSetHandler getResultSetHandler() {
+        return resultSetHandler_;
     }
 
-    public MapBasicProcedureHandler(DataSource ds, String procedureName,
-            StatementFactory statementFactory) {
+    public void setResultSetHandler(ResultSetHandler handler) {
+        this.resultSetHandler_ = handler;
+    }
+
+    public ReturnsResultsetProcedureHandler(DataSource ds,
+            String procedureName, ResultSetHandler resultSetHandler) {
+        this(ds, procedureName, BasicStatementFactory.INSTANCE,
+                resultSetHandler);
+    }
+
+    public ReturnsResultsetProcedureHandler(DataSource ds,
+            String procedureName, StatementFactory statementFactory,
+            ResultSetHandler resultSetHandler) {
         setDataSource(ds);
         setProcedureName(procedureName);
         setStatementFactory(statementFactory);
+        setResultSetHandler(resultSetHandler);
     }
 
     public void initialize() {
-        initTypes();
+        if (initTypes() > 1) {
+            throw new SRuntimeException("EDAO0010");
+        }
     }
 
     protected Object execute(Connection connection, Object[] args) {
         CallableStatement cs = null;
+        ResultSet rs = null;
         try {
             cs = prepareCallableStatement(connection);
             bindArgs(cs, args);
             cs.execute();
-            Map result = new HashMap();
-            for (int i = 0; i < columnInOutTypes_.length; i++) {
-                if (isOutputColum(columnInOutTypes_[i].intValue())) {
-                    result.put(columnNames_[i], cs.getObject(i + 1));
-                }
-            }
-            return result;
+            rs = cs.getResultSet();
+            return getResultSetHandler().handle(rs);
         } catch (SQLException e) {
             throw new SQLRuntimeException(e);
         } finally {
-            StatementUtil.close(cs);
+            try {
+                ResultSetUtil.close(rs);
+            } finally {
+                StatementUtil.close(cs);
+            }
         }
     }
+
 }

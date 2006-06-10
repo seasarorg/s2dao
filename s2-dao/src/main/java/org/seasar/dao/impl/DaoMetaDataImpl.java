@@ -42,8 +42,12 @@ import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
+import org.seasar.dao.handler.AbstractBasicProcedureHandler;
 import org.seasar.dao.handler.MapBasicProcedureHandler;
 import org.seasar.dao.handler.ObjectBasicProcedureHandler;
+import org.seasar.dao.handler.ReturnsResultsetProcedureHandler;
+import org.seasar.dao.util.ProcedureMetaData;
+import org.seasar.dao.util.ProcedureUtil;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
@@ -242,19 +246,31 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
         String procedureName = annotationReader_.getStoredProcedureName(method);
         if (procedureName != null) {
-            Class returnType = method.getReturnType();
-            if (returnType.isAssignableFrom(Map.class)) {
-                sqlCommands_.put(method.getName(),
-                        new StaticStoredProcedureCommand(
-                                new MapBasicProcedureHandler(dataSource_,
-                                        procedureName)));
+            setupProcedure(method, procedureName);
+        }
+    }
+
+    protected void setupProcedure(Method method, String procedureName) {
+        final ProcedureMetaData procedureMetaData = ProcedureUtil
+                .getProcedureMetaData(dataSource_, procedureName);
+        final AbstractBasicProcedureHandler handler;
+        if (procedureMetaData.getProcedureType() == DatabaseMetaData.procedureReturnsResult) {
+            handler = new ReturnsResultsetProcedureHandler(dataSource_,
+                    procedureName, createResultSetHandler(method));
+        } else {
+            final Class returnType = method.getReturnType();
+            if (Map.class.isAssignableFrom(returnType)) {
+                handler = new MapBasicProcedureHandler(dataSource_,
+                        procedureName);
             } else {
-                sqlCommands_.put(method.getName(),
-                        new StaticStoredProcedureCommand(
-                                new ObjectBasicProcedureHandler(dataSource_,
-                                        procedureName)));
+                handler = new ObjectBasicProcedureHandler(dataSource_,
+                        procedureName);
             }
         }
+        handler.setProcedureMetaData(procedureMetaData);
+        handler.initialize();
+        final SqlCommand command = new StaticStoredProcedureCommand(handler);
+        sqlCommands_.put(method.getName(), command);
     }
 
     protected String readText(String path) {

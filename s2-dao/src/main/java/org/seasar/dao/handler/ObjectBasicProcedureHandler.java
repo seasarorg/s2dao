@@ -38,6 +38,9 @@ public class ObjectBasicProcedureHandler extends AbstractBasicProcedureHandler {
         setDataSource(ds);
         setProcedureName(procedureName);
         setStatementFactory(statementFactory);
+    }
+
+    public void initialize() {
         if (initTypes() > 1) {
             throw new SRuntimeException("EDAO0010");
         }

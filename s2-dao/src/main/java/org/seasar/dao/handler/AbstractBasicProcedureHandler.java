@@ -27,13 +27,13 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.seasar.dao.util.ProcedureMetaData;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.jdbc.types.ValueTypes;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
-import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.exception.EmptyRuntimeException;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
@@ -60,6 +60,8 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
     protected String[] columnNames_;
 
     protected StatementFactory statementFactory_ = BasicStatementFactory.INSTANCE;
+
+    protected ProcedureMetaData procedureMetaData;
 
     public DataSource getDataSource() {
         return dataSource_;
@@ -108,46 +110,10 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
         }
     }
 
-    protected String[] confirmProcedureName(DatabaseMetaData dmd)
-            throws SQLException {
-        String[] names = DatabaseMetaDataUtil.convertIdentifier(dmd,
-                procedureName_).split("\\.");
-        final int namesLength = names.length;
-        ResultSet rs = null;
-        try {
-            if (namesLength == 1) {
-                rs = dmd.getProcedures(null, null, names[0]);
-            } else if (namesLength == 2) {
-                rs = dmd.getProcedures(null, names[0], names[1]);
-            } else if (namesLength == 3) {
-                rs = dmd.getProcedures(names[0], names[1], names[2]);
-            }
-            int len = 0;
-            names = new String[3];
-            while (rs.next()) {
-                names[0] = rs.getString(1);
-                names[1] = rs.getString(2);
-                names[2] = rs.getString(3);
-                len++;
-            }
-            if (len < 1) {
-                throw new SRuntimeException("EDAO0012",
-                        new Object[] { procedureName_ });
-            }
-            if (len > 1) {
-                throw new SRuntimeException("EDAO0013",
-                        new Object[] { procedureName_ });
-            }
-            return names;
-        } finally {
-            ResultSetUtil.close(rs);
-        }
-    }
-
     protected int initTypes() {
         StringBuffer buff = new StringBuffer();
         buff.append("{ call ");
-        buff.append(procedureName_);
+        buff.append(getProcedureName());
         buff.append("(");
         List columnNames = new ArrayList();
         List dataType = new ArrayList();
@@ -158,8 +124,9 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
         try {
             connection = getConnection();
             DatabaseMetaData dmd = ConnectionUtil.getMetaData(connection);
-            String[] names = confirmProcedureName(dmd);
-            rs = dmd.getProcedureColumns(names[0], names[1], names[2], null);
+            rs = dmd.getProcedureColumns(procedureMetaData.getProcedureCat(),
+                    procedureMetaData.getProcedureSchem(), procedureMetaData
+                            .getProcedureName(), null);
             boolean commaRequired = false;
             while (rs.next()) {
                 columnNames.add(rs.getObject(4));
@@ -172,10 +139,12 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
                     }
                     buff.append("?");
                     commaRequired = true;
+                } else if (columnType == DatabaseMetaData.procedureColumnResult) {
+                    // ignore
                 } else if (columnType == DatabaseMetaData.procedureColumnReturn) {
                     buff.setLength(0);
                     buff.append("{? = call ");
-                    buff.append(procedureName_);
+                    buff.append(getProcedureName());
                     buff.append("(");
                 } else if (columnType == DatabaseMetaData.procedureColumnOut
                         || columnType == DatabaseMetaData.procedureColumnInOut) {
@@ -187,7 +156,7 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
                     outparameterNum++;
                 } else {
                     throw new SRuntimeException("EDAO0010",
-                            new Object[] { procedureName_ });
+                            new Object[] { getProcedureName() });
                 }
             }
         } catch (SQLException e) {
@@ -206,6 +175,8 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
                 .toArray(new Integer[inOutTypes.size()]);
         return outparameterNum;
     }
+
+    public abstract void initialize();
 
     protected abstract Object execute(Connection connection, Object[] args);
 
@@ -281,4 +252,9 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
     protected ValueType getValueType(Class clazz) {
         return ValueTypes.getValueType(clazz);
     }
+
+    public void setProcedureMetaData(ProcedureMetaData procedureMetaData) {
+        this.procedureMetaData = procedureMetaData;
+    }
+
 }
