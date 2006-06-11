@@ -12,21 +12,25 @@
   <version>1.0.35-SNAPSHOT</version>
   <description></description>
   <url>http://s2dao.seasar.org/</url>
+  <issueManagement>
+    <system>JIRA</system>
+    <url><![CDATA[https://www.seasar.org/issues/browse/DAO]]></url>
+  </issueManagement>
   <inceptionYear>2004</inceptionYear>
   <mailingLists>
     <mailingList>
       <name>Seasar-user</name>
-      <subscribe>http://lists.sourceforge.jp/mailman/listinfo/seasar-user</subscribe>
-      <unsubscribe>http://lists.sourceforge.jp/mailman/listinfo/seasar-user</unsubscribe>
-      <post>seasar-user@lists.sourceforge.jp</post>
-      <archive>http://lists.sourceforge.jp/mailman/archives/seasar-user/</archive>
+      <subscribe>https://www.seasar.org/mailman/listinfo/seasar-user</subscribe>
+      <unsubscribe>https://www.seasar.org/mailman/listinfo/seasar-user</unsubscribe>
+      <post>seasar-user@ml.seasar.org</post>
+      <archive>https://www.seasar.org/mailman/listinfo/seasar-user</archive>
     </mailingList>
     <mailingList>
       <name>Seasar-dev</name>
-      <subscribe>http://lists.sourceforge.jp/mailman/listinfo/seasar-dev</subscribe>
-      <unsubscribe>http://lists.sourceforge.jp/mailman/listinfo/seasar-dev</unsubscribe>
-      <post>seasar-user@lists.sourceforge.jp</post>
-      <archive>http://lists.sourceforge.jp/mailman/archives/seasar-dev/</archive>
+      <subscribe>https://www.seasar.org/mailman/listinfo/seasar-dev</subscribe>
+      <unsubscribe>https://www.seasar.org/mailman/listinfo/seasar-dev</unsubscribe>
+      <post>seasar-dev@ml.seasar.org</post>
+      <archive>https://www.seasar.org/mailman/listinfo/seasar-dev</archive>
     </mailingList>
     <mailingList>
       <name>Seasar-user-en</name>
@@ -63,10 +67,16 @@
       <id>manhole</id>
       <name>HONMA Hirotaka</name>
       <email>manholex@gmail.com</email>
-      <url></url>
+      <organization>ARK Systems Co., Ltd.</organization>
+      <organizationUrl>http://www.arksystems.co.jp/</organizationUrl>
       <timezone>+9</timezone>
     </developer>
   </developers>
+  <contributors>
+    <contributor>
+      <name>Satoshi Kimura</name>
+    </contributor>
+  </contributors>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
