@@ -22,4 +22,9 @@ public interface Employee2Dao {
     public Class BEAN = Employee2.class;
 
     public List getAllEmployees();
+
+    public String getAllEmployeesOnly_SQL = "SELECT ename, deptnum, empno FROM EMP2";
+
+    public List getAllEmployeesOnly();
+
 }

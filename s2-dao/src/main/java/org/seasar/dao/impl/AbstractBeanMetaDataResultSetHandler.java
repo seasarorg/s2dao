@@ -99,12 +99,14 @@ public abstract class AbstractBeanMetaDataResultSetHandler implements
             }
             continue;
         }
+        int existColumn = 0;
         for (int i = 0; i < bmd.getPropertyTypeSize(); ++i) {
             PropertyType pt = bmd.getPropertyType(i);
             String columnName = pt.getColumnName() + "_" + rpt.getRelationNo();
             if (!columnNames.contains(columnName)) {
                 continue;
             }
+            existColumn++;
             if (row == null) {
                 row = createRelationRow(rpt);
             }
@@ -119,7 +121,9 @@ public abstract class AbstractBeanMetaDataResultSetHandler implements
             if (value != null) {
                 pd.setValue(row, value);
             }
-
+        }
+        if (existColumn == 0) {
+            return null;
         }
         return row;
     }
@@ -137,4 +141,5 @@ public abstract class AbstractBeanMetaDataResultSetHandler implements
         }
         return columnNames;
     }
+
 }

@@ -16,6 +16,7 @@
 package org.seasar.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.seasar.dao.DaoMetaData;
@@ -34,7 +35,7 @@ import org.seasar.framework.util.TextUtil;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
 
@@ -81,14 +82,17 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         dmd.setValueTypeFactory(getValueTypeFactory());
         dmd.initialize();
 
-        InsertAutoDynamicCommand cmd = (InsertAutoDynamicCommand) dmd
+        InsertAutoDynamicCommand cmd1 = (InsertAutoDynamicCommand) dmd
                 .getSqlCommand("generate");
+        assertNotNull(cmd1);
         // System.out.println(cmd.getSql());
         UpdateAutoStaticCommand cmd2 = (UpdateAutoStaticCommand) dmd
                 .getSqlCommand("change");
+        assertNotNull(cmd2);
         System.out.println(cmd2.getSql());
         DeleteAutoStaticCommand cmd3 = (DeleteAutoStaticCommand) dmd
                 .getSqlCommand("terminate");
+        assertNotNull(cmd3);
         System.out.println(cmd3.getSql());
     }
 
@@ -203,7 +207,6 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
 
     public void testCreateFindCommand() throws Exception {
         DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
-
         SqlCommand cmd = dmd.createFindCommand(null);
         List employees = (List) cmd.execute(null);
         System.out.println(employees);
@@ -289,13 +292,54 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         // assertEquals("1", 2, employees.size());
     }
 
-    public void testRelation() throws Exception {
+    public void testRelation1() throws Exception {
         DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee2Dao"));
-
         SqlCommand cmd = dmd.getSqlCommand("getAllEmployees");
         List emps = (List) cmd.execute(null);
         System.out.println(emps);
         assertTrue("1", emps.size() > 0);
+        for (Iterator it = emps.iterator(); it.hasNext();) {
+            Employee2 emp = (Employee2) it.next();
+            assertNotNull("2:" + emp.toString(), emp.getDepartment2());
+        }
+    }
+
+    public void testRelation2() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee2Dao"));
+        SqlCommand cmd = dmd.getSqlCommand("getAllEmployeesOnly");
+        List emps = (List) cmd.execute(null);
+        System.out.println(emps);
+        assertTrue("1", emps.size() > 0);
+        for (Iterator it = emps.iterator(); it.hasNext();) {
+            Employee2 emp = (Employee2) it.next();
+            assertNull("2:" + emp.toString(), emp.getDepartment2());
+        }
+    }
+
+    public void testRelation3Tx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
+        {
+            SqlCommand cmd = dmd.getSqlCommand("insert");
+            Employee emp = new Employee();
+            emp.setEmpno(9999);
+            emp.setEname("test");
+            // Department:50 does not exist.
+            emp.setDeptno(50);
+            cmd.execute(new Object[] { emp });
+        }
+        SqlCommand cmd = dmd.getSqlCommand("getEmployee");
+        {
+            Employee emp = (Employee) cmd.execute(new Object[] { new Integer(
+                    7369) });
+            System.out.println(emp);
+            assertNotNull(emp.getDepartment());
+        }
+        {
+            Employee emp = (Employee) cmd.execute(new Object[] { new Integer(
+                    9999) });
+            System.out.println(emp);
+            assertNotNull(emp.getDepartment());
+        }
     }
 
     public void testGetDaoInterface() throws Exception {
