@@ -18,7 +18,7 @@ package org.seasar.dao.pager;
 import java.util.Stack;
 
 /**
- * �y�[�W���̏����X���b�h���[�J���ɕێ����܂��B
+ * ページャの情報をスレッドローカルに保持します。
  * 
  * @author Toshitaka Agata(Nulab,inc.)
  */
@@ -26,7 +26,7 @@ class PagerContext {
 
     private static final Object[] EMPTY_ARGS = new Object[0];
 
-    /** �X���b�h���[�J�� */
+    /** スレッドローカル */
     private static ThreadLocal threadLocal = new ThreadLocal() {
         protected Object initialValue() {
             return new PagerContext();
@@ -37,13 +37,13 @@ class PagerContext {
     private Stack argsStack = new Stack();
 
     /**
-     * �R���X�g���N�^
+     * コンストラクタ
      */
     private PagerContext() {
     };
 
     /**
-     * ���݂̃X���b�h�Ɍ��т���PagerContext���擾���܂��B
+     * 現在のスレッドに結びついたPagerContextを取得します。
      * 
      * @return PagerContext
      */
@@ -68,10 +68,10 @@ class PagerContext {
     }
 
     /**
-     * ���\�b�h�̈�����PagerCondition���܂܂�Ă��邩�ǂ����𔻒肵�܂��B
+     * メソッドの引数にPagerConditionが含まれているかどうかを判定します。
      * 
      * @param args
-     *            ����
+     *            引数
      * @return true/false
      */
     public static boolean isPagerCondition(Object[] args) {
@@ -85,10 +85,10 @@ class PagerContext {
     }
 
     /**
-     * ���\�b�h�̈�������PagerCondition���擾���܂��B
+     * メソッドの引数からPagerConditionを取得します。
      * 
      * @param args
-     *            ����
+     *            引数
      * @return PagerCondition
      */
     public static PagerCondition getPagerCondition(Object[] args) {

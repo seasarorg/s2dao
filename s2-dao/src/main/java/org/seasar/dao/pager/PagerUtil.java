@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ƒy[ƒWƒƒƒ†[ƒeƒBƒŠƒeƒB
+ * ãƒšãƒ¼ã‚¸ãƒ£ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
  * 
  * @author Toshitaka Agata(Nulab,inc.)
  */
@@ -103,13 +103,13 @@ public class PagerUtil {
     }
 
     /**
-     * List‚Ì“à—e‚ðPagerCondition‚ÌðŒ‚ÅƒtƒBƒ‹ƒ^ƒŠƒ“ƒO‚µ‚Ü‚·B
+     * Listã®å†…å®¹ã‚’PagerConditionã®æ¡ä»¶ã§ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°ã—ã¾ã™ã€‚
      * 
      * @param list
      *            List
      * @param condition
-     *            ðŒ
-     * @return ƒtƒBƒ‹ƒ^ƒŠƒ“ƒOŒã‚ÌList
+     *            æ¡ä»¶
+     * @return ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°å¾Œã®List
      */
     public static List filter(List list, PagerCondition condition) {
         condition.setCount(list.size());

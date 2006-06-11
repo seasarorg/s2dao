@@ -21,23 +21,23 @@ import java.sql.ResultSet;
 import org.seasar.extension.jdbc.ResultSetFactory;
 
 /**
- * ResultSetFactory‚ğƒ‰ƒbƒv‚µ‚ÄA ƒy[ƒWƒƒ—p‚ÌResultSet‚ğ¶¬‚µ‚Ü‚·B
+ * ResultSetFactoryã‚’ãƒ©ãƒƒãƒ—ã—ã¦ã€ ãƒšãƒ¼ã‚¸ãƒ£ç”¨ã®ResultSetã‚’ç”Ÿæˆã—ã¾ã™ã€‚
  * 
  * @author Toshitaka Agata(Nulab,inc.)
  * @author manhole
  */
 public class PagerResultSetFactoryWrapper implements ResultSetFactory {
 
-    /** ƒIƒŠƒWƒiƒ‹‚ÌResultSetFactory */
+    /** ã‚ªãƒªã‚¸ãƒŠãƒ«ã®ResultSetFactory */
     private ResultSetFactory resultSetFactory_;
 
     private boolean useScrollCursor_ = true;
 
     /**
-     * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+     * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
      * 
      * @param resultSetFactory
-     *            ƒIƒŠƒWƒiƒ‹‚ÌResultSetFactory
+     *            ã‚ªãƒªã‚¸ãƒŠãƒ«ã®ResultSetFactory
      */
     public PagerResultSetFactoryWrapper(ResultSetFactory resultSetFactory) {
         resultSetFactory_ = resultSetFactory;
@@ -51,10 +51,10 @@ public class PagerResultSetFactoryWrapper implements ResultSetFactory {
     }
 
     /**
-     * ResultSet‚ğ¶¬‚µ‚Ü‚·B
+     * ResultSetã‚’ç”Ÿæˆã—ã¾ã™ã€‚
      * <p>
-     * PagerContext‚ÉPagerCondition‚ªƒZƒbƒg‚³‚ê‚Ä‚¢‚éê‡A
-     * ResultSet‚ğPagerResultSetWrapper‚Åƒ‰ƒbƒv‚µ‚Ä•Ô‚µ‚Ü‚·B
+     * PagerContextã«PagerConditionãŒã‚»ãƒƒãƒˆã•ã‚Œã¦ã„ã‚‹å ´åˆã€
+     * ResultSetã‚’PagerResultSetWrapperã§ãƒ©ãƒƒãƒ—ã—ã¦è¿”ã—ã¾ã™ã€‚
      * 
      * @param PreparedStatement
      * @return ResultSet

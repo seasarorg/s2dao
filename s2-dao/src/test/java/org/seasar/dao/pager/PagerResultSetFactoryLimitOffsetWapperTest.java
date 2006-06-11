@@ -19,9 +19,9 @@ public class PagerResultSetFactoryLimitOffsetWapperTest extends TestCase {
     /*
      * public void testMakeBaseSql() throws Exception { try {
      * PagerContext.getContext().pushArgs(createNormalArgs()); assertEquals(
-     * "SELECT‚Ì‘O‚ÌƒlƒCƒeƒBƒuSQL‚ğœ‹", "SELECT * FROM DEPARTMENT",
+     * "SELECTã®å‰ã®ãƒã‚¤ãƒ†ã‚£ãƒ–SQLã‚’é™¤å»", "SELECT * FROM DEPARTMENT",
      * wrapper.makeBaseSql("native sql ... SELECT * FROM DEPARTMENT"));
-     * assertEquals( "ƒlƒCƒeƒBƒuSQL‚ª‘¶İ‚µ‚È‚¢ê‡AŒ³‚ÌSQL‚à•Ï‰»‚È‚µ", "SELECT * FROM DEPARTMENT",
+     * assertEquals( "ãƒã‚¤ãƒ†ã‚£ãƒ–SQLãŒå­˜åœ¨ã—ãªã„å ´åˆã€å…ƒã®SQLã‚‚å¤‰åŒ–ãªã—", "SELECT * FROM DEPARTMENT",
      * wrapper.makeBaseSql("SELECT * FROM DEPARTMENT")); } finally {
      * PagerContext.getContext().popArgs(); }
      *  }
@@ -29,7 +29,7 @@ public class PagerResultSetFactoryLimitOffsetWapperTest extends TestCase {
     public void testLimitOffsetSql() throws Exception {
         try {
             PagerContext.getContext().pushArgs(createNormalArgs());
-            assertEquals("w’è‚³‚ê‚½limit offset‚ª•t‰Á‚³‚ê‚½SQL‚ğ¶¬",
+            assertEquals("æŒ‡å®šã•ã‚ŒãŸlimit offsetãŒä»˜åŠ ã•ã‚ŒãŸSQLã‚’ç”Ÿæˆ",
                     "SELECT * FROM DEPARTMENT LIMIT 10 OFFSET 55", wrapper
                             .makeLimitOffsetSql("SELECT * FROM DEPARTMENT", 10,
                                     55));

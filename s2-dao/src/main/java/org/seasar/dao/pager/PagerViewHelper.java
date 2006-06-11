@@ -16,7 +16,7 @@
 package org.seasar.dao.pager;
 
 /**
- * ƒy[ƒWƒƒ‚Ìƒrƒ…[ƒwƒ‹ƒp[ƒNƒ‰ƒX‚Å‚·B
+ * ãƒšãƒ¼ã‚¸ãƒ£ã®ãƒ“ãƒ¥ãƒ¼ãƒ˜ãƒ«ãƒ‘ãƒ¼ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
  * 
  * @author Toshitaka Agata(Nulab,inc.)
  */
@@ -24,10 +24,10 @@ public class PagerViewHelper implements PagerCondition {
 
     private static final int DEFAULT_DISPLAY_PAGE_MAX = 9;
 
-    /** ŒŸõğŒƒIƒuƒWƒFƒNƒg */
+    /** æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ */
     private final PagerCondition condition;
 
-    /** ‰æ–Êã‚Å‚Ìƒy[ƒW‚ÌÅ‘å•\¦” */
+    /** ç”»é¢ä¸Šã§ã®ãƒšãƒ¼ã‚¸ã®æœ€å¤§è¡¨ç¤ºæ•° */
     private final int displayPageMax;
 
     public PagerViewHelper(PagerCondition condition) {
@@ -64,7 +64,7 @@ public class PagerViewHelper implements PagerCondition {
     }
 
     /**
-     * ‘O‚Ö‚ÌƒŠƒ“ƒN‚ª•\¦‚Å‚«‚é‚©‚Ç‚¤‚©‚ğ”»’è‚µ‚Ü‚·B
+     * å‰ã¸ã®ãƒªãƒ³ã‚¯ãŒè¡¨ç¤ºã§ãã‚‹ã‹ã©ã†ã‹ã‚’åˆ¤å®šã—ã¾ã™ã€‚
      * 
      * @param ture/false
      */
@@ -73,7 +73,7 @@ public class PagerViewHelper implements PagerCondition {
     }
 
     /**
-     * Ÿ‚Ö‚ÌƒŠƒ“ƒN‚ª•\¦‚Å‚«‚é‚©‚Ç‚¤‚©‚ğ”»’è‚µ‚Ü‚·B
+     * æ¬¡ã¸ã®ãƒªãƒ³ã‚¯ãŒè¡¨ç¤ºã§ãã‚‹ã‹ã©ã†ã‹ã‚’åˆ¤å®šã—ã¾ã™ã€‚
      * 
      * @param ture/false
      */
@@ -82,72 +82,72 @@ public class PagerViewHelper implements PagerCondition {
     }
 
     /**
-     * Œ»İ•\¦’†‚Ìˆê——‚ÌÅŒã‚Ìoffset‚ğæ“¾‚µ‚Ü‚·B
+     * ç¾åœ¨è¡¨ç¤ºä¸­ã®ä¸€è¦§ã®æœ€å¾Œã®offsetã‚’å–å¾—ã—ã¾ã™ã€‚
      * 
-     * @param Œ»İ•\¦’†‚Ìˆê——‚ÌÅŒã‚Ìoffset
+     * @param ç¾åœ¨è¡¨ç¤ºä¸­ã®ä¸€è¦§ã®æœ€å¾Œã®offset
      */
     public int getCurrentLastOffset() {
         return PagerUtil.getCurrentLastOffset(condition);
     }
 
     /**
-     * Ÿ‚ÖƒŠƒ“ƒN‚Ìoffset‚ğ•Ô‚µ‚Ü‚·B
+     * æ¬¡ã¸ãƒªãƒ³ã‚¯ã®offsetã‚’è¿”ã—ã¾ã™ã€‚
      * 
-     * @return Ÿ‚ÖƒŠƒ“ƒN‚Ìoffset
+     * @return æ¬¡ã¸ãƒªãƒ³ã‚¯ã®offset
      */
     public int getNextOffset() {
         return PagerUtil.getNextOffset(condition);
     }
 
     /**
-     * ‘O‚ÖƒŠƒ“ƒN‚Ìoffset‚ğ•Ô‚µ‚Ü‚·B
+     * å‰ã¸ãƒªãƒ³ã‚¯ã®offsetã‚’è¿”ã—ã¾ã™ã€‚
      * 
-     * @return ‘O‚ÖƒŠƒ“ƒN‚Ìoffset
+     * @return å‰ã¸ãƒªãƒ³ã‚¯ã®offset
      */
     public int getPrevOffset() {
         return PagerUtil.getPrevOffset(condition);
     }
 
     /**
-     * Œ»İƒy[ƒW‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚µ‚Ü‚·B
+     * ç¾åœ¨ãƒšãƒ¼ã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿”ã—ã¾ã™ã€‚
      * 
-     * @return Œ»İƒy[ƒW‚ÌƒCƒ“ƒfƒbƒNƒX
+     * @return ç¾åœ¨ãƒšãƒ¼ã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
      */
     public int getPageIndex() {
         return PagerUtil.getPageIndex(condition);
     }
 
     /**
-     * Œ»İƒy[ƒW‚ÌƒJƒEƒ“ƒg(ƒCƒ“ƒfƒbƒNƒX+1)‚ğ•Ô‚µ‚Ü‚·B
+     * ç¾åœ¨ãƒšãƒ¼ã‚¸ã®ã‚«ã‚¦ãƒ³ãƒˆ(ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹+1)ã‚’è¿”ã—ã¾ã™ã€‚
      * 
-     * @return Œ»İƒy[ƒW‚ÌƒJƒEƒ“ƒg(ƒCƒ“ƒfƒbƒNƒX+1)
+     * @return ç¾åœ¨ãƒšãƒ¼ã‚¸ã®ã‚«ã‚¦ãƒ³ãƒˆ(ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹+1)
      */
     public int getPageCount() {
         return PagerUtil.getPageCount(condition);
     }
 
     /**
-     * ÅIƒy[ƒW‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚µ‚Ü‚·B
+     * æœ€çµ‚ãƒšãƒ¼ã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿”ã—ã¾ã™ã€‚
      * 
-     * @return ÅIƒy[ƒW‚ÌƒCƒ“ƒfƒbƒNƒX
+     * @return æœ€çµ‚ãƒšãƒ¼ã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
      */
     public int getLastPageIndex() {
         return PagerUtil.getLastPageIndex(condition);
     }
 
     /**
-     * ƒy[ƒWƒŠƒ“ƒN‚Ì•\¦ãŒÀ‚ğŒ³‚ÉAƒy[ƒW”Ô†ƒŠƒ“ƒN‚Ì•\¦ŠJnˆÊ’u‚ğ•Ô‚µ‚Ü‚·B
+     * ãƒšãƒ¼ã‚¸ãƒªãƒ³ã‚¯ã®è¡¨ç¤ºä¸Šé™ã‚’å…ƒã«ã€ãƒšãƒ¼ã‚¸ç•ªå·ãƒªãƒ³ã‚¯ã®è¡¨ç¤ºé–‹å§‹ä½ç½®ã‚’è¿”ã—ã¾ã™ã€‚
      * 
-     * @return ƒy[ƒW”Ô†ƒŠƒ“ƒN‚Ì•\¦ŠJnˆÊ’u
+     * @return ãƒšãƒ¼ã‚¸ç•ªå·ãƒªãƒ³ã‚¯ã®è¡¨ç¤ºé–‹å§‹ä½ç½®
      */
     public int getDisplayPageIndexBegin() {
         return PagerUtil.getDisplayPageIndexBegin(condition, displayPageMax);
     }
 
     /**
-     * ƒy[ƒWƒŠƒ“ƒN‚Ì•\¦ãŒÀ‚ğŒ³‚ÉAƒy[ƒW”Ô†ƒŠƒ“ƒN‚Ì•\¦I—¹ˆÊ’u‚ğ•Ô‚µ‚Ü‚·B
+     * ãƒšãƒ¼ã‚¸ãƒªãƒ³ã‚¯ã®è¡¨ç¤ºä¸Šé™ã‚’å…ƒã«ã€ãƒšãƒ¼ã‚¸ç•ªå·ãƒªãƒ³ã‚¯ã®è¡¨ç¤ºçµ‚äº†ä½ç½®ã‚’è¿”ã—ã¾ã™ã€‚
      * 
-     * @return ƒy[ƒW”Ô†ƒŠƒ“ƒN‚Ì•\¦I—¹ˆÊ’u
+     * @return ãƒšãƒ¼ã‚¸ç•ªå·ãƒªãƒ³ã‚¯ã®è¡¨ç¤ºçµ‚äº†ä½ç½®
      */
     public int getDisplayPageIndexEnd() {
         return PagerUtil.getDisplayPageIndexEnd(condition, displayPageMax);

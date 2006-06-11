@@ -22,15 +22,15 @@ import org.seasar.dao.interceptors.S2DaoInterceptor;
 import org.seasar.framework.aop.interceptors.AbstractInterceptor;
 
 /**
- * ƒy[ƒWƒƒ—p‚ÌS2DaoInterceptor‚Ìƒ‰ƒbƒp[B PagerContext‚Éˆø”‚ğƒZƒbƒg‚µ‚ÄA S2DaoInterceptor‚ğŒÄ‚Ño‚µ‚Ü‚·B
+ * ãƒšãƒ¼ã‚¸ãƒ£ç”¨ã®S2DaoInterceptorã®ãƒ©ãƒƒãƒ‘ãƒ¼ã€‚ PagerContextã«å¼•æ•°ã‚’ã‚»ãƒƒãƒˆã—ã¦ã€ S2DaoInterceptorã‚’å‘¼ã³å‡ºã—ã¾ã™ã€‚
  * <p>
  * 
- * Ÿ‚ÌƒV[ƒPƒ“ƒX‚É‚æ‚èAƒy[ƒWƒ“ƒOˆ—‚ªÀs‚³‚ê‚Ü‚·B
+ * æ¬¡ã®ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«ã‚ˆã‚Šã€ãƒšãƒ¼ã‚¸ãƒ³ã‚°å‡¦ç†ãŒå®Ÿè¡Œã•ã‚Œã¾ã™ã€‚
  * <ol>
- * <li>PagerS2DaoInterceptorWrapper‚ªˆø”‚ğPagerContext‚ÉƒZƒbƒg‚µ‚Ü‚·B</li>
- * <li>PagerResultSetFactoryWrapper‚ªˆø”‚©‚çPagerCondition‚ğæ“¾‚µ‚ÄPagerResultSetWrapper‚ÉƒZƒbƒg‚µ‚Ü‚·B</li>
- * <li>PagerResultSetWrapper‚ÍPagerCondition‚ğŒ³‚Éw’è‚³‚ê‚½”ÍˆÍ‚ÌŒ‹‰ÊƒZƒbƒg‚ğ•Ô‚µ‚Ü‚·B</li>
- * <li>PagerResultSetWrapper‚ÍResultSet‚Ì‘Œ”‚ğPagerCondition‚ÉƒZƒbƒg‚µ‚Ü‚·B</li>
+ * <li>PagerS2DaoInterceptorWrapperãŒå¼•æ•°ã‚’PagerContextã«ã‚»ãƒƒãƒˆã—ã¾ã™ã€‚</li>
+ * <li>PagerResultSetFactoryWrapperãŒå¼•æ•°ã‹ã‚‰PagerConditionã‚’å–å¾—ã—ã¦PagerResultSetWrapperã«ã‚»ãƒƒãƒˆã—ã¾ã™ã€‚</li>
+ * <li>PagerResultSetWrapperã¯PagerConditionã‚’å…ƒã«æŒ‡å®šã•ã‚ŒãŸç¯„å›²ã®çµæœã‚»ãƒƒãƒˆã‚’è¿”ã—ã¾ã™ã€‚</li>
+ * <li>PagerResultSetWrapperã¯ResultSetã®ç·ä»¶æ•°ã‚’PagerConditionã«ã‚»ãƒƒãƒˆã—ã¾ã™ã€‚</li>
  * </ol>
  * 
  * @author Toshitaka Agata(Nulab,inc.)
@@ -42,14 +42,14 @@ public class PagerS2DaoInterceptorWrapper extends AbstractInterceptor {
 
     private static final long serialVersionUID = 1L;
 
-    /** ƒIƒŠƒWƒiƒ‹‚ÌS2DaoInterceptor */
+    /** ã‚ªãƒªã‚¸ãƒŠãƒ«ã®S2DaoInterceptor */
     private S2DaoInterceptor interceptor_;
 
     /**
-     * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+     * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
      * 
      * @param interceptor
-     *            ƒIƒŠƒWƒiƒ‹‚ÌS2DaoInterceptor
+     *            ã‚ªãƒªã‚¸ãƒŠãƒ«ã®S2DaoInterceptor
      */
     public PagerS2DaoInterceptorWrapper(S2DaoInterceptor interceptor) {
         this.interceptor_ = interceptor;

@@ -18,7 +18,7 @@ package org.seasar.dao.pager;
 import java.io.Serializable;
 
 /**
- * ƒy[ƒWƒƒğŒ•ÛƒIƒuƒWƒFƒNƒg‚Ìƒx[ƒXƒNƒ‰ƒXB
+ * ãƒšãƒ¼ã‚¸ãƒ£æ¡ä»¶ä¿æŒã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã€‚
  * 
  * @author Toshitaka Agata(Nulab,inc.)
  */
@@ -26,17 +26,17 @@ public class DefaultPagerCondition implements PagerCondition, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /** Œ»İ‚ÌˆÊ’u */
+    /** ç¾åœ¨ã®ä½ç½® */
     private int offset;
 
-    /** •\¦‚ÌÅ‘å’l */
+    /** è¡¨ç¤ºã®æœ€å¤§å€¤ */
     private int limit = NONE_LIMIT;
 
-    /** æ“¾‚µ‚½‘” */
+    /** å–å¾—ã—ãŸç·æ•° */
     private int count;
 
     /**
-     * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+     * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
      */
     public DefaultPagerCondition() {
     }

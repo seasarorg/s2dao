@@ -20,12 +20,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.seasar.framework.util.ClassUtil;
 
 /**
- * ƒy[ƒWƒƒŠÇ—ƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒXB
+ * ãƒšãƒ¼ã‚¸ãƒ£ç®¡ç†ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚¯ãƒ©ã‚¹ã€‚
  * <p>
- * ƒZƒbƒVƒ‡ƒ“’†‚Ìƒy[ƒWƒƒŒŸõğŒƒIƒuƒWƒFƒNƒg‚ğŠÇ—‚µ‚Ü‚·B
+ * ã‚»ãƒƒã‚·ãƒ§ãƒ³ä¸­ã®ãƒšãƒ¼ã‚¸ãƒ£æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç®¡ç†ã—ã¾ã™ã€‚
  * <p>
  * <p>
- * g—p•û–@‚ÍˆÈ‰º‚Ì‚æ‚¤‚É‚È‚è‚Ü‚·B
+ * ä½¿ç”¨æ–¹æ³•ã¯ä»¥ä¸‹ã®ã‚ˆã†ã«ãªã‚Šã¾ã™ã€‚
  * 
  * <pre>
  * public class XXXXAction extends Action {
@@ -38,12 +38,12 @@ import org.seasar.framework.util.ClassUtil;
  *   public ActionForward doExecute(ActionMapping mapping, ActionForm _form,
  *       HttpServletRequest request, HttpServletResponse response) throws Exception {
  * 
- *      // ƒpƒ‰ƒ[ƒ^offset‚ğŒ³‚Éƒy[ƒWƒƒ‚ÌoffsetˆÊ’u‚ğXV
+ *      // ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿offsetã‚’å…ƒã«ãƒšãƒ¼ã‚¸ãƒ£ã®offsetä½ç½®ã‚’æ›´æ–°
  *      pager.updateOffset(request);
- *      // ŒŸõ
+ *      // æ¤œç´¢
  *  	MyPagerCondition dto = (MyPagerCondition) pager.getPagerCondition(request);
  *       if (form.getCode() != null) {
- *           // ğŒ‚ª‘¶İ‚·‚ê‚ÎAğŒ‚ğƒZƒbƒg‚·‚éB
+ *           // æ¡ä»¶ãŒå­˜åœ¨ã™ã‚Œã°ã€æ¡ä»¶ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
  *           dto.setCode(form.getCode());
  *       }
  *       List items = logic.getItems(dto);
@@ -56,41 +56,41 @@ import org.seasar.framework.util.ClassUtil;
  */
 public class PagerSupport {
 
-    /** Å‘åæ“¾Œ”‚Ì‰Šú’l */
+    /** æœ€å¤§å–å¾—ä»¶æ•°ã®åˆæœŸå€¤ */
     public static final int DEFAULT_LIMIT = PagerCondition.NONE_LIMIT;
 
-    /** Å‘åæ“¾Œ” */
+    /** æœ€å¤§å–å¾—ä»¶æ•° */
     private int limit = DEFAULT_LIMIT;
 
-    /** ƒy[ƒWƒƒŒŸõğŒƒNƒ‰ƒX */
+    /** ãƒšãƒ¼ã‚¸ãƒ£æ¤œç´¢æ¡ä»¶ã‚¯ãƒ©ã‚¹ */
     private Class pagerConditionClass;
 
-    /** ŒŸõğŒƒIƒuƒWƒFƒNƒg‚ÌƒZƒbƒVƒ‡ƒ“’†‚Ì–¼‘O */
+    /** æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚»ãƒƒã‚·ãƒ§ãƒ³ä¸­ã®åå‰ */
     private String pagerConditionName;
 
     /**
-     * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+     * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
      * <p>
-     * Å‘åæ“¾Œ”‚Í–³§ŒÀ(-1)‚Éİ’è‚³‚ê‚Ü‚·B
+     * æœ€å¤§å–å¾—ä»¶æ•°ã¯ç„¡åˆ¶é™(-1)ã«è¨­å®šã•ã‚Œã¾ã™ã€‚
      * 
      * @param pagerConditionClass
-     *            ƒy[ƒWƒƒŒŸõğŒƒNƒ‰ƒX
+     *            ãƒšãƒ¼ã‚¸ãƒ£æ¤œç´¢æ¡ä»¶ã‚¯ãƒ©ã‚¹
      * @param pagerConditionName
-     *            ŒŸõğŒƒIƒuƒWƒFƒNƒg‚ÌƒZƒbƒVƒ‡ƒ“’†‚Ì–¼‘O
+     *            æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚»ãƒƒã‚·ãƒ§ãƒ³ä¸­ã®åå‰
      */
     public PagerSupport(Class pagerConditionClass, String pagerConditionName) {
         this(DEFAULT_LIMIT, pagerConditionClass, pagerConditionName);
     }
 
     /**
-     * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+     * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
      * 
      * @param limit
-     *            Å‘åæ“¾Œ”
+     *            æœ€å¤§å–å¾—ä»¶æ•°
      * @param pagerConditionClass
-     *            ƒy[ƒWƒƒŒŸõğŒƒNƒ‰ƒX
+     *            ãƒšãƒ¼ã‚¸ãƒ£æ¤œç´¢æ¡ä»¶ã‚¯ãƒ©ã‚¹
      * @param pagerConditionName
-     *            ŒŸõğŒƒIƒuƒWƒFƒNƒg‚ÌƒZƒbƒVƒ‡ƒ“’†‚Ì–¼‘O
+     *            æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚»ãƒƒã‚·ãƒ§ãƒ³ä¸­ã®åå‰
      */
     public PagerSupport(int limit, Class pagerConditionClass,
             String pagerConditionName) {
@@ -100,14 +100,14 @@ public class PagerSupport {
     }
 
     /**
-     * ƒŠƒNƒGƒXƒgƒpƒ‰ƒ[ƒ^–¼‚ğw’è‚µ‚ÄAƒZƒbƒVƒ‡ƒ“’†‚ÌŒŸõğŒƒIƒuƒWƒFƒNƒg‚ÌŒ»İˆÊ’u‚ğXV‚µ‚Ü‚·B
+     * ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿åã‚’æŒ‡å®šã—ã¦ã€ã‚»ãƒƒã‚·ãƒ§ãƒ³ä¸­ã®æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç¾åœ¨ä½ç½®ã‚’æ›´æ–°ã—ã¾ã™ã€‚
      * <p>
-     * ŒŸõğŒƒIƒuƒWƒFƒNƒg‚ª‘¶İ‚µ‚È‚¢ê‡AV‹K‚ÉŒŸõğŒƒIƒuƒWƒFƒNƒg‚ğ¶¬‚µ‚Ü‚·B
+     * æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒå­˜åœ¨ã—ãªã„å ´åˆã€æ–°è¦ã«æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆã—ã¾ã™ã€‚
      * 
      * @param request
      *            HttpServletRequest
      * @param offsetParamName
-     *            Œ»İˆÊ’u‚ğ•\‚·ƒŠƒNƒGƒXƒgƒpƒ‰ƒ[ƒ^–¼
+     *            ç¾åœ¨ä½ç½®ã‚’è¡¨ã™ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å
      */
     public void updateOffset(HttpServletRequest request, String offsetParamName) {
         int offset = getOffset(request, offsetParamName);
@@ -116,9 +116,9 @@ public class PagerSupport {
     }
 
     /**
-     * ƒŠƒNƒGƒXƒgƒpƒ‰ƒ[ƒ^–¼"offset"‚ÅƒZƒbƒVƒ‡ƒ“’†‚ÌŒŸõğŒƒIƒuƒWƒFƒNƒg‚ÌŒ»İˆÊ’u‚ğXV‚µ‚Ü‚·B
+     * ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å"offset"ã§ã‚»ãƒƒã‚·ãƒ§ãƒ³ä¸­ã®æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç¾åœ¨ä½ç½®ã‚’æ›´æ–°ã—ã¾ã™ã€‚
      * <p>
-     * ŒŸõğŒƒIƒuƒWƒFƒNƒg‚ª‘¶İ‚µ‚È‚¢ê‡AV‹K‚ÉŒŸõğŒƒIƒuƒWƒFƒNƒg‚ğ¶¬‚µ‚Ü‚·B
+     * æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒå­˜åœ¨ã—ãªã„å ´åˆã€æ–°è¦ã«æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆã—ã¾ã™ã€‚
      * 
      * @param request
      *            HttpServletRequest
@@ -128,13 +128,13 @@ public class PagerSupport {
     }
 
     /**
-     * ƒŠƒNƒGƒXƒgƒpƒ‰ƒ[ƒ^"offset"‚©‚çŒ»İˆÊ’u‚ğæ“¾‚µ‚Ü‚·B
+     * ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿"offset"ã‹ã‚‰ç¾åœ¨ä½ç½®ã‚’å–å¾—ã—ã¾ã™ã€‚
      * 
      * @param request
      *            HttpServletRequest
      * @param offsetParamName
-     *            Œ»İˆÊ’u‚ğ•\‚·ƒŠƒNƒGƒXƒgƒpƒ‰ƒ[ƒ^–¼
-     * @return Œ»İˆÊ’u
+     *            ç¾åœ¨ä½ç½®ã‚’è¡¨ã™ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å
+     * @return ç¾åœ¨ä½ç½®
      */
     private int getOffset(HttpServletRequest request, String offsetParamName) {
         String value = request.getParameter(offsetParamName);
@@ -150,13 +150,13 @@ public class PagerSupport {
     }
 
     /**
-     * ƒZƒbƒVƒ‡ƒ“’†‚ÌŒŸõğŒƒIƒuƒWƒFƒNƒg‚ğæ“¾‚µ‚Ü‚·B
+     * ã‚»ãƒƒã‚·ãƒ§ãƒ³ä¸­ã®æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
      * <p>
-     * ŒŸõğŒƒIƒuƒWƒFƒNƒg‚ª‘¶İ‚µ‚È‚¢ê‡AV‹K‚ÉŒŸõğŒƒIƒuƒWƒFƒNƒg‚ğ¶¬‚µ‚Ü‚·B
+     * æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒå­˜åœ¨ã—ãªã„å ´åˆã€æ–°è¦ã«æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆã—ã¾ã™ã€‚
      * 
      * @param request
      *            HttpServletRequest
-     * @return ŒŸõğŒƒIƒuƒWƒFƒNƒg
+     * @return æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
      */
     public PagerCondition getPagerCondition(HttpServletRequest request) {
         PagerCondition dto = (PagerCondition) request.getSession()

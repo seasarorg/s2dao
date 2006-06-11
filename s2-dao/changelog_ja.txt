@@ -1,88 +1,85 @@
-S2Dao �ύX����
+S2Dao 変更履歴
 
 1.0.35-SNAPSHOT
 -------------------------------------------------------------------------------
-AbstractDao���p�������N���X�ł́ADao�C���^�t�F�[�X�֕t����bean�A�m�e�[�V�������擾�ł��Ă��Ȃ��������ɑΉ����܂����B(s2dao-tiger)[Seasar-user:3651]
-�o�����[�^�Ȃ��̃X�g�A�h�v���V�[�W���ŃG���[������������ɑΉ����܂����B[Seasar-user:3686] 
-SQL���֎g�p����J�������́ADatabaseMetaData����COLUMN�A�m�e�[�V������D�悷��悤�ɂ��܂����B[Seasar-user:3693]
-S2Dao 1.0.33�ȍ~����ID�A�m�e�[�V������SEQUENCE�ō쐬���ꂽID���AINSERT���Ɋ܂܂�Ȃ��Ȃ��Ă��܂������ɑΉ����܂����B[Seasar-user:3711]
-S2Dao Tiger��Example�ɒu����Ă���dao.dicon��ValueTypeFactory�������Ă����̂��C�����܂����B
-"�X�L�[�}��.�v���V�[�W����"�`���Ńv���V�[�W�����擾����ۂɁA�X�L�[�}�����J�^���O���Ƃ��Ĉ����Ă����̂��C�����܂����B[DAO-5]
-Statement��fetchSize��ύX�ł���悤�ɂ��܂����B[DAO-2]
-
-[DAO-2]�̑Ή���j2ee.dicon��ύX���Ă��܂��B
-�O�o�[�W�����̂܂܂ł�����͂��܂����A���̏ꍇ��fetchSize��ύX���Ȃ����߁AJDBC�h���C�o�̃f�t�H���g�l�ɂȂ�܂��B
-(1.0.34�܂ł�BasicSelectHandler�ɂ����100��ݒ肵�Ă���)
+AbstractDaoを継承したクラスでは、Daoインタフェースへ付けたbeanアノテーションを取得できていなかった問題に対応しました。(s2dao-tiger)[Seasar-user:3651]
+バラメータなしのストアドプロシージャでエラーが発生する問題に対応しました。[Seasar-user:3686] 
+SQL文へ使用するカラム名は、DatabaseMetaDataよりもCOLUMNアノテーションを優先するようにしました。[Seasar-user:3693]
+S2Dao 1.0.33以降からIDアノテーションのSEQUENCEで作成されたIDが、INSERT文に含まれなくなってしまった問題に対応しました。[Seasar-user:3711]
+S2Dao TigerのExampleに置かれていたdao.diconにValueTypeFactoryが抜けていたのを修正しました。
+"スキーマ名.プロシージャ名"形式でプロシージャを取得する際に、スキーマ名がカタログ名として扱われていたのを修正しました。[DAO-5]
+SelectDynamicCommandからのSELECT時にsetchSizeを変更しないようにしました。fetchSizeを変更するにはS2Container 2.3.11からの機能を使用してください。[DAO-2]
+ResultSetを返すStored Procedureを扱えるようにしました。[DAO-6]
 
 1.0.34
 -------------------------------------------------------------------------------
-QUERY�A�m�e�[�V������BEGIN�R�����g��������悤�ɂ��܂����B[Seasar-user:3558]
-VALUE_TYPE�A�m�e�[�V�����ւ̓R���|�[�l���g�����L�q����悤�ύX���܂����B[Seasar-user:3556]
-dao.dicon��ValueTypeFactoryImpl��StringClobType��ǉ����܂����B
-BeanMetaDataImpl, DaoMetaDataImpl, DtoMetaDataImpl�փf�t�H���g�R���X�g���N�^��ǉ����A�����̃R���X�g���N�^��deprecated�ɂ��܂����B
-ID="identity"�̏ꍇ�Ƀo�b�`�X�V�ł�insert���G���[�ɂȂ���ɑΉ����܂����B
-s2dao-examples��EmployeeDaoClient����O�ƂȂ���ɑΉ����܂����B[Seasar-user:3465]
+QUERYアノテーションにBEGINコメントを書けるようにしました。[Seasar-user:3558]
+VALUE_TYPEアノテーションへはコンポーネント名を記述するよう変更しました。[Seasar-user:3556]
+dao.diconへValueTypeFactoryImplとStringClobTypeを追加しました。
+BeanMetaDataImpl, DaoMetaDataImpl, DtoMetaDataImplへデフォルトコンストラクタを追加し、既存のコンストラクタをdeprecatedにしました。
+ID="identity"の場合にバッチ更新でのinsertがエラーになる問題に対応しました。
+s2dao-examplesのEmployeeDaoClientが例外となる問題に対応しました。[Seasar-user:3465]
 
 1.0.33
 -------------------------------------------------------------------------------
-CLOB�^���T�|�[�g���܂����B���̂��߂�VALUE_TYPE�A�m�e�[�V�����𓱓����܂����B
-�������������INSERT������Abean�̃v���p�e�B��null�̃J���������O����悤�ɂ��܂����B����ɂ��ATable�֒�`���Ă���DEFAULT�l�����������Ƃ��ł��܂��B
-�X�V�s����0���̏ꍇ�ɗ�O�𓊂���AssertAtLeastOneRowInterceptor�ƁA�X�V�s����1���ȊO�̏ꍇ�ɗ�O�𓊂���AssertExactlyOneRowInterceptor��ǉ����܂����B[Seasar-user:3508]
-UpdateDynamicCommand��UpdateAutoDynamicCommand�����ꂾ�������߁AUpdateAutoDynamicCommand���폜���܂����B
+CLOB型をサポートしました。このためにVALUE_TYPEアノテーションを導入しました。
+自動生成されるINSERT文から、beanのプロパティがnullのカラムを除外するようにしました。これにより、Tableへ定義してあるDEFAULT値を活かすことができます。
+更新行数が0件の場合に例外を投げるAssertAtLeastOneRowInterceptorと、更新行数が1件以外の場合に例外を投げるAssertExactlyOneRowInterceptorを追加しました。[Seasar-user:3508]
+UpdateDynamicCommandとUpdateAutoDynamicCommandが同一だったため、UpdateAutoDynamicCommandを削除しました。
 
-S2Dao 1.0.33�̓���ɂ�Seasar 2.3.8���K�v�ł��B
-(CLOB�^�T�|�[�g�𗘗p���Ȃ����2.3.7�ł����삷��Ǝv���܂��B)
+S2Dao 1.0.33の動作にはSeasar 2.3.8が必要です。
+(CLOB型サポートを利用しなければ2.3.7でも動作すると思います。)
 
 1.0.32
 -------------------------------------------------------------------------------
-Dao��Suffix��insert,update,delete����������prefix�̎w�肪�ł���悤�ɂȂ�܂����B�@([Seasar-user:3226])
-Sql�t�@�C���̕����R�[�h��F������̎���([Seasar-user:3337])
+DaoのSuffixとinsert,update,delete自動生成のprefixの指定ができるようになりました。　([Seasar-user:3226])
+Sqlファイルの文字コード誤認識回避の実装([Seasar-user:3337])
 
 1.0.31
 -------------------------------------------------------------------------------
-PROCEDURE�A�m�e�[�V������ǉ����܂����B
-S2Pager��g�ݍ��݂܂����B
+PROCEDUREアノテーションを追加しました。
+S2Pagerを組み込みました。
 
 1.0.30
 -------------------------------------------------------------------------------
 org.seasar.dao.impl.DaoMetaDataImpl
-dao�̃C���^�[�t�F�[�X���p�������C���^�[�t�F�[�X�ł����삷��悤�ɂ��܂����B
+daoのインターフェースを継承したインターフェースでも動作するようにしました。
 (thanks to Satoshi Kimura)
 
 1.0.29
 -------------------------------------------------------------------------------
 org.seasar.dao.node.BindVariableNode
-* �֘A��I�u�W�F�N�g�̃v���p�e�B���o�C���h�ł���悤�ɏC�����܂����B(#6435)
+* 関連先オブジェクトのプロパティをバインドできるように修正しました。(#6435)
 
-org.seasar.dao.impl �p�b�P�[�W
-* DaoMetaDataFactoryImpl��private�t�B�[���h��protected�ɕύX���܂����B
-* EntityManager#find�֓n��SELECT�����X�y�[�X����s�n�܂�ł���ꍇ��SQL���g�ݗ��Ă��Ȃ����������C�����܂����B(#6491)
+org.seasar.dao.impl パッケージ
+* DaoMetaDataFactoryImplのprivateフィールドをprotectedに変更しました。
+* EntityManager#findへ渡すSELECT文がスペースや改行始まりである場合にSQLが組み立てられなかった問題を修正しました。(#6491)
 
-org.seasar.dao.unit �p�b�P�[�W
-* S2DaoTestCase�փf�t�H���g�R���X�g���N�^��ǉ����܂����B(#6438)
+org.seasar.dao.unit パッケージ
+* S2DaoTestCaseへデフォルトコンストラクタを追加しました。(#6438)
 
 Maven2
-* Maven2�ɑΉ����܂����B
+* Maven2に対応しました。
 
-Derby�Ή�
-* Apache Derby�f�[�^�x�[�X�ɑΉ����܂����B
+Derby対応
+* Apache Derbyデータベースに対応しました。
 
 1.0.28
 -------------------------------------------------------------------------------
 org.seasar.dao.impl.DaoMetaDataImpl
-* �A�m�e�[�V�����̓ǂݍ��݂�AnnotationReader�ɕ������܂����B
-* SQL�A�m�e�[�V������V���ɍ��܂����B
-* QUERY�A�m�e�[�V������SQL�R�����g�̌��ORDER BY���L�q�����Ƃ���
-�@���܂�SQL���g�ݗ��Ă��Ȃ������̂��C�����܂����B
-* Dao�C���^�[�t�F�[�X��Bean�ȊO�̈�����delete��update���\�b�h��
-�@�쐬�����Ƃ��ɁADAO �� implements �������ۃN���X��p�ӂ��āA
-�@�Y�����郁�\�b�h���������Ă�Exception�����ł����̂��C�����܂����B 
-* �C���^�Z�v�^�𒊏ۃN���X�ɓK�p�����ꍇ�A�C���^�t�F�[�X���炾���łȂ�
-�@�K�p��̃N���X������A�m�e�[�V�������擾�ł���悤�ɕύX���܂����B
+* アノテーションの読み込みをAnnotationReaderに分離しました。
+* SQLアノテーションを新たに作りました。
+* QUERYアノテーションにSQLコメントの後にORDER BYを記述したときに
+　うまくSQLが組み立てられなかったのを修正しました。
+* DaoインターフェースにBean以外の引数でdeleteやupdateメソッドを
+　作成したときに、DAO を implements した抽象クラスを用意して、
+　該当するメソッドを実装してもExceptionが飛んでいたのを修正しました。 
+* インタセプタを抽象クラスに適用した場合、インタフェースからだけでなく
+　適用先のクラスからもアノテーションを取得できるように変更しました。
 
 1.0.27
 -------------------------------------------------------------------------------
-org.seasar.extension.dbcp.impl �p�b�P�[�W
-* �J��������_�����Ă���v���C�}���L�[���v���C�}���L�[�Ƃ��ĔF������Ȃ��̂��C�����܂����B
-* DaoMetaDataImpl,BeanMetaDataImpl,DtoMetaDataImpl��private���\�b�h��protected�ɂ����܂����B
-* RelationPropertyTypeImpl��private�t�B�[���h��protected�ɂ����܂����B
+org.seasar.extension.dbcp.impl パッケージ
+* カラム名に_がついているプライマリキーがプライマリキーとして認識されないのを修正しました。
+* DaoMetaDataImpl,BeanMetaDataImpl,DtoMetaDataImplのprivateメソッドをprotectedにかえました。
+* RelationPropertyTypeImplのprivateフィールドをprotectedにかえました。

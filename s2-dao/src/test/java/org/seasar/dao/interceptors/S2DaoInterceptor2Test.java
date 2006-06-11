@@ -71,7 +71,7 @@ public class S2DaoInterceptor2Test extends S2TestCase {
     public void testFullWidthTildaTx() throws Exception {
         Employee emp = new Employee();
         emp.setEmpno(99);
-        emp.setEname("Å`");
+        emp.setEname("ÔΩû");
         dao_.insert(emp);
         Employee emp2 = dao_.getEmployee(99);
         assertEquals("1", emp.getEname(), emp2.getEname());

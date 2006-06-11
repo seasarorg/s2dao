@@ -16,7 +16,7 @@
 package org.seasar.dao.pager;
 
 /**
- * �y�[�W�������I�u�W�F�N�g�̃C���^�[�t�F�C�X
+ * ページャ条件オブジェクトのインターフェイス
  * 
  * @author Toshitaka Agata(Nulab,inc.)
  */
@@ -25,47 +25,47 @@ public interface PagerCondition {
     public static final int NONE_LIMIT = -1;
 
     /**
-     * �������ʂ̑��������擾���܂��B
+     * 検索結果の総件数を取得します。
      * 
-     * @return ������
+     * @return 総件数
      */
     public int getCount();
 
     /**
-     * �������ʂ̑��������Z�b�g���܂��B
+     * 検索結果の総件数をセットします。
      * 
      * @param count
-     *            ������
+     *            総件数
      */
     public void setCount(int count);
 
     /**
-     * �������ʂ����x�Ɏ擾����ő匏�����擾���܂��B
+     * 検索結果から一度に取得する最大件数を取得します。
      * 
-     * @return �ő匏��
+     * @return 最大件数
      */
     public int getLimit();
 
     /**
-     * �������ʂ����x�Ɏ擾����ő匏�����Z�b�g���܂��B
+     * 検索結果から一度に取得する最大件数をセットします。
      * 
      * @param limit
-     *            �ő匏��
+     *            最大件数
      */
     public void setLimit(int limit);
 
     /**
-     * �������ʂ̎擾�J�n�ʒu�����Z�b�g���܂��B
+     * 検索結果の取得開始位置ををセットします。
      * 
      * @param offset
-     *            �擾�J�n�ʒu
+     *            取得開始位置
      */
     public void setOffset(int offset);
 
     /**
-     * �������ʂ̎擾�J�n�ʒu�����擾���܂��B
+     * 検索結果の取得開始位置をを取得します。
      * 
-     * @return �擾�J�n�ʒu
+     * @return 取得開始位置
      */
     public int getOffset();
 

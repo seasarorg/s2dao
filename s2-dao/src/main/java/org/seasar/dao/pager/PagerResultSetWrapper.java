@@ -23,30 +23,30 @@ import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.log.Logger;
 
 /**
- * ƒy[ƒWƒƒ—p‚ÌResultSetƒ‰ƒbƒp[B
+ * ãƒšãƒ¼ã‚¸ãƒ£ç”¨ã®ResultSetãƒ©ãƒƒãƒ‘ãƒ¼ã€‚
  * <p>
- * ŒŸõğŒƒIƒuƒWƒFƒNƒg‚ÌoffsetˆÊ’u‚©‚çAlimit‚Ü‚Å‚Ì”ÍˆÍ‚ÌŒ‹‰Ê‚ğ nextƒƒ\ƒbƒh‚Å•Ô‚µ‚Ü‚·B
+ * æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®offsetä½ç½®ã‹ã‚‰ã€limitã¾ã§ã®ç¯„å›²ã®çµæœã‚’ nextãƒ¡ã‚½ãƒƒãƒ‰ã§è¿”ã—ã¾ã™ã€‚
  * <p>
- * limit‚ª-1‚Ìê‡A‘S‚Ä‚ÌŒ‹‰Ê‚ğnextƒƒ\ƒbƒh‚Å•Ô‚µ‚Ü‚·B
+ * limitãŒ-1ã®å ´åˆã€å…¨ã¦ã®çµæœã‚’nextãƒ¡ã‚½ãƒƒãƒ‰ã§è¿”ã—ã¾ã™ã€‚
  * 
  * @author Toshitaka Agata(Nulab,inc.)
  */
 class PagerResultSetWrapper extends ResultSetWrapper {
 
-    /** ƒƒO */
+    /** ãƒ­ã‚° */
     private static final Logger LOGGER = Logger
             .getLogger(PagerResultSetWrapper.class);
 
-    /** ƒJƒEƒ“ƒg */
+    /** ã‚«ã‚¦ãƒ³ãƒˆ */
     private int counter = 0;
 
-    /** ƒIƒŠƒWƒiƒ‹‚ÌResultSet */
+    /** ã‚ªãƒªã‚¸ãƒŠãƒ«ã®ResultSet */
     private ResultSet original;
 
-    /** ŒŸõğŒƒIƒuƒWƒFƒNƒg */
+    /** æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ */
     private PagerCondition condition;
 
-    /** absoluteƒƒ\ƒbƒh‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO */
+    /** absoluteãƒ¡ã‚½ãƒƒãƒ‰ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚° */
     private boolean useAbsolute = true;
 
     public void setUseAbsolute(boolean useAbsolute) {
@@ -54,12 +54,12 @@ class PagerResultSetWrapper extends ResultSetWrapper {
     }
 
     /**
-     * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+     * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
      * 
      * @param original
-     *            ƒIƒŠƒWƒiƒ‹‚ÌResultSet
+     *            ã‚ªãƒªã‚¸ãƒŠãƒ«ã®ResultSet
      * @param condition
-     *            ŒŸõğŒƒIƒuƒWƒFƒNƒg
+     *            æ¤œç´¢æ¡ä»¶ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
      * @param useAbsolute
      * @throws SQLException
      */
@@ -73,7 +73,7 @@ class PagerResultSetWrapper extends ResultSetWrapper {
     }
 
     /**
-     * ŠJnˆÊ’u‚Ü‚ÅƒJ[ƒ\ƒ‹‚ği‚ß‚Ü‚·B
+     * é–‹å§‹ä½ç½®ã¾ã§ã‚«ãƒ¼ã‚½ãƒ«ã‚’é€²ã‚ã¾ã™ã€‚
      * 
      * @throws SQLException
      */
@@ -122,7 +122,7 @@ class PagerResultSetWrapper extends ResultSetWrapper {
                 condition.setCount(count);
             } else {
                 if (next) {
-                    counter++; // ’²®
+                    counter++; // èª¿æ•´
                     while (original.next()) {
                         counter++;
                     }

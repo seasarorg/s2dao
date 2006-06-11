@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 /**
  * @author higa
  * 
- * この生成されたコメントの挿入されるテンプレートを変更するため ウィンドウ > 設定 > Java > コード生成 > コードとコメント
  */
 public class HogeTest extends TestCase {
 

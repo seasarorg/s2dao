@@ -599,7 +599,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected String createAutoSelectSqlByDto(Class dtoClass) {
         String sql = dbms_.getAutoSelectSql(getBeanMetaData());
         StringBuffer buf = new StringBuffer(sql);
-        // TODO ‚Ç‚¤‚·‚é‚©—vŒŸ“¢
+        // TODO ã©ã†ã™ã‚‹ã‹è¦æ¤œè¨
         if (dtoClass.isPrimitive()) {
             return sql;
         }

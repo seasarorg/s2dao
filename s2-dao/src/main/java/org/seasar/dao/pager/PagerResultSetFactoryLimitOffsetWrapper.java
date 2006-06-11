@@ -39,16 +39,16 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
     private static final Logger LOGGER = Logger
             .getLogger(PagerResultSetFactoryLimitOffsetWrapper.class);
 
-    /** ƒIƒŠƒWƒiƒ‹‚ÌResultSetFactory */
+    /** ã‚ªãƒªã‚¸ãƒŠãƒ«ã®ResultSetFactory */
     private ResultSetFactory resultSetFactory_;
 
     private Dbms dbms_;
 
     /**
-     * ƒRƒ“ƒXƒgƒ‰ƒNƒ^(test only)
+     * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿(test only)
      * 
      * @param resultSetFactory
-     *            ƒIƒŠƒWƒiƒ‹‚ÌResultSetFactory
+     *            ã‚ªãƒªã‚¸ãƒŠãƒ«ã®ResultSetFactory
      */
     PagerResultSetFactoryLimitOffsetWrapper(ResultSetFactory resultSetFactory,
             String productName) {
@@ -57,10 +57,10 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
     }
 
     /**
-     * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+     * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
      * 
      * @param resultSetFactory
-     *            ƒIƒŠƒWƒiƒ‹‚ÌResultSetFactory
+     *            ã‚ªãƒªã‚¸ãƒŠãƒ«ã®ResultSetFactory
      */
     public PagerResultSetFactoryLimitOffsetWrapper(
             ResultSetFactory resultSetFactory, DataSource dataSource) {
@@ -69,11 +69,11 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
     }
 
     /**
-     * ResultSet‚ğ¶¬‚µ‚Ü‚·B<br>
-     * PagerContext‚ÉPagerCondition‚ªƒZƒbƒg‚³‚ê‚Ä‚¢‚éê‡A
+     * ResultSetã‚’ç”Ÿæˆã—ã¾ã™ã€‚<br>
+     * PagerContextã«PagerConditionãŒã‚»ãƒƒãƒˆã•ã‚Œã¦ã„ã‚‹å ´åˆã€
      * <ul>
-     * <li>ŒŸõŒ‹‰ÊŒ”‚ğæ“¾‚µPagerCondition‚ÉƒZƒbƒg‚µ‚Ü‚·B</li>
-     * <li>LIMIT OFFSET ğŒ‚ğ•t‰Á‚µ‚½SQL‚ğÀs‚µAŒ‹‰Ê‚ÌResultSet‚ğ•Ô‚µ‚Ü‚·B</li>
+     * <li>æ¤œç´¢çµæœä»¶æ•°ã‚’å–å¾—ã—PagerConditionã«ã‚»ãƒƒãƒˆã—ã¾ã™ã€‚</li>
+     * <li>LIMIT OFFSET æ¡ä»¶ã‚’ä»˜åŠ ã—ãŸSQLã‚’å®Ÿè¡Œã—ã€çµæœã®ResultSetã‚’è¿”ã—ã¾ã™ã€‚</li>
      * </ul>
      * 
      * @param PreparedStatement
@@ -117,7 +117,7 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
     }
 
     /**
-     * limit offset‚ğ•t‰Á‚µ‚½SQL‚ğì¬‚µ‚Ü‚·B
+     * limit offsetã‚’ä»˜åŠ ã—ãŸSQLã‚’ä½œæˆã—ã¾ã™ã€‚
      * 
      * @param baseSQL
      * @param limit
@@ -134,13 +134,13 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
     }
 
     /**
-     * Œ³‚ÌSQL‚É‚æ‚éŒ‹‰Ê‘Œ”‚ğæ“¾‚µ‚Ü‚·
+     * å…ƒã®SQLã«ã‚ˆã‚‹çµæœç·ä»¶æ•°ã‚’å–å¾—ã—ã¾ã™
      * 
      * @param ps
-     *            Œ³‚ÌPreparedStatement
+     *            å…ƒã®PreparedStatement
      * @param baseSQL
-     *            Œ³‚ÌSQL
-     * @return Œ‹‰Ê‘Œ”
+     *            å…ƒã®SQL
+     * @return çµæœç·ä»¶æ•°
      * @throws SQLException
      */
     private int getCount(PreparedStatement ps, String baseSQL)

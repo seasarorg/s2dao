@@ -21,20 +21,20 @@ import java.sql.SQLException;
 import org.seasar.framework.exception.SQLRuntimeException;
 
 /**
- * ResultSet���[�e�B���e�B�ł��B
+ * ResultSetユーティリティです。
  * 
  * @author Toshitaka Agata(Nulab,inc.)
  */
 class ResultSetUtil {
 
     /**
-     * ResultSet���w�肳�ꂽ�ʒu�܂Ői�߂܂��B
+     * ResultSetを指定された位置まで進めます。
      * 
      * @param resultSet
      *            ResultSet
      * @param offset
-     *            �ʒu
-     * @return ResultSet#next���Ăяo������
+     *            位置
+     * @return ResultSet#nextを呼び出した回数
      * @throws SQLException
      */
     public static int autoAbsolute(ResultSet resultSet, int offset)
@@ -55,13 +55,13 @@ class ResultSetUtil {
     }
 
     /**
-     * ResultSet���w�肳�ꂽ�ʒu�܂Ői�߂܂��B
+     * ResultSetを指定された位置まで進めます。
      * 
      * @param resultSet
      *            ResultSet
      * @param offset
-     *            �ʒu
-     * @return ResultSet#next���Ăяo������
+     *            位置
+     * @return ResultSet#nextを呼び出した回数
      * @throws SQLException
      */
     private static int manualAbsolute(ResultSet resultSet, int offset)
@@ -74,7 +74,7 @@ class ResultSetUtil {
     }
 
     /**
-     * ResultSet���Ō�̈ʒu�܂Ői�߂܂��B
+     * ResultSetを最後の位置まで進めます。
      * 
      * @param resultSet
      *            ResultSet
@@ -96,11 +96,11 @@ class ResultSetUtil {
     }
 
     /**
-     * ResultSet���J�[�\�����T�|�[�g���Ă��邩�ǂ����𔻒肵�܂��B
+     * ResultSetがカーソルをサポートしているかどうかを判定します。
      * 
      * @param resultSet
      *            ResultSet
-     * @return �J�[�\�����T�|�[�g���Ă����true�A����ȊO��false
+     * @return カーソルをサポートしていればtrue、それ以外はfalse
      * @throws SQLException
      */
     public static boolean isCursorSupport(ResultSet resultSet) {
@@ -112,7 +112,7 @@ class ResultSetUtil {
     }
 
     /**
-     * ResultSet���Ō�̈ʒu�܂Ői�߂܂��B
+     * ResultSetを最後の位置まで進めます。
      * 
      * @param resultSet
      *            ResultSet
