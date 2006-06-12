@@ -14,7 +14,6 @@ import javax.sql.DataSource;
 
 import org.seasar.dao.impl.Employee;
 import org.seasar.dao.unit.S2DaoTestCase;
-import org.seasar.dao.util.ProcedureUtil;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.impl.BeanListResultSetHandler;
 import org.seasar.extension.jdbc.impl.MapListResultSetHandler;
@@ -57,8 +56,6 @@ public class ReturnsResultsetProcedureHandlerTest extends S2DaoTestCase {
                         return ret;
                     }
                 });
-        handler.setProcedureMetaData(ProcedureUtil.getProcedureMetaData(
-                dataSource, "CURDATE"));
         handler.initialize();
 
         Object[] args = {};

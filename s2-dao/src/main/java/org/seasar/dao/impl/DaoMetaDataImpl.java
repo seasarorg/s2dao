@@ -36,18 +36,14 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoNotFoundRuntimeException;
+import org.seasar.dao.DaoResultSetHandlerFactory;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
-import org.seasar.dao.handler.AbstractBasicProcedureHandler;
-import org.seasar.dao.handler.MapBasicProcedureHandler;
-import org.seasar.dao.handler.ObjectBasicProcedureHandler;
-import org.seasar.dao.handler.ReturnsResultsetProcedureHandler;
-import org.seasar.dao.util.ProcedureMetaData;
-import org.seasar.dao.util.ProcedureUtil;
+import org.seasar.dao.handler.ProcedureHandlerImpl;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
@@ -120,6 +116,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
             "store" };
 
     protected String[] deletePrefixes_ = new String[] { "delete", "remove" };
+
+    private DaoResultSetHandlerFactory resultSetHandlerFactory;
 
     public DaoMetaDataImpl() {
     }
@@ -201,6 +199,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
         } finally {
             ConnectionUtil.close(con);
         }
+        resultSetHandlerFactory = new DaoResultSetHandlerFactoryImpl(
+                beanMetaData_);
         setupSqlCommand();
     }
 
@@ -250,26 +250,19 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
     }
 
-    protected void setupProcedure(Method method, String procedureName) {
-        final ProcedureMetaData procedureMetaData = ProcedureUtil
-                .getProcedureMetaData(dataSource_, procedureName);
-        final AbstractBasicProcedureHandler handler;
-        if (procedureMetaData.getProcedureType() == DatabaseMetaData.procedureReturnsResult) {
-            handler = new ReturnsResultsetProcedureHandler(dataSource_,
-                    procedureName, createResultSetHandler(method));
-        } else {
-            final Class returnType = method.getReturnType();
-            if (Map.class.isAssignableFrom(returnType)) {
-                handler = new MapBasicProcedureHandler(dataSource_,
-                        procedureName);
-            } else {
-                handler = new ObjectBasicProcedureHandler(dataSource_,
-                        procedureName);
-            }
-        }
-        handler.setProcedureMetaData(procedureMetaData);
+    protected void setupProcedure(final Method method,
+            final String procedureName) {
+
+        ProcedureHandlerImpl handler = new ProcedureHandlerImpl();
+        handler.setDataSource(dataSource_);
+        handler.setMethod(method);
+        handler.setProcedureName(procedureName);
+        handler.setResultSetHandlerFactory(resultSetHandlerFactory);
+        handler.setStatementFactory(statementFactory_);
         handler.initialize();
-        final SqlCommand command = new StaticStoredProcedureCommand(handler);
+
+        final StaticStoredProcedureCommand command = new StaticStoredProcedureCommand(
+                handler);
         sqlCommands_.put(method.getName(), command);
     }
 
@@ -422,16 +415,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected ResultSetHandler createResultSetHandler(Method method) {
-        if (List.class.isAssignableFrom(method.getReturnType())) {
-            return new BeanListMetaDataResultSetHandler(beanMetaData_);
-        } else if (isBeanClassAssignable(method.getReturnType())) {
-            return new BeanMetaDataResultSetHandler(beanMetaData_);
-        } else if (Array.newInstance(beanClass_, 0).getClass()
-                .isAssignableFrom(method.getReturnType())) {
-            return new BeanArrayMetaDataResultSetHandler(beanMetaData_);
-        } else {
-            return new ObjectResultSetHandler();
-        }
+        return resultSetHandlerFactory.createResultSetHandler(method);
     }
 
     protected boolean isBeanClassAssignable(Class clazz) {
@@ -881,6 +865,36 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     public void setDaoClass(Class daoClass) {
         daoClass_ = daoClass;
+    }
+
+    static class DaoResultSetHandlerFactoryImpl implements
+            DaoResultSetHandlerFactory {
+
+        final BeanMetaData beanMetaData;
+
+        DaoResultSetHandlerFactoryImpl(BeanMetaData beanMetaData) {
+            this.beanMetaData = beanMetaData;
+        }
+
+        public ResultSetHandler createResultSetHandler(final Method method) {
+            final Class beanClass = beanMetaData.getBeanClass();
+            if (List.class.isAssignableFrom(method.getReturnType())) {
+                return new BeanListMetaDataResultSetHandler(beanMetaData);
+            } else if (isBeanClassAssignable(beanClass, method.getReturnType())) {
+                return new BeanMetaDataResultSetHandler(beanMetaData);
+            } else if (Array.newInstance(beanClass, 0).getClass()
+                    .isAssignableFrom(method.getReturnType())) {
+                return new BeanArrayMetaDataResultSetHandler(beanMetaData);
+            } else {
+                return new ObjectResultSetHandler();
+            }
+        }
+
+        private boolean isBeanClassAssignable(Class beanClass, Class clazz) {
+            return beanClass.isAssignableFrom(clazz)
+                    || clazz.isAssignableFrom(beanClass);
+        }
+
     }
 
 }

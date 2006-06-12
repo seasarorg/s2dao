@@ -27,13 +27,13 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.seasar.dao.util.ProcedureMetaData;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.jdbc.types.ValueTypes;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
+import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.exception.EmptyRuntimeException;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
@@ -60,8 +60,6 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
     protected String[] columnNames_;
 
     protected StatementFactory statementFactory_ = BasicStatementFactory.INSTANCE;
-
-    protected ProcedureMetaData procedureMetaData;
 
     public DataSource getDataSource() {
         return dataSource_;
@@ -124,6 +122,10 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
         try {
             connection = getConnection();
             DatabaseMetaData dmd = ConnectionUtil.getMetaData(connection);
+
+            ProcedureMetaData procedureMetaData = getProcedureMetaData(
+                    getDataSource(), getProcedureName());
+
             rs = dmd.getProcedureColumns(procedureMetaData.getProcedureCat(),
                     procedureMetaData.getProcedureSchem(), procedureMetaData
                             .getProcedureName(), null);
@@ -253,8 +255,93 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
         return ValueTypes.getValueType(clazz);
     }
 
-    public void setProcedureMetaData(ProcedureMetaData procedureMetaData) {
-        this.procedureMetaData = procedureMetaData;
+    ProcedureMetaData getProcedureMetaData(DataSource dataSource,
+            String procedureName) {
+        final Connection con = DataSourceUtil.getConnection(dataSource);
+        ResultSet rs = null;
+        try {
+            DatabaseMetaData dmd = ConnectionUtil.getMetaData(con);
+            String[] names = DatabaseMetaDataUtil.convertIdentifier(dmd,
+                    procedureName).split("\\.");
+            final int namesLength = names.length;
+            if (namesLength == 1) {
+                rs = dmd.getProcedures(null, null, names[0]);
+            } else if (namesLength == 2) {
+                rs = dmd.getProcedures(null, names[0], names[1]);
+            } else if (namesLength == 3) {
+                rs = dmd.getProcedures(names[0], names[1], names[2]);
+            }
+            int len = 0;
+            ProcedureMetaData procedureMetaData = new ProcedureMetaData();
+            while (rs.next()) {
+                procedureMetaData.setProcedureCat(rs.getString(1));
+                procedureMetaData.setProcedureSchem(rs.getString(2));
+                procedureMetaData.setProcedureName(rs.getString(3));
+                procedureMetaData.setProcedureType(rs.getShort(8));
+                len++;
+            }
+            if (len < 1) {
+                throw new SRuntimeException("EDAO0012",
+                        new Object[] { procedureName });
+            }
+            if (len > 1) {
+                throw new SRuntimeException("EDAO0013",
+                        new Object[] { procedureName });
+            }
+            return procedureMetaData;
+        } catch (SQLException e) {
+            throw new SQLRuntimeException(e);
+        } finally {
+            try {
+                ResultSetUtil.close(rs);
+            } finally {
+                ConnectionUtil.close(con);
+            }
+        }
+    }
+
+    static class ProcedureMetaData {
+
+        private String procedureCat;
+
+        private String procedureSchem;
+
+        private String procedureName;
+
+        private short procedureType;
+
+        public String getProcedureCat() {
+            return procedureCat;
+        }
+
+        public void setProcedureCat(String procedureCat) {
+            this.procedureCat = procedureCat;
+        }
+
+        public String getProcedureName() {
+            return procedureName;
+        }
+
+        public void setProcedureName(String procedureName) {
+            this.procedureName = procedureName;
+        }
+
+        public String getProcedureSchem() {
+            return procedureSchem;
+        }
+
+        public void setProcedureSchem(String procedureSchem) {
+            this.procedureSchem = procedureSchem;
+        }
+
+        public short getProcedureType() {
+            return procedureType;
+        }
+
+        public void setProcedureType(short procedureType) {
+            this.procedureType = procedureType;
+        }
+
     }
 
 }
