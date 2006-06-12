@@ -117,7 +117,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected String[] deletePrefixes = new String[] { "delete", "remove" };
 
-    private ResultSetHandlerFactory resultSetHandlerFactory;
+    protected ResultSetHandlerFactory resultSetHandlerFactory;
 
     public DaoMetaDataImpl() {
     }
