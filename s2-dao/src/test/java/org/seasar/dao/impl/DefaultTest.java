@@ -122,6 +122,78 @@ public class DefaultTest extends S2TestCase {
         int ret = defaultTableDao
                 .insertBatch(new DefaultTable[] { bean1, bean2 });
         assertEquals(2, ret);
+
+        final List defaultTables = defaultTableDao.getDefaultTables();
+        assertEquals(2, defaultTables.size());
+        {
+            final DefaultTable object = (DefaultTable) defaultTables.get(0);
+            assertEquals("11", object.getAaa());
+            assertEquals("12", object.getBbb());
+        }
+        {
+            final DefaultTable object = (DefaultTable) defaultTables.get(1);
+            assertEquals("21", object.getAaa());
+            assertEquals("22", object.getBbb());
+        }
+    }
+
+    public void testInsertBatchDefaultByAutoSqlTx() throws Exception {
+        DefaultTable bean1 = new DefaultTable();
+        bean1.setAaa("11");
+        bean1.setBbb("12");
+        DefaultTable bean2 = new DefaultTable();
+        bean2.setAaa(null);
+        bean2.setBbb("22");
+        DefaultTable bean3 = new DefaultTable();
+        bean3.setAaa("31");
+        bean3.setBbb(null);
+        int ret = defaultTableDao.insertBatch(new DefaultTable[] { bean1,
+                bean2, bean3 });
+        assertEquals(3, ret);
+
+        final List defaultTables = defaultTableDao.getDefaultTables();
+        assertEquals(3, defaultTables.size());
+        {
+            final DefaultTable object = (DefaultTable) defaultTables.get(0);
+            assertEquals("11", object.getAaa());
+            assertEquals("12", object.getBbb());
+        }
+        {
+            final DefaultTable object = (DefaultTable) defaultTables.get(1);
+            assertEquals((String) null, object.getAaa());
+            assertEquals("22", object.getBbb());
+        }
+        {
+            final DefaultTable object = (DefaultTable) defaultTables.get(2);
+            assertEquals("31", object.getAaa());
+            assertEquals((String) null, object.getBbb());
+        }
+    }
+
+    // [DAO-9]
+    public void testInsertBatchDefaultByAutoSql2Tx() throws Exception {
+        DefaultTable bean1 = new DefaultTable();
+        bean1.setAaa("11");
+        bean1.setBbb(null);
+        DefaultTable bean2 = new DefaultTable();
+        bean2.setAaa("21");
+        bean2.setBbb("22");
+        int ret = defaultTableDao
+                .insertBatch(new DefaultTable[] { bean1, bean2 });
+        assertEquals(2, ret);
+
+        final List defaultTables = defaultTableDao.getDefaultTables();
+        assertEquals(2, defaultTables.size());
+        {
+            final DefaultTable object = (DefaultTable) defaultTables.get(0);
+            assertEquals("11", object.getAaa());
+            assertEquals((String) null, object.getBbb());
+        }
+        {
+            final DefaultTable object = (DefaultTable) defaultTables.get(1);
+            assertEquals("21", object.getAaa());
+            assertEquals("22", object.getBbb());
+        }
     }
 
     public void testInsertDefaultByAutoSqlTx() throws Exception {
@@ -151,7 +223,12 @@ public class DefaultTest extends S2TestCase {
         }
     }
 
-    public void testThrownExceptionWhenNullDataOnlyByBatchTx() throws Exception {
+    /*
+     * 問題が見つかったため[DAO-9]、バッチ更新ではINSERT文からnull値のカラムを
+     * 除外する機能(s2dao-1.0.33で追加)をサポートしないことにしました。
+     */
+    public void no_testThrownExceptionWhenNullDataOnlyByBatchTx()
+            throws Exception {
         DefaultTable bean = new DefaultTable();
         try {
             defaultTableDao.insertBatch(new DefaultTable[] { bean });
@@ -201,6 +278,10 @@ public class DefaultTest extends S2TestCase {
         public String getDefaultTable_ARGS = "id";
 
         public DefaultTable getDefaultTable(Integer id);
+
+        public String getDefaultTables_QUERY = "ORDER BY ID";
+
+        public List getDefaultTables();
 
         public void insert(DefaultTable largeBinary);
 

@@ -186,7 +186,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
 
     public void testInsertBatchAuto() throws Exception {
         DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
-        InsertBatchAutoDynamicCommand cmd = (InsertBatchAutoDynamicCommand) dmd
+        InsertBatchAutoStaticCommand cmd = (InsertBatchAutoStaticCommand) dmd
                 .getSqlCommand("insertBatch");
         assertNotNull("1", cmd);
     }
