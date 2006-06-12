@@ -55,8 +55,12 @@ public class ObjectBasicProcedureHandler extends AbstractBasicProcedureHandler {
             cs = prepareCallableStatement(connection);
             bindArgs(cs, args);
             cs.execute();
-            for (int i = 0; i < columnInOutTypes_.length; i++) {
-                if (isOutputColum(columnInOutTypes_[i].intValue())) {
+            // FIXME
+            if (cs.getResultSet() != null) {
+                throw new RuntimeException();
+            }
+            for (int i = 0; i < columnInOutTypes.length; i++) {
+                if (isOutputColum(columnInOutTypes[i].intValue())) {
                     return cs.getObject(i + 1);
                 }
             }

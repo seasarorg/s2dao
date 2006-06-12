@@ -39,28 +39,28 @@ import org.seasar.framework.util.StringUtil;
  */
 public class SqlParserImpl implements SqlParser {
 
-    private SqlTokenizer tokenizer_;
+    private SqlTokenizer tokenizer;
 
-    private Stack nodeStack_ = new Stack();
+    private Stack nodeStack = new Stack();
 
     public SqlParserImpl(String sql) {
         sql = sql.trim();
         if (sql.endsWith(";")) {
             sql = sql.substring(0, sql.length() - 1);
         }
-        tokenizer_ = new SqlTokenizerImpl(sql);
+        tokenizer = new SqlTokenizerImpl(sql);
     }
 
     public Node parse() {
         push(new ContainerNode());
-        while (SqlTokenizer.EOF != tokenizer_.next()) {
+        while (SqlTokenizer.EOF != tokenizer.next()) {
             parseToken();
         }
         return pop();
     }
 
     protected void parseToken() {
-        switch (tokenizer_.getTokenType()) {
+        switch (tokenizer.getTokenType()) {
         case SqlTokenizer.SQL:
             parseSql();
             break;
@@ -77,7 +77,7 @@ public class SqlParserImpl implements SqlParser {
     }
 
     protected void parseSql() {
-        String sql = tokenizer_.getToken();
+        String sql = tokenizer.getToken();
         if (isElseMode()) {
             sql = StringUtil.replace(sql, "--", "");
         }
@@ -100,7 +100,7 @@ public class SqlParserImpl implements SqlParser {
     }
 
     protected void parseComment() {
-        String comment = tokenizer_.getToken();
+        String comment = tokenizer.getToken();
         if (isTargetComment(comment)) {
             if (isIfComment(comment)) {
                 parseIf();
@@ -115,7 +115,7 @@ public class SqlParserImpl implements SqlParser {
     }
 
     protected void parseIf() {
-        String condition = tokenizer_.getToken().substring(2).trim();
+        String condition = tokenizer.getToken().substring(2).trim();
         if (StringUtil.isEmpty(condition)) {
             throw new IfConditionNotFoundRuntimeException();
         }
@@ -133,9 +133,9 @@ public class SqlParserImpl implements SqlParser {
     }
 
     protected void parseEnd() {
-        while (SqlTokenizer.EOF != tokenizer_.next()) {
-            if (tokenizer_.getTokenType() == SqlTokenizer.COMMENT
-                    && isEndComment(tokenizer_.getToken())) {
+        while (SqlTokenizer.EOF != tokenizer.next()) {
+            if (tokenizer.getTokenType() == SqlTokenizer.COMMENT
+                    && isEndComment(tokenizer.getToken())) {
 
                 pop();
                 return;
@@ -154,12 +154,12 @@ public class SqlParserImpl implements SqlParser {
         ElseNode elseNode = new ElseNode();
         ifNode.setElseNode(elseNode);
         push(elseNode);
-        tokenizer_.skipWhitespace();
+        tokenizer.skipWhitespace();
     }
 
     protected void parseCommentBindVariable() {
-        String expr = tokenizer_.getToken();
-        String s = tokenizer_.skipToken();
+        String expr = tokenizer.getToken();
+        String s = tokenizer.skipToken();
         if (s.startsWith("(") && s.endsWith(")")) {
             peek().addChild(new ParenBindVariableNode(expr));
         } else if (expr.startsWith("$")) {
@@ -170,25 +170,25 @@ public class SqlParserImpl implements SqlParser {
     }
 
     protected void parseBindVariable() {
-        String expr = tokenizer_.getToken();
+        String expr = tokenizer.getToken();
         peek().addChild(new BindVariableNode(expr));
     }
 
     protected Node pop() {
-        return (Node) nodeStack_.pop();
+        return (Node) nodeStack.pop();
     }
 
     protected Node peek() {
-        return (Node) nodeStack_.peek();
+        return (Node) nodeStack.peek();
     }
 
     protected void push(Node node) {
-        nodeStack_.push(node);
+        nodeStack.push(node);
     }
 
     protected boolean isElseMode() {
-        for (int i = 0; i < nodeStack_.size(); ++i) {
-            if (nodeStack_.get(i) instanceof ElseNode) {
+        for (int i = 0; i < nodeStack.size(); ++i) {
+            if (nodeStack.get(i) instanceof ElseNode) {
                 return true;
             }
         }

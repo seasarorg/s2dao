@@ -27,24 +27,24 @@ import org.seasar.framework.util.OgnlUtil;
  */
 public class ParenBindVariableNode extends AbstractNode {
 
-    private String expression_;
+    private String expression;
 
-    private Object parsedExpression_;
+    private Object parsedExpression;
 
     public ParenBindVariableNode(String expression) {
-        expression_ = expression;
-        parsedExpression_ = OgnlUtil.parseExpression(expression);
+        this.expression = expression;
+        this.parsedExpression = OgnlUtil.parseExpression(expression);
     }
 
     public String getExpression() {
-        return expression_;
+        return expression;
     }
 
     /**
      * @see org.seasar.dao.Node#accept(org.seasar.dao.QueryContext)
      */
     public void accept(CommandContext ctx) {
-        Object var = OgnlUtil.getValue(parsedExpression_, ctx);
+        Object var = OgnlUtil.getValue(parsedExpression, ctx);
         if (var instanceof List) {
             bindArray(ctx, ((List) var).toArray());
         } else if (var == null) {

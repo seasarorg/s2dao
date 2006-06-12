@@ -27,12 +27,12 @@ import org.seasar.framework.util.StringUtil;
  */
 public class BindVariableNode extends AbstractNode {
 
-    private String expression_;
+    private String expression;
 
     private String[] names;
 
     public BindVariableNode(String expression) {
-        expression_ = expression;
+        this.expression = expression;
         names = StringUtil.split(expression, ".");
         // baseName_ = array[0];
         // if (array.length > 1) {
@@ -41,7 +41,7 @@ public class BindVariableNode extends AbstractNode {
     }
 
     public String getExpression() {
-        return expression_;
+        return expression;
     }
 
     /**

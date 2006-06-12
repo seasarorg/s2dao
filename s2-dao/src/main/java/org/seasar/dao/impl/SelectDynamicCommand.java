@@ -29,28 +29,28 @@ import org.seasar.extension.jdbc.impl.BasicSelectHandler;
  */
 public class SelectDynamicCommand extends AbstractDynamicCommand {
 
-    private ResultSetHandler resultSetHandler_;
+    private ResultSetHandler resultSetHandler;
 
-    private ResultSetFactory resultSetFactory_;
+    private ResultSetFactory resultSetFactory;
 
     public SelectDynamicCommand(DataSource dataSource,
             StatementFactory statementFactory,
             ResultSetHandler resultSetHandler, ResultSetFactory resultSetFactory) {
 
         super(dataSource, statementFactory);
-        resultSetHandler_ = resultSetHandler;
-        resultSetFactory_ = resultSetFactory;
+        this.resultSetHandler = resultSetHandler;
+        this.resultSetFactory = resultSetFactory;
     }
 
     public ResultSetHandler getResultSetHandler() {
-        return resultSetHandler_;
+        return resultSetHandler;
     }
 
     public Object execute(Object[] args) {
         CommandContext ctx = apply(args);
         BasicSelectHandler selectHandler = new BasicSelectHandler(
-                getDataSource(), ctx.getSql(), resultSetHandler_,
-                getStatementFactory(), resultSetFactory_);
+                getDataSource(), ctx.getSql(), resultSetHandler,
+                getStatementFactory(), resultSetFactory);
         selectHandler.setFetchSize(-1);
         return selectHandler.execute(ctx.getBindVariables(), ctx
                 .getBindVariableTypes());

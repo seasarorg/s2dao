@@ -23,14 +23,14 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class IllegalBoolExpressionRuntimeException extends SRuntimeException {
 
-    private String expression_;
+    private String expression;
 
     public IllegalBoolExpressionRuntimeException(String expression) {
         super("EDAO0003", new Object[] { expression });
-        expression_ = expression;
+        this.expression = expression;
     }
 
     public String getExpression() {
-        return expression_;
+        return expression;
     }
 }

@@ -23,14 +23,14 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class DaoNotFoundRuntimeException extends SRuntimeException {
 
-    private Class targetClass_;
+    private Class targetClass;
 
     public DaoNotFoundRuntimeException(Class targetClass) {
         super("EDAO0008", new Object[] { targetClass.getName() });
-        targetClass_ = targetClass;
+        this.targetClass = targetClass;
     }
 
     public Class getTargetClass() {
-        return targetClass_;
+        return targetClass;
     }
 }

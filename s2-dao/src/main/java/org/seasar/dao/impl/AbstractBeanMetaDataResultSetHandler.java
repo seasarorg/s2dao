@@ -35,23 +35,23 @@ import org.seasar.framework.util.StringUtil;
 public abstract class AbstractBeanMetaDataResultSetHandler implements
         ResultSetHandler {
 
-    private BeanMetaData beanMetaData_;
+    private BeanMetaData beanMetaData;
 
     public AbstractBeanMetaDataResultSetHandler(BeanMetaData beanMetaData) {
-        beanMetaData_ = beanMetaData;
+        this.beanMetaData = beanMetaData;
 
     }
 
     public BeanMetaData getBeanMetaData() {
-        return beanMetaData_;
+        return beanMetaData;
     }
 
     protected Object createRow(ResultSet rs, Set columnNames)
             throws SQLException {
 
-        Object row = ClassUtil.newInstance(beanMetaData_.getBeanClass());
-        for (int i = 0; i < beanMetaData_.getPropertyTypeSize(); ++i) {
-            PropertyType pt = beanMetaData_.getPropertyType(i);
+        Object row = ClassUtil.newInstance(beanMetaData.getBeanClass());
+        for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
+            PropertyType pt = beanMetaData.getPropertyType(i);
             if (columnNames.contains(pt.getColumnName())) {
                 ValueType valueType = pt.getValueType();
                 Object value = valueType.getValue(rs, pt.getColumnName());

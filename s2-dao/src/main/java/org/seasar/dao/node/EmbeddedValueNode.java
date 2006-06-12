@@ -27,34 +27,34 @@ import org.seasar.framework.util.StringUtil;
  */
 public class EmbeddedValueNode extends AbstractNode {
 
-    private String expression_;
+    private String expression;
 
-    private String baseName_;
+    private String baseName;
 
-    private String propertyName_;
+    private String propertyName;
 
     public EmbeddedValueNode(String expression) {
-        expression_ = expression;
+        this.expression = expression;
         String[] array = StringUtil.split(expression, ".");
-        baseName_ = array[0];
+        this.baseName = array[0];
         if (array.length > 1) {
-            propertyName_ = array[1];
+            this.propertyName = array[1];
         }
     }
 
     public String getExpression() {
-        return expression_;
+        return expression;
     }
 
     /**
      * @see org.seasar.dao.Node#accept(org.seasar.dao.QueryContext)
      */
     public void accept(CommandContext ctx) {
-        Object value = ctx.getArg(baseName_);
-        Class clazz = ctx.getArgType(baseName_);
-        if (propertyName_ != null) {
+        Object value = ctx.getArg(baseName);
+        Class clazz = ctx.getArgType(baseName);
+        if (propertyName != null) {
             BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz);
-            PropertyDesc pd = beanDesc.getPropertyDesc(propertyName_);
+            PropertyDesc pd = beanDesc.getPropertyDesc(propertyName);
             value = pd.getValue(value);
             clazz = pd.getPropertyType();
         }

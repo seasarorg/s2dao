@@ -23,22 +23,22 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class UpdateFailureRuntimeException extends SRuntimeException {
 
-    private Object bean_;
+    private Object bean;
 
-    private int rows_;
+    private int rows;
 
     public UpdateFailureRuntimeException(Object bean, int rows) {
         super("EDAO0005",
                 new Object[] { bean.toString(), String.valueOf(rows) });
-        bean_ = bean;
-        rows_ = rows;
+        this.bean = bean;
+        this.rows = rows;
     }
 
     public Object getBean() {
-        return bean_;
+        return bean;
     }
 
     public int getRows() {
-        return rows_;
+        return rows;
     }
 }

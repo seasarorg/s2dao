@@ -25,15 +25,11 @@ import org.seasar.extension.jdbc.ResultSetHandler;
 
 public class BeanMetaDataResultSetHandler2Test extends S2DaoTestCase {
 
-    private BeanMetaData beanMetaData_;
-
-    public BeanMetaDataResultSetHandler2Test(String arg0) {
-        super(arg0);
-    }
+    private BeanMetaData beanMetaData;
 
     public void testHandle() throws Exception {
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
-                beanMetaData_);
+                beanMetaData);
         String sql = "select empno, dept.dname as d_name from emp, dept where empno = 7788 and emp.deptno = dept.deptno";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -59,11 +55,7 @@ public class BeanMetaDataResultSetHandler2Test extends S2DaoTestCase {
 
     protected void setUpAfterBindFields() throws Throwable {
         super.setUpAfterBindFields();
-        beanMetaData_ = createBeanMetaData(MyEmp.class);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(BeanMetaDataResultSetHandler2Test.class);
+        beanMetaData = createBeanMetaData(MyEmp.class);
     }
 
     public static class MyEmp {

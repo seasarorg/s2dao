@@ -26,43 +26,42 @@ import org.seasar.extension.jdbc.StatementFactory;
  */
 public abstract class AbstractSqlCommand implements SqlCommand {
 
-    private DataSource dataSource_;
+    private DataSource dataSource;
 
-    private StatementFactory statementFactory_;
+    private StatementFactory statementFactory;
 
-    private String sql_;
+    private String sql;
 
-    private Class notSingleRowUpdatedExceptionClass_;
+    private Class notSingleRowUpdatedExceptionClass;
 
     public AbstractSqlCommand(DataSource dataSource,
             StatementFactory statementFactory) {
-
-        dataSource_ = dataSource;
-        statementFactory_ = statementFactory;
+        this.dataSource = dataSource;
+        this.statementFactory = statementFactory;
     }
 
     public DataSource getDataSource() {
-        return dataSource_;
+        return dataSource;
     }
 
     public StatementFactory getStatementFactory() {
-        return statementFactory_;
+        return statementFactory;
     }
 
     public String getSql() {
-        return sql_;
+        return sql;
     }
 
     public void setSql(String sql) {
-        sql_ = sql;
+        this.sql = sql;
     }
 
     public Class getNotSingleRowUpdatedExceptionClass() {
-        return notSingleRowUpdatedExceptionClass_;
+        return notSingleRowUpdatedExceptionClass;
     }
 
     public void setNotSingleRowUpdatedExceptionClass(
             Class notSingleRowUpdatedExceptionClass) {
-        notSingleRowUpdatedExceptionClass_ = notSingleRowUpdatedExceptionClass;
+        this.notSingleRowUpdatedExceptionClass = notSingleRowUpdatedExceptionClass;
     }
 }

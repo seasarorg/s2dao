@@ -33,7 +33,7 @@ import org.seasar.extension.jdbc.StatementFactory;
  */
 public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
 
-    private PropertyType[] propertyTypes_;
+    private PropertyType[] propertyTypes;
 
     public AbstractAutoStaticCommand(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData,
@@ -55,11 +55,11 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
     }
 
     protected PropertyType[] getPropertyTypes() {
-        return propertyTypes_;
+        return propertyTypes;
     }
 
     protected void setPropertyTypes(PropertyType[] propertyTypes) {
-        propertyTypes_ = propertyTypes;
+        this.propertyTypes = propertyTypes;
     }
 
     protected abstract AbstractAutoHandler createAutoHandler();
@@ -78,7 +78,7 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
             }
             types.add(pt);
         }
-        propertyTypes_ = (PropertyType[]) types.toArray(new PropertyType[types
+        propertyTypes = (PropertyType[]) types.toArray(new PropertyType[types
                 .size()]);
     }
 
@@ -92,7 +92,7 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
             }
             types.add(pt);
         }
-        propertyTypes_ = (PropertyType[]) types.toArray(new PropertyType[types
+        propertyTypes = (PropertyType[]) types.toArray(new PropertyType[types
                 .size()]);
     }
 
@@ -109,8 +109,8 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
         buf.append(" (");
         final IdentifierGenerator identifierGenerator = bmd
                 .getIdentifierGenerator();
-        for (int i = 0; i < propertyTypes_.length; ++i) {
-            PropertyType pt = propertyTypes_[i];
+        for (int i = 0; i < propertyTypes.length; ++i) {
+            PropertyType pt = propertyTypes[i];
             if (pt.isPrimaryKey() && !identifierGenerator.isSelfGenerate()) {
                 continue;
             }
@@ -119,8 +119,8 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
         }
         buf.setLength(buf.length() - 2);
         buf.append(") VALUES (");
-        for (int i = 0; i < propertyTypes_.length; ++i) {
-            PropertyType pt = propertyTypes_[i];
+        for (int i = 0; i < propertyTypes.length; ++i) {
+            PropertyType pt = propertyTypes[i];
             if (pt.isPrimaryKey() && !identifierGenerator.isSelfGenerate()) {
                 continue;
             }
@@ -137,8 +137,8 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
         buf.append("UPDATE ");
         buf.append(getBeanMetaData().getTableName());
         buf.append(" SET ");
-        for (int i = 0; i < propertyTypes_.length; ++i) {
-            PropertyType pt = propertyTypes_[i];
+        for (int i = 0; i < propertyTypes.length; ++i) {
+            PropertyType pt = propertyTypes[i];
             buf.append(pt.getColumnName());
             buf.append(" = ?, ");
         }

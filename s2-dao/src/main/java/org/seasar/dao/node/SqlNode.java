@@ -23,21 +23,21 @@ import org.seasar.dao.CommandContext;
  */
 public class SqlNode extends AbstractNode {
 
-    private String sql_;
+    private String sql;
 
     public SqlNode(String sql) {
-        sql_ = sql;
+        this.sql = sql;
     }
 
     public String getSql() {
-        return sql_;
+        return sql;
     }
 
     /**
      * @see org.seasar.dao.Node#accept(org.seasar.dao.QueryContext)
      */
     public void accept(CommandContext ctx) {
-        ctx.addSql(sql_);
+        ctx.addSql(sql);
     }
 
 }

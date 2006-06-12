@@ -24,14 +24,14 @@ import org.seasar.dao.EntityManager;
  */
 public abstract class AbstractDao {
 
-    private EntityManager entityManager_;
+    private EntityManager entityManager;
 
     public AbstractDao(DaoMetaDataFactory daoMetaDataFactory) {
-        entityManager_ = new EntityManagerImpl(daoMetaDataFactory
+        entityManager = new EntityManagerImpl(daoMetaDataFactory
                 .getDaoMetaData(getClass()));
     }
 
     public EntityManager getEntityManager() {
-        return entityManager_;
+        return entityManager;
     }
 }

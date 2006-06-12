@@ -24,38 +24,34 @@ import org.seasar.extension.unit.S2TestCase;
 
 public class EntityManagerImplTest extends S2TestCase {
 
-    private EntityManager entityManager_;
-
-    public EntityManagerImplTest(String arg0) {
-        super(arg0);
-    }
+    private EntityManager entityManager;
 
     public void testFind() throws Exception {
-        List employees = entityManager_.find("empno = ?", new Integer(7788));
+        List employees = entityManager.find("empno = ?", new Integer(7788));
         assertEquals("1", 1, employees.size());
     }
 
     public void testFind_BTS6491() throws Exception {
-        List employees = entityManager_.find(
+        List employees = entityManager.find(
                 "\n SELECT * FROM EMP WHERE empno = ?", new Integer(7788));
         System.out.println(employees);
         assertEquals("1", 1, employees.size());
     }
 
     public void testFindArray() throws Exception {
-        Employee[] employees = (Employee[]) entityManager_.findArray(
+        Employee[] employees = (Employee[]) entityManager.findArray(
                 "empno = ?", new Integer(7788));
         assertEquals("1", 1, employees.length);
     }
 
     public void testFindBean() throws Exception {
-        Employee employee = (Employee) entityManager_.findBean("empno = ?",
+        Employee employee = (Employee) entityManager.findBean("empno = ?",
                 new Integer(7788));
         assertEquals("1", "SCOTT", employee.getEname());
     }
 
     public void testFindObject() throws Exception {
-        Integer count = (Integer) entityManager_
+        Integer count = (Integer) entityManager
                 .findObject("select count(*) from emp");
         assertEquals("1", new Integer(14), count);
     }
@@ -64,11 +60,7 @@ public class EntityManagerImplTest extends S2TestCase {
         include("dao.dicon");
         DaoMetaDataFactory factory = (DaoMetaDataFactory) getComponent(DaoMetaDataFactory.class);
         DaoMetaData daoMetaData = factory.getDaoMetaData(EmployeeDao.class);
-        entityManager_ = new EntityManagerImpl(daoMetaData);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(EntityManagerImplTest.class);
+        entityManager = new EntityManagerImpl(daoMetaData);
     }
 
 }

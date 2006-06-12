@@ -47,56 +47,56 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
 
     protected boolean initialised = false;
 
-    protected DataSource dataSource_;
+    protected DataSource dataSource;
 
-    protected String procedureName_;
+    protected String procedureName;
 
-    protected String sql_;
+    protected String sql;
 
-    protected Integer[] columnInOutTypes_;
+    protected Integer[] columnInOutTypes;
 
-    protected Integer[] columnTypes_;
+    protected Integer[] columnTypes;
 
-    protected String[] columnNames_;
+    protected String[] columnNames;
 
-    protected StatementFactory statementFactory_ = BasicStatementFactory.INSTANCE;
+    protected StatementFactory statementFactory = BasicStatementFactory.INSTANCE;
 
     public DataSource getDataSource() {
-        return dataSource_;
+        return dataSource;
     }
 
     public void setDataSource(DataSource dataSource) {
-        dataSource_ = dataSource;
+        this.dataSource = dataSource;
     }
 
     public String getProcedureName() {
-        return procedureName_;
+        return procedureName;
     }
 
     public void setProcedureName(String procedureName) {
-        this.procedureName_ = procedureName;
+        this.procedureName = procedureName;
     }
 
     public StatementFactory getStatementFactory() {
-        return statementFactory_;
+        return statementFactory;
     }
 
     public void setStatementFactory(StatementFactory statementFactory) {
-        statementFactory_ = statementFactory;
+        this.statementFactory = statementFactory;
     }
 
     protected Connection getConnection() {
-        if (dataSource_ == null) {
+        if (dataSource == null) {
             throw new EmptyRuntimeException("dataSource");
         }
-        return DataSourceUtil.getConnection(dataSource_);
+        return DataSourceUtil.getConnection(dataSource);
     }
 
     protected CallableStatement prepareCallableStatement(Connection connection) {
-        if (sql_ == null) {
+        if (sql == null) {
             throw new EmptyRuntimeException("sql");
         }
-        return statementFactory_.createCallableStatement(connection, sql_);
+        return statementFactory.createCallableStatement(connection, sql);
     }
 
     public Object execute(Object[] args) throws SQLRuntimeException {
@@ -167,12 +167,12 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
             ConnectionUtil.close(connection);
         }
         buff.append(")}");
-        sql_ = buff.toString();
-        columnNames_ = (String[]) columnNames.toArray(new String[columnNames
+        this.sql = buff.toString();
+        this.columnNames = (String[]) columnNames
+                .toArray(new String[columnNames.size()]);
+        this.columnTypes = (Integer[]) dataType.toArray(new Integer[dataType
                 .size()]);
-        columnTypes_ = (Integer[]) dataType
-                .toArray(new Integer[dataType.size()]);
-        columnInOutTypes_ = (Integer[]) inOutTypes
+        this.columnInOutTypes = (Integer[]) inOutTypes
                 .toArray(new Integer[inOutTypes.size()]);
         return outparameterNum;
     }
@@ -187,12 +187,12 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
             return;
         }
         int argPos = 0;
-        for (int i = 0; i < columnTypes_.length; i++) {
-            if (isOutputColum(columnInOutTypes_[i].intValue())) {
-                ps.registerOutParameter(i + 1, columnTypes_[i].intValue());
+        for (int i = 0; i < columnTypes.length; i++) {
+            if (isOutputColum(columnInOutTypes[i].intValue())) {
+                ps.registerOutParameter(i + 1, columnTypes[i].intValue());
             }
-            if (isInputColum(columnInOutTypes_[i].intValue())) {
-                ps.setObject(i + 1, args[argPos++], columnTypes_[i].intValue());
+            if (isInputColum(columnInOutTypes[i].intValue())) {
+                ps.setObject(i + 1, args[argPos++], columnTypes[i].intValue());
             }
         }
     }
@@ -210,20 +210,20 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
 
     protected String getCompleteSql(Object[] args) {
         if (args == null || args.length == 0) {
-            return sql_;
+            return sql;
         }
         StringBuffer buf = new StringBuffer(200);
         int pos = 0;
         int pos2 = 0;
         int index = 0;
         while (true) {
-            pos = sql_.indexOf('?', pos2);
+            pos = sql.indexOf('?', pos2);
             if (pos > 0) {
-                buf.append(sql_.substring(pos2, pos));
+                buf.append(sql.substring(pos2, pos));
                 buf.append(getBindVariableText(args[index++]));
                 pos2 = pos + 1;
             } else {
-                buf.append(sql_.substring(pos2));
+                buf.append(sql.substring(pos2));
                 break;
             }
         }

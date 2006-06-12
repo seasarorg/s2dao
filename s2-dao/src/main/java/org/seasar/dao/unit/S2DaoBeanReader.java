@@ -37,9 +37,9 @@ import org.seasar.framework.beans.PropertyDesc;
 
 public class S2DaoBeanReader implements DataReader {
 
-    private DataSet dataSet_ = new DataSetImpl();
+    private DataSet dataSet = new DataSetImpl();
 
-    private DataTable table_ = dataSet_.addTable("S2DaoBean");
+    private DataTable table = dataSet.addTable("S2DaoBean");
 
     protected S2DaoBeanReader() {
     }
@@ -73,7 +73,7 @@ public class S2DaoBeanReader implements DataReader {
         for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
             PropertyType pt = beanMetaData.getPropertyType(i);
             Class propertyType = pt.getPropertyDesc().getPropertyType();
-            table_.addColumn(pt.getColumnName(), ColumnTypes
+            table.addColumn(pt.getColumnName(), ColumnTypes
                     .getColumnType(propertyType));
         }
         for (int i = 0; i < beanMetaData.getRelationPropertyTypeSize(); ++i) {
@@ -83,14 +83,14 @@ public class S2DaoBeanReader implements DataReader {
                 String columnName = pt.getColumnName() + "_"
                         + rpt.getRelationNo();
                 Class propertyType = pt.getPropertyDesc().getPropertyType();
-                table_.addColumn(columnName, ColumnTypes
+                table.addColumn(columnName, ColumnTypes
                         .getColumnType(propertyType));
             }
         }
     }
 
     protected void setupRow(BeanMetaData beanMetaData, Object bean) {
-        DataRow row = table_.addRow();
+        DataRow row = table.addRow();
         for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
             PropertyType pt = beanMetaData.getPropertyType(i);
             PropertyDesc pd = pt.getPropertyDesc();
@@ -118,7 +118,7 @@ public class S2DaoBeanReader implements DataReader {
     }
 
     public DataSet read() {
-        return dataSet_;
+        return dataSet;
     }
 
 }

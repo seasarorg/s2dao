@@ -26,15 +26,7 @@ import org.seasar.extension.dataset.DataSet;
  */
 public class EmployeeDaoTest extends S2DaoTestCase {
 
-    private EmployeeDao employeeDao_;
-
-    public EmployeeDaoTest(String arg0) {
-        super(arg0);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(EmployeeDaoTest.class);
-    }
+    private EmployeeDao employeeDao;
 
     public void setUp() {
         include("examples/dao/EmployeeDao.dicon");
@@ -42,7 +34,7 @@ public class EmployeeDaoTest extends S2DaoTestCase {
 
     public void testGetAllEmployee() throws Exception {
         DataSet expected = readXls("getAllEmployeesResult.xls");
-        List actual = employeeDao_.getAllEmployees();
+        List actual = employeeDao.getAllEmployees();
         assertEquals("1", expected, actual);
     }
 }

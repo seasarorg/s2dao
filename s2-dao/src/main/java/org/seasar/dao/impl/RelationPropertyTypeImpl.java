@@ -27,13 +27,13 @@ import org.seasar.framework.beans.PropertyDesc;
 public class RelationPropertyTypeImpl extends PropertyTypeImpl implements
         RelationPropertyType {
 
-    protected int relationNo_;
+    protected int relationNo;
 
-    protected String[] myKeys_;
+    protected String[] myKeys;
 
-    protected String[] yourKeys_;
+    protected String[] yourKeys;
 
-    protected BeanMetaData beanMetaData_;
+    protected BeanMetaData beanMetaData;
 
     public RelationPropertyTypeImpl(PropertyDesc propertyDesc) {
         super(propertyDesc);
@@ -43,24 +43,24 @@ public class RelationPropertyTypeImpl extends PropertyTypeImpl implements
             String[] myKeys, String[] yourKeys, BeanMetaData beanMetaData) {
 
         super(propertyDesc);
-        relationNo_ = relationNo;
-        myKeys_ = myKeys;
-        yourKeys_ = yourKeys;
-        beanMetaData_ = beanMetaData;
+        this.relationNo = relationNo;
+        this.myKeys = myKeys;
+        this.yourKeys = yourKeys;
+        this.beanMetaData = beanMetaData;
     }
 
     public int getRelationNo() {
-        return relationNo_;
+        return relationNo;
     }
 
     /**
      * @see org.seasar.dao.RelationPropertyType#getKeySize()
      */
     public int getKeySize() {
-        if (myKeys_.length > 0) {
-            return myKeys_.length;
+        if (myKeys.length > 0) {
+            return myKeys.length;
         } else {
-            return beanMetaData_.getPrimaryKeySize();
+            return beanMetaData.getPrimaryKeySize();
         }
 
     }
@@ -69,10 +69,10 @@ public class RelationPropertyTypeImpl extends PropertyTypeImpl implements
      * @see org.seasar.dao.RelationPropertyType#getMyKey(int)
      */
     public String getMyKey(int index) {
-        if (myKeys_.length > 0) {
-            return myKeys_[index];
+        if (myKeys.length > 0) {
+            return myKeys[index];
         } else {
-            return beanMetaData_.getPrimaryKey(index);
+            return beanMetaData.getPrimaryKey(index);
         }
     }
 
@@ -80,10 +80,10 @@ public class RelationPropertyTypeImpl extends PropertyTypeImpl implements
      * @see org.seasar.dao.RelationPropertyType#getYourKey(int)
      */
     public String getYourKey(int index) {
-        if (yourKeys_.length > 0) {
-            return yourKeys_[index];
+        if (yourKeys.length > 0) {
+            return yourKeys[index];
         } else {
-            return beanMetaData_.getPrimaryKey(index);
+            return beanMetaData.getPrimaryKey(index);
         }
     }
 
@@ -103,6 +103,6 @@ public class RelationPropertyTypeImpl extends PropertyTypeImpl implements
      * @see org.seasar.extension.jdbc.RelationPropertyType#getBeanMetaData()
      */
     public BeanMetaData getBeanMetaData() {
-        return beanMetaData_;
+        return beanMetaData;
     }
 }

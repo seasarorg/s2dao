@@ -23,7 +23,7 @@ import org.seasar.extension.unit.S2TestCase;
  */
 public class S2DaoInterceptor3Test extends S2TestCase {
 
-    private DepartmentAutoDao dao_;
+    private DepartmentAutoDao dao;
 
     public S2DaoInterceptor3Test(String arg0) {
         super(arg0);
@@ -40,13 +40,13 @@ public class S2DaoInterceptor3Test extends S2TestCase {
     public void testUpdateTx() throws Exception {
         Department dept = new Department();
         dept.setDeptno(10);
-        assertEquals("1", 1, dao_.update(dept));
+        assertEquals("1", 1, dao.update(dept));
     }
 
     public void testDeleteTx() throws Exception {
         Department dept = new Department();
         dept.setDeptno(10);
-        assertEquals("1", 1, dao_.delete(dept));
+        assertEquals("1", 1, dao.delete(dept));
     }
 
 }

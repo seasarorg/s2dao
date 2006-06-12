@@ -23,14 +23,14 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class IllegalSignatureRuntimeException extends SRuntimeException {
 
-    private String signature_;
+    private String signature;
 
     public IllegalSignatureRuntimeException(String messageCode, String signature) {
         super(messageCode, new Object[] { signature });
-        signature_ = signature;
+        this.signature = signature;
     }
 
     public String getSignature() {
-        return signature_;
+        return signature;
     }
 }

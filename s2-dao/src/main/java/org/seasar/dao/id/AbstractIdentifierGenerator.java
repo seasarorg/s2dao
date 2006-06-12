@@ -34,37 +34,37 @@ import org.seasar.framework.exception.EmptyRuntimeException;
 public abstract class AbstractIdentifierGenerator implements
         IdentifierGenerator {
 
-    private static ResultSetHandler resultSetHandler_ = new ObjectResultSetHandler();
+    private static ResultSetHandler resultSetHandler = new ObjectResultSetHandler();
 
-    private String propertyName_;
+    private String propertyName;
 
-    private Dbms dbms_;
+    private Dbms dbms;
 
     public AbstractIdentifierGenerator(String propertyName, Dbms dbms) {
-        propertyName_ = propertyName;
-        dbms_ = dbms;
+        this.propertyName = propertyName;
+        this.dbms = dbms;
     }
 
     public String getPropertyName() {
-        return propertyName_;
+        return propertyName;
     }
 
     public Dbms getDbms() {
-        return dbms_;
+        return dbms;
     }
 
     protected Object executeSql(DataSource ds, String sql, Object[] args) {
         BasicSelectHandler handler = new BasicSelectHandler(ds, sql,
-                resultSetHandler_);
+                resultSetHandler);
         return handler.execute(args);
     }
 
     protected void setIdentifier(Object bean, Object value) {
-        if (propertyName_ == null) {
+        if (propertyName == null) {
             throw new EmptyRuntimeException("propertyName");
         }
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(bean.getClass());
-        PropertyDesc pd = beanDesc.getPropertyDesc(propertyName_);
+        PropertyDesc pd = beanDesc.getPropertyDesc(propertyName);
         pd.setValue(bean, value);
     }
 }

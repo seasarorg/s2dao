@@ -29,14 +29,14 @@ public class EntityManagerImpl implements EntityManager {
 
     private static Object[] EMPTY_ARGS = new Object[0];
 
-    private DaoMetaData daoMetaData_;
+    private DaoMetaData daoMetaData;
 
     public EntityManagerImpl(DaoMetaData daoMetaData) {
-        daoMetaData_ = daoMetaData;
+        this.daoMetaData = daoMetaData;
     }
 
     public DaoMetaData getDaoMetaData() {
-        return daoMetaData_;
+        return daoMetaData;
     }
 
     /**
@@ -75,7 +75,7 @@ public class EntityManagerImpl implements EntityManager {
      *      java.lang.Object[])
      */
     public List find(String query, Object[] args) {
-        SqlCommand cmd = daoMetaData_.createFindCommand(query);
+        SqlCommand cmd = daoMetaData.createFindCommand(query);
         return (List) cmd.execute(args);
     }
 
@@ -117,7 +117,7 @@ public class EntityManagerImpl implements EntityManager {
      *      java.lang.Object[])
      */
     public Object[] findArray(String query, Object[] args) {
-        SqlCommand cmd = daoMetaData_.createFindArrayCommand(query);
+        SqlCommand cmd = daoMetaData.createFindArrayCommand(query);
         return (Object[]) cmd.execute(args);
     }
 
@@ -157,7 +157,7 @@ public class EntityManagerImpl implements EntityManager {
      *      java.lang.Object[])
      */
     public Object findBean(String query, Object[] args) {
-        SqlCommand cmd = daoMetaData_.createFindBeanCommand(query);
+        SqlCommand cmd = daoMetaData.createFindBeanCommand(query);
         return cmd.execute(args);
     }
 
@@ -202,7 +202,7 @@ public class EntityManagerImpl implements EntityManager {
      *      java.lang.Object[])
      */
     public Object findObject(String query, Object[] args) {
-        SqlCommand cmd = daoMetaData_.createFindObjectCommand(query);
+        SqlCommand cmd = daoMetaData.createFindObjectCommand(query);
         return cmd.execute(args);
     }
 }

@@ -60,86 +60,86 @@ public class DefaultBeanMetaDataImplTest extends BeanMetaDataImplTest {
 
         public static final String ccc_RELKEYS = "ddd:id";
 
-        private Integer aaa_;
+        private Integer aaa;
 
-        private String bbb_;
+        private String bbb;
 
-        private Ccc ccc_;
+        private Ccc ccc;
 
-        private Integer ddd_;
+        private Integer ddd;
 
         public Integer getAaa() {
-            return aaa_;
+            return aaa;
         }
 
         public void setAaa(Integer aaa) {
-            aaa_ = aaa;
+            this.aaa = aaa;
         }
 
         public String getBbb() {
-            return bbb_;
+            return bbb;
         }
 
         public void setBbb(String bbb) {
-            bbb_ = bbb;
+            this.bbb = bbb;
         }
 
         public Ccc getCcc() {
-            return ccc_;
+            return ccc;
         }
 
         public void setCcc(Ccc ccc) {
-            ccc_ = ccc;
+            this.ccc = ccc;
         }
 
         public Integer getDdd() {
-            return ddd_;
+            return ddd;
         }
 
         public void setDdd(Integer ddd) {
-            ddd_ = ddd;
+            this.ddd = ddd;
         }
     }
 
     public static class Ccc {
         public static final String id_ID = "assigned";
 
-        private Integer id_;
+        private Integer id;
 
         public Integer getId() {
-            return id_;
+            return id;
         }
 
         public void setId(Integer id) {
-            id_ = id;
+            this.id = id;
         }
     }
 
     public static class Ddd extends Ccc {
         public static final String NO_PERSISTENT_PROPS = "";
 
-        private String name_;
+        private String name;
 
         public String getName() {
-            return name_;
+            return name;
         }
 
         public void setName(String name) {
-            name_ = name;
+            this.name = name;
         }
     }
 
     public static class Eee extends Ccc {
         public static final String NO_PERSISTENT_PROPS = "name";
 
-        private String name_;
+        private String name;
 
         public String getName() {
-            return name_;
+            return name;
         }
 
         public void setName(String name) {
-            name_ = name;
+            this.name = name;
         }
     }
 
@@ -148,34 +148,34 @@ public class DefaultBeanMetaDataImplTest extends BeanMetaDataImplTest {
 
         public static final String TIMESTAMP_PROPERTY = "updated";
 
-        private int version_;
+        private int version;
 
-        private Integer id_;
+        private Integer id;
 
-        private Timestamp updated_;
+        private Timestamp updated;
 
         public Integer getId() {
-            return id_;
+            return id;
         }
 
         public void setId(Integer id) {
-            id_ = id;
+            this.id = id;
         }
 
         public int getVersion() {
-            return version_;
+            return version;
         }
 
         public void setVersion(int version) {
-            version_ = version;
+            this.version = version;
         }
 
         public Timestamp getUpdated() {
-            return updated_;
+            return updated;
         }
 
         public void setUpdated(Timestamp updated) {
-            updated_ = updated;
+            this.updated = updated;
         }
     }
 }

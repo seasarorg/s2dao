@@ -34,7 +34,7 @@ import org.seasar.framework.util.StringUtil;
  */
 public class IdentifierGeneratorFactory {
 
-    private static Map generatorClasses_ = new HashMap();
+    private static Map generatorClasses = new HashMap();
 
     static {
         addIdentifierGeneratorClass("assigned",
@@ -49,7 +49,7 @@ public class IdentifierGeneratorFactory {
     }
 
     public static void addIdentifierGeneratorClass(String name, Class clazz) {
-        generatorClasses_.put(name, clazz);
+        generatorClasses.put(name, clazz);
     }
 
     public static IdentifierGenerator createIdentifierGenerator(
@@ -75,7 +75,7 @@ public class IdentifierGeneratorFactory {
     }
 
     protected static Class getGeneratorClass(String name) {
-        Class clazz = (Class) generatorClasses_.get(name);
+        Class clazz = (Class) generatorClasses.get(name);
         if (clazz != null) {
             return clazz;
         }

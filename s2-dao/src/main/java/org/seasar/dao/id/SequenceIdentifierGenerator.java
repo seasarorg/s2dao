@@ -25,7 +25,7 @@ import org.seasar.dao.Dbms;
  */
 public class SequenceIdentifierGenerator extends AbstractIdentifierGenerator {
 
-    private String sequenceName_;
+    private String sequenceName;
 
     /**
      * @param propertyName
@@ -36,16 +36,16 @@ public class SequenceIdentifierGenerator extends AbstractIdentifierGenerator {
     }
 
     public String getSequenceName() {
-        return sequenceName_;
+        return sequenceName;
     }
 
     public void setSequenceName(String sequenceName) {
-        sequenceName_ = sequenceName;
+        this.sequenceName = sequenceName;
     }
 
     public void setIdentifier(Object bean, DataSource ds) {
         Object value = executeSql(ds, getDbms().getSequenceNextValString(
-                sequenceName_), null);
+                sequenceName), null);
         setIdentifier(bean, value);
     }
 

@@ -23,14 +23,14 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class PrimaryKeyNotFoundRuntimeException extends SRuntimeException {
 
-    private Class targetClass_;
+    private Class targetClass;
 
     public PrimaryKeyNotFoundRuntimeException(Class targetClass) {
         super("EDAO0009", new Object[] { targetClass.getName() });
-        targetClass_ = targetClass;
+        this.targetClass = targetClass;
     }
 
     public Class getTargetClass() {
-        return targetClass_;
+        return targetClass;
     }
 }

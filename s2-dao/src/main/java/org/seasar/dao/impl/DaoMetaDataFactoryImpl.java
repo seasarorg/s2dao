@@ -29,41 +29,41 @@ import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory {
 
-    protected Map daoMetaDataCache_ = new HashMap();
+    protected Map daoMetaDataCache = new HashMap();
 
-    protected DataSource dataSource_;
+    protected DataSource dataSource;
 
-    protected StatementFactory statementFactory_;
+    protected StatementFactory statementFactory;
 
-    protected ResultSetFactory resultSetFactory_;
+    protected ResultSetFactory resultSetFactory;
 
-    protected AnnotationReaderFactory readerFactory_;
+    protected AnnotationReaderFactory annotationReaderFactory;
 
-    private ValueTypeFactory valueTypeFactory;
+    protected ValueTypeFactory valueTypeFactory;
 
-    private String sqlFileEncoding;
+    protected String sqlFileEncoding;
 
-    private String[] daoSuffixes;
+    protected String[] daoSuffixes;
 
-    private String[] insertPrefixes;
+    protected String[] insertPrefixes;
 
-    private String[] deletePrefixes;
+    protected String[] deletePrefixes;
 
-    private String[] updatePrefixes;
+    protected String[] updatePrefixes;
 
     public DaoMetaDataFactoryImpl(DataSource dataSource,
             StatementFactory statementFactory,
             ResultSetFactory resultSetFactory,
             AnnotationReaderFactory readerFactory) {
 
-        dataSource_ = dataSource;
-        statementFactory_ = statementFactory;
-        resultSetFactory_ = resultSetFactory;
-        readerFactory_ = readerFactory;
+        this.dataSource = dataSource;
+        this.statementFactory = statementFactory;
+        this.resultSetFactory = resultSetFactory;
+        this.annotationReaderFactory = readerFactory;
     }
 
     public void setSqlFileEncoding(String encoding) {
@@ -88,22 +88,22 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory {
 
     public synchronized DaoMetaData getDaoMetaData(Class daoClass) {
         String key = daoClass.getName();
-        DaoMetaData dmd = (DaoMetaData) daoMetaDataCache_.get(key);
+        DaoMetaData dmd = (DaoMetaData) daoMetaDataCache.get(key);
         if (dmd != null) {
             return dmd;
         }
         DaoMetaData dmdi = createDaoMetaData(daoClass);
-        daoMetaDataCache_.put(key, dmdi);
+        daoMetaDataCache.put(key, dmdi);
         return dmdi;
     }
 
-    private DaoMetaData createDaoMetaData(Class daoClass) {
+    protected DaoMetaData createDaoMetaData(Class daoClass) {
         DaoMetaDataImpl daoMetaData = new DaoMetaDataImpl();
         daoMetaData.setDaoClass(daoClass);
-        daoMetaData.setDataSource(dataSource_);
-        daoMetaData.setStatementFactory(statementFactory_);
-        daoMetaData.setResultSetFactory(resultSetFactory_);
-        daoMetaData.setAnnotationReaderFactory(readerFactory_);
+        daoMetaData.setDataSource(dataSource);
+        daoMetaData.setStatementFactory(statementFactory);
+        daoMetaData.setResultSetFactory(resultSetFactory);
+        daoMetaData.setAnnotationReaderFactory(annotationReaderFactory);
         daoMetaData.setValueTypeFactory(valueTypeFactory);
         if (sqlFileEncoding != null) {
             daoMetaData.setSqlFileEncoding(sqlFileEncoding);

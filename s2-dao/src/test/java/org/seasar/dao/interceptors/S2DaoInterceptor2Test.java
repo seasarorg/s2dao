@@ -25,7 +25,7 @@ import org.seasar.extension.unit.S2TestCase;
  */
 public class S2DaoInterceptor2Test extends S2TestCase {
 
-    private EmployeeAutoDao dao_;
+    private EmployeeAutoDao dao;
 
     public S2DaoInterceptor2Test(String arg0) {
         super(arg0);
@@ -43,17 +43,17 @@ public class S2DaoInterceptor2Test extends S2TestCase {
         Employee emp = new Employee();
         emp.setEmpno(99);
         emp.setEname("hoge");
-        assertEquals("1", 1, dao_.insert(emp));
+        assertEquals("1", 1, dao.insert(emp));
     }
 
     public void testSelect() throws Exception {
-        Employee emp = dao_.getEmployee(7788);
+        Employee emp = dao.getEmployee(7788);
         System.out.println(emp);
         assertEquals("1", 7788, emp.getEmpno());
     }
 
     public void testSelectQuery() throws Exception {
-        List employees = dao_.getEmployeesBySal(0, 1000);
+        List employees = dao.getEmployeesBySal(0, 1000);
         System.out.println(employees);
         assertEquals("1", 2, employees.size());
     }
@@ -65,15 +65,15 @@ public class S2DaoInterceptor2Test extends S2TestCase {
         Employee emp2 = new Employee();
         emp2.setEmpno(98);
         emp2.setEname("hoge2");
-        assertEquals("1", 2, dao_.insertBatch(new Employee[] { emp, emp2 }));
+        assertEquals("1", 2, dao.insertBatch(new Employee[] { emp, emp2 }));
     }
 
     public void testFullWidthTildaTx() throws Exception {
         Employee emp = new Employee();
         emp.setEmpno(99);
         emp.setEname("～");
-        dao_.insert(emp);
-        Employee emp2 = dao_.getEmployee(99);
+        dao.insert(emp);
+        Employee emp2 = dao.getEmployee(99);
         assertEquals("1", emp.getEname(), emp2.getEname());
     }
 }

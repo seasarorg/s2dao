@@ -33,11 +33,11 @@ import org.seasar.framework.util.CaseInsensitiveMap;
  */
 public class DtoMetaDataImpl implements DtoMetaData {
 
-    private Class beanClass_;
+    private Class beanClass;
 
-    private CaseInsensitiveMap propertyTypes_ = new CaseInsensitiveMap();
+    private CaseInsensitiveMap propertyTypes = new CaseInsensitiveMap();
 
-    protected BeanAnnotationReader beanAnnotationReader_;
+    protected BeanAnnotationReader beanAnnotationReader;
 
     private ValueTypeFactory valueTypeFactory;
 
@@ -63,25 +63,25 @@ public class DtoMetaDataImpl implements DtoMetaData {
      * @see org.seasar.dao.DtoMetaData#getBeanClass()
      */
     public Class getBeanClass() {
-        return beanClass_;
+        return beanClass;
     }
 
     public void setBeanClass(Class beanClass) {
-        beanClass_ = beanClass;
+        this.beanClass = beanClass;
     }
 
     /**
      * @see org.seasar.dao.DtoMetaData#getPropertyTypeSize()
      */
     public int getPropertyTypeSize() {
-        return propertyTypes_.size();
+        return propertyTypes.size();
     }
 
     /**
      * @see org.seasar.dao.DtoMetaData#getPropertyType(int)
      */
     public PropertyType getPropertyType(int index) {
-        return (PropertyType) propertyTypes_.get(index);
+        return (PropertyType) propertyTypes.get(index);
     }
 
     /**
@@ -90,10 +90,10 @@ public class DtoMetaDataImpl implements DtoMetaData {
     public PropertyType getPropertyType(String propertyName)
             throws PropertyNotFoundRuntimeException {
 
-        PropertyType propertyType = (PropertyType) propertyTypes_
+        PropertyType propertyType = (PropertyType) propertyTypes
                 .get(propertyName);
         if (propertyType == null) {
-            throw new PropertyNotFoundRuntimeException(beanClass_, propertyName);
+            throw new PropertyNotFoundRuntimeException(beanClass, propertyName);
         }
         return propertyType;
     }
@@ -102,7 +102,7 @@ public class DtoMetaDataImpl implements DtoMetaData {
      * @see org.seasar.dao.DtoMetaData#hasPropertyType(java.lang.String)
      */
     public boolean hasPropertyType(String propertyName) {
-        return propertyTypes_.get(propertyName) != null;
+        return propertyTypes.get(propertyName) != null;
     }
 
     protected void setupPropertyType(BeanDesc beanDesc) {
@@ -117,7 +117,7 @@ public class DtoMetaDataImpl implements DtoMetaData {
             PropertyDesc propertyDesc) {
 
         String columnName = propertyDesc.getPropertyName();
-        String ca = beanAnnotationReader_.getColumnAnnotation(propertyDesc);
+        String ca = beanAnnotationReader.getColumnAnnotation(propertyDesc);
         if (ca != null) {
             columnName = ca;
         }
@@ -128,7 +128,7 @@ public class DtoMetaDataImpl implements DtoMetaData {
     }
 
     protected ValueType getValueType(PropertyDesc propertyDesc) {
-        final String valueTypeName = beanAnnotationReader_
+        final String valueTypeName = beanAnnotationReader
                 .getValueType(propertyDesc);
         if (valueTypeName != null) {
             return getValueTypeFactory().getValueTypeByName(valueTypeName);
@@ -139,12 +139,12 @@ public class DtoMetaDataImpl implements DtoMetaData {
     }
 
     protected void addPropertyType(PropertyType propertyType) {
-        propertyTypes_.put(propertyType.getPropertyName(), propertyType);
+        propertyTypes.put(propertyType.getPropertyName(), propertyType);
     }
 
     public void setBeanAnnotationReader(
             BeanAnnotationReader beanAnnotationReader) {
-        beanAnnotationReader_ = beanAnnotationReader;
+        this.beanAnnotationReader = beanAnnotationReader;
     }
 
     protected ValueTypeFactory getValueTypeFactory() {

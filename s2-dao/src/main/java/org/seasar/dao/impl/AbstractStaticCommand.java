@@ -26,16 +26,17 @@ import org.seasar.extension.jdbc.StatementFactory;
  */
 public abstract class AbstractStaticCommand extends AbstractSqlCommand {
 
-    private BeanMetaData beanMetaData_;
+    private BeanMetaData beanMetaData;
 
     public AbstractStaticCommand(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData) {
 
         super(dataSource, statementFactory);
-        beanMetaData_ = beanMetaData;
+        this.beanMetaData = beanMetaData;
     }
 
     public BeanMetaData getBeanMetaData() {
-        return beanMetaData_;
+        return beanMetaData;
     }
+
 }

@@ -33,10 +33,10 @@ public class S2DaoInterceptor extends AbstractInterceptor {
 
     private static final long serialVersionUID = 1L;
 
-    private DaoMetaDataFactory daoMetaDataFactory_;
+    private DaoMetaDataFactory daoMetaDataFactory;
 
     public S2DaoInterceptor(DaoMetaDataFactory daoMetaDataFactory) {
-        daoMetaDataFactory_ = daoMetaDataFactory;
+        this.daoMetaDataFactory = daoMetaDataFactory;
     }
 
     /**
@@ -48,7 +48,7 @@ public class S2DaoInterceptor extends AbstractInterceptor {
             return invocation.proceed();
         }
         Class targetClass = getTargetClass(invocation);
-        DaoMetaData dmd = daoMetaDataFactory_.getDaoMetaData(targetClass);
+        DaoMetaData dmd = daoMetaDataFactory.getDaoMetaData(targetClass);
         SqlCommand cmd = dmd.getSqlCommand(method.getName());
         Object ret = cmd.execute(invocation.getArguments());
         Class retType = method.getReturnType();

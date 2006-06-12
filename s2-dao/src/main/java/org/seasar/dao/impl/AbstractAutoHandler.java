@@ -46,19 +46,19 @@ import org.seasar.framework.util.StatementUtil;
 public abstract class AbstractAutoHandler extends BasicHandler implements
         UpdateHandler {
 
-    private static Logger logger_ = Logger.getLogger(AbstractAutoHandler.class);
+    private static Logger logger = Logger.getLogger(AbstractAutoHandler.class);
 
-    private BeanMetaData beanMetaData_;
+    private BeanMetaData beanMetaData;
 
-    private Object[] bindVariables_;
+    private Object[] bindVariables;
 
-    private ValueType[] bindVariableValueTypes_;
+    private ValueType[] bindVariableValueTypes;
 
-    private Timestamp timestamp_;
+    private Timestamp timestamp;
 
-    private Integer versionNo_;
+    private Integer versionNo;
 
-    private PropertyType[] propertyTypes_;
+    private PropertyType[] propertyTypes;
 
     public AbstractAutoHandler(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData,
@@ -66,56 +66,56 @@ public abstract class AbstractAutoHandler extends BasicHandler implements
 
         setDataSource(dataSource);
         setStatementFactory(statementFactory);
-        beanMetaData_ = beanMetaData;
-        propertyTypes_ = propertyTypes;
+        this.beanMetaData = beanMetaData;
+        this.propertyTypes = propertyTypes;
     }
 
     public BeanMetaData getBeanMetaData() {
-        return beanMetaData_;
+        return beanMetaData;
     }
 
     protected static Logger getLogger() {
-        return logger_;
+        return logger;
     }
 
     protected Object[] getBindVariables() {
-        return bindVariables_;
+        return bindVariables;
     }
 
     protected void setBindVariables(Object[] bindVariables) {
-        bindVariables_ = bindVariables;
+        this.bindVariables = bindVariables;
     }
 
     protected ValueType[] getBindVariableValueTypes() {
-        return bindVariableValueTypes_;
+        return bindVariableValueTypes;
     }
 
     protected void setBindVariableValueTypes(ValueType[] bindVariableValueTypes) {
-        bindVariableValueTypes_ = bindVariableValueTypes;
+        this.bindVariableValueTypes = bindVariableValueTypes;
     }
 
     protected Timestamp getTimestamp() {
-        return timestamp_;
+        return timestamp;
     }
 
     protected void setTimestamp(Timestamp timestamp) {
-        timestamp_ = timestamp;
+        this.timestamp = timestamp;
     }
 
     protected Integer getVersionNo() {
-        return versionNo_;
+        return versionNo;
     }
 
     protected void setVersionNo(Integer versionNo) {
-        versionNo_ = versionNo;
+        this.versionNo = versionNo;
     }
 
     protected PropertyType[] getPropertyTypes() {
-        return propertyTypes_;
+        return propertyTypes;
     }
 
     protected void setPropertyTypes(PropertyType[] propertyTypes) {
-        propertyTypes_ = propertyTypes;
+        this.propertyTypes = propertyTypes;
     }
 
     public int execute(Object[] args) throws SQLRuntimeException {
@@ -135,13 +135,13 @@ public abstract class AbstractAutoHandler extends BasicHandler implements
     protected int execute(Connection connection, Object bean) {
         preUpdateBean(bean);
         setupBindVariables(bean);
-        if (logger_.isDebugEnabled()) {
-            logger_.debug(getCompleteSql(bindVariables_));
+        if (logger.isDebugEnabled()) {
+            logger.debug(getCompleteSql(bindVariables));
         }
         PreparedStatement ps = prepareStatement(connection);
         int ret = -1;
         try {
-            bindArgs(ps, bindVariables_, bindVariableValueTypes_);
+            bindArgs(ps, bindVariables, bindVariableValueTypes);
             ret = PreparedStatementUtil.executeUpdate(ps);
         } finally {
             StatementUtil.close(ps);
@@ -179,8 +179,8 @@ public abstract class AbstractAutoHandler extends BasicHandler implements
         final BeanMetaData bmd = getBeanMetaData();
         final String timestampPropertyName = bmd.getTimestampPropertyName();
         final String versionNoPropertyName = bmd.getVersionNoPropertyName();
-        for (int i = 0; i < propertyTypes_.length; ++i) {
-            PropertyType pt = propertyTypes_[i];
+        for (int i = 0; i < propertyTypes.length; ++i) {
+            PropertyType pt = propertyTypes[i];
             if (pt.getPropertyName().equalsIgnoreCase(timestampPropertyName)) {
                 setTimestamp(new Timestamp(new Date().getTime()));
                 varList.add(getTimestamp());
@@ -203,8 +203,8 @@ public abstract class AbstractAutoHandler extends BasicHandler implements
         final BeanMetaData bmd = getBeanMetaData();
         final String timestampPropertyName = bmd.getTimestampPropertyName();
         final String versionNoPropertyName = bmd.getVersionNoPropertyName();
-        for (int i = 0; i < propertyTypes_.length; ++i) {
-            PropertyType pt = propertyTypes_[i];
+        for (int i = 0; i < propertyTypes.length; ++i) {
+            PropertyType pt = propertyTypes[i];
             if (pt.getPropertyName().equalsIgnoreCase(timestampPropertyName)) {
                 setTimestamp(new Timestamp(new Date().getTime()));
                 varList.add(getTimestamp());

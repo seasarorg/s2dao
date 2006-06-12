@@ -55,9 +55,9 @@ public class MapBasicProcedureHandler extends AbstractBasicProcedureHandler {
             bindArgs(cs, args);
             cs.execute();
             Map result = new HashMap();
-            for (int i = 0; i < columnInOutTypes_.length; i++) {
-                if (isOutputColum(columnInOutTypes_[i].intValue())) {
-                    result.put(columnNames_[i], cs.getObject(i + 1));
+            for (int i = 0; i < columnInOutTypes.length; i++) {
+                if (isOutputColum(columnInOutTypes[i].intValue())) {
+                    result.put(columnNames[i], cs.getObject(i + 1));
                 }
             }
             return result;

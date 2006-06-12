@@ -25,27 +25,14 @@ import org.seasar.extension.unit.S2TestCase;
  */
 public class S2DaoInterceptorTest extends S2TestCase {
 
-    private EmployeeDao dao_;
-
-    /**
-     * Constructor for InvocationImplTest.
-     * 
-     * @param arg0
-     */
-    public S2DaoInterceptorTest(String arg0) {
-        super(arg0);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(S2DaoInterceptorTest.class);
-    }
+    private EmployeeDao dao;
 
     public void setUp() {
         include("EmployeeDao.dicon");
     }
 
     public void testSelectBeanList() throws Exception {
-        List employees = dao_.getAllEmployees();
+        List employees = dao.getAllEmployees();
         for (int i = 0; i < employees.size(); ++i) {
             System.out.println(employees.get(i));
         }
@@ -53,28 +40,28 @@ public class S2DaoInterceptorTest extends S2TestCase {
     }
 
     public void testSelectBean() throws Exception {
-        Employee employee = dao_.getEmployee(7788);
+        Employee employee = dao.getEmployee(7788);
         System.out.println(employee);
         assertEquals("1", "SCOTT", employee.getEname());
     }
 
     public void testSelectObject() throws Exception {
-        int count = dao_.getCount();
+        int count = dao.getCount();
         System.out.println("count:" + count);
         assertEquals("1", true, count > 0);
     }
 
     public void testUpdateTx() throws Exception {
-        Employee employee = dao_.getEmployee(7788);
-        assertEquals("1", 1, dao_.update(employee));
+        Employee employee = dao.getEmployee(7788);
+        assertEquals("1", 1, dao.update(employee));
     }
 
     public void testEntityManager() throws Exception {
-        Employee[] employees = dao_.getEmployeesByDeptno(10);
+        Employee[] employees = dao.getEmployeesByDeptno(10);
         assertEquals("1", 3, employees.length);
     }
 
     public void testInsertTx() throws Exception {
-        dao_.insert(9999, "hoge");
+        dao.insert(9999, "hoge");
     }
 }

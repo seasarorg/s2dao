@@ -24,54 +24,54 @@ import org.seasar.dao.TokenNotClosedRuntimeException;
  */
 public class SqlTokenizerImpl implements SqlTokenizer {
 
-    private String sql_;
+    private String sql;
 
-    private int position_ = 0;
+    private int position = 0;
 
-    private String token_;
+    private String token;
 
-    private int tokenType_ = SQL;
+    private int tokenType = SQL;
 
-    private int nextTokenType_ = SQL;
+    private int nextTokenType = SQL;
 
     private int bindVariableNum = 0;
 
     public SqlTokenizerImpl(String sql) {
-        sql_ = sql;
+        this.sql = sql;
     }
 
     public int getPosition() {
-        return position_;
+        return position;
     }
 
     public String getToken() {
-        return token_;
+        return token;
     }
 
     public String getBefore() {
-        return sql_.substring(0, position_);
+        return sql.substring(0, position);
     }
 
     public String getAfter() {
-        return sql_.substring(position_);
+        return sql.substring(position);
     }
 
     public int getTokenType() {
-        return tokenType_;
+        return tokenType;
     }
 
     public int getNextTokenType() {
-        return nextTokenType_;
+        return nextTokenType;
     }
 
     public int next() {
-        if (position_ >= sql_.length()) {
-            token_ = null;
-            tokenType_ = EOF;
-            nextTokenType_ = EOF;
-            return tokenType_;
+        if (position >= sql.length()) {
+            token = null;
+            tokenType = EOF;
+            nextTokenType = EOF;
+            return tokenType;
         }
-        switch (nextTokenType_) {
+        switch (nextTokenType) {
         case SQL:
             parseSql();
             break;
@@ -88,23 +88,23 @@ public class SqlTokenizerImpl implements SqlTokenizer {
             parseEof();
             break;
         }
-        return tokenType_;
+        return tokenType;
     }
 
     protected void parseSql() {
-        int commentStartPos = sql_.indexOf("/*", position_);
-        int commentStartPos2 = sql_.indexOf("#*", position_);
+        int commentStartPos = sql.indexOf("/*", position);
+        int commentStartPos2 = sql.indexOf("#*", position);
         if (0 < commentStartPos2 && commentStartPos2 < commentStartPos) {
             commentStartPos = commentStartPos2;
         }
-        int lineCommentStartPos = sql_.indexOf("--", position_);
-        int bindVariableStartPos = sql_.indexOf("?", position_);
+        int lineCommentStartPos = sql.indexOf("--", position);
+        int bindVariableStartPos = sql.indexOf("?", position);
         int elseCommentStartPos = -1;
         int elseCommentLength = -1;
         if (lineCommentStartPos >= 0) {
             int skipPos = skipWhitespace(lineCommentStartPos + 2);
-            if (skipPos + 4 < sql_.length()
-                    && "ELSE".equals(sql_.substring(skipPos, skipPos + 4))) {
+            if (skipPos + 4 < sql.length()
+                    && "ELSE".equals(sql.substring(skipPos, skipPos + 4))) {
                 elseCommentStartPos = lineCommentStartPos;
                 elseCommentLength = skipPos + 4 - lineCommentStartPos;
             }
@@ -112,23 +112,23 @@ public class SqlTokenizerImpl implements SqlTokenizer {
         int nextStartPos = getNextStartPos(commentStartPos,
                 elseCommentStartPos, bindVariableStartPos);
         if (nextStartPos < 0) {
-            token_ = sql_.substring(position_);
-            nextTokenType_ = EOF;
-            position_ = sql_.length();
-            tokenType_ = SQL;
+            token = sql.substring(position);
+            nextTokenType = EOF;
+            position = sql.length();
+            tokenType = SQL;
         } else {
-            token_ = sql_.substring(position_, nextStartPos);
-            tokenType_ = SQL;
-            boolean needNext = nextStartPos == position_;
+            token = sql.substring(position, nextStartPos);
+            tokenType = SQL;
+            boolean needNext = nextStartPos == position;
             if (nextStartPos == commentStartPos) {
-                nextTokenType_ = COMMENT;
-                position_ = commentStartPos + 2;
+                nextTokenType = COMMENT;
+                position = commentStartPos + 2;
             } else if (nextStartPos == elseCommentStartPos) {
-                nextTokenType_ = ELSE;
-                position_ = elseCommentStartPos + elseCommentLength;
+                nextTokenType = ELSE;
+                position = elseCommentStartPos + elseCommentLength;
             } else if (nextStartPos == bindVariableStartPos) {
-                nextTokenType_ = BIND_VARIABLE;
-                position_ = bindVariableStartPos;
+                nextTokenType = BIND_VARIABLE;
+                position = bindVariableStartPos;
             }
             if (needNext) {
                 next();
@@ -159,63 +159,63 @@ public class SqlTokenizerImpl implements SqlTokenizer {
     }
 
     protected void parseComment() {
-        int commentEndPos = sql_.indexOf("*/", position_);
-        int commentEndPos2 = sql_.indexOf("*#", position_);
+        int commentEndPos = sql.indexOf("*/", position);
+        int commentEndPos2 = sql.indexOf("*#", position);
         if (0 < commentEndPos2 && commentEndPos2 < commentEndPos) {
             commentEndPos = commentEndPos2;
         }
         if (commentEndPos < 0) {
-            throw new TokenNotClosedRuntimeException("*/", sql_
-                    .substring(position_));
+            throw new TokenNotClosedRuntimeException("*/", sql
+                    .substring(position));
         }
-        token_ = sql_.substring(position_, commentEndPos);
-        nextTokenType_ = SQL;
-        position_ = commentEndPos + 2;
-        tokenType_ = COMMENT;
+        token = sql.substring(position, commentEndPos);
+        nextTokenType = SQL;
+        position = commentEndPos + 2;
+        tokenType = COMMENT;
     }
 
     protected void parseBindVariable() {
-        token_ = nextBindVariableName();
-        nextTokenType_ = SQL;
-        position_ += 1;
-        tokenType_ = BIND_VARIABLE;
+        token = nextBindVariableName();
+        nextTokenType = SQL;
+        position += 1;
+        tokenType = BIND_VARIABLE;
     }
 
     protected void parseElse() {
-        token_ = null;
-        nextTokenType_ = SQL;
-        tokenType_ = ELSE;
+        token = null;
+        nextTokenType = SQL;
+        tokenType = ELSE;
     }
 
     protected void parseEof() {
-        token_ = null;
-        tokenType_ = EOF;
-        nextTokenType_ = EOF;
+        token = null;
+        tokenType = EOF;
+        nextTokenType = EOF;
     }
 
     public String skipToken() {
-        int index = sql_.length();
-        char quote = position_ < sql_.length() ? sql_.charAt(position_) : '\0';
+        int index = sql.length();
+        char quote = position < sql.length() ? sql.charAt(position) : '\0';
         boolean quoting = quote == '\'' || quote == '(';
         if (quote == '(') {
             quote = ')';
         }
-        for (int i = quoting ? position_ + 1 : position_; i < sql_.length(); ++i) {
-            char c = sql_.charAt(i);
+        for (int i = quoting ? position + 1 : position; i < sql.length(); ++i) {
+            char c = sql.charAt(i);
             if ((Character.isWhitespace(c) || c == ',' || c == ')' || c == '(')
                     && !quoting) {
                 index = i;
                 break;
-            } else if (c == '/' && i + 1 < sql_.length()
-                    && sql_.charAt(i + 1) == '*') {
+            } else if (c == '/' && i + 1 < sql.length()
+                    && sql.charAt(i + 1) == '*') {
                 index = i;
                 break;
-            } else if (c == '-' && i + 1 < sql_.length()
-                    && sql_.charAt(i + 1) == '-') {
+            } else if (c == '-' && i + 1 < sql.length()
+                    && sql.charAt(i + 1) == '-') {
                 index = i;
                 break;
             } else if (quoting && quote == '\'' && c == '\''
-                    && (i + 1 >= sql_.length() || sql_.charAt(i + 1) != '\'')) {
+                    && (i + 1 >= sql.length() || sql.charAt(i + 1) != '\'')) {
                 index = i + 1;
                 break;
             } else if (quoting && c == quote) {
@@ -223,24 +223,24 @@ public class SqlTokenizerImpl implements SqlTokenizer {
                 break;
             }
         }
-        token_ = sql_.substring(position_, index);
-        tokenType_ = SQL;
-        nextTokenType_ = SQL;
-        position_ = index;
-        return token_;
+        token = sql.substring(position, index);
+        tokenType = SQL;
+        nextTokenType = SQL;
+        position = index;
+        return token;
     }
 
     public String skipWhitespace() {
-        int index = skipWhitespace(position_);
-        token_ = sql_.substring(position_, index);
-        position_ = index;
-        return token_;
+        int index = skipWhitespace(position);
+        token = sql.substring(position, index);
+        position = index;
+        return token;
     }
 
     private int skipWhitespace(int position) {
-        int index = sql_.length();
-        for (int i = position; i < sql_.length(); ++i) {
-            char c = sql_.charAt(i);
+        int index = sql.length();
+        for (int i = position; i < sql.length(); ++i) {
+            char c = sql.charAt(i);
             if (!Character.isWhitespace(c)) {
                 index = i;
                 break;

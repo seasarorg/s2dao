@@ -23,21 +23,21 @@ import org.seasar.dao.CommandContext;
  */
 public class PrefixSqlNode extends AbstractNode {
 
-    private String prefix_;
+    private String prefix;
 
-    private String sql_;
+    private String sql;
 
     public PrefixSqlNode(String prefix, String sql) {
-        prefix_ = prefix;
-        sql_ = sql;
+        this.prefix = prefix;
+        this.sql = sql;
     }
 
     public String getPrefix() {
-        return prefix_;
+        return prefix;
     }
 
     public String getSql() {
-        return sql_;
+        return sql;
     }
 
     /**
@@ -45,9 +45,9 @@ public class PrefixSqlNode extends AbstractNode {
      */
     public void accept(CommandContext ctx) {
         if (ctx.isEnabled()) {
-            ctx.addSql(prefix_);
+            ctx.addSql(prefix);
         }
-        ctx.addSql(sql_);
+        ctx.addSql(sql);
     }
 
 }

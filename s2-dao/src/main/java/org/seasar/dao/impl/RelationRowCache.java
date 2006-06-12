@@ -26,15 +26,12 @@ import java.util.Map;
  */
 public class RelationRowCache {
 
-    private List rowMapList_;
+    private List rowMapList;
 
-    /**
-     * 
-     */
     public RelationRowCache(int size) {
-        rowMapList_ = new ArrayList();
+        rowMapList = new ArrayList();
         for (int i = 0; i < size; ++i) {
-            rowMapList_.add(new HashMap());
+            rowMapList.add(new HashMap());
         }
     }
 
@@ -47,6 +44,6 @@ public class RelationRowCache {
     }
 
     protected Map getRowMap(int relno) {
-        return (Map) rowMapList_.get(relno);
+        return (Map) rowMapList.get(relno);
     }
 }

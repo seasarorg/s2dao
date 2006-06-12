@@ -37,7 +37,7 @@ import org.seasar.framework.util.ResourceUtil;
  */
 public final class DbmsManager {
 
-    private static Map dbmses_ = new HashMap();
+    private static Map dbmses = new HashMap();
 
     static {
         Properties dbmsClassNames = ResourceUtil
@@ -46,7 +46,7 @@ public final class DbmsManager {
             String productName = (String) i.next();
             Dbms dbms = (Dbms) ClassUtil.newInstance(dbmsClassNames
                     .getProperty(productName));
-            dbmses_.put(productName, dbms);
+            dbmses.put(productName, dbms);
         }
     }
 
@@ -70,9 +70,9 @@ public final class DbmsManager {
     }
 
     public static Dbms getDbms(String productName) {
-        Dbms dbms = (Dbms) dbmses_.get(productName);
+        Dbms dbms = (Dbms) dbmses.get(productName);
         if (dbms == null) {
-            dbms = (Dbms) dbmses_.get("");
+            dbms = (Dbms) dbmses.get("");
         }
         return dbms;
     }

@@ -34,7 +34,7 @@ public class Standard implements Dbms {
     private static final Pattern baseSqlPattern = Pattern.compile(
             "^.*?(select)", Pattern.CASE_INSENSITIVE);
 
-    private Map autoSelectFromClauseCache_ = new HashMap();
+    private Map autoSelectFromClauseCache = new HashMap();
 
     /**
      * @see org.seasar.dao.Dbms#getSuffix()
@@ -51,12 +51,12 @@ public class Standard implements Dbms {
         buf.append(beanMetaData.getAutoSelectList());
         buf.append(" ");
         String beanName = beanMetaData.getBeanClass().getName();
-        synchronized (autoSelectFromClauseCache_) {
-            String fromClause = (String) autoSelectFromClauseCache_
+        synchronized (autoSelectFromClauseCache) {
+            String fromClause = (String) autoSelectFromClauseCache
                     .get(beanName);
             if (fromClause == null) {
                 fromClause = createAutoSelectFromClause(beanMetaData);
-                autoSelectFromClauseCache_.put(beanName, fromClause);
+                autoSelectFromClauseCache.put(beanName, fromClause);
             }
             buf.append(fromClause);
         }

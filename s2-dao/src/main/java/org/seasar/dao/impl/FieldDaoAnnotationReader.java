@@ -43,19 +43,19 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
 
     public String PERSISTENT_PROPS_SUFFIX = "_PERSISTENT_PROPS";
 
-    protected BeanDesc daoBeanDesc_;
+    protected BeanDesc daoBeanDesc;
 
     /**
      * @param daoBeanDesc
      */
     public FieldDaoAnnotationReader(BeanDesc daoBeanDesc) {
-        this.daoBeanDesc_ = daoBeanDesc;
+        this.daoBeanDesc = daoBeanDesc;
     }
 
     public String[] getArgNames(Method method) {
         String argsKey = method.getName() + ARGS_SUFFIX;
-        if (daoBeanDesc_.hasField(argsKey)) {
-            Field argNamesField = daoBeanDesc_.getField(argsKey);
+        if (daoBeanDesc.hasField(argsKey)) {
+            Field argNamesField = daoBeanDesc.getField(argsKey);
             String argNames = (String) FieldUtil.get(argNamesField, null);
             return StringUtil.split(argNames, " ,");
         } else {
@@ -65,8 +65,8 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
 
     public String getQuery(Method method) {
         String key = method.getName() + QUERY_SUFFIX;
-        if (daoBeanDesc_.hasField(key)) {
-            Field queryField = daoBeanDesc_.getField(key);
+        if (daoBeanDesc.hasField(key)) {
+            Field queryField = daoBeanDesc.getField(key);
             return (String) FieldUtil.get(queryField, null);
         } else {
             return null;
@@ -75,8 +75,8 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
 
     public String getStoredProcedureName(Method method) {
         String key = method.getName() + PROCEDURE_SUFFIX;
-        if (daoBeanDesc_.hasField(key)) {
-            Field queryField = daoBeanDesc_.getField(key);
+        if (daoBeanDesc.hasField(key)) {
+            Field queryField = daoBeanDesc.getField(key);
             return (String) FieldUtil.get(queryField, null);
         } else {
             return null;
@@ -84,7 +84,7 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
     }
 
     public Class getBeanClass() {
-        Field beanField = daoBeanDesc_.getField(BEAN);
+        Field beanField = daoBeanDesc.getField(BEAN);
         return (Class) FieldUtil.get(beanField, null);
     }
 
@@ -97,8 +97,8 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
     }
 
     private String[] getProps(Method method, String fieldName) {
-        if (daoBeanDesc_.hasField(fieldName)) {
-            Field field = daoBeanDesc_.getField(fieldName);
+        if (daoBeanDesc.hasField(fieldName)) {
+            Field field = daoBeanDesc.getField(fieldName);
             String s = (String) FieldUtil.get(field, null);
             return StringUtil.split(s, ", ");
         }
@@ -107,13 +107,13 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
 
     public String getSQL(Method method, String dbmsSuffix) {
         String key = method.getName() + dbmsSuffix + SQL_SUFFIX;
-        if (daoBeanDesc_.hasField(key)) {
-            Field queryField = daoBeanDesc_.getField(key);
+        if (daoBeanDesc.hasField(key)) {
+            Field queryField = daoBeanDesc.getField(key);
             return (String) FieldUtil.get(queryField, null);
         }
         key = method.getName() + SQL_SUFFIX;
-        if (daoBeanDesc_.hasField(key)) {
-            Field queryField = daoBeanDesc_.getField(key);
+        if (daoBeanDesc.hasField(key)) {
+            Field queryField = daoBeanDesc.getField(key);
             return (String) FieldUtil.get(queryField, null);
         }
         return null;

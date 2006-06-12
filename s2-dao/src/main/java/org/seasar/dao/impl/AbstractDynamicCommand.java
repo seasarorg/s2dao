@@ -29,11 +29,11 @@ import org.seasar.extension.jdbc.StatementFactory;
  */
 public abstract class AbstractDynamicCommand extends AbstractSqlCommand {
 
-    private Node rootNode_;
+    private Node rootNode;
 
-    private String[] argNames_ = new String[0];
+    private String[] argNames = new String[0];
 
-    private Class[] argTypes_ = new Class[0];
+    private Class[] argTypes = new Class[0];
 
     public AbstractDynamicCommand(DataSource dataSource,
             StatementFactory statementFactory) {
@@ -42,28 +42,28 @@ public abstract class AbstractDynamicCommand extends AbstractSqlCommand {
 
     public void setSql(String sql) {
         super.setSql(sql);
-        rootNode_ = new SqlParserImpl(sql).parse();
+        this.rootNode = new SqlParserImpl(sql).parse();
     }
 
     public String[] getArgNames() {
-        return argNames_;
+        return argNames;
     }
 
     public void setArgNames(String[] argNames) {
-        argNames_ = argNames;
+        this.argNames = argNames;
     }
 
     public Class[] getArgTypes() {
-        return argTypes_;
+        return argTypes;
     }
 
     public void setArgTypes(Class[] argTypes) {
-        argTypes_ = argTypes;
+        this.argTypes = argTypes;
     }
 
     protected CommandContext apply(Object[] args) {
         CommandContext ctx = createCommandContext(args);
-        rootNode_.accept(ctx);
+        rootNode.accept(ctx);
         return ctx;
     }
 
@@ -73,14 +73,14 @@ public abstract class AbstractDynamicCommand extends AbstractSqlCommand {
             for (int i = 0; i < args.length; ++i) {
                 Class argType = null;
                 if (args[i] != null) {
-                    if (i < argTypes_.length) {
-                        argType = argTypes_[i];
+                    if (i < argTypes.length) {
+                        argType = argTypes[i];
                     } else if (args[i] != null) {
                         argType = args[i].getClass();
                     }
                 }
-                if (i < argNames_.length) {
-                    ctx.addArg(argNames_[i], args[i], argType);
+                if (i < argNames.length) {
+                    ctx.addArg(argNames[i], args[i], argType);
                 } else {
                     ctx.addArg("$" + (i + 1), args[i], argType);
                 }

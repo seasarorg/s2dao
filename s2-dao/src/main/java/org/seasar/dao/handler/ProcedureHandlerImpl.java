@@ -65,9 +65,9 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
         final Class returnType = daoMethod.getReturnType();
         if (Map.class.isAssignableFrom(returnType)) {
             Map result = new HashMap();
-            for (int i = 0; i < columnInOutTypes_.length; i++) {
-                if (isOutputColum(columnInOutTypes_[i].intValue())) {
-                    result.put(columnNames_[i], cs.getObject(i + 1));
+            for (int i = 0; i < columnInOutTypes.length; i++) {
+                if (isOutputColum(columnInOutTypes[i].intValue())) {
+                    result.put(columnNames[i], cs.getObject(i + 1));
                 }
             }
             return result;
@@ -75,8 +75,8 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
             if (outParameterNumbers > 1) {
                 throw new SRuntimeException("EDAO0010");
             }
-            for (int i = 0; i < columnInOutTypes_.length; i++) {
-                if (isOutputColum(columnInOutTypes_[i].intValue())) {
+            for (int i = 0; i < columnInOutTypes.length; i++) {
+                if (isOutputColum(columnInOutTypes[i].intValue())) {
                     return cs.getObject(i + 1);
                 }
             }

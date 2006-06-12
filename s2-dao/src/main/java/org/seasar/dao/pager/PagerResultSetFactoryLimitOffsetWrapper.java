@@ -40,9 +40,9 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
             .getLogger(PagerResultSetFactoryLimitOffsetWrapper.class);
 
     /** オリジナルのResultSetFactory */
-    private ResultSetFactory resultSetFactory_;
+    private ResultSetFactory resultSetFactory;
 
-    private Dbms dbms_;
+    private Dbms dbms;
 
     /**
      * コンストラクタ(test only)
@@ -52,8 +52,8 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
      */
     PagerResultSetFactoryLimitOffsetWrapper(ResultSetFactory resultSetFactory,
             String productName) {
-        resultSetFactory_ = resultSetFactory;
-        dbms_ = DbmsManager.getDbms(productName);
+        this.resultSetFactory = resultSetFactory;
+        this.dbms = DbmsManager.getDbms(productName);
     }
 
     /**
@@ -64,8 +64,8 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
      */
     public PagerResultSetFactoryLimitOffsetWrapper(
             ResultSetFactory resultSetFactory, DataSource dataSource) {
-        resultSetFactory_ = resultSetFactory;
-        dbms_ = DbmsManager.getDbms(dataSource);
+        this.resultSetFactory = resultSetFactory;
+        this.dbms = DbmsManager.getDbms(dataSource);
     }
 
     /**
@@ -90,7 +90,7 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
                     LOGGER.debug("S2Pager native SQL : " + nativeSql);
                 }
 
-                String baseSQL = dbms_.getBaseSql(ps);
+                String baseSQL = dbms.getBaseSql(ps);
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("S2Pager base SQL : " + baseSQL);
                 }
@@ -103,16 +103,16 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("S2Pager execute SQL : " + limitOffsetSql);
                     }
-                    return resultSetFactory_.createResultSet(ps.getConnection()
+                    return resultSetFactory.createResultSet(ps.getConnection()
                             .prepareStatement(limitOffsetSql));
                 } else {
-                    return resultSetFactory_.createResultSet(ps);
+                    return resultSetFactory.createResultSet(ps);
                 }
             } catch (SQLException e) {
                 throw new SQLRuntimeException(e);
             }
         } else {
-            return resultSetFactory_.createResultSet(ps);
+            return resultSetFactory.createResultSet(ps);
         }
     }
 
@@ -156,7 +156,7 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
         ResultSet rs = null;
         try {
             psCount = ps.getConnection().prepareStatement(sqlBuf.toString());
-            rs = resultSetFactory_.createResultSet(psCount);
+            rs = resultSetFactory.createResultSet(psCount);
             if (rs.next()) {
                 return rs.getInt(1);
             } else {

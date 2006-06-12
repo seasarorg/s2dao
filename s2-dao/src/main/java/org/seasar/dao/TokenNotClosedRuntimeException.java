@@ -23,21 +23,21 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class TokenNotClosedRuntimeException extends SRuntimeException {
 
-    private String token_;
+    private String token;
 
-    private String sql_;
+    private String sql;
 
     public TokenNotClosedRuntimeException(String token, String sql) {
         super("EDAO0002", new Object[] { token, sql });
-        token_ = token;
-        sql_ = sql;
+        this.token = token;
+        this.sql = sql;
     }
 
     public String getToken() {
-        return token_;
+        return token;
     }
 
     public String getSql() {
-        return sql_;
+        return sql;
     }
 }

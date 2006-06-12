@@ -44,41 +44,41 @@ public class FieldBeanAnnotationReader implements BeanAnnotationReader {
 
     public String VALUE_TYPE_SUFFIX = "_VALUE_TYPE";
 
-    private BeanDesc beanDesc_;
+    private BeanDesc beanDesc;
 
     public FieldBeanAnnotationReader(Class beanClass_) {
-        beanDesc_ = BeanDescFactory.getBeanDesc(beanClass_);
+        this.beanDesc = BeanDescFactory.getBeanDesc(beanClass_);
     }
 
     public String getColumnAnnotation(PropertyDesc pd) {
         String propertyName = pd.getPropertyName();
         String columnNameKey = propertyName + COLUMN_SUFFIX;
-        if (beanDesc_.hasField(columnNameKey)) {
-            Field field = beanDesc_.getField(columnNameKey);
+        if (beanDesc.hasField(columnNameKey)) {
+            Field field = beanDesc.getField(columnNameKey);
             return (String) FieldUtil.get(field, null);
         }
         return null;
     }
 
     public String getTableAnnotation() {
-        if (beanDesc_.hasField(TABLE)) {
-            Field field = beanDesc_.getField(TABLE);
+        if (beanDesc.hasField(TABLE)) {
+            Field field = beanDesc.getField(TABLE);
             return (String) FieldUtil.get(field, null);
         }
         return null;
     }
 
     public String getVersionNoProteryNameAnnotation() {
-        if (beanDesc_.hasField(VERSION_NO_PROPERTY)) {
-            Field field = beanDesc_.getField(VERSION_NO_PROPERTY);
+        if (beanDesc.hasField(VERSION_NO_PROPERTY)) {
+            Field field = beanDesc.getField(VERSION_NO_PROPERTY);
             return (String) FieldUtil.get(field, null);
         }
         return null;
     }
 
     public String getTimestampPropertyName() {
-        if (beanDesc_.hasField(TIMESTAMP_PROPERTY)) {
-            Field field = beanDesc_.getField(TIMESTAMP_PROPERTY);
+        if (beanDesc.hasField(TIMESTAMP_PROPERTY)) {
+            Field field = beanDesc.getField(TIMESTAMP_PROPERTY);
             return (String) FieldUtil.get(field, null);
         }
         return null;
@@ -86,16 +86,16 @@ public class FieldBeanAnnotationReader implements BeanAnnotationReader {
 
     public String getId(PropertyDesc pd) {
         String idKey = pd.getPropertyName() + ID_SUFFIX;
-        if (beanDesc_.hasField(idKey)) {
-            Field field = beanDesc_.getField(idKey);
+        if (beanDesc.hasField(idKey)) {
+            Field field = beanDesc.getField(idKey);
             return (String) FieldUtil.get(field, null);
         }
         return null;
     }
 
     public String[] getNoPersisteneProps() {
-        if (beanDesc_.hasField(NO_PERSISTENT_PROPS)) {
-            Field field = beanDesc_.getField(NO_PERSISTENT_PROPS);
+        if (beanDesc.hasField(NO_PERSISTENT_PROPS)) {
+            Field field = beanDesc.getField(NO_PERSISTENT_PROPS);
             String str = (String) FieldUtil.get(field, null);
             return StringUtil.split(str, ", ");
         }
@@ -105,8 +105,8 @@ public class FieldBeanAnnotationReader implements BeanAnnotationReader {
     public String getRelationKey(PropertyDesc pd) {
         String propertyName = pd.getPropertyName();
         String relkeysKey = propertyName + RELKEYS_SUFFIX;
-        if (beanDesc_.hasField(relkeysKey)) {
-            Field field = beanDesc_.getField(relkeysKey);
+        if (beanDesc.hasField(relkeysKey)) {
+            Field field = beanDesc.getField(relkeysKey);
             return (String) FieldUtil.get(field, null);
         }
         return null;
@@ -114,19 +114,19 @@ public class FieldBeanAnnotationReader implements BeanAnnotationReader {
 
     public int getRelationNo(PropertyDesc pd) {
         String relnoKey = pd.getPropertyName() + RELNO_SUFFIX;
-        Field field = beanDesc_.getField(relnoKey);
+        Field field = beanDesc.getField(relnoKey);
         return FieldUtil.getInt(field, null);
     }
 
     public boolean hasRelationNo(PropertyDesc pd) {
         String relnoKey = pd.getPropertyName() + RELNO_SUFFIX;
-        return beanDesc_.hasField(relnoKey);
+        return beanDesc.hasField(relnoKey);
     }
 
     public String getValueType(PropertyDesc pd) {
         String valueTypeKey = pd.getPropertyName() + VALUE_TYPE_SUFFIX;
-        if (beanDesc_.hasField(valueTypeKey)) {
-            Field field = beanDesc_.getField(valueTypeKey);
+        if (beanDesc.hasField(valueTypeKey)) {
+            Field field = beanDesc.getField(valueTypeKey);
             return (String) FieldUtil.get(field, null);
         }
         return null;

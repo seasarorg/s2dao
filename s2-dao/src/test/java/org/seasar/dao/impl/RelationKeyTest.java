@@ -23,19 +23,6 @@ import junit.framework.TestCase;
  */
 public class RelationKeyTest extends TestCase {
 
-    /**
-     * Constructor for InvocationImplTest.
-     * 
-     * @param arg0
-     */
-    public RelationKeyTest(String arg0) {
-        super(arg0);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(RelationKeyTest.class);
-    }
-
     protected void tearDown() throws Exception {
     }
 
@@ -63,56 +50,56 @@ public class RelationKeyTest extends TestCase {
 
         public static final String ccc_RELKEYS = "ddd:id";
 
-        private Integer aaa_;
+        private Integer aaa;
 
-        private String bbb_;
+        private String bbb;
 
-        private Ccc ccc_;
+        private Ccc ccc;
 
-        private Integer ddd_;
+        private Integer ddd;
 
         public Integer getAaa() {
-            return aaa_;
+            return aaa;
         }
 
         public void setAaa(Integer aaa) {
-            aaa_ = aaa;
+            this. aaa = aaa;
         }
 
         public String getBbb() {
-            return bbb_;
+            return bbb;
         }
 
         public void setBbb(String bbb) {
-            bbb_ = bbb;
+            this.bbb = bbb;
         }
 
         public Ccc getCcc() {
-            return ccc_;
+            return ccc;
         }
 
         public void setCcc(Ccc ccc) {
-            ccc_ = ccc;
+            this.ccc = ccc;
         }
 
         public Integer getDdd() {
-            return ddd_;
+            return ddd;
         }
 
         public void setDdd(Integer ddd) {
-            ddd_ = ddd;
+            this.ddd = ddd;
         }
     }
 
     public static class Ccc {
-        private Integer id_;
+        private Integer id;
 
         public Integer getId() {
-            return id_;
+            return id;
         }
 
         public void setId(Integer id) {
-            id_ = id;
+            this.id = id;
         }
     }
 }

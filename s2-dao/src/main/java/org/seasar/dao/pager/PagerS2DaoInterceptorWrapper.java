@@ -43,7 +43,7 @@ public class PagerS2DaoInterceptorWrapper extends AbstractInterceptor {
     private static final long serialVersionUID = 1L;
 
     /** オリジナルのS2DaoInterceptor */
-    private S2DaoInterceptor interceptor_;
+    private S2DaoInterceptor interceptor;
 
     /**
      * コンストラクタ
@@ -52,7 +52,7 @@ public class PagerS2DaoInterceptorWrapper extends AbstractInterceptor {
      *            オリジナルのS2DaoInterceptor
      */
     public PagerS2DaoInterceptorWrapper(S2DaoInterceptor interceptor) {
-        this.interceptor_ = interceptor;
+        this.interceptor = interceptor;
     }
 
     /**
@@ -61,7 +61,7 @@ public class PagerS2DaoInterceptorWrapper extends AbstractInterceptor {
     public Object invoke(MethodInvocation invocation) throws Throwable {
         try {
             PagerContext.getContext().pushArgs(invocation.getArguments());
-            return interceptor_.invoke(invocation);
+            return interceptor.invoke(invocation);
         } finally {
             PagerContext.getContext().popArgs();
         }
