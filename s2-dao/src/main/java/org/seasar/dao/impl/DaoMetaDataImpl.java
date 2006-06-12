@@ -36,10 +36,10 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoNotFoundRuntimeException;
-import org.seasar.dao.DaoResultSetHandlerFactory;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
+import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
@@ -117,7 +117,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected String[] deletePrefixes_ = new String[] { "delete", "remove" };
 
-    private DaoResultSetHandlerFactory resultSetHandlerFactory;
+    private ResultSetHandlerFactory resultSetHandlerFactory;
 
     public DaoMetaDataImpl() {
     }
@@ -199,8 +199,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         } finally {
             ConnectionUtil.close(con);
         }
-        resultSetHandlerFactory = new DaoResultSetHandlerFactoryImpl(
-                beanMetaData_);
+        resultSetHandlerFactory = new ResultSetHandlerFactoryImpl(beanMetaData_);
         setupSqlCommand();
     }
 
@@ -246,16 +245,16 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
         String procedureName = annotationReader_.getStoredProcedureName(method);
         if (procedureName != null) {
-            setupProcedure(method, procedureName);
+            setupProcedureMethod(method, procedureName);
         }
     }
 
-    protected void setupProcedure(final Method method,
+    protected void setupProcedureMethod(final Method method,
             final String procedureName) {
 
-        ProcedureHandlerImpl handler = new ProcedureHandlerImpl();
+        final ProcedureHandlerImpl handler = new ProcedureHandlerImpl();
         handler.setDataSource(dataSource_);
-        handler.setMethod(method);
+        handler.setDaoMethod(method);
         handler.setProcedureName(procedureName);
         handler.setResultSetHandlerFactory(resultSetHandlerFactory);
         handler.setStatementFactory(statementFactory_);
@@ -867,12 +866,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
         daoClass_ = daoClass;
     }
 
-    static class DaoResultSetHandlerFactoryImpl implements
-            DaoResultSetHandlerFactory {
+    static class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
 
         final BeanMetaData beanMetaData;
 
-        DaoResultSetHandlerFactoryImpl(BeanMetaData beanMetaData) {
+        ResultSetHandlerFactoryImpl(BeanMetaData beanMetaData) {
             this.beanMetaData = beanMetaData;
         }
 

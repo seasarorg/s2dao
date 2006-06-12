@@ -123,12 +123,11 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
             connection = getConnection();
             DatabaseMetaData dmd = ConnectionUtil.getMetaData(connection);
 
-            ProcedureMetaData procedureMetaData = getProcedureMetaData(
-                    getDataSource(), getProcedureName());
+            final ProcedureMetaData pmd = getProcedureMetaData(getDataSource(),
+                    getProcedureName());
 
-            rs = dmd.getProcedureColumns(procedureMetaData.getProcedureCat(),
-                    procedureMetaData.getProcedureSchem(), procedureMetaData
-                            .getProcedureName(), null);
+            rs = dmd.getProcedureColumns(pmd.getProcedureCat(), pmd
+                    .getProcedureSchem(), pmd.getProcedureName(), null);
             boolean commaRequired = false;
             while (rs.next()) {
                 columnNames.add(rs.getObject(4));

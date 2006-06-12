@@ -28,6 +28,9 @@ import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.util.StatementUtil;
 
+/**
+ * @deprecated
+ */
 public class MapBasicProcedureHandler extends AbstractBasicProcedureHandler {
 
     public MapBasicProcedureHandler(DataSource ds, String procedureName) {

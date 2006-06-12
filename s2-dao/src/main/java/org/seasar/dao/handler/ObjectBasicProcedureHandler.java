@@ -27,6 +27,9 @@ import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
 import org.seasar.framework.util.StatementUtil;
 
+/**
+ * @deprecated
+ */
 public class ObjectBasicProcedureHandler extends AbstractBasicProcedureHandler {
 
     public ObjectBasicProcedureHandler(DataSource ds, String procedureName) {

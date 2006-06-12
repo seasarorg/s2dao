@@ -22,7 +22,7 @@ import org.seasar.extension.jdbc.ResultSetHandler;
 /**
  * @author manhole
  */
-public interface DaoResultSetHandlerFactory {
+public interface ResultSetHandlerFactory {
 
     ResultSetHandler createResultSetHandler(final Method daoMethod);
 
