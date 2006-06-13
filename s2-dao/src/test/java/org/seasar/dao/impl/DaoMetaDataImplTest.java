@@ -304,6 +304,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         }
     }
 
+    // [Seasar-user:3605][DAO-7]
     public void testRelation2() throws Exception {
         DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee2Dao"));
         SqlCommand cmd = dmd.getSqlCommand("getAllEmployeesOnly");
