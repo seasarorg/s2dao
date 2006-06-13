@@ -63,7 +63,7 @@ public class RelationKeyTest extends TestCase {
         }
 
         public void setAaa(Integer aaa) {
-            this. aaa = aaa;
+            this.aaa = aaa;
         }
 
         public String getBbb() {

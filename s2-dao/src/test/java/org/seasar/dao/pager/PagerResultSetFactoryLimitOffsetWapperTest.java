@@ -23,8 +23,7 @@ public class PagerResultSetFactoryLimitOffsetWapperTest extends TestCase {
      * wrapper.makeBaseSql("native sql ... SELECT * FROM DEPARTMENT"));
      * assertEquals( "ネイティブSQLが存在しない場合、元のSQLも変化なし", "SELECT * FROM DEPARTMENT",
      * wrapper.makeBaseSql("SELECT * FROM DEPARTMENT")); } finally {
-     * PagerContext.getContext().popArgs(); }
-     *  }
+     * PagerContext.getContext().popArgs(); } }
      */
     public void testLimitOffsetSql() throws Exception {
         try {

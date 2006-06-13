@@ -120,8 +120,8 @@ public class CommandContextImpl implements CommandContext {
      * @see org.seasar.dao.CommandContext#getBindVariableTypes()
      */
     public Class[] getBindVariableTypes() {
-        return (Class[]) bindVariableTypes
-                .toArray(new Class[bindVariableTypes.size()]);
+        return (Class[]) bindVariableTypes.toArray(new Class[bindVariableTypes
+                .size()]);
     }
 
     /**
