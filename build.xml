@@ -5,6 +5,7 @@
 		<mkdir dir="target"/>
 		<zip zipfile="target/s2-dao-${ver}.zip">
 			<zipfileset prefix="s2dao" dir=".">
+				<exclude name="**/build/**"/>
 				<exclude name="**/target/**"/>
 				<exclude name="*.log"/>
 				<exclude name="**/.settings/**"/>
