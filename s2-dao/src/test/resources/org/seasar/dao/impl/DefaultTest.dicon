@@ -6,4 +6,7 @@
 	<component class="org.seasar.dao.impl.DefaultTest$DefaultTableDao">
 		<aspect>dao.interceptor</aspect>
 	</component>
+	<component class="org.seasar.dao.impl.DefaultTest$PkOnlyTableDao">
+		<aspect>dao.interceptor</aspect>
+	</component>
 </components>

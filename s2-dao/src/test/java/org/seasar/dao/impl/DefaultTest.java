@@ -35,6 +35,8 @@ public class DefaultTest extends S2TestCase {
 
     private DefaultTableDao defaultTableDao;
 
+    private PkOnlyTableDao pkOnlyTableDao;
+
     protected void setUp() throws Exception {
         super.setUp();
         include("DefaultTest.dicon");
@@ -271,6 +273,15 @@ public class DefaultTest extends S2TestCase {
         }
     }
 
+    public void testInsertPkOnlyTableTx() throws Exception {
+        PkOnlyTable bean = new PkOnlyTable();
+        bean.setAaa(new Integer(123));
+        bean.setBbb(new Integer(456));
+        pkOnlyTableDao.insert(bean);
+        final List list = pkOnlyTableDao.findAll();
+        assertEquals(1, list.size());
+    }
+
     public static interface DefaultTableDao {
 
         public Class BEAN = DefaultTable.class;
@@ -340,6 +351,44 @@ public class DefaultTest extends S2TestCase {
         public void setVersionNo(Integer versionNo) {
             this.versionNo = versionNo;
         }
+    }
+
+    public static interface PkOnlyTableDao {
+
+        Class BEAN = PkOnlyTable.class;
+
+        void insert(PkOnlyTable table);
+
+        List findAll();
+
+    }
+
+    public static class PkOnlyTable implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        public static final String TABLE = "PK_ONLY_TABLE";
+
+        private Integer aaa;
+
+        private Integer bbb;
+
+        public Integer getAaa() {
+            return aaa;
+        }
+
+        public void setAaa(Integer aaa) {
+            this.aaa = aaa;
+        }
+
+        public Integer getBbb() {
+            return bbb;
+        }
+
+        public void setBbb(Integer bbb) {
+            this.bbb = bbb;
+        }
+
     }
 
 }

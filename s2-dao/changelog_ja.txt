@@ -1,13 +1,18 @@
 S2Dao 変更履歴
 
+1.0.36
+-------------------------------------------------------------------------------
+PKのみのテーブルへINSERTできなくなっていた問題に対応しました。[Seasar-user:3915][DAO-16]
+
+
 1.0.35
 -------------------------------------------------------------------------------
-AbstractDaoを継承したクラスでは、Daoインタフェースへ付けたbeanアノテーションを取得できていなかった問題に対応しました。(s2dao-tiger)[Seasar-user:3651]
+AbstractDaoを継承したクラスでは、Daoインタフェースへ付けたbeanアノテーションを取得できていなかった問題に対応しました。なおs2dao-backport175では https://www.seasar.org/issues/browse/MAVENBACKPORT-2 の問題のため対応できていません。(s2dao-tiger)[Seasar-user:3651]
 バラメータなしのストアドプロシージャでエラーが発生する問題に対応しました。[Seasar-user:3686] 
 SQL文へ使用するカラム名は、DatabaseMetaDataよりもCOLUMNアノテーションを優先するようにしました。[Seasar-user:3693]
-S2Dao 1.0.33以降からIDアノテーションのSEQUENCEで作成されたIDが、INSERT文に含まれなくなってしまった問題に対応しました。[Seasar-user:3711]
+IDアノテーションのSEQUENCEで作成されたIDが、INSERT文に含まれなくなってしまった問題に対応しました。[Seasar-user:3711]
 S2Dao TigerのExampleに置かれていたdao.diconにValueTypeFactoryが抜けていたのを修正しました。
-"スキーマ名.プロシージャ名"形式でプロシージャを取得する際に、スキーマ名がカタログ名として扱われていたのを修正しました。[DAO-5]
+"スキーマ名.プロシージャ名"形式でPROCEDUREアノテーションを記述した際に、スキーマ名がカタログ名として扱われていたのを修正しました。[DAO-5]
 SelectDynamicCommandからのSELECT時にsetchSizeを変更しないようにしました。fetchSizeを変更するにはS2Container 2.3.11からの機能を使用してください。[DAO-2]
 ResultSetを返すStored Procedureを扱えるようにしました。[DAO-6]
 SELECT文に関連エンティティの記述がない場合は、関連エンティティはnullになるようにしました。[Seasar-user:3605][DAO-7]
