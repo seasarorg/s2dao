@@ -17,6 +17,7 @@ SelectDynamicCommandからのSELECT時にsetchSizeを変更しないようにし
 ResultSetを返すStored Procedureを扱えるようにしました。[DAO-6]
 SELECT文に関連エンティティの記述がない場合は、関連エンティティはnullになるようにしました。[Seasar-user:3605][DAO-7]
 バッチ更新ではINSERT文からnull値のカラムを除外する機能(s2dao-1.0.33で追加)をサポートしないことにしました。[Seasar-user:3815][DAO-9]
+IDアノテーションがあると"_"を含むカラム名を自動解決できない問題に対応しました。[Seasar-user:3806][DAO-8]
 
 ソースコードのエンコーディングをMS932からUTF-8へ変更しました。
 インスタンス変数名を、"_"サフィックス無しで統一しました。
