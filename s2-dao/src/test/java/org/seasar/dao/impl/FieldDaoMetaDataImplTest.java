@@ -17,7 +17,7 @@ package org.seasar.dao.impl;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
 
@@ -29,7 +29,7 @@ public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
         if (className.equals("Employee")) {
             return Employee.class;
         }
-        fail();
+        fail(className);
         return null;
     }
 
@@ -45,7 +45,7 @@ public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
         } else if (className.equals("Department")) {
             return new Department();
         }
-        fail();
+        fail(className);
         return null;
     }
 
@@ -76,8 +76,12 @@ public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
             return Employee8Manager.class;
         } else if (className.equals("DepartmentTotalSalaryDao")) {
             return DepartmentTotalSalaryDao.class;
+        } else if (className.equals("EmployeeDaoImpl")) {
+            return EmployeeDaoImpl.class;
+        } else if (className.equals("EmployeeExDao")) {
+            return EmployeeExDao.class;
         }
-        fail();
+        fail(className);
         return null;
     }
 
