@@ -883,8 +883,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 return new BeanListMetaDataResultSetHandler(beanMetaData);
             } else if (isBeanClassAssignable(beanClass, method.getReturnType())) {
                 return new BeanMetaDataResultSetHandler(beanMetaData);
-            } else if (Array.newInstance(beanClass, 0).getClass()
-                    .isAssignableFrom(method.getReturnType())) {
+            } else if (method.getReturnType().isAssignableFrom(
+                    Array.newInstance(beanClass, 0).getClass())) {
                 return new BeanArrayMetaDataResultSetHandler(beanMetaData);
             } else {
                 return new ObjectResultSetHandler();
