@@ -27,6 +27,7 @@ import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.IdentifierGenerator;
+import org.seasar.dao.NoPersistentPropertyTypeRuntimeException;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.id.IdentifierGeneratorFactory;
 import org.seasar.extension.jdbc.ColumnNotFoundRuntimeException;
@@ -509,13 +510,18 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     protected void setupAutoSelectList() {
         StringBuffer buf = new StringBuffer(100);
         buf.append("SELECT ");
+        boolean first = true;
         for (int i = 0; i < getPropertyTypeSize(); ++i) {
             PropertyType pt = getPropertyType(i);
             if (pt.isPersistent()) {
+                if (first) {
+                    first = false;
+                } else {
+                    buf.append(", ");
+                }
                 buf.append(tableName);
                 buf.append(".");
                 buf.append(pt.getColumnName());
-                buf.append(", ");
             }
         }
         for (int i = 0; i < getRelationPropertyTypeSize(); ++i) {
@@ -524,18 +530,24 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
             for (int j = 0; j < bmd.getPropertyTypeSize(); ++j) {
                 PropertyType pt = bmd.getPropertyType(j);
                 if (pt.isPersistent()) {
-                    String columnName = pt.getColumnName();
+                    if (first) {
+                        first = false;
+                    } else {
+                        buf.append(", ");
+                    }
+                    final String columnName = pt.getColumnName();
                     buf.append(rpt.getPropertyName());
                     buf.append(".");
                     buf.append(columnName);
                     buf.append(" AS ");
-                    buf.append(pt.getColumnName()).append("_").append(
+                    buf.append(columnName).append("_").append(
                             rpt.getRelationNo());
-                    buf.append(", ");
                 }
             }
         }
-        buf.setLength(buf.length() - 2);
+        if (first) {
+            throw new NoPersistentPropertyTypeRuntimeException();
+        }
         autoSelectList = buf.toString();
     }
 
