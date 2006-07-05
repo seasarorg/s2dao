@@ -115,16 +115,19 @@ public class DtoMetaDataImpl implements DtoMetaData {
 
     protected PropertyType createPropertyType(BeanDesc beanDesc,
             PropertyDesc propertyDesc) {
-
-        String columnName = propertyDesc.getPropertyName();
-        String ca = beanAnnotationReader.getColumnAnnotation(propertyDesc);
-        if (ca != null) {
-            columnName = ca;
-        }
-        ValueType valueType = getValueType(propertyDesc);
+        final String columnName = getColumnName(propertyDesc);
+        final ValueType valueType = getValueType(propertyDesc);
         PropertyType pt = new PropertyTypeImpl(propertyDesc, valueType,
                 columnName);
         return pt;
+    }
+
+    private String getColumnName(PropertyDesc propertyDesc) {
+        String ca = beanAnnotationReader.getColumnAnnotation(propertyDesc);
+        if (ca != null) {
+            return ca;
+        }
+        return propertyDesc.getPropertyName();
     }
 
     protected ValueType getValueType(PropertyDesc propertyDesc) {
