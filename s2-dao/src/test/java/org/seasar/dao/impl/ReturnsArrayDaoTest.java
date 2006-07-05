@@ -20,6 +20,8 @@ import java.util.List;
 import org.seasar.extension.unit.S2TestCase;
 
 /**
+ * https://www.seasar.org/issues/browse/DAO-19
+ * 
  * @author manhole
  */
 public class ReturnsArrayDaoTest extends S2TestCase {
