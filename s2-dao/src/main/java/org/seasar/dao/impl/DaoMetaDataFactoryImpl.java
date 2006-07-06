@@ -26,12 +26,14 @@ import org.seasar.dao.DaoMetaDataFactory;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.framework.util.Disposable;
+import org.seasar.framework.util.DisposableUtil;
 
 /**
  * @author higa
  * @author manhole
  */
-public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory {
+public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected Map daoMetaDataCache = new HashMap();
 
@@ -60,6 +62,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory {
             ResultSetFactory resultSetFactory,
             AnnotationReaderFactory readerFactory) {
 
+        DisposableUtil.add(this);
         this.dataSource = dataSource;
         this.statementFactory = statementFactory;
         this.resultSetFactory = resultSetFactory;
@@ -126,6 +129,10 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory {
 
     public void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {
         this.valueTypeFactory = valueTypeFactory;
+    }
+
+    public void dispose() {
+        daoMetaDataCache.clear();
     }
 
 }
