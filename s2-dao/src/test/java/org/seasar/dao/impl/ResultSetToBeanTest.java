@@ -21,7 +21,6 @@ import org.seasar.dao.unit.S2DaoTestCase;
 
 /**
  * @author manhole
- * 
  */
 public class ResultSetToBeanTest extends S2DaoTestCase {
 
@@ -47,16 +46,12 @@ public class ResultSetToBeanTest extends S2DaoTestCase {
         // ## Assert ##
         {
             final SqlCommand command = dmd.getSqlCommand("find1");
-            final Object result = command.execute(null);
-            Employee bean = (Employee) result;
-            assertNotNull(bean);
+            Employee bean = (Employee) command.execute(null);
             assertEquals("foo", bean.getEmployeeName());
         }
         {
             final SqlCommand command = dmd.getSqlCommand("find2");
-            final Object result = command.execute(null);
-            Employee bean = (Employee) result;
-            assertNotNull(bean);
+            Employee bean = (Employee) command.execute(null);
             assertEquals("foo", bean.getEmployeeName());
         }
     }
