@@ -57,6 +57,11 @@ public abstract class AbstractBeanMetaDataResultSetHandler implements
                 Object value = valueType.getValue(rs, pt.getColumnName());
                 PropertyDesc pd = pt.getPropertyDesc();
                 pd.setValue(row, value);
+            } else if (columnNames.contains(pt.getPropertyName())) {
+                ValueType valueType = pt.getValueType();
+                Object value = valueType.getValue(rs, pt.getPropertyName());
+                PropertyDesc pd = pt.getPropertyDesc();
+                pd.setValue(row, value);
             } else if (!pt.isPersistent()) {
                 for (Iterator iter = columnNames.iterator(); iter.hasNext();) {
                     String columnName = (String) iter.next();
