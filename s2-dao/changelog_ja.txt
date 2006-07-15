@@ -12,7 +12,7 @@ SELECT句のASへBeanのプロパティ名を指定した場合にもBeanへセ�
 1.0.35
 -------------------------------------------------------------------------------
 AbstractDaoを継承したクラスでは、Daoインタフェースへ付けたbeanアノテーションを取得できていなかった問題に対応しました。なおs2dao-backport175では https://www.seasar.org/issues/browse/MAVENBACKPORT-2 の問題のため対応できていません。(s2dao-tiger)[Seasar-user:3651]
-バラメータなしのストアドプロシージャでエラーが発生する問題に対応しました。[Seasar-user:3686] 
+パラメータなしのストアドプロシージャでエラーが発生する問題に対応しました。[Seasar-user:3686] 
 SQL文へ使用するカラム名は、DatabaseMetaDataよりもCOLUMNアノテーションを優先するようにしました。[Seasar-user:3693]
 IDアノテーションのSEQUENCEで作成されたIDが、INSERT文に含まれなくなってしまった問題に対応しました。[Seasar-user:3711]
 S2Dao TigerのExampleに置かれていたdao.diconにValueTypeFactoryが抜けていたのを修正しました。
