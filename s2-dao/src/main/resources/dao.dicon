@@ -4,7 +4,7 @@
 <components namespace="dao">
 	<include path="j2ee.dicon"/>
 	<component
-		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"/>
+		class="org.seasar.dao.impl.AnnotationReaderFactoryImpl"/>
 	<component
 		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl"/>
 	<component name="interceptor"
