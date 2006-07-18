@@ -11,6 +11,7 @@ SELECT句のASへBeanのプロパティ名を指定した場合にもBeanへセ�
 s2dao-tigerのjarがclasspathにある場合には自動的にTiger側のAnnotationReaderを使用するようにしました。[DAO-22]
 使われていなかったorg.seasar.dao.annotation.tiger.AnnotationReaderFactoryクラスを削除しました。(s2dao-tiger)[DAO-27]
 
+※dao.diconを変更しています。
 
 1.0.35
 -------------------------------------------------------------------------------
@@ -37,6 +38,8 @@ dao.diconへValueTypeFactoryImplとStringClobTypeを追加しました。
 BeanMetaDataImpl, DaoMetaDataImpl, DtoMetaDataImplへデフォルトコンストラクタを追加し、既存のコンストラクタをdeprecatedにしました。
 ID="identity"の場合にバッチ更新でのinsertがエラーになる問題に対応しました。
 s2dao-examplesのEmployeeDaoClientが例外となる問題に対応しました。[Seasar-user:3465]
+
+※dao.diconを変更しています。
 
 1.0.33
 -------------------------------------------------------------------------------
