@@ -29,13 +29,20 @@ public class AnnotationReaderFactoryImpl implements AnnotationReaderFactory {
 
     private static final String TIGER_ANNOTATION_READER_FACTORY = "org.seasar.dao.annotation.tiger.impl.AnnotationReaderFactoryImpl";
 
+    private static final String BACKPORT175_ANNOTATION_READER_FACTORY = "org.seasar.dao.annotation.backport175.impl.AnnotationReaderFactoryImpl";
+
     private AnnotationReaderFactory annotationReaderFactory;
 
     public AnnotationReaderFactoryImpl() {
         Class clazz = FieldAnnotationReaderFactory.class;
         try {
             clazz = ClassUtil.forName(TIGER_ANNOTATION_READER_FACTORY);
-        } catch (ClassNotFoundRuntimeException ignore) {
+        } catch (ClassNotFoundRuntimeException ignore1) {
+            try {
+                clazz = ClassUtil
+                        .forName(BACKPORT175_ANNOTATION_READER_FACTORY);
+            } catch (ClassNotFoundRuntimeException ignore2) {
+            }
         }
         annotationReaderFactory = (AnnotationReaderFactory) ClassUtil
                 .newInstance(clazz);
