@@ -8,7 +8,7 @@ DaoのReturnTypeがインタフェースの配列で、BEAN定数がそのイン
 HotDeployに対応しました。(DaoMetaDataFactoryが保持するキャッシュをクリア可能にしました)[DAO-17]
 dao.diconをs2-dao-x.x.x.jarへ含めるようにしました。[DAO-21]
 SELECT句のASへBeanのプロパティ名を指定した場合にもBeanへセットできるようにしました。[Seasar-user:4071][DAO-26]
-s2dao-tigerのjarがclasspathにある場合には自動的にTiger側のAnnotationReaderを使用するようにしました。[DAO-22]
+s2dao-tiger・s2dao-backport175のjarがclasspathにある場合には、自動的にTiger・Backport175側のAnnotationReaderを使用するようにしました。[DAO-22]
 使われていなかったorg.seasar.dao.annotation.tiger.AnnotationReaderFactoryクラスを削除しました。(s2dao-tiger)[DAO-27]
 
 ※dao.diconを変更しています。
