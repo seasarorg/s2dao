@@ -26,7 +26,6 @@ import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
-import org.seasar.framework.exception.SRuntimeException;
 
 /**
  * @author manhole
