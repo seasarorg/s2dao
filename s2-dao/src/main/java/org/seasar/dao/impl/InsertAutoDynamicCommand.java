@@ -96,14 +96,11 @@ public class InsertAutoDynamicCommand implements SqlCommand {
         final IdentifierGenerator identifierGenerator = bmd
                 .getIdentifierGenerator();
 
-        int notNullColumns = 0;
         for (int i = 0; i < propertyNames.length; ++i) {
             PropertyType pt = bmd.getPropertyType(propertyNames[i]);
             if (pt.isPrimaryKey()) {
                 if (!identifierGenerator.isSelfGenerate()) {
                     continue;
-                } else {
-                    notNullColumns++;
                 }
             } else {
                 if (pt.getPropertyDesc().getValue(bean) == null) {
@@ -113,14 +110,9 @@ public class InsertAutoDynamicCommand implements SqlCommand {
                                     .equalsIgnoreCase(versionNoPropertyName)) {
                         continue;
                     }
-                } else {
-                    notNullColumns++;
                 }
             }
             types.add(pt);
-        }
-        if (notNullColumns == 0) {
-            throw new SRuntimeException("EDAO0014");
         }
         PropertyType[] propertyTypes = (PropertyType[]) types
                 .toArray(new PropertyType[types.size()]);

@@ -214,14 +214,21 @@ public class DefaultTest extends S2TestCase {
         }
     }
 
-    public void testThrownExceptionWhenNullDataOnlyTx() throws Exception {
-        DefaultTable bean = new DefaultTable();
-        try {
+    /*
+     * [DAO-29]にて、例外を投げないようにしました。
+     */
+    public void testNotThrownExceptionWhenNullDataOnlyTx() throws Exception {
+        Integer id;
+        {
+            DefaultTable bean = new DefaultTable();
             defaultTableDao.insert(bean);
-            fail("should be thrown SRuntimeException, when only null properties");
-        } catch (SRuntimeException e) {
-            e.printStackTrace();
-            assertEquals("EDAO0014", e.getMessageCode());
+            id = bean.getId();
+        }
+        {
+            final DefaultTable bean = defaultTableDao.getDefaultTable(id);
+            assertEquals("inserted DEFAULT value", "ABC", bean.getAaa());
+            assertEquals((String)null, bean.getBbb());
+            assertEquals(new Integer(0), bean.getVersionNo());
         }
     }
 
