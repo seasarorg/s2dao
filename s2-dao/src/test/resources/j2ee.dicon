@@ -14,8 +14,8 @@
 		class="org.seasar.extension.tx.NotSupportedInterceptor"/>
 
 	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
-			<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
-		<!--
+	<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
+	<!--
 	<component class="org.seasar.extension.jdbc.impl.OracleResultSetFactory"/>
 	<component class="org.seasar.extension.jdbc.impl.BooleanToIntStatementFactory"/>
 	-->

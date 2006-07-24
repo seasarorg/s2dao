@@ -14,7 +14,7 @@
 		class="org.seasar.extension.tx.NotSupportedInterceptor"/>
 
 	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
-			<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
+	<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
 
 	<component name="xaDataSource"
 		class="org.seasar.extension.dbcp.impl.XADataSourceImpl">
