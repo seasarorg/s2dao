@@ -289,7 +289,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         jobs.add("FREE");
         List employees = (List) cmd.execute(new Object[] { enames, jobs });
         System.out.println(employees);
-        // assertEquals("1", 2, employees.size());
+        assertEquals("1", 1, employees.size());
     }
 
     public void testRelation1() throws Exception {
