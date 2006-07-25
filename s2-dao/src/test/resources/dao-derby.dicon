@@ -3,15 +3,18 @@
 	"http://www.seasar.org/dtd/components21.dtd">
 <components namespace="dao">
 	<include path="j2ee-derby.dicon"/>
+	<component class="org.seasar.dao.impl.AnnotationReaderFactoryImpl"/>
+	<component class="org.seasar.dao.impl.DaoMetaDataFactoryImpl"/>
 	<component
-		class="org.seasar.dao.impl.AnnotationReaderFactoryImpl"/>
-	<component
-		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl"/>
-	<component name="interceptor"
-		class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
-	<component
-		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
+		name="interceptor"
+		class="org.seasar.dao.pager.PagerS2DaoInterceptorWrapper">
+		<arg>
+			<component class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
+		</arg>
+	</component>
+	<component class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
 	<component 
 		name="stringClobType" 
-		class="org.seasar.extension.jdbc.types.StringClobType"/>
+		class="org.seasar.extension.jdbc.types.StringClobType"
+	/>
 </components>

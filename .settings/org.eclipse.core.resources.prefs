@@ -1,3 +1,7 @@
-#Sun Jun 11 14:00:01 JST 2006
+#Mon Jul 24 11:00:01 JST 2006
 eclipse.preferences.version=1
+encoding//s2-dao/src/main/resources/dao.dicon=MS932
+encoding//s2-dao/src/test/resources/dao-derby.dicon=MS932
+encoding//s2-dao/src/test/resources/j2ee-derby.dicon=MS932
+encoding//s2-dao/src/test/resources/j2ee.dicon=MS932
 encoding/<project>=UTF-8
