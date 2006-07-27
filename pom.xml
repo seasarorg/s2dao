@@ -71,6 +71,20 @@
       <organizationUrl>http://www.arksystems.co.jp/</organizationUrl>
       <timezone>+9</timezone>
     </developer>
+    <developer>
+      <id>jflute</id>
+      <name></name>
+      <email></email>
+      <url></url>
+      <timezone>+9</timezone>
+    </developer>
+    <developer>
+      <id>hozawa</id>
+      <name></name>
+      <email></email>
+      <url></url>
+      <timezone>+9</timezone>
+    </developer>
   </developers>
   <contributors>
     <contributor>
