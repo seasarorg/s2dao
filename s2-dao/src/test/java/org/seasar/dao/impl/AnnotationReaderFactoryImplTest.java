@@ -29,14 +29,16 @@ public class AnnotationReaderFactoryImplTest extends TestCase {
 
     private FieldAnnotationReaderFactory fieldAnnotationReaderFactory;
 
+    private AnnotationReaderFactoryImpl annotationReaderFactory;
+
     protected void setUp() throws Exception {
         super.setUp();
         fieldAnnotationReaderFactory = new FieldAnnotationReaderFactory();
+        annotationReaderFactory = new AnnotationReaderFactoryImpl();
     }
 
     public void testBeanAnnotationReader() throws Exception {
         // ## Arrange ##
-        AnnotationReaderFactoryImpl annotationReaderFactory = new AnnotationReaderFactoryImpl();
         final Class beanClass = Employee.class;
 
         // ## Act ##
@@ -50,7 +52,6 @@ public class AnnotationReaderFactoryImplTest extends TestCase {
 
     public void testDaoAnnotationReader() throws Exception {
         // ## Arrange ##
-        AnnotationReaderFactoryImpl annotationReaderFactory = new AnnotationReaderFactoryImpl();
         final BeanDesc daoBeanDesc = BeanDescFactory
                 .getBeanDesc(EmployeeDao.class);
 
