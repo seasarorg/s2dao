@@ -26,6 +26,7 @@ import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.framework.exception.SRuntimeException;
 
 /**
  * @author manhole
@@ -112,6 +113,9 @@ public class InsertAutoDynamicCommand implements SqlCommand {
                 }
             }
             types.add(pt);
+        }
+        if (types.isEmpty()) {
+            throw new SRuntimeException("EDAO0014");
         }
         PropertyType[] propertyTypes = (PropertyType[]) types
                 .toArray(new PropertyType[types.size()]);

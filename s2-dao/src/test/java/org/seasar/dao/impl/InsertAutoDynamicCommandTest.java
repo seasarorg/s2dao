@@ -18,6 +18,8 @@ package org.seasar.dao.impl;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
+import org.seasar.framework.exception.SRuntimeException;
+import org.seasar.framework.util.StringUtil;
 
 public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
 
@@ -30,6 +32,41 @@ public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
         emp.setEname("hoge");
         Integer count = (Integer) cmd.execute(new Object[] { emp });
         assertEquals("1", new Integer(1), count);
+    }
+
+    /*
+     * https://www.seasar.org/issues/browse/DAO-29
+     */
+    public void testInsertPkOnlyTx() throws Exception {
+        // ## Arrange ##
+        DaoMetaData dmd = createDaoMetaData(EmpDao.class);
+        SqlCommand cmd = dmd.getSqlCommand("insert");
+
+        // ## Act ##
+        Emp emp = new Emp();
+        emp.setEmpno(new Integer(980));
+
+        // ## Assert ##
+        cmd.execute(new Object[] { emp });
+    }
+
+    /*
+     * https://www.seasar.org/issues/browse/DAO-29
+     */
+    public void testInsertAllNullTx() throws Exception {
+        // ## Arrange ##
+        final DaoMetaData dmd = createDaoMetaData(IdentityTableAutoDao.class);
+        final SqlCommand cmd = dmd.getSqlCommand("insert");
+        final IdentityTable table = new IdentityTable();
+
+        // ## Act ##
+        // ## Assert ##
+        try {
+            cmd.execute(new Object[] { table });
+        } catch (SRuntimeException e) {
+            final String message = e.getMessage();
+            assertEquals(true, StringUtil.contains(message, "EDAO0014"));
+        }
     }
 
     public void testExecute2Tx() throws Exception {
@@ -50,9 +87,9 @@ public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
     }
 
     public void testExecute3_1Tx() throws Exception {
-        DaoMetaData dmd = createDaoMetaData(SeqTableAutoDao.class);
+        DaoMetaData dmd = createDaoMetaData(SeqTable1Dao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert");
-        SeqTable table1 = new SeqTable();
+        SeqTable1 table1 = new SeqTable1();
         table1.setName("hoge");
         Integer count = (Integer) cmd.execute(new Object[] { table1 });
         assertEquals("1", new Integer(1), count);
@@ -61,7 +98,7 @@ public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
     }
 
     public void testExecute3_2Tx() throws Exception {
-        DaoMetaData dmd = createDaoMetaData(SeqTableAuto2Dao.class);
+        DaoMetaData dmd = createDaoMetaData(SeqTable2Dao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert");
         SeqTable2 table1 = new SeqTable2();
         table1.setName("hoge");
@@ -103,8 +140,107 @@ public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
         include("j2ee.dicon");
     }
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(InsertAutoDynamicCommandTest.class);
+    public static interface SeqTable1Dao {
+
+        public Class BEAN = SeqTable1.class;
+
+        public void insert(SeqTable1 seqTable);
+    }
+
+    public static class SeqTable1 {
+
+        public static final String TABLE = "SEQTABLE";
+
+        public static final String id_ID = "sequence, sequenceName=myseq";
+
+        private int id;
+
+        private String name;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public static interface SeqTable2Dao {
+
+        public Class BEAN = SeqTable2.class;
+
+        public void insert(SeqTable2 seqTable);
+
+    }
+
+    public static class SeqTable2 {
+
+        public static final String TABLE = "SEQTABLE";
+
+        public static final String id_ID = "sequence, sequenceName=myseq";
+
+        private Integer id;
+
+        private String name;
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public static interface EmpDao {
+
+        public Class BEAN = Emp.class;
+
+        public void insert(Emp employee);
+
+    }
+
+    public static class Emp {
+
+        public static final String TABLE = "EMP";
+
+        private Integer empno;
+
+        private String ename;
+
+        public Integer getEmpno() {
+            return this.empno;
+        }
+
+        public void setEmpno(Integer empno) {
+            this.empno = empno;
+        }
+
+        public String getEname() {
+            return this.ename;
+        }
+
+        public void setEname(String ename) {
+            this.ename = ename;
+        }
+
     }
 
 }
