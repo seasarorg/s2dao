@@ -36,7 +36,7 @@ public class DaoMetaDataFactoryImplTest extends S2TestCase {
     /*
      * https://www.seasar.org/issues/browse/DAO-17
      */
-    public void testDispose() throws Exception {
+    public void testDispose1() throws Exception {
         // ## Arrange ##
         assertEquals(0, daoMetaDataFactory.daoMetaDataCache.size());
 
@@ -45,6 +45,31 @@ public class DaoMetaDataFactoryImplTest extends S2TestCase {
         assertNotNull(dmd);
 
         // ## Assert ##
+        assertEquals(1, daoMetaDataFactory.daoMetaDataCache.size());
+        DisposableUtil.dispose();
+        assertEquals(0, daoMetaDataFactory.daoMetaDataCache.size());
+    }
+
+    public void testDispose2() throws Exception {
+        // ## Arrange ##
+        assertEquals(0, daoMetaDataFactory.daoMetaDataCache.size());
+
+        // ## Act ##
+        // ## Assert ##
+        {
+            final DaoMetaData dmd = daoMetaDataFactory
+                    .getDaoMetaData(FooDao.class);
+            assertNotNull(dmd);
+        }
+
+        assertEquals(1, daoMetaDataFactory.daoMetaDataCache.size());
+        DisposableUtil.dispose();
+        assertEquals(0, daoMetaDataFactory.daoMetaDataCache.size());
+        {
+            final DaoMetaData dmd = daoMetaDataFactory
+                    .getDaoMetaData(FooDao.class);
+            assertNotNull(dmd);
+        }
         assertEquals(1, daoMetaDataFactory.daoMetaDataCache.size());
         DisposableUtil.dispose();
         assertEquals(0, daoMetaDataFactory.daoMetaDataCache.size());

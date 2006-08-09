@@ -57,12 +57,13 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected String[] updatePrefixes;
 
+    protected boolean initialized;
+
     public DaoMetaDataFactoryImpl(DataSource dataSource,
             StatementFactory statementFactory,
             ResultSetFactory resultSetFactory,
             AnnotationReaderFactory readerFactory) {
 
-        DisposableUtil.add(this);
         this.dataSource = dataSource;
         this.statementFactory = statementFactory;
         this.resultSetFactory = resultSetFactory;
@@ -90,6 +91,10 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
     }
 
     public synchronized DaoMetaData getDaoMetaData(Class daoClass) {
+        if (!initialized) {
+            DisposableUtil.add(this);
+            initialized = true;
+        }
         String key = daoClass.getName();
         DaoMetaData dmd = (DaoMetaData) daoMetaDataCache.get(key);
         if (dmd != null) {
@@ -131,8 +136,9 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         this.valueTypeFactory = valueTypeFactory;
     }
 
-    public void dispose() {
+    public synchronized void dispose() {
         daoMetaDataCache.clear();
+        initialized = false;
     }
 
 }
