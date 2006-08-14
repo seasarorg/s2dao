@@ -77,6 +77,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
     private static final Pattern startWithBeginCommentPattern = Pattern
             .compile("/\\*BEGIN\\*/\\s*WHERE .+", Pattern.CASE_INSENSITIVE);
 
+    private static final Pattern startWithIfCommentPattern = Pattern.compile(
+            "/\\*IF .+", Pattern.CASE_INSENSITIVE);
+
     private static final String NOT_SINGLE_ROW_UPDATED = "NotSingleRowUpdated";
 
     protected Class daoClass;
@@ -369,20 +372,40 @@ public class DaoMetaDataImpl implements DaoMetaData {
             String sql = dbms.getAutoSelectSql(getBeanMetaData());
             buf.append(sql);
             if (query != null) {
+                boolean began = false;
                 if (startsWithOrderBy(query)) {
                     buf.append(" ");
                 } else if (startsWithBeginComment(query)) {
                     buf.append(" ");
                 } else if (sql.lastIndexOf("WHERE") < 0) {
+                    if (startsWithIfComment(query)) {
+                        buf.append("/*BEGIN*/");
+                        began = true;
+                    }
                     buf.append(" WHERE ");
                 } else {
+                    if (startsWithIfComment(query)) {
+                        buf.append("/*BEGIN*/");
+                        began = true;
+                    }
                     buf.append(" AND ");
                 }
                 buf.append(query);
+                if (began) {
+                    buf.append("/*END*/");
+                }
             }
         }
         cmd.setSql(buf.toString());
         return cmd;
+    }
+
+    protected boolean startsWithIfComment(String query) {
+        Matcher m = startWithIfCommentPattern.matcher(query);
+        if (m.lookingAt()) {
+            return true;
+        }
+        return false;
     }
 
     protected boolean startsWithBeginComment(String query) {

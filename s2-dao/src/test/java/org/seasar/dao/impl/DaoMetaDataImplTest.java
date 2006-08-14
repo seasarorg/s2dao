@@ -596,4 +596,15 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         assertEquals(after, true, after.indexOf("EMP.eName") > -1);
     }
 
+    /*
+     * https://www.seasar.org/issues/browse/DAO-32
+     */
+    public void testSelectWithNullArgs() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee10Dao"));
+        SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
+                .getSqlCommand("getEmployeesByJob");
+        final List emps = (List) cmd.execute(new Object[] { null });
+        assertEquals(14, emps.size());
+    }
+
 }
