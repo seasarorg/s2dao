@@ -21,16 +21,7 @@
 		</arg>
 		<property name="useScrollCursor">true</property>
 	</component>
-	<!--
-	<component 
-		name="resultSetFactory"
-		class="org.seasar.dao.pager.PagerResultSetFactoryLimitOffsetWrapper">
-		<arg>
-			<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
-		</arg>
-		<arg>dataSource</arg>
-	</component>
-	-->
+
 	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
 		<arg>
 			<component class="org.seasar.dao.pager.PagerStatementFactory"/>
@@ -40,21 +31,6 @@
 		<property name="maxRows">100</property>
 		-->
 	</component>
-
-	<!--
-	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
-	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
-		<arg>
-			<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
-		</arg>
-		<property name="fetchSize">100</property>
-		<! - -
-		<property name="maxRows">100</property>
-		- - >
-	</component>
-	<component class="org.seasar.extension.jdbc.impl.OracleResultSetFactory"/>
-	<component class="org.seasar.extension.jdbc.impl.BooleanToIntStatementFactory"/>
-	-->
 
 	<component name="xaDataSource"
 		class="org.seasar.extension.dbcp.impl.XADataSourceImpl">
