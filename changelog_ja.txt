@@ -5,14 +5,17 @@ S2Dao 変更履歴
 PKのみのテーブルへINSERTできなくなっていた問題に対応しました。[Seasar-user:3915][DAO-16]
 DaoのReturnTypeがインタフェースの配列で、BEAN定数がそのインタフェースをImplするクラスである場合に、正しく動作していなかった問題に対応しました。[DAO-19]
 自動生成SELECT文にSELECT項目が1つも無い場合は例外を投げるようにしました。[DAO-20]
-HotDeployに対応しました。(DaoMetaDataFactoryが保持するキャッシュをクリア可能にしました)[DAO-17]
+HotDeployに対応しました。(DaoMetaDataFactoryが保持するキャッシュをクリアするようにしました)[DAO-17]
 dao.diconをs2-dao-x.x.x.jarへ含めるようにしました。[DAO-21]
 SELECT句のASへBeanのプロパティ名を指定した場合にもBeanへセットできるようにしました。[Seasar-user:4071][DAO-26]
 s2dao-tiger・s2dao-backport175のjarがclasspathにある場合には、自動的にTiger・Backport175側のAnnotationReaderを使用するようにしました。[DAO-22]
 使われていなかったorg.seasar.dao.annotation.tiger.AnnotationReaderFactoryクラスを削除しました。(s2dao-tiger)[DAO-27]
-INSERT時にEntityへPKしかセットされていない場合に例外を出していました(1.0.33から)が、例外を投げないことにしました。[Seasar-user:4164][DAO-29]
+INSERT文生成時にEntityにPKしかセットされていない場合は例外を出していました(1.0.33から)が、INSERT可能な項目が1つでもあれば例外を投げないことにしました。(例えば、以前はVersionNoだけのINSERTは例外にしていました)[Seasar-user:4164][DAO-29]
+デフォルト設定でS2Pagerを有効にしました。[DAO-28]
+charとCharacter型をEntityで扱えるようにしました。(実際にコードを変更したのはS2Container側。2.3.11以降)[DAO-30]
+Daoの引数がnullの場合にANDやWHEREでSQL文が終わる問題を修正しました。[DAO-32]
 
-※[DAO-22]の対応でdao.diconを変更しています。
+※[DAO-22][DAO-28]の対応でdao.diconを変更しています。
 
 1.0.35
 -------------------------------------------------------------------------------
