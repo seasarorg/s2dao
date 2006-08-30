@@ -172,8 +172,18 @@
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <id>Maven Snapshots</id>
-      <url>http://snapshots.maven.codehaus.org/maven2/</url>
+      <id>people.apache.org m2-snapshot</id>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+    <pluginRepository>
+      <id>snapshots.repository.codehaus.org</id>
+      <url>http://snapshots.repository.codehaus.org</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
