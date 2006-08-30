@@ -23,14 +23,14 @@
       <subscribe>https://www.seasar.org/mailman/listinfo/seasar-user</subscribe>
       <unsubscribe>https://www.seasar.org/mailman/listinfo/seasar-user</unsubscribe>
       <post>seasar-user@ml.seasar.org</post>
-      <archive>https://www.seasar.org/mailman/listinfo/seasar-user</archive>
+      <archive>http://ml.seasar.org/archives/seasar-user</archive>
     </mailingList>
     <mailingList>
       <name>Seasar-dev</name>
       <subscribe>https://www.seasar.org/mailman/listinfo/seasar-dev</subscribe>
       <unsubscribe>https://www.seasar.org/mailman/listinfo/seasar-dev</unsubscribe>
       <post>seasar-dev@ml.seasar.org</post>
-      <archive>https://www.seasar.org/mailman/listinfo/seasar-dev</archive>
+      <archive>http://ml.seasar.org/archives/seasar-dev</archive>
     </mailingList>
     <mailingList>
       <name>Seasar-user-en</name>
@@ -38,6 +38,13 @@
       <unsubscribe>https://www.seasar.org/mailman/listinfo/seasar-user-en</unsubscribe>
       <post>seasar-user-en@ml.seasar.org</post>
       <archive>http://ml.seasar.org/archives/seasar-user-en/</archive>
+    </mailingList>
+    <mailingList>
+      <name>seasar-s2dao-dev</name>
+      <subscribe>https://www.seasar.org/mailman/listinfo/seasar-s2dao-dev</subscribe>
+      <unsubscribe>https://www.seasar.org/mailman/listinfo/seasar-s2dao-dev</unsubscribe>
+      <post>seasar-s2dao-dev@ml.seasar.org</post>
+      <archive>http://ml.seasar.org/archives/seasar-s2dao-dev</archive>
     </mailingList>
   </mailingLists>
   <developers>
@@ -101,7 +108,7 @@
   <scm>
     <connection>scm:svn:https://www.seasar.org/svn/s2dao/trunk/s2dao/</connection>
     <developerConnection>scm:svn:https://www.seasar.org/svn/s2dao/trunk/s2dao/</developerConnection>
-    <url>http://www.seasar.org/websvn/listing.php?repname=s2dao</url>
+    <url>http://svn.seasar.org/browse/trunk/?root=s2dao</url>
   </scm>
   <organization>
     <name>The Seasar Foundation</name>
