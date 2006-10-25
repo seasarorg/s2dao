@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Random;
 
 import org.seasar.extension.unit.S2TestCase;
 
@@ -36,6 +37,9 @@ public class BlobTest extends S2TestCase {
         include("BlobTest.dicon");
     }
 
+    /*
+     * レコードが無い場合はnullを返すこと。
+     */
     public void testBinary1Tx() throws Exception {
         assertNotNull(largeBinaryByteArrayDao);
         final LargeBinary largeBinary = largeBinaryByteArrayDao
@@ -43,9 +47,12 @@ public class BlobTest extends S2TestCase {
         assertEquals(null, largeBinary);
     }
 
+    /*
+     * INSERT -> SELECT -> UPDATE -> DELETEできること。
+     */
     public void testBinary2Tx() throws Exception {
         {
-            LargeBinary largeBinary = new LargeBinary();
+            final LargeBinary largeBinary = new LargeBinary();
             largeBinary.setId(111);
             largeBinary.setLargeBinary("aabbcc".getBytes());
             largeBinaryByteArrayDao.insert(largeBinary);
@@ -64,6 +71,38 @@ public class BlobTest extends S2TestCase {
                     .getLargeBinary(111);
             assertEquals("ABCDEFG".getBytes(), largeBinary.getLargeBinary());
             assertEquals(1, largeBinary.getVersionNo());
+
+            largeBinaryByteArrayDao.delete(largeBinary);
+        }
+        {
+            final LargeBinary largeBinary = largeBinaryByteArrayDao
+                    .getLargeBinary(111);
+            assertEquals(null, largeBinary);
+        }
+    }
+
+    /*
+     * 5MBのデータを入出力できること。
+     * 
+     * [Seasar-user:4834]のスレッドで、2.3KBあるデータが86byteになってしまうとの
+     * 現象があったためこのテストで確認。
+     * derbyでは問題ないようです。
+     */
+    public void testBinary3Tx() throws Exception {
+        final Random random = new Random();
+        final byte[] bytes = new byte[1024 * 5];
+        random.nextBytes(bytes);
+        {
+            LargeBinary largeBinary = new LargeBinary();
+            largeBinary.setId(4321);
+            largeBinary.setLargeBinary(bytes);
+            largeBinaryByteArrayDao.insert(largeBinary);
+        }
+        {
+            final LargeBinary largeBinary = largeBinaryByteArrayDao
+                    .getLargeBinary(4321);
+            assertEquals(bytes, largeBinary.getLargeBinary());
+            assertEquals(0, largeBinary.getVersionNo());
         }
     }
 
@@ -141,6 +180,8 @@ public class BlobTest extends S2TestCase {
         public void insert(LargeBinary largeBinary);
 
         public void update(LargeBinary largeBinary);
+
+        public void delete(LargeBinary largeBinary);
 
     }
 
