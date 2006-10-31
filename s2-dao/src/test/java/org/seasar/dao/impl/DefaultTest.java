@@ -227,7 +227,7 @@ public class DefaultTest extends S2TestCase {
         {
             final DefaultTable bean = defaultTableDao.getDefaultTable(id);
             assertEquals("inserted DEFAULT value", "ABC", bean.getAaa());
-            assertEquals((String)null, bean.getBbb());
+            assertEquals((String) null, bean.getBbb());
             assertEquals(new Integer(0), bean.getVersionNo());
         }
     }
@@ -280,6 +280,7 @@ public class DefaultTest extends S2TestCase {
         }
     }
 
+    // https://www.seasar.org/issues/browse/DAO-16
     public void testInsertPkOnlyTableTx() throws Exception {
         PkOnlyTable bean = new PkOnlyTable();
         bean.setAaa(new Integer(123));
