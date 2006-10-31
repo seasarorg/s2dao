@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>s2dao</name>
+	<name>s2dao-1.0.x</name>
 	<comment></comment>
 	<projects>
 		<project>seasar2</project>
