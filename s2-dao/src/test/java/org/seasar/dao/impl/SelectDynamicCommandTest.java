@@ -15,6 +15,11 @@
  */
 package org.seasar.dao.impl;
 
+import java.io.Serializable;
+import java.util.List;
+
+import org.seasar.dao.DaoMetaData;
+import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
@@ -36,6 +41,34 @@ public class SelectDynamicCommandTest extends S2DaoTestCase {
                 .execute(new Object[] { new Integer(7788) });
         System.out.println(emp);
         assertNotNull("1", emp);
+    }
+
+    public void testSelectDynamic() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(DynamicDao.class);
+        SqlCommand cmd = dmd.getSqlCommand("getEmployeesBySearchCondition");
+        assertTrue(cmd instanceof SelectDynamicCommand);
+        Employee cond = new Employee();
+        cond.setJob("CLERK");
+        cond.setEmpno(7369);
+        cond.setDeptno(20);
+        List result = (List) cmd.execute(new Object[] { cond });
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof Employee);
+
+        cmd = dmd.getSqlCommand("getEmployeeBySearchCondition");
+        assertTrue(cmd instanceof SelectDynamicCommand);
+        Object obj = cmd.execute(new Object[] { cond });
+        assertTrue(obj instanceof Employee);
+    }
+
+    public interface DynamicDao {
+        public Class BEAN = Employee.class;
+
+        List getEmployeesBySearchCondition(Serializable dto);
+
+        Object getEmployeeBySearchCondition(Serializable dto);
+
+        int update(Object dto);
     }
 
     public void setUp() {

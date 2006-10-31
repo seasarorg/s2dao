@@ -76,4 +76,7 @@ public interface EmployeeAutoDao {
     public void delete(Employee employee);
 
     public void deleteBatch(Employee[] employees);
+
+    public void updateUnlessNull(Employee employee);
+
 }

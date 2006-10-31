@@ -120,6 +120,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected String[] deletePrefixes = new String[] { "delete", "remove" };
 
+    protected String[] unlessNullSuffixes = new String[] { "UnlessNull" };
+
     protected ResultSetHandlerFactory resultSetHandlerFactory;
 
     public DaoMetaDataImpl() {
@@ -508,8 +510,15 @@ public class DaoMetaDataImpl implements DaoMetaData {
         String[] propertyNames = getPersistentPropertyNames(method);
         AbstractSqlCommand cmd = null;
         if (isUpdateSignatureForBean(method)) {
-            cmd = new UpdateAutoStaticCommand(dataSource, statementFactory,
-                    beanMetaData, propertyNames);
+            if (isUnlessNull(method.getName())) {
+                cmd = new UpdateAutoDynamicCommand(dataSource,
+                        statementFactory, beanMetaData, propertyNames);
+                cmd
+                        .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
+            } else {
+                cmd = new UpdateAutoStaticCommand(dataSource, statementFactory,
+                        beanMetaData, propertyNames);
+            }
         } else {
             cmd = new UpdateBatchAutoStaticCommand(dataSource,
                     statementFactory, beanMetaData, propertyNames);
@@ -585,14 +594,19 @@ public class DaoMetaDataImpl implements DaoMetaData {
         ResultSetHandler handler = createResultSetHandler(method);
         SelectDynamicCommand cmd = null;
         String[] argNames = annotationReader.getArgNames(method);
+        Class[] types = method.getParameterTypes();
         if (query != null && !startsWithOrderBy(query)) {
             cmd = createSelectDynamicCommand(handler, query);
         } else {
             cmd = createSelectDynamicCommand(handler);
             String sql = null;
             if (argNames.length == 0 && method.getParameterTypes().length == 1) {
-                argNames = new String[] { "dto" };
-                sql = createAutoSelectSqlByDto(method.getParameterTypes()[0]);
+                Class clazz = method.getParameterTypes()[0];
+                if (isUpdateSignatureForBean(method)) {
+                    clazz = beanClass;
+                }
+                sql = createAutoSelectSqlByDto(clazz);
+                types = new Class[] { clazz };
             } else {
                 sql = createAutoSelectSql(argNames);
             }
@@ -602,7 +616,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
             cmd.setSql(sql);
         }
         cmd.setArgNames(argNames);
-        cmd.setArgTypes(method.getParameterTypes());
+        cmd.setArgTypes(types);
         sqlCommands.put(method.getName(), cmd);
     }
 
@@ -742,6 +756,15 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return false;
     }
 
+    protected boolean isUnlessNull(String methodName) {
+        for (int i = 0; i < unlessNullSuffixes.length; i++) {
+            if (methodName.endsWith(unlessNullSuffixes[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @see org.seasar.dao.DaoMetaData#getBeanClass()
      */
@@ -870,6 +893,10 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     public void setUpdatePrefixes(String[] updatePrefixes) {
         this.updatePrefixes = updatePrefixes;
+    }
+
+    public void setUnlessNullSuffixes(String[] suffixes) {
+        this.unlessNullSuffixes = suffixes;
     }
 
     protected ValueTypeFactory getValueTypeFactory() {

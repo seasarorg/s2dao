@@ -57,6 +57,8 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected String[] updatePrefixes;
 
+    protected String[] unlessNullSuffixes;
+
     protected boolean initialized;
 
     public DaoMetaDataFactoryImpl(DataSource dataSource,
@@ -88,6 +90,10 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     public void setUpdatePrefixes(String[] prefixes) {
         this.updatePrefixes = prefixes;
+    }
+
+    public void setUnlessNullSuffixes(String[] suffixes) {
+        this.unlessNullSuffixes = suffixes;
     }
 
     public synchronized DaoMetaData getDaoMetaData(Class daoClass) {
@@ -127,6 +133,9 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         }
         if (deletePrefixes != null) {
             daoMetaData.setDeletePrefixes(deletePrefixes);
+        }
+        if (unlessNullSuffixes != null) {
+            daoMetaData.setUnlessNullSuffixes(unlessNullSuffixes);
         }
         daoMetaData.initialize();
         return daoMetaData;
