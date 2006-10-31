@@ -92,6 +92,13 @@
       <url></url>
       <timezone>+9</timezone>
     </developer>
+    <developer>
+      <id>taichi_sato</id>
+      <name>SATO Taichi</name>
+      <email></email>
+      <url>http://d.hatena.ne.jp/taichitaichi/</url>
+      <timezone>+9</timezone>
+    </developer>
   </developers>
   <contributors>
     <contributor>
@@ -106,9 +113,9 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:https://www.seasar.org/svn/s2dao/trunk/s2dao/</connection>
-    <developerConnection>scm:svn:https://www.seasar.org/svn/s2dao/trunk/s2dao/</developerConnection>
-    <url>http://svn.seasar.org/browse/trunk/?root=s2dao</url>
+    <connection>scm:svn:https://www.seasar.org/svn/s2dao/branches/s2dao-1.0.x/</connection>
+    <developerConnection>scm:svn:https://www.seasar.org/svn/s2dao/branches/s2dao-1.0.x/</developerConnection>
+    <url>http://svn.seasar.org/browse/branches/?root=s2dao</url>
   </scm>
   <organization>
     <name>The Seasar Foundation</name>
@@ -243,6 +250,49 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+      </plugin>
+      <!--
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>surefire-report-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>changelog-maven-plugin</artifactId>
+      </plugin>
+       -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <configuration>
+          <tags>
+            <tag>FIXME</tag>
+            <tag>TODO</tag>
+            <tag>XXX</tag>
+          </tags>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+      </plugin>
+      <!--
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      -->
+    </plugins>
+  </reporting>
   <distributionManagement>
     <repository>
       <uniqueVersion>false</uniqueVersion>
