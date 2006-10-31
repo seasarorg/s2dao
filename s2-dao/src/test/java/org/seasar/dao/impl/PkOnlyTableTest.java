@@ -40,7 +40,7 @@ public class PkOnlyTableTest extends S2DaoTestCase {
     /*
      * https://www.seasar.org/issues/browse/DAO-16
      */
-    public void testInsert() throws Exception {
+    public void testInsertTx() throws Exception {
         DaoMetaData dmd = createDaoMetaData(PkOnlyTableDao.class);
         SqlCommand cmd = dmd.getSqlCommand("insert");
         PkOnlyTable data = new PkOnlyTable();
