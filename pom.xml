@@ -9,7 +9,7 @@
   <artifactId>s2-dao-project</artifactId>
   <packaging>pom</packaging>
   <name>S2Dao Project</name>
-  <version>1.0.37-SNAPSHOT</version>
+  <version>1.0.37</version>
   <description></description>
   <url>http://s2dao.seasar.org/</url>
   <issueManagement>
@@ -93,7 +93,7 @@
       <timezone>+9</timezone>
     </developer>
     <developer>
-      <id>taichi_sato</id>
+      <id>taichi</id>
       <name>SATO Taichi</name>
       <email></email>
       <url>http://d.hatena.ne.jp/taichitaichi/</url>
@@ -210,7 +210,7 @@
     <dependency>
       <groupId>org.seasar.container</groupId>
       <artifactId>s2-extension</artifactId>
-      <version>2.3.12</version>
+      <version>2.3.14</version>
       <type>jar</type>
     </dependency>
     <dependency>
