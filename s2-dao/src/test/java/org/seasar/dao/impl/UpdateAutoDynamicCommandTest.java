@@ -16,6 +16,7 @@
 package org.seasar.dao.impl;
 
 import org.seasar.dao.DaoMetaData;
+import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
 
@@ -57,4 +58,71 @@ public class UpdateAutoDynamicCommandTest extends S2DaoTestCase {
         assertEquals(before.getMgr(), after.getMgr());
     }
 
+    /*
+     * https://www.seasar.org/issues/browse/DAO-39
+     */
+    public void testExecuteOnePropertyTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(EmployeeAutoDao.class);
+        SqlCommand select = dmd.getSqlCommand("getEmployee");
+        Employee before = (Employee) select.execute(new Object[] { new Integer(
+                7369) });
+
+        Employee e = new Employee();
+        e.setEmpno(7369);
+        e.setDeptno(20);
+        SqlCommand unlessNull = dmd.getSqlCommand("updateUnlessNull");
+        assertTrue(unlessNull instanceof UpdateAutoDynamicCommand);
+        unlessNull.execute(new Object[] { e });
+
+        Employee after = (Employee) select.execute(new Object[] { new Integer(
+                7369) });
+        assertEquals(before.getHiredate(), after.getHiredate());
+        assertEquals(before.getMgr(), after.getMgr());
+    }
+
+    /*
+     * https://www.seasar.org/issues/browse/DAO-39
+     */
+    public void testExecuteAllNullTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(CharTableDao.class);
+        SqlCommand unlessNull = dmd.getSqlCommand("updateUnlessNull");
+        CharTable data = new CharTable();
+        data.setId(1);
+        try {
+            unlessNull.execute(new Object[] { data });
+            fail();
+        } catch (NoUpdatePropertyTypeRuntimeException e) {
+            assertTrue(true);
+        }
+    }
+
+    public class CharTable {
+        public static final String TABLE = "CHAR_TABLE";
+
+        int id = 0;
+
+        Character aaa = null;
+
+        public Character getAaa() {
+            return aaa;
+        }
+
+        public void setAaa(Character aaa) {
+            this.aaa = aaa;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+    }
+
+    public interface CharTableDao {
+        Class BEAN = CharTable.class;
+
+        int updateUnlessNull(CharTable data);
+    }
 }

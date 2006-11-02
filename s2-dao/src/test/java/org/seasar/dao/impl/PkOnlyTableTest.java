@@ -16,6 +16,7 @@
 package org.seasar.dao.impl;
 
 import org.seasar.dao.DaoMetaData;
+import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
 
@@ -49,6 +50,15 @@ public class PkOnlyTableTest extends S2DaoTestCase {
         assertEquals(1, i.intValue());
     }
 
+    public void testUpdateUnlessNullTx() throws Exception {
+        try {
+            createDaoMetaData(PkOnlyTableDao2.class);
+            fail();
+        } catch (NoUpdatePropertyTypeRuntimeException e) {
+            assertTrue(true);
+        }
+    }
+
     public class PkOnlyTable {
         public static final String TABLE = "PKONLYTABLE";
 
@@ -67,5 +77,12 @@ public class PkOnlyTableTest extends S2DaoTestCase {
         Class BEAN = PkOnlyTable.class;
 
         int insert(PkOnlyTable data);
+
+    }
+
+    public interface PkOnlyTableDao2 {
+        Class BEAN = PkOnlyTable.class;
+
+        int updateUnlessNull(PkOnlyTable data);
     }
 }

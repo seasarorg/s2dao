@@ -22,6 +22,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
 import org.seasar.dao.PrimaryKeyNotFoundRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.extension.jdbc.PropertyType;
@@ -32,98 +33,126 @@ import org.seasar.extension.jdbc.StatementFactory;
  * 
  */
 public class UpdateAutoDynamicCommand extends UpdateDynamicCommand implements
-		SqlCommand {
+        SqlCommand {
 
-	/**
-	 * 
-	 */
-	public UpdateAutoDynamicCommand(DataSource dataSource,
-			StatementFactory statementFactory, BeanMetaData beanMetaData,
-			String[] propertyNames) {
-		super(dataSource, statementFactory);
-		Class beanClass = beanMetaData.getBeanClass();
-		String argName = beanMetaData.getTableName();
-		setupSql(beanMetaData, argName, propertyNames);
-		setArgNames(new String[] { argName });
-		setArgTypes(new Class[] { beanClass });
-	}
+    private PropertyType[] propertyTypes = null;
 
-	protected void setupSql(BeanMetaData bmd, String argName,
-			String[] propertyNames) {
-		if (bmd.getPrimaryKeySize() == 0) {
-			throw new PrimaryKeyNotFoundRuntimeException(bmd.getBeanClass());
-		}
-		StringBuffer buf = new StringBuffer(200);
-		buf.append("UPDATE ");
-		buf.append(bmd.getTableName());
-		buf.append(" SET /*BEGIN*/");
-		PropertyType[] propertyTypes = cretePropertyTypes(bmd, propertyNames);
-		for (int i = 0; i < propertyTypes.length; ++i) {
-			PropertyType pt = propertyTypes[i];
-			if (pt.isPrimaryKey() || pt.isPersistent() == false) {
-				continue;
-			}
-			buf.append("/*IF ");
-			buf.append(argName);
-			buf.append('.');
-			buf.append(pt.getPropertyName());
-			buf.append(" != null*/");
-			buf.append(i == 0 ? "" : ",");
-			buf.append(pt.getColumnName());
-			buf.append(" = /*");
-			buf.append(argName);
-			buf.append('.');
-			buf.append(pt.getPropertyName());
-			buf.append("*//*END*/");
-		}
-		buf.append("/*END*/");
-		setupUpdateWhere(buf, argName, bmd);
-		setSql(buf.toString());
-	}
+    public UpdateAutoDynamicCommand(DataSource dataSource,
+            StatementFactory statementFactory, BeanMetaData beanMetaData,
+            String[] propertyNames) {
+        super(dataSource, statementFactory);
+        Class beanClass = beanMetaData.getBeanClass();
+        String argName = beanMetaData.getTableName();
+        propertyTypes = cretePropertyTypes(beanMetaData, propertyNames);
+        setupSql(beanMetaData, argName, propertyNames);
+        setArgNames(new String[] { argName });
+        setArgTypes(new Class[] { beanClass });
+    }
 
-	protected PropertyType[] cretePropertyTypes(BeanMetaData bmd,
-			String[] propertyNames) {
-		List types = new ArrayList();
-		for (int i = 0; i < propertyNames.length; ++i) {
-			PropertyType pt = bmd.getPropertyType(propertyNames[i]);
-			if (pt.isPrimaryKey()
-					&& !bmd.getIdentifierGenerator().isSelfGenerate()) {
-				continue;
-			}
-			types.add(pt);
-		}
-		return (PropertyType[]) types.toArray(new PropertyType[types.size()]);
+    protected void setupSql(BeanMetaData bmd, String argName,
+            String[] propertyNames) {
+        if (bmd.getPrimaryKeySize() == 0) {
+            throw new PrimaryKeyNotFoundRuntimeException(bmd.getBeanClass());
+        }
+        StringBuffer buf = new StringBuffer(200);
+        buf.append("UPDATE ");
+        buf.append(bmd.getTableName());
+        buf.append(" SET /*BEGIN*/");
+        int counter = 0;
+        for (int i = 0; i < propertyTypes.length; ++i) {
+            PropertyType pt = propertyTypes[i];
+            if (pt.isPrimaryKey() || pt.isPersistent() == false) {
+                continue;
+            }
+            buf.append("/*IF ");
+            buf.append(argName);
+            buf.append('.');
+            buf.append(pt.getPropertyName());
+            buf.append(" != null*/");
+            buf.append(counter == 0 ? "" : ",");
+            buf.append(pt.getColumnName());
+            buf.append(" = /*");
+            buf.append(argName);
+            buf.append('.');
+            buf.append(pt.getPropertyName());
+            buf.append("*//*END*/");
+            counter++;
+        }
+        if (counter < 1) {
+            throw new NoUpdatePropertyTypeRuntimeException();
+        }
 
-	}
+        buf.append("/*END*/");
+        setupUpdateWhere(buf, argName, bmd);
+        setSql(buf.toString());
+    }
 
-	protected void setupUpdateWhere(StringBuffer buf, String argName,
-			BeanMetaData bmd) {
-		buf.append(" WHERE ");
-		for (int i = 0; i < bmd.getPrimaryKeySize(); ++i) {
-			String column = bmd.getPrimaryKey(i);
-			PropertyType pt = bmd.getPropertyTypeByColumnName(column);
-			appendColumn(buf, argName, pt);
-			buf.append(" AND ");
-		}
-		buf.setLength(buf.length() - 5);
-		if (bmd.hasVersionNoPropertyType()) {
-			PropertyType pt = bmd.getVersionNoPropertyType();
-			buf.append(" AND ");
-			appendColumn(buf, argName, pt);
-		}
-		if (bmd.hasTimestampPropertyType()) {
-			PropertyType pt = bmd.getTimestampPropertyType();
-			buf.append(" AND ");
-			appendColumn(buf, argName, pt);
-		}
-	}
+    protected PropertyType[] cretePropertyTypes(BeanMetaData bmd,
+            String[] propertyNames) {
+        List types = new ArrayList();
+        for (int i = 0; i < propertyNames.length; ++i) {
+            PropertyType pt = bmd.getPropertyType(propertyNames[i]);
+            if (pt.isPrimaryKey()
+                    && !bmd.getIdentifierGenerator().isSelfGenerate()) {
+                continue;
+            }
+            types.add(pt);
+        }
+        return (PropertyType[]) types.toArray(new PropertyType[types.size()]);
 
-	private void appendColumn(StringBuffer buf, String argName, PropertyType pt) {
-		buf.append(pt.getColumnName());
-		buf.append(" = /*");
-		buf.append(argName);
-		buf.append('.');
-		buf.append(pt.getPropertyName());
-		buf.append("*/");
-	}
+    }
+
+    protected void setupUpdateWhere(StringBuffer buf, String argName,
+            BeanMetaData bmd) {
+        buf.append(" WHERE ");
+        for (int i = 0; i < bmd.getPrimaryKeySize(); ++i) {
+            String column = bmd.getPrimaryKey(i);
+            PropertyType pt = bmd.getPropertyTypeByColumnName(column);
+            appendColumn(buf, argName, pt);
+            buf.append(" AND ");
+        }
+        buf.setLength(buf.length() - 5);
+        if (bmd.hasVersionNoPropertyType()) {
+            PropertyType pt = bmd.getVersionNoPropertyType();
+            buf.append(" AND ");
+            appendColumn(buf, argName, pt);
+        }
+        if (bmd.hasTimestampPropertyType()) {
+            PropertyType pt = bmd.getTimestampPropertyType();
+            buf.append(" AND ");
+            appendColumn(buf, argName, pt);
+        }
+    }
+
+    private void appendColumn(StringBuffer buf, String argName, PropertyType pt) {
+        buf.append(pt.getColumnName());
+        buf.append(" = /*");
+        buf.append(argName);
+        buf.append('.');
+        buf.append(pt.getPropertyName());
+        buf.append("*/");
+    }
+
+    public Object execute(Object[] args) {
+        if (validate(args)) {
+            return super.execute(args);
+        }
+        throw new NoUpdatePropertyTypeRuntimeException();
+    }
+
+    protected boolean validate(Object[] args) {
+        boolean result = false;
+        if (args != null && -1 < args.length) {
+            for (int i = 0; i < propertyTypes.length; i++) {
+                PropertyType pt = propertyTypes[i];
+                if (pt.isPrimaryKey() || pt.isPersistent() == false) {
+                    continue;
+                }
+                if (result = pt.getPropertyDesc().getValue(args[0]) != null) {
+                    break;
+                }
+            }
+        }
+        return result;
+    }
 }

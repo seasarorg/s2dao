@@ -89,7 +89,14 @@ public class SqlParserImpl implements SqlParser {
             st.skipWhitespace();
             String token = st.skipToken();
             st.skipWhitespace();
-            if ("AND".equalsIgnoreCase(token) || "OR".equalsIgnoreCase(token)) {
+            if (sql.startsWith(",")) {
+                if (sql.startsWith(", ")) {
+                    node.addChild(new PrefixSqlNode(", ", sql.substring(2)));
+                } else {
+                    node.addChild(new PrefixSqlNode(",", sql.substring(1)));
+                }
+            } else if ("AND".equalsIgnoreCase(token)
+                    || "OR".equalsIgnoreCase(token)) {
                 node.addChild(new PrefixSqlNode(st.getBefore(), st.getAfter()));
             } else {
                 node.addChild(new SqlNode(sql));
