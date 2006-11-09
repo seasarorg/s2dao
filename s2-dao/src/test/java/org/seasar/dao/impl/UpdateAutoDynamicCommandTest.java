@@ -21,7 +21,7 @@ import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
 
 /**
- * @author li1770
+ * @author taichi
  * 
  */
 public class UpdateAutoDynamicCommandTest extends S2DaoTestCase {
@@ -56,6 +56,7 @@ public class UpdateAutoDynamicCommandTest extends S2DaoTestCase {
         assertEquals(e.getEname(), after.getEname());
         assertEquals(before.getHiredate(), after.getHiredate());
         assertEquals(before.getMgr(), after.getMgr());
+        assertNotSame(before.getTimestamp(), after.getTimestamp());
     }
 
     /*
@@ -70,6 +71,7 @@ public class UpdateAutoDynamicCommandTest extends S2DaoTestCase {
         Employee e = new Employee();
         e.setEmpno(7369);
         e.setDeptno(20);
+        e.setTimestamp(before.getTimestamp());
         SqlCommand unlessNull = dmd.getSqlCommand("updateUnlessNull");
         assertTrue(unlessNull instanceof UpdateAutoDynamicCommand);
         unlessNull.execute(new Object[] { e });
@@ -85,15 +87,42 @@ public class UpdateAutoDynamicCommandTest extends S2DaoTestCase {
      */
     public void testExecuteAllNullTx() throws Exception {
         DaoMetaData dmd = createDaoMetaData(CharTableDao.class);
-        SqlCommand unlessNull = dmd.getSqlCommand("updateUnlessNull");
+        SqlCommand insert = dmd.getSqlCommand("insert");
         CharTable data = new CharTable();
         data.setId(1);
+        data.setAaa(new Character('c'));
+        insert.execute(new Object[] { data });
+
+        SqlCommand unlessNull = dmd.getSqlCommand("updateUnlessNull");
+        data.setAaa(null);
         try {
             unlessNull.execute(new Object[] { data });
             fail();
         } catch (NoUpdatePropertyTypeRuntimeException e) {
             assertTrue(true);
         }
+    }
+
+    public void testUpdateUnlessNullVersionNoTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(DepartmentAutoDao.class);
+        SqlCommand select = dmd.getSqlCommand("getDepartment");
+        Department before = (Department) select
+                .execute(new Object[] { new Integer(20) });
+
+        SqlCommand update = dmd.getSqlCommand("updateUnlessNull");
+        Department data = new Department();
+        data.setDeptno(20);
+        data.setDname("HOGE");
+        data.setDummy(null);
+        data.setVersionNo(before.getVersionNo());
+        update.execute(new Object[] { data });
+
+        Department after = (Department) select
+                .execute(new Object[] { new Integer(20) });
+
+        assertEquals(data.getDname(), after.getDname());
+        assertEquals(before.getVersionNo() + 1, after.getVersionNo());
+        assertEquals(before.getDummy(), after.getDummy());
     }
 
     public class CharTable {
@@ -122,6 +151,8 @@ public class UpdateAutoDynamicCommandTest extends S2DaoTestCase {
 
     public interface CharTableDao {
         Class BEAN = CharTable.class;
+
+        void insert(CharTable data);
 
         int updateUnlessNull(CharTable data);
     }

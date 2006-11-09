@@ -511,10 +511,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         AbstractSqlCommand cmd = null;
         if (isUpdateSignatureForBean(method)) {
             if (isUnlessNull(method.getName())) {
-                cmd = new UpdateAutoDynamicCommand(dataSource,
-                        statementFactory, beanMetaData, propertyNames);
-                cmd
-                        .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
+                cmd = createUpdateAutoDynamicCommand(method, propertyNames);
             } else {
                 cmd = new UpdateAutoStaticCommand(dataSource, statementFactory,
                         beanMetaData, propertyNames);
@@ -524,6 +521,23 @@ public class DaoMetaDataImpl implements DaoMetaData {
                     statementFactory, beanMetaData, propertyNames);
         }
         sqlCommands.put(method.getName(), cmd);
+    }
+
+    /**
+     * @param method
+     * @param propertyNames
+     * @return
+     */
+    private AbstractSqlCommand createUpdateAutoDynamicCommand(Method method, String[] propertyNames) {
+        AbstractSqlCommand cmd;
+        UpdateAutoDynamicCommand uac = new UpdateAutoDynamicCommand(
+                dataSource, statementFactory);
+        uac.setBeanMetaData(beanMetaData);
+        uac.setPropertyNames(propertyNames);
+        uac
+                .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
+        cmd = uac;
+        return cmd;
     }
 
     protected void setupDeleteMethodByAuto(Method method) {

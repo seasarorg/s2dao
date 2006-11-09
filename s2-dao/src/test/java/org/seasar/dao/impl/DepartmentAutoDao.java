@@ -30,4 +30,10 @@ public interface DepartmentAutoDao {
     public void delete(Department department);
 
     public void deleteBatch(Department[] departents);
+
+    public String getDepartment_ARGS = "deptno";
+
+    public Department getDepartment(int deptno);
+
+    public void updateUnlessNull(Department department);
 }
