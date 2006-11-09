@@ -671,6 +671,14 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 .createBeanAnnotationReader(dtoClass));
         dtoMetaData.setValueTypeFactory(getValueTypeFactory());
         dtoMetaData.initialize();
+        for (int i = 0; i < beanMetaData.getPropertyTypeSize(); i++) {
+            PropertyType master = beanMetaData.getPropertyType(i);
+            String name = master.getPropertyName();
+            if (dtoMetaData.hasPropertyType(name)) {
+                PropertyType slave = dtoMetaData.getPropertyType(name);
+                slave.setColumnName(master.getColumnName());
+            }
+        }
         return dtoMetaData;
     }
 
