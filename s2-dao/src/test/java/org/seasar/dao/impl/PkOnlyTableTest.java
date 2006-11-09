@@ -52,7 +52,11 @@ public class PkOnlyTableTest extends S2DaoTestCase {
 
     public void testUpdateUnlessNullTx() throws Exception {
         try {
-            createDaoMetaData(PkOnlyTableDao2.class);
+            DaoMetaData dmd = createDaoMetaData(PkOnlyTableDao2.class);
+            SqlCommand cmd = dmd.getSqlCommand("updateUnlessNull");
+            PkOnlyTable data = new PkOnlyTable();
+            data.setAaa("value");
+            cmd.execute(new Object[] { data });
             fail();
         } catch (NoUpdatePropertyTypeRuntimeException e) {
             assertTrue(true);
