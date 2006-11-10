@@ -137,12 +137,22 @@ public abstract class AbstractBeanMetaDataResultSetHandler implements
         return ClassUtil.newInstance(rpt.getPropertyDesc().getPropertyType());
     }
 
-    protected Set createColumnNames(ResultSetMetaData rsmd) throws SQLException {
-        int count = rsmd.getColumnCount();
-        Set columnNames = new CaseInsensitiveSet();
+    /*
+     * https://www.seasar.org/issues/browse/DAO-41
+     * SQLiteでは[TABLE名.COLUMN名]がcolumnNamesに入るため、[COLUMN名]だけにしておく。
+     */
+    protected Set createColumnNames(final ResultSetMetaData rsmd)
+            throws SQLException {
+        final int count = rsmd.getColumnCount();
+        final Set columnNames = new CaseInsensitiveSet();
         for (int i = 0; i < count; ++i) {
-            String columnName = rsmd.getColumnLabel(i + 1);
-            columnNames.add(columnName);
+            final String columnName = rsmd.getColumnLabel(i + 1);
+            final int pos = columnName.lastIndexOf('.');
+            if (-1 < pos) {
+                columnNames.add(columnName.substring(pos + 1));
+            } else {
+                columnNames.add(columnName);
+            }
         }
         return columnNames;
     }
