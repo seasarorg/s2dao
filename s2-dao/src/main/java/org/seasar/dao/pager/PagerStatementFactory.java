@@ -27,22 +27,30 @@ import org.seasar.framework.exception.SQLRuntimeException;
 
 /**
  * @author agata
- * 
+ * @author manhole
  */
 public class PagerStatementFactory implements StatementFactory {
 
-    public static final StatementFactory INSTANCE = new PagerStatementFactory();
-
     public PreparedStatement createPreparedStatement(Connection con, String sql) {
-        try {
-            return con.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
-        } catch (SQLException e) {
-            throw new SQLRuntimeException(e);
+        /*
+         * https://www.seasar.org/issues/browse/DAO-42
+         */
+        final Object[] args = PagerContext.getContext().peekArgs();
+        if (PagerContext.isPagerCondition(args)) {
+            try {
+                return con.prepareStatement(sql,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_READ_ONLY);
+            } catch (SQLException e) {
+                throw new SQLRuntimeException(e);
+            }
+        } else {
+            return ConnectionUtil.prepareStatement(con, sql);
         }
     }
 
     public CallableStatement createCallableStatement(Connection con, String sql) {
         return ConnectionUtil.prepareCall(con, sql);
     }
+
 }
