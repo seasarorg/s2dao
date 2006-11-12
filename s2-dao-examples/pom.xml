@@ -21,7 +21,7 @@
       <testResource>
         <directory>${basedir}/../s2-dao/src/test/resources</directory>
         <includes>
-          <include>data/**</include>
+          <include>data-hsqldb/**</include>
         </includes>
       </testResource>
     </testResources>

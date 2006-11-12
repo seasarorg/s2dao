@@ -69,7 +69,7 @@
 			-->
 			"jdbc:hsqldb:file:"
 				+ @org.seasar.framework.util.ResourceUtil@getBuildDir(@examples.dao.EmployeeDaoTest@class).getCanonicalPath() 
-				+ "/data/demo"
+				+ "/data-hsqldb/demo"
 		</property>
 		<property name="user">"sa"</property>
 		<property name="password">""</property>

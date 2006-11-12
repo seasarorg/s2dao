@@ -26,7 +26,7 @@
                 <copy todir="${project.build.directory}/test-jar-staging">
                   <fileset dir="${project.build.testOutputDirectory}">
                     <exclude name="**/*.dicon"/>
-                    <exclude name="data/**"/>
+                    <exclude name="data-hsqldb/**"/>
                     <exclude name="data-derby/**"/>
                   </fileset>
                 </copy>

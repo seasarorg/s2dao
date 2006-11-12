@@ -68,7 +68,7 @@
 			-->
 			"jdbc:hsqldb:file:"
 				+ @org.seasar.framework.util.ResourceUtil@getBuildDir(@org.seasar.dao.impl.ClobTest@class).getCanonicalPath() 
-				+ "/data/demo"
+				+ "/data-hsqldb/demo"
 		</property>
 		<property name="user">"sa"</property>
 		<property name="password">""</property>
