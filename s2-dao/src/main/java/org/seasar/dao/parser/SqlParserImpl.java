@@ -118,6 +118,10 @@ public class SqlParserImpl implements SqlParser {
             } else {
                 parseCommentBindVariable();
             }
+        } else if (comment != null && 0 < comment.length()) {
+            String before = tokenizer.getBefore();
+            peek().addChild(
+                    new SqlNode(before.substring(before.lastIndexOf("/*"))));
         }
     }
 

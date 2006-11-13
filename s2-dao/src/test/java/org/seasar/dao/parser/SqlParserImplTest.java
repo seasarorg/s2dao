@@ -129,7 +129,6 @@ public class SqlParserImplTest extends TestCase {
 
     public void testParseBindVariable2() throws Exception {
         String sql = "SELECT * FROM emp WHERE job = /* job*/'CLERK'";
-        String sql2 = "SELECT * FROM emp WHERE job = 'CLERK'";
         String sql3 = "SELECT * FROM emp WHERE job = ";
         String sql4 = "'CLERK'";
         SqlParser parser = new SqlParserImpl(sql);
@@ -137,11 +136,11 @@ public class SqlParserImplTest extends TestCase {
         Node root = parser.parse();
         root.accept(ctx);
         System.out.println(ctx.getSql());
-        assertEquals("1", sql2, ctx.getSql());
-        assertEquals("2", 2, root.getChildSize());
+        assertEquals("1", sql, ctx.getSql());
+        assertEquals("2", 3, root.getChildSize());
         SqlNode sqlNode = (SqlNode) root.getChild(0);
         assertEquals("3", sql3, sqlNode.getSql());
-        SqlNode sqlNode2 = (SqlNode) root.getChild(1);
+        SqlNode sqlNode2 = (SqlNode) root.getChild(2);
         assertEquals("4", sql4, sqlNode2.getSql());
     }
 
@@ -427,5 +426,19 @@ public class SqlParserImplTest extends TestCase {
         root.accept(ctx);
         System.out.println(ctx.getSql());
         assertEquals("1", "0", ctx.getSql());
+    }
+
+    /*
+     * [seasar-s2dao-dev:31]
+     */
+    public void testCommentAlive() throws Exception {
+        String sql = "SELECT AAA,BBB -- UGO \r\nFROM HOGE WHERE AAA=/*moge*/aaa AND FUGA=/* PIRO */ccc";
+        SqlParser parser = new SqlParserImpl(sql);
+        Node root = parser.parse();
+        CommandContext ctx = new CommandContextImpl();
+        root.accept(ctx);
+        System.out.println(ctx.getSql());
+        sql = "SELECT AAA,BBB -- UGO \r\nFROM HOGE WHERE AAA=? AND FUGA=/* PIRO */ccc";
+        assertEquals(sql, ctx.getSql());
     }
 }
