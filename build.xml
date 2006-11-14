@@ -18,11 +18,7 @@
 				<include name="s2-dao-${ver}.jar"/>
 				<include name="s2-dao-${ver}-sources.jar"/>
 			</zipfileset>
-			<zipfileset prefix="s2dao/resources" dir="s2-dao/src/main/resources">
-				<include name="dao.dicon"/>
-			</zipfileset>
 			<zipfileset prefix="s2dao/resources" dir="s2-dao/src/test/resources">
-				<include name="dao-pager.dicon"/>
 				<include name="j2ee.dicon"/>
 				<include name="log4j.properties"/>
 			</zipfileset>
