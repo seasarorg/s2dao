@@ -9,6 +9,10 @@
 				<exclude name="**/target/**"/>
 				<exclude name="*.log"/>
 				<exclude name="**/.settings/**"/>
+				<exclude name="s2-dao/cobertura.ser"/>
+				<exclude name="s2-dao-examples/cobertura.ser"/>
+				<exclude name="s2-dao/*.log"/>
+				<exclude name="s2-dao-examples/*.log"/>
 			</zipfileset>
 			<zipfileset prefix="s2dao/lib" dir="s2-dao/target">
 				<include name="s2-dao-${ver}.jar"/>
