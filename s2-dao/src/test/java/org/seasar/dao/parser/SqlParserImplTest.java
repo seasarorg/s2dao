@@ -430,6 +430,8 @@ public class SqlParserImplTest extends TestCase {
 
     /*
      * [seasar-s2dao-dev:31]
+     * 
+     * https://www.seasar.org/issues/browse/DAO-43
      */
     public void testCommentAlive() throws Exception {
         String sql = "SELECT AAA,BBB -- UGO \r\nFROM HOGE WHERE AAA=/*moge*/aaa AND FUGA=/* PIRO */ccc";
@@ -438,7 +440,25 @@ public class SqlParserImplTest extends TestCase {
         CommandContext ctx = new CommandContextImpl();
         root.accept(ctx);
         System.out.println(ctx.getSql());
-        sql = "SELECT AAA,BBB -- UGO \r\nFROM HOGE WHERE AAA=? AND FUGA=/* PIRO */ccc";
-        assertEquals(sql, ctx.getSql());
+        assertEquals(
+                "SELECT AAA,BBB -- UGO \r\nFROM HOGE WHERE AAA=? AND FUGA=/* PIRO */ccc",
+                ctx.getSql());
     }
+
+    /*
+     * https://www.seasar.org/issues/browse/DAO-43
+     * 
+     * Oracleのヒント句が消されないこと。
+     */
+    public void testCommentAlive2() throws Exception {
+        final SqlParser parser = new SqlParserImpl(
+                "SELECT /*+ INDEX(TABLE_NAME INDEX_NAME) */ AAA FROM HOGE");
+        final Node root = parser.parse();
+        final CommandContext ctx = new CommandContextImpl();
+        root.accept(ctx);
+        assertEquals(
+                "SELECT /*+ INDEX(TABLE_NAME INDEX_NAME) */ AAA FROM HOGE", ctx
+                        .getSql());
+    }
+
 }
