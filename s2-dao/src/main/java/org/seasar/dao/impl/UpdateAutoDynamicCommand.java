@@ -52,7 +52,7 @@ public class UpdateAutoDynamicCommand extends AbstractSqlCommand implements
     public Object execute(Object[] args) {
         final Object bean = args[0];
         final BeanMetaData bmd = getBeanMetaData();
-        final PropertyType[] propertyTypes = createUpdateropertyTypes(bmd,
+        final PropertyType[] propertyTypes = createUpdatePropertyTypes(bmd,
                 bean, getPropertyNames());
 
         UpdateAutoHandler handler = new UpdateAutoHandler(getDataSource(),
@@ -65,7 +65,7 @@ public class UpdateAutoDynamicCommand extends AbstractSqlCommand implements
         return new Integer(i);
     }
 
-    protected PropertyType[] createUpdateropertyTypes(BeanMetaData bmd,
+    protected PropertyType[] createUpdatePropertyTypes(BeanMetaData bmd,
             Object bean, String[] propertyNames) {
         List types = new ArrayList();
         final String timestampPropertyName = bmd.getTimestampPropertyName();
