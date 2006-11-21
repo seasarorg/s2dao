@@ -24,17 +24,21 @@ import java.util.regex.Pattern;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.RelationPropertyType;
+import org.seasar.framework.util.Disposable;
+import org.seasar.framework.util.DisposableUtil;
 
 /**
  * @author higa
  * 
  */
-public class Standard implements Dbms {
+public class Standard implements Dbms, Disposable {
 
     private static final Pattern baseSqlPattern = Pattern.compile(
             "^.*?(select)", Pattern.CASE_INSENSITIVE);
 
-    private Map autoSelectFromClauseCache = new HashMap();
+    final Map autoSelectFromClauseCache = new HashMap();
+
+    boolean initialized;
 
     /**
      * @see org.seasar.dao.Dbms#getSuffix()
@@ -47,6 +51,10 @@ public class Standard implements Dbms {
      * @see org.seasar.dao.Dbms#getAutoSelectSql(org.seasar.dao.BeanMetaData)
      */
     public String getAutoSelectSql(BeanMetaData beanMetaData) {
+        if (!initialized) {
+            DisposableUtil.add(this);
+            initialized = true;
+        }
         StringBuffer buf = new StringBuffer(100);
         buf.append(beanMetaData.getAutoSelectList());
         buf.append(" ");
@@ -114,4 +122,10 @@ public class Standard implements Dbms {
             return sql;
         }
     }
+
+    public synchronized void dispose() {
+        autoSelectFromClauseCache.clear();
+        initialized = false;
+    }
+
 }

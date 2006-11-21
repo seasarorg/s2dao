@@ -19,25 +19,13 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.impl.BeanMetaDataImpl;
 import org.seasar.dao.unit.S2DaoTestCase;
+import org.seasar.framework.util.DisposableUtil;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public class StandardTest extends S2DaoTestCase {
-
-    /**
-     * Constructor for InvocationImplTest.
-     * 
-     * @param arg0
-     */
-    public StandardTest(String arg0) {
-        super(arg0);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(StandardTest.class);
-    }
 
     protected void setUp() throws Exception {
         include("j2ee.dicon");
@@ -62,6 +50,28 @@ public class StandardTest extends S2DaoTestCase {
         beanMetaData.setValueTypeFactory(getValueTypeFactory());
         beanMetaData.initialize();
         return beanMetaData;
+    }
+
+    public void testDispose() throws Exception {
+        final Standard standard = new Standard();
+        assertEquals(0, standard.autoSelectFromClauseCache.size());
+
+        final BeanMetaData bmd = createBeanMetaData(Employee.class, standard);
+        {
+            final String sql = standard.getAutoSelectSql(bmd);
+            assertNotNull(sql);
+        }
+
+        assertEquals(1, standard.autoSelectFromClauseCache.size());
+        DisposableUtil.dispose();
+        assertEquals(0, standard.autoSelectFromClauseCache.size());
+        {
+            final String sql = standard.getAutoSelectSql(bmd);
+            assertNotNull(sql);
+        }
+        assertEquals(1, standard.autoSelectFromClauseCache.size());
+        DisposableUtil.dispose();
+        assertEquals(0, standard.autoSelectFromClauseCache.size());
     }
 
 }
