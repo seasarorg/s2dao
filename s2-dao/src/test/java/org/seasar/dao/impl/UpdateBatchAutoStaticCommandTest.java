@@ -15,15 +15,15 @@
  */
 package org.seasar.dao.impl;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
 
 public class UpdateBatchAutoStaticCommandTest extends S2DaoTestCase {
-
-    public UpdateBatchAutoStaticCommandTest(String arg0) {
-        super(arg0);
-    }
 
     public void testExecuteTx() throws Exception {
         DaoMetaData dmd = createDaoMetaData(EmployeeAutoDao.class);
@@ -39,12 +39,46 @@ public class UpdateBatchAutoStaticCommandTest extends S2DaoTestCase {
         assertEquals("1", new Integer(2), count);
     }
 
-    public void setUp() {
-        include("j2ee.dicon");
+    public void testExecuteByListTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(EmployeeAutoDao.class);
+        {
+            SqlCommand cmd = dmd.getSqlCommand("updateBatchByList");
+            final List list = new ArrayList();
+            {
+                Employee emp = new Employee();
+                emp.setEmpno(7788);
+                emp.setEname("hoge");
+                emp.setTimestamp(Timestamp.valueOf("2005-01-18 13:09:32.213"));
+                list.add(emp);
+            }
+            {
+                Employee emp = new Employee();
+                emp.setEmpno(7369);
+                emp.setEname("hoge2");
+                emp.setTimestamp(Timestamp.valueOf("2000-01-01 00:00:00.0"));
+                list.add(emp);
+            }
+            Integer count = (Integer) cmd.execute(new Object[] { list });
+            assertEquals("1", new Integer(2), count);
+        }
+
+        {
+            SqlCommand cmd = dmd.getSqlCommand("getEmployee");
+            {
+                final Employee employee = (Employee) cmd
+                        .execute(new Object[] { new Integer(7788) });
+                assertEquals("hoge", employee.getEname());
+            }
+            {
+                final Employee employee = (Employee) cmd
+                        .execute(new Object[] { new Integer(7369) });
+                assertEquals("hoge2", employee.getEname());
+            }
+        }
     }
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(UpdateBatchAutoStaticCommandTest.class);
+    public void setUp() {
+        include("j2ee.dicon");
     }
 
 }

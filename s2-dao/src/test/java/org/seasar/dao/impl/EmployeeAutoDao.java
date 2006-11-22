@@ -73,6 +73,8 @@ public interface EmployeeAutoDao {
 
     public void updateBatch(Employee[] employees);
 
+    public void updateBatchByList(List employees);
+
     public void delete(Employee employee);
 
     public void deleteBatch(Employee[] employees);
