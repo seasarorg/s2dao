@@ -46,9 +46,9 @@ public class UpdateBatchAutoStaticCommandTest extends S2DaoTestCase {
             final List list = new ArrayList();
             {
                 Employee emp = new Employee();
-                emp.setEmpno(7788);
+                emp.setEmpno(7499);
                 emp.setEname("hoge");
-                emp.setTimestamp(Timestamp.valueOf("2005-01-18 13:09:32.213"));
+                emp.setTimestamp(Timestamp.valueOf("2000-01-01 00:00:00.0"));
                 list.add(emp);
             }
             {
@@ -66,7 +66,7 @@ public class UpdateBatchAutoStaticCommandTest extends S2DaoTestCase {
             SqlCommand cmd = dmd.getSqlCommand("getEmployee");
             {
                 final Employee employee = (Employee) cmd
-                        .execute(new Object[] { new Integer(7788) });
+                        .execute(new Object[] { new Integer(7499) });
                 assertEquals("hoge", employee.getEname());
             }
             {
