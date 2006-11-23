@@ -528,10 +528,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
      * @param propertyNames
      * @return
      */
-    private AbstractSqlCommand createUpdateAutoDynamicCommand(Method method, String[] propertyNames) {
+    private AbstractSqlCommand createUpdateAutoDynamicCommand(Method method,
+            String[] propertyNames) {
         AbstractSqlCommand cmd;
-        UpdateAutoDynamicCommand uac = new UpdateAutoDynamicCommand(
-                dataSource, statementFactory);
+        UpdateAutoDynamicCommand uac = new UpdateAutoDynamicCommand(dataSource,
+                statementFactory);
         uac.setBeanMetaData(beanMetaData);
         uac.setPropertyNames(propertyNames);
         uac
