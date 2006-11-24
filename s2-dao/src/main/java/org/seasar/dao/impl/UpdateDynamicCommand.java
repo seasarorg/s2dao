@@ -25,6 +25,9 @@ import org.seasar.extension.jdbc.impl.BasicUpdateHandler;
  * @author higa
  * 
  */
+/*
+ * INSERT, UPDATE, DELETE文用
+ */
 public class UpdateDynamicCommand extends AbstractDynamicCommand {
 
     public UpdateDynamicCommand(DataSource dataSource,
