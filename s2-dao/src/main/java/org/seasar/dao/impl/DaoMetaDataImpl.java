@@ -122,6 +122,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected String[] unlessNullSuffixes = new String[] { "UnlessNull" };
 
+    // TODO カスタマイズ可能にする
+    protected String[] modifiedOnlySuffixes = new String[] { "ModifiedOnly" };
+
     protected ResultSetHandlerFactory resultSetHandlerFactory;
 
     public DaoMetaDataImpl() {
@@ -508,10 +511,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected void setupUpdateMethodByAuto(Method method) {
         checkAutoUpdateMethod(method);
         String[] propertyNames = getPersistentPropertyNames(method);
-        AbstractSqlCommand cmd = null;
+        AbstractSqlCommand cmd;
         if (isUpdateSignatureForBean(method)) {
             if (isUnlessNull(method.getName())) {
                 cmd = createUpdateAutoDynamicCommand(method, propertyNames);
+            } else if (isModifiedOnly(method.getName())) {
+                cmd = createUpdateModifiedOnlyCommand(method, propertyNames);
             } else {
                 cmd = new UpdateAutoStaticCommand(dataSource, statementFactory,
                         beanMetaData, propertyNames);
@@ -539,6 +544,17 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
         cmd = uac;
         return cmd;
+    }
+
+    private AbstractSqlCommand createUpdateModifiedOnlyCommand(
+            final Method method, final String[] propertyNames) {
+        UpdateModifiedOnlyCommand uac = new UpdateModifiedOnlyCommand(
+                dataSource, statementFactory);
+        uac.setBeanMetaData(beanMetaData);
+        uac.setPropertyNames(propertyNames);
+        uac
+                .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
+        return uac;
     }
 
     protected void setupDeleteMethodByAuto(Method method) {
@@ -782,6 +798,15 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected boolean isUnlessNull(String methodName) {
         for (int i = 0; i < unlessNullSuffixes.length; i++) {
             if (methodName.endsWith(unlessNullSuffixes[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean isModifiedOnly(final String methodName) {
+        for (int i = 0; i < modifiedOnlySuffixes.length; i++) {
+            if (methodName.endsWith(modifiedOnlySuffixes[i])) {
                 return true;
             }
         }

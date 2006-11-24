@@ -99,8 +99,8 @@ public abstract class BeanMetaDataImplTest extends S2DaoTestCase {
     public void testSelfReference() throws Exception {
         BeanMetaData bmd = createBeanMetaData(getBeanClass("Employee4"));
         RelationPropertyType rpt = bmd.getRelationPropertyType("parent");
-        assertEquals("1", getBeanClass("Employee4"), rpt.getBeanMetaData()
-                .getBeanClass());
+        assertEquals("1", true, getBeanClass("Employee4").isAssignableFrom(
+                rpt.getBeanMetaData().getBeanClass()));
     }
 
     public void testNoPersistentPropsEmpty() throws Exception {

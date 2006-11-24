@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ValueType;
@@ -68,6 +69,9 @@ public class BeanListMetaDataResultSetHandler extends
                     PropertyDesc pd = rpt.getPropertyDesc();
                     pd.setValue(row, relRow);
                 }
+            }
+            if (row instanceof PropertyModifiedSupport) {
+                ((PropertyModifiedSupport) row).getModifiedProperties().clear();
             }
             list.add(row);
         }

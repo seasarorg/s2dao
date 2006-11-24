@@ -53,8 +53,8 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         assertEquals("2", "SELECT * FROM emp", cmd.getSql());
         BeanListMetaDataResultSetHandler rsh = (BeanListMetaDataResultSetHandler) cmd
                 .getResultSetHandler();
-        assertEquals("3", getBeanClass("Employee"), rsh.getBeanMetaData()
-                .getBeanClass());
+        assertEquals("3", true, getBeanClass("Employee").isAssignableFrom(
+                rsh.getBeanMetaData().getBeanClass()));
     }
 
     public void testSelectBeanArray() throws Exception {
@@ -64,8 +64,8 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         assertNotNull("1", cmd);
         BeanArrayMetaDataResultSetHandler rsh = (BeanArrayMetaDataResultSetHandler) cmd
                 .getResultSetHandler();
-        assertEquals("2", getBeanClass("Employee"), rsh.getBeanMetaData()
-                .getBeanClass());
+        assertEquals("2", true, getBeanClass("Employee").isAssignableFrom(
+                rsh.getBeanMetaData().getBeanClass()));
     }
 
     public void testPrefixTest() {

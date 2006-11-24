@@ -20,6 +20,8 @@ import java.sql.SQLException;
 import java.util.Set;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.ModifiedProperties;
+import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.framework.beans.PropertyDesc;
 
@@ -49,10 +51,22 @@ public class BeanMetaDataResultSetHandler extends
                     PropertyDesc pd = rpt.getPropertyDesc();
                     pd.setValue(row, relationRow);
                 }
+                clearPropertyModified(relationRow);
             }
+            clearPropertyModified(row);
             return row;
         } else {
             return null;
         }
     }
+
+    private void clearPropertyModified(Object row) {
+        if (row instanceof PropertyModifiedSupport) {
+            final PropertyModifiedSupport propertyModifiedSupport = (PropertyModifiedSupport) row;
+            final ModifiedProperties modifiedProperties = propertyModifiedSupport
+                    .getModifiedProperties();
+            modifiedProperties.clear();
+        }
+    }
+
 }
