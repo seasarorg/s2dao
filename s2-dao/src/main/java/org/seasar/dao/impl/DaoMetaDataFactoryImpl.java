@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.seasar.dao.AnnotationReaderFactory;
+import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoMetaDataFactory;
 import org.seasar.dao.ValueTypeFactory;
@@ -112,13 +113,14 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
     }
 
     protected DaoMetaData createDaoMetaData(Class daoClass) {
-        DaoMetaDataImpl daoMetaData = new DaoMetaDataImpl();
+        DaoMetaDataImpl daoMetaData = newDaoMetaDataImpl();
         daoMetaData.setDaoClass(daoClass);
         daoMetaData.setDataSource(dataSource);
         daoMetaData.setStatementFactory(statementFactory);
         daoMetaData.setResultSetFactory(resultSetFactory);
         daoMetaData.setAnnotationReaderFactory(annotationReaderFactory);
         daoMetaData.setValueTypeFactory(valueTypeFactory);
+        daoMetaData.setBeanMetaDataFactory(createBeanMetaDataFactory());
         if (sqlFileEncoding != null) {
             daoMetaData.setSqlFileEncoding(sqlFileEncoding);
         }
@@ -139,6 +141,22 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         }
         daoMetaData.initialize();
         return daoMetaData;
+    }
+
+    protected DaoMetaDataImpl newDaoMetaDataImpl() {
+        return new DaoMetaDataImpl();
+    }
+
+    protected BeanMetaDataFactory createBeanMetaDataFactory() {
+        final BeanMetaDataFactoryImpl beanMetaDataFactoryImpl = newBeanMetaDataFactoryImpl();
+        beanMetaDataFactoryImpl
+                .setAnnotationReaderFactory(annotationReaderFactory);
+        beanMetaDataFactoryImpl.setValueTypeFactory(valueTypeFactory);
+        return beanMetaDataFactoryImpl;
+    }
+
+    protected BeanMetaDataFactoryImpl newBeanMetaDataFactoryImpl() {
+        return new BeanMetaDataFactoryImpl();
     }
 
     public void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {

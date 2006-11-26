@@ -33,6 +33,7 @@ import javassist.NotFoundException;
 
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.IdentifierGenerator;
 import org.seasar.dao.ModifiedProperties;
@@ -82,7 +83,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     private String autoSelectList;
 
-    private boolean relation;
+    private boolean isStopRelationCreation;
 
     private IdentifierGenerator identifierGenerator;
 
@@ -97,6 +98,10 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     private DatabaseMetaData databaseMetaData;
 
     private Class originalBeanClass;
+
+    private BeanMetaDataFactory beanMetaDataFactory;
+
+    private int relationNestLevel;
 
     public BeanMetaDataImpl() {
     }
@@ -126,12 +131,12 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
             boolean relation) {
         setBeanClass(beanClass);
         setAnnotationReaderFactory(annotationReaderFactory);
-        setRelation(relation);
+        setStopRelationCreation(relation);
         setValueTypeFactory(new ValueTypeFactoryImpl());
         initialize();
     }
 
-    protected AnnotationReaderFactory getAnnotationReaderFactory() {
+    public AnnotationReaderFactory getAnnotationReaderFactory() {
         return annotationReaderFactory;
     }
 
@@ -372,7 +377,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
             }
             PropertyType pt = null;
             if (beanAnnotationReader.hasRelationNo(pd)) {
-                if (!relation) {
+                if (!isStopRelationCreation) {
                     RelationPropertyType rpt = createRelationPropertyType(
                             beanDesc, pd, dbMetaData, dbms);
                     addRelationPropertyType(rpt);
@@ -493,21 +498,20 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
             yourKeys = (String[]) yourKeyList.toArray(new String[yourKeyList
                     .size()]);
         }
-        final Class beanClass = propertyDesc.getPropertyType();
-        final BeanMetaDataImpl beanMetaData = new BeanMetaDataImpl();
-        beanMetaData.setBeanClass(beanClass);
-        beanMetaData.setDatabaseMetaData(dbMetaData);
-        beanMetaData.setDbms(dbms);
-        beanMetaData.setAnnotationReaderFactory(getAnnotationReaderFactory());
-        beanMetaData.setValueTypeFactory(getValueTypeFactory());
-        beanMetaData.setRelation(true);
-        beanMetaData.initialize();
+        final BeanMetaData beanMetaData = createRelationBeanMetaData(propertyDesc
+                .getPropertyType());
         final PropertyDescImpl enhancedPd = new PropertyDescImpl(propertyDesc
                 .getPropertyName(), beanMetaData.getBeanClass(), propertyDesc
                 .getReadMethod(), propertyDesc.getWriteMethod(), beanDesc);
         final RelationPropertyType rpt = new RelationPropertyTypeImpl(
                 enhancedPd, relno, myKeys, yourKeys, beanMetaData);
         return rpt;
+    }
+
+    protected BeanMetaData createRelationBeanMetaData(
+            final Class relationBeanClass) {
+        return beanMetaDataFactory.createBeanMetaData(databaseMetaData,
+                relationBeanClass, relationNestLevel + 1);
     }
 
     protected void addRelationPropertyType(RelationPropertyType rpt) {
@@ -591,18 +595,26 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     }
 
     /**
-     * @see org.seasar.dao.BeanMetaData#isRelation()
+     * @see org.seasar.dao.BeanMetaData#isStopRelationCreation()
      */
-    public boolean isRelation() {
-        return relation;
+    public boolean isStopRelationCreation() {
+        return isStopRelationCreation;
     }
 
-    public void setRelation(boolean relation) {
-        this.relation = relation;
+    public void setStopRelationCreation(boolean isStopRelationCreation) {
+        this.isStopRelationCreation = isStopRelationCreation;
     }
 
     public void setDatabaseMetaData(DatabaseMetaData databaseMetaData) {
         this.databaseMetaData = databaseMetaData;
+    }
+
+    public void setBeanMetaDataFactory(BeanMetaDataFactory beanMetaDataFactory) {
+        this.beanMetaDataFactory = beanMetaDataFactory;
+    }
+
+    public void setRelationNestLevel(int relationNestLevel) {
+        this.relationNestLevel = relationNestLevel;
     }
 
     private void enhanceBeanClass() {

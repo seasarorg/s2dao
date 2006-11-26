@@ -26,6 +26,7 @@ import java.util.Set;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.dao.RelationPropertyType;
+import org.seasar.dao.RelationRowCreator;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.framework.beans.PropertyDesc;
@@ -33,8 +34,8 @@ import org.seasar.framework.beans.PropertyDesc;
 public class BeanListMetaDataResultSetHandler extends
         AbstractBeanMetaDataResultSetHandler {
 
-    public BeanListMetaDataResultSetHandler(BeanMetaData beanMetaData) {
-        super(beanMetaData);
+    public BeanListMetaDataResultSetHandler(BeanMetaData beanMetaData, RelationRowCreator relationRowCreator) {
+        super(beanMetaData, relationRowCreator);
     }
 
     /**

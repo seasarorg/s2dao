@@ -30,7 +30,7 @@ public class BeanListMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle() throws Exception {
         ResultSetHandler handler = new BeanListMetaDataResultSetHandler(
-                beanMetaData);
+                beanMetaData, new RelationRowCreatorImpl());
         String sql = "select * from emp";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -54,7 +54,7 @@ public class BeanListMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle2() throws Exception {
         ResultSetHandler handler = new BeanListMetaDataResultSetHandler(
-                beanMetaData);
+                beanMetaData, new RelationRowCreatorImpl());
         String sql = "select emp.*, dept.dname as dname_0 from emp, dept where emp.deptno = dept.deptno and emp.deptno = 20";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -82,7 +82,7 @@ public class BeanListMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle3() throws Exception {
         ResultSetHandler handler = new BeanListMetaDataResultSetHandler(
-                beanMetaData);
+                beanMetaData, new RelationRowCreatorImpl());
         String sql = "select emp.*, dept.deptno as deptno_0, dept.dname as dname_0 from emp, dept where dept.deptno = 20 and emp.deptno = dept.deptno";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);

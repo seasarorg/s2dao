@@ -21,12 +21,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.RelationRowCreator;
 
 public class BeanArrayMetaDataResultSetHandler extends
         BeanListMetaDataResultSetHandler {
 
-    public BeanArrayMetaDataResultSetHandler(BeanMetaData beanMetaData) {
-        super(beanMetaData);
+    public BeanArrayMetaDataResultSetHandler(BeanMetaData beanMetaData, RelationRowCreator relationRowCreator) {
+        super(beanMetaData, relationRowCreator);
     }
 
     /**

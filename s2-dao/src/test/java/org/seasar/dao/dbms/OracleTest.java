@@ -17,6 +17,7 @@ package org.seasar.dao.dbms;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
+import org.seasar.dao.impl.BeanMetaDataFactoryImpl;
 import org.seasar.dao.impl.BeanMetaDataImpl;
 import org.seasar.dao.unit.S2DaoTestCase;
 
@@ -68,6 +69,8 @@ public class OracleTest extends S2DaoTestCase {
         beanMetaData.setDbms(dbms);
         beanMetaData.setAnnotationReaderFactory(getAnnotationReaderFactory());
         beanMetaData.setValueTypeFactory(getValueTypeFactory());
+        beanMetaData.setBeanMetaDataFactory(createBeanMetaDataFactory());
+        beanMetaData.setRelationNestLevel(0);
         beanMetaData.initialize();
         return beanMetaData;
     }

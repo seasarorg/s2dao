@@ -29,7 +29,7 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle() throws Exception {
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
-                beanMetaData);
+                beanMetaData, new RelationRowCreatorImpl());
         String sql = "select emp.*, dept.deptno as deptno_0, dept.dname as dname_0 from emp, dept where empno = 7788 and emp.deptno = dept.deptno";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -54,7 +54,7 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle2() throws Exception {
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
-                beanMetaData);
+                beanMetaData, new RelationRowCreatorImpl());
         String sql = "select ename, job from emp where empno = 7788";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -77,7 +77,7 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle3() throws Exception {
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
-                beanMetaData);
+                beanMetaData, new RelationRowCreatorImpl());
         String sql = "select ename, dept.dname as dname_0 from emp, dept where empno = 7788 and emp.deptno = dept.deptno";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);

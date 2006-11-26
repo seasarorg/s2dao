@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationPropertyType;
+import org.seasar.dao.RelationRowCreator;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.ValueType;
@@ -36,10 +37,12 @@ public abstract class AbstractBeanMetaDataResultSetHandler implements
         ResultSetHandler {
 
     private BeanMetaData beanMetaData;
+    
+    private RelationRowCreator relationRowCreator;
 
-    public AbstractBeanMetaDataResultSetHandler(BeanMetaData beanMetaData) {
+    public AbstractBeanMetaDataResultSetHandler(BeanMetaData beanMetaData, RelationRowCreator relationRowCreator) {
         this.beanMetaData = beanMetaData;
-
+        this.relationRowCreator = relationRowCreator;
     }
 
     public BeanMetaData getBeanMetaData() {
@@ -82,59 +85,7 @@ public abstract class AbstractBeanMetaDataResultSetHandler implements
 
     protected Object createRelationRow(ResultSet rs, RelationPropertyType rpt,
             Set columnNames, Map relKeyValues) throws SQLException {
-
-        Object row = null;
-        BeanMetaData bmd = rpt.getBeanMetaData();
-        for (int i = 0; i < rpt.getKeySize(); ++i) {
-            String columnName = rpt.getMyKey(i);
-            if (columnNames.contains(columnName)) {
-                if (row == null) {
-                    row = createRelationRow(rpt);
-                }
-                if (relKeyValues != null
-                        && relKeyValues.containsKey(columnName)) {
-                    Object value = relKeyValues.get(columnName);
-                    PropertyType pt = bmd.getPropertyTypeByColumnName(rpt
-                            .getYourKey(i));
-                    PropertyDesc pd = pt.getPropertyDesc();
-                    if (value != null) {
-                        pd.setValue(row, value);
-                    }
-                }
-            }
-            continue;
-        }
-        int existColumn = 0;
-        for (int i = 0; i < bmd.getPropertyTypeSize(); ++i) {
-            PropertyType pt = bmd.getPropertyType(i);
-            String columnName = pt.getColumnName() + "_" + rpt.getRelationNo();
-            if (!columnNames.contains(columnName)) {
-                continue;
-            }
-            existColumn++;
-            if (row == null) {
-                row = createRelationRow(rpt);
-            }
-            Object value = null;
-            if (relKeyValues != null && relKeyValues.containsKey(columnName)) {
-                value = relKeyValues.get(columnName);
-            } else {
-                ValueType valueType = pt.getValueType();
-                value = valueType.getValue(rs, columnName);
-            }
-            PropertyDesc pd = pt.getPropertyDesc();
-            if (value != null) {
-                pd.setValue(row, value);
-            }
-        }
-        if (existColumn == 0) {
-            return null;
-        }
-        return row;
-    }
-
-    protected Object createRelationRow(RelationPropertyType rpt) {
-        return ClassUtil.newInstance(rpt.getPropertyDesc().getPropertyType());
+        return relationRowCreator.createRelationRow(rs, rpt, columnNames, relKeyValues);
     }
 
     /*

@@ -68,5 +68,5 @@ public interface BeanMetaData extends DtoMetaData {
 
     public String getAutoSelectList();
 
-    public boolean isRelation();
+    public boolean isStopRelationCreation();
 }

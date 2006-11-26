@@ -18,9 +18,13 @@ package org.seasar.dao.unit;
 import java.sql.DatabaseMetaData;
 import java.util.List;
 
+import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.Dbms;
+import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
+import org.seasar.dao.impl.BeanMetaDataFactoryImpl;
 import org.seasar.dao.impl.BeanMetaDataImpl;
 import org.seasar.dao.impl.FieldAnnotationReaderFactory;
 import org.seasar.dao.impl.ValueTypeFactoryImpl;
@@ -40,11 +44,26 @@ public class S2DaoBeanListReader extends S2DaoBeanReader {
         beanMetaData.setBeanClass(list.get(0).getClass());
         beanMetaData.setDatabaseMetaData(dbMetaData);
         beanMetaData.setDbms(dbms);
-        beanMetaData
-                .setAnnotationReaderFactory(new FieldAnnotationReaderFactory());
-        beanMetaData.setValueTypeFactory(new ValueTypeFactoryImpl());
+
+        final FieldAnnotationReaderFactory fieldAnnotationReaderFactory = new FieldAnnotationReaderFactory();
+        final ValueTypeFactoryImpl valueTypeFactoryImpl = new ValueTypeFactoryImpl();
+        beanMetaData.setAnnotationReaderFactory(fieldAnnotationReaderFactory);
+        beanMetaData.setValueTypeFactory(valueTypeFactoryImpl);
+        beanMetaData.setBeanMetaDataFactory(createBeanMetaDataFactory(
+                fieldAnnotationReaderFactory, valueTypeFactoryImpl));
+        beanMetaData.setRelationNestLevel(0);
         beanMetaData.initialize();
         initialize(list, beanMetaData);
+    }
+
+    private BeanMetaDataFactory createBeanMetaDataFactory(
+            AnnotationReaderFactory annotationReaderFactory,
+            ValueTypeFactory valueTypeFactory) {
+        final BeanMetaDataFactoryImpl beanMetaDataFactoryImpl = new BeanMetaDataFactoryImpl();
+        beanMetaDataFactoryImpl
+                .setAnnotationReaderFactory(annotationReaderFactory);
+        beanMetaDataFactoryImpl.setValueTypeFactory(valueTypeFactory);
+        return beanMetaDataFactoryImpl;
     }
 
     public S2DaoBeanListReader(List list, BeanMetaData beanMetaData) {

@@ -20,9 +20,11 @@ import java.util.List;
 
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
+import org.seasar.dao.impl.BeanMetaDataFactoryImpl;
 import org.seasar.dao.impl.BeanMetaDataImpl;
 import org.seasar.dao.impl.DaoMetaDataImpl;
 import org.seasar.dao.impl.FieldAnnotationReaderFactory;
@@ -80,6 +82,8 @@ public abstract class S2DaoTestCase extends S2TestCase {
         beanMetaData.setDbms(getDbms());
         beanMetaData.setAnnotationReaderFactory(getAnnotationReaderFactory());
         beanMetaData.setValueTypeFactory(getValueTypeFactory());
+        beanMetaData.setBeanMetaDataFactory(createBeanMetaDataFactory());
+        beanMetaData.setRelationNestLevel(0);
         beanMetaData.initialize();
         return beanMetaData;
     }
@@ -117,8 +121,16 @@ public abstract class S2DaoTestCase extends S2TestCase {
         daoMetaData.setResultSetFactory(BasicResultSetFactory.INSTANCE);
         daoMetaData.setAnnotationReaderFactory(getAnnotationReaderFactory());
         daoMetaData.setValueTypeFactory(getValueTypeFactory());
+        daoMetaData.setBeanMetaDataFactory(createBeanMetaDataFactory());
         daoMetaData.initialize();
         return daoMetaData;
     }
 
+    protected BeanMetaDataFactory createBeanMetaDataFactory() {
+        final BeanMetaDataFactoryImpl beanMetaDataFactoryImpl = new BeanMetaDataFactoryImpl();
+        beanMetaDataFactoryImpl
+                .setAnnotationReaderFactory(annotationReaderFactory);
+        beanMetaDataFactoryImpl.setValueTypeFactory(valueTypeFactory);
+        return beanMetaDataFactoryImpl;
+    }
 }

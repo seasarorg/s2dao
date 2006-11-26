@@ -34,7 +34,7 @@ public class SelectDynamicCommandTest extends S2DaoTestCase {
         SelectDynamicCommand cmd = new SelectDynamicCommand(getDataSource(),
                 BasicStatementFactory.INSTANCE,
                 new BeanMetaDataResultSetHandler(
-                        createBeanMetaData(Employee.class)),
+                        createBeanMetaData(Employee.class), new RelationRowCreatorImpl()),
                 BasicResultSetFactory.INSTANCE);
         cmd.setSql("SELECT * FROM emp WHERE empno = /*empno*/1234");
         Employee emp = (Employee) cmd

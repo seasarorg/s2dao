@@ -33,12 +33,14 @@ import javax.sql.DataSource;
 
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoNotFoundRuntimeException;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
+import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.ValueTypeFactory;
@@ -127,6 +129,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected ResultSetHandlerFactory resultSetHandlerFactory;
 
+    protected BeanMetaDataFactory beanMetaDataFactory;
+
     public DaoMetaDataImpl() {
     }
 
@@ -181,6 +185,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         if (deletePrefixes != null) {
             setDeletePrefixes(deletePrefixes);
         }
+        setBeanMetaDataFactory(new BeanMetaDataFactoryImpl());
         initialize();
     }
 
@@ -193,22 +198,20 @@ public class DaoMetaDataImpl implements DaoMetaData {
         setBeanClass(annotationReader.getBeanClass());
         Connection con = DataSourceUtil.getConnection(dataSource);
         try {
-            DatabaseMetaData dbMetaData = ConnectionUtil.getMetaData(con);
+            final DatabaseMetaData dbMetaData = ConnectionUtil.getMetaData(con);
             dbms = DbmsManager.getDbms(dbMetaData);
-            BeanMetaDataImpl beanMetaDataImpl = new BeanMetaDataImpl();
-            beanMetaDataImpl.setBeanClass(getBeanClass());
-            beanMetaDataImpl.setDatabaseMetaData(dbMetaData);
-            beanMetaDataImpl.setDbms(dbms);
-            beanMetaDataImpl
-                    .setAnnotationReaderFactory(getAnnotationReaderFactory());
-            beanMetaDataImpl.setValueTypeFactory(getValueTypeFactory());
-            beanMetaDataImpl.initialize();
-            this.beanMetaData = beanMetaDataImpl;
+            this.beanMetaData = beanMetaDataFactory.createBeanMetaData(
+                    dbMetaData, beanClass);
         } finally {
             ConnectionUtil.close(con);
         }
-        resultSetHandlerFactory = new ResultSetHandlerFactoryImpl(beanMetaData);
+        resultSetHandlerFactory = createResultSetHandlerFactory(this.beanMetaData);
         setupSqlCommand();
+    }
+
+    protected ResultSetHandlerFactory createResultSetHandlerFactory(
+            final BeanMetaData beanMetaData) {
+        return new ResultSetHandlerFactoryImpl(beanMetaData);
     }
 
     protected void setupSqlCommand() {
@@ -621,34 +624,81 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected void setupSelectMethodByAuto(Method method) {
-        String query = annotationReader.getQuery(method);
-        ResultSetHandler handler = createResultSetHandler(method);
+        final ResultSetHandler handler = createResultSetHandler(method);
+        final String[] argNames = annotationReader.getArgNames(method);
+        final String query = annotationReader.getQuery(method);
         SelectDynamicCommand cmd = null;
-        String[] argNames = annotationReader.getArgNames(method);
-        Class[] types = method.getParameterTypes();
         if (query != null && !startsWithOrderBy(query)) {
-            cmd = createSelectDynamicCommand(handler, query);
+            cmd = setupQuerySelectMethodByAuto(method, handler, argNames, query);
         } else {
-            cmd = createSelectDynamicCommand(handler);
-            String sql = null;
-            if (argNames.length == 0 && method.getParameterTypes().length == 1) {
-                Class clazz = method.getParameterTypes()[0];
-                if (isUpdateSignatureForBean(method)) {
-                    clazz = beanClass;
-                }
-                sql = createAutoSelectSqlByDto(clazz);
-                types = new Class[] { clazz };
-            } else {
-                sql = createAutoSelectSql(argNames);
-            }
-            if (query != null) {
-                sql = sql + " " + query;
-            }
-            cmd.setSql(sql);
+            cmd = setupNonQuerySelectMethodByAuto(method, handler, argNames,
+                    query);
         }
+        sqlCommands.put(method.getName(), cmd);
+    }
+
+    protected boolean isQuerySelectMethodByAuto(Method method, String query) {
+        return query != null && !startsWithOrderBy(query);
+    }
+
+    protected SelectDynamicCommand setupQuerySelectMethodByAuto(Method method,
+            ResultSetHandler handler, String[] argNames, String query) {
+        Class[] types = method.getParameterTypes();
+        final SelectDynamicCommand cmd = createSelectDynamicCommand(handler,
+                query);
         cmd.setArgNames(argNames);
         cmd.setArgTypes(types);
-        sqlCommands.put(method.getName(), cmd);
+        return cmd;
+    }
+
+    protected SelectDynamicCommand setupNonQuerySelectMethodByAuto(
+            Method method, ResultSetHandler handler, String[] argNames,
+            String query) {
+        if (isAutoSelectSqlByDto(method, argNames)) {
+            return setupNonQuerySelectMethodByDto(method, handler, argNames,
+                    query);
+        } else {
+            return setupNonQuerySelectMethodByArgs(method, handler, argNames,
+                    query);
+        }
+    }
+
+    protected boolean isAutoSelectSqlByDto(Method method, String[] argNames) {
+        return argNames.length == 0 && method.getParameterTypes().length == 1;
+    }
+
+    protected SelectDynamicCommand setupNonQuerySelectMethodByDto(
+            Method method, ResultSetHandler handler, String[] argNames,
+            String query) {
+        final SelectDynamicCommand cmd = createSelectDynamicCommand(handler);
+        Class clazz = method.getParameterTypes()[0];
+        if (isUpdateSignatureForBean(method)) {
+            clazz = beanClass;
+        }
+        final Class[] types = new Class[] { clazz };
+        String sql = createAutoSelectSqlByDto(clazz);
+        if (query != null) {
+            sql = sql + " " + query;
+        }
+        cmd.setSql(sql);
+        cmd.setArgNames(argNames);
+        cmd.setArgTypes(types);
+        return cmd;
+    }
+
+    protected SelectDynamicCommand setupNonQuerySelectMethodByArgs(
+            Method method, ResultSetHandler handler, String[] argNames,
+            String query) {
+        final SelectDynamicCommand cmd = createSelectDynamicCommand(handler);
+        final Class[] types = method.getParameterTypes();
+        String sql = createAutoSelectSql(argNames);
+        if (query != null) {
+            sql = sql + " " + query;
+        }
+        cmd.setSql(sql);
+        cmd.setArgNames(argNames);
+        cmd.setArgTypes(types);
+        return cmd;
     }
 
     protected String createAutoSelectSqlByDto(Class dtoClass) {
@@ -856,12 +906,13 @@ public class DaoMetaDataImpl implements DaoMetaData {
      */
     public SqlCommand createFindCommand(String query) {
         return createSelectDynamicCommand(new BeanListMetaDataResultSetHandler(
-                beanMetaData), query);
+                beanMetaData, new RelationRowCreatorImpl()), query);
     }
 
     public SqlCommand createFindArrayCommand(String query) {
         return createSelectDynamicCommand(
-                new BeanArrayMetaDataResultSetHandler(beanMetaData), query);
+                new BeanArrayMetaDataResultSetHandler(beanMetaData,
+                        new RelationRowCreatorImpl()), query);
     }
 
     /**
@@ -869,7 +920,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
      */
     public SqlCommand createFindBeanCommand(String query) {
         return createSelectDynamicCommand(new BeanMetaDataResultSetHandler(
-                beanMetaData), query);
+                beanMetaData, new RelationRowCreatorImpl()), query);
     }
 
     /**
@@ -902,7 +953,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         this.dbms = dbms;
     }
 
-    protected AnnotationReaderFactory getAnnotationReaderFactory() {
+    public AnnotationReaderFactory getAnnotationReaderFactory() {
         return annotationReaderFactory;
     }
 
@@ -947,7 +998,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         this.unlessNullSuffixes = suffixes;
     }
 
-    protected ValueTypeFactory getValueTypeFactory() {
+    public ValueTypeFactory getValueTypeFactory() {
         return valueTypeFactory;
     }
 
@@ -967,29 +1018,57 @@ public class DaoMetaDataImpl implements DaoMetaData {
         this.daoClass = daoClass;
     }
 
-    static class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
+    public void setBeanMetaDataFactory(BeanMetaDataFactory beanMetaDataFactory) {
+        this.beanMetaDataFactory = beanMetaDataFactory;
+    }
+
+    public static class ResultSetHandlerFactoryImpl implements
+            ResultSetHandlerFactory {
 
         final BeanMetaData beanMetaData;
 
-        ResultSetHandlerFactoryImpl(BeanMetaData beanMetaData) {
+        public ResultSetHandlerFactoryImpl(BeanMetaData beanMetaData) {
             this.beanMetaData = beanMetaData;
         }
 
         public ResultSetHandler createResultSetHandler(final Method method) {
             final Class beanClass = beanMetaData.getBeanClass();
             if (List.class.isAssignableFrom(method.getReturnType())) {
-                return new BeanListMetaDataResultSetHandler(beanMetaData);
+                return createBeanListMetaDataResultSetHandler();
             } else if (isBeanClassAssignable(beanClass, method.getReturnType())) {
-                return new BeanMetaDataResultSetHandler(beanMetaData);
+                return createBeanMetaDataResultSetHandler();
             } else if (method.getReturnType().isAssignableFrom(
                     Array.newInstance(beanClass, 0).getClass())) {
-                return new BeanArrayMetaDataResultSetHandler(beanMetaData);
+                return createBeanArrayMetaDataResultSetHandler();
             } else {
-                return new ObjectResultSetHandler();
+                return createObjectResultSetHandler();
             }
         }
 
-        private boolean isBeanClassAssignable(Class beanClass, Class clazz) {
+        protected ResultSetHandler createBeanListMetaDataResultSetHandler() {
+            return new BeanListMetaDataResultSetHandler(beanMetaData,
+                    createRelationRowCreator());
+        }
+
+        protected ResultSetHandler createBeanMetaDataResultSetHandler() {
+            return new BeanMetaDataResultSetHandler(beanMetaData,
+                    createRelationRowCreator());
+        }
+
+        protected ResultSetHandler createBeanArrayMetaDataResultSetHandler() {
+            return new BeanArrayMetaDataResultSetHandler(beanMetaData,
+                    createRelationRowCreator());
+        }
+
+        protected ResultSetHandler createObjectResultSetHandler() {
+            return new ObjectResultSetHandler();
+        }
+
+        protected RelationRowCreator createRelationRowCreator() {
+            return new RelationRowCreatorImpl();
+        }
+
+        protected boolean isBeanClassAssignable(Class beanClass, Class clazz) {
             return beanClass.isAssignableFrom(clazz)
                     || clazz.isAssignableFrom(beanClass);
         }

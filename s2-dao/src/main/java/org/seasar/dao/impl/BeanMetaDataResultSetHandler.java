@@ -23,13 +23,14 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.ModifiedProperties;
 import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.dao.RelationPropertyType;
+import org.seasar.dao.RelationRowCreator;
 import org.seasar.framework.beans.PropertyDesc;
 
 public class BeanMetaDataResultSetHandler extends
         AbstractBeanMetaDataResultSetHandler {
 
-    public BeanMetaDataResultSetHandler(BeanMetaData beanMetaData) {
-        super(beanMetaData);
+    public BeanMetaDataResultSetHandler(BeanMetaData beanMetaData, RelationRowCreator relationRowCreator) {
+        super(beanMetaData, relationRowCreator);
     }
 
     /**
