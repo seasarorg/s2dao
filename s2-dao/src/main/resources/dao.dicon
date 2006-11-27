@@ -17,4 +17,5 @@
 		name="stringClobType" 
 		class="org.seasar.extension.jdbc.types.StringClobType"
 	/>
+	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
 </components>

@@ -16,6 +16,7 @@
 
 package org.seasar.dao.impl;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,8 @@ import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
 import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.framework.util.ClassUtil;
+import org.seasar.framework.util.MethodUtil;
 
 /**
  * @author manhole
@@ -41,13 +44,25 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
 
     protected PropertyType[] createUpdatePropertyTypes(final BeanMetaData bmd,
             final Object bean, final String[] propertyNames) {
-        if (!(bean instanceof PropertyModifiedSupport)) {
-            // TODO 例外メッセージを定義すること
-            throw new IllegalArgumentException(bean.getClass().getName());
+
+        final Set modifiedPropertyNames;
+        if (bean instanceof PropertyModifiedSupport) {
+            final ModifiedProperties modifiedProperties = ((PropertyModifiedSupport) bean)
+            .getModifiedProperties();
+            modifiedPropertyNames = modifiedProperties.getPropertyNames();
+        } else {
+            try {
+                final Method method = ClassUtil.getMethod(bean.getClass(),
+                        "getModifiedPropertyNames", new Class[] {});
+                final Object result = MethodUtil.invoke(method, bean,
+                        new Object[] {});
+                modifiedPropertyNames = (Set) result;
+            } catch (Exception e) {
+                // TODO 例外メッセージを定義すること
+                throw new IllegalArgumentException(bean.getClass().getName());
+            }
         }
-        final ModifiedProperties modifiedProperties = ((PropertyModifiedSupport) bean)
-                .getModifiedProperties();
-        final Set modifiedPropertyNames = modifiedProperties.getPropertyNames();
+
         final List types = new ArrayList();
         final String timestampPropertyName = bmd.getTimestampPropertyName();
         final String versionNoPropertyName = bmd.getVersionNoPropertyName();

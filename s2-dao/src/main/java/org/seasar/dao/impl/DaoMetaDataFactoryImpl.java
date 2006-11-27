@@ -60,6 +60,8 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected String[] unlessNullSuffixes;
 
+    protected BeanMetaDataFactory beanMetaDataFactory;
+    
     protected boolean initialized;
 
     public DaoMetaDataFactoryImpl(DataSource dataSource,
@@ -96,7 +98,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
     public void setUnlessNullSuffixes(String[] suffixes) {
         this.unlessNullSuffixes = suffixes;
     }
-
+    
     public synchronized DaoMetaData getDaoMetaData(Class daoClass) {
         if (!initialized) {
             DisposableUtil.add(this);
@@ -120,7 +122,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         daoMetaData.setResultSetFactory(resultSetFactory);
         daoMetaData.setAnnotationReaderFactory(annotationReaderFactory);
         daoMetaData.setValueTypeFactory(valueTypeFactory);
-        daoMetaData.setBeanMetaDataFactory(createBeanMetaDataFactory());
+        daoMetaData.setBeanMetaDataFactory(getBeanMetaDataFactory());
         if (sqlFileEncoding != null) {
             daoMetaData.setSqlFileEncoding(sqlFileEncoding);
         }
@@ -147,22 +149,18 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         return new DaoMetaDataImpl();
     }
 
-    protected BeanMetaDataFactory createBeanMetaDataFactory() {
-        final BeanMetaDataFactoryImpl beanMetaDataFactoryImpl = newBeanMetaDataFactoryImpl();
-        beanMetaDataFactoryImpl
-                .setAnnotationReaderFactory(annotationReaderFactory);
-        beanMetaDataFactoryImpl.setValueTypeFactory(valueTypeFactory);
-        return beanMetaDataFactoryImpl;
-    }
-
-    protected BeanMetaDataFactoryImpl newBeanMetaDataFactoryImpl() {
-        return new BeanMetaDataFactoryImpl();
-    }
-
     public void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {
         this.valueTypeFactory = valueTypeFactory;
     }
 
+    protected BeanMetaDataFactory getBeanMetaDataFactory() {
+        return beanMetaDataFactory;
+    }
+    
+    public void setBeanMetaDataFactory(BeanMetaDataFactory beanMetaDataFactory) {
+        this.beanMetaDataFactory = beanMetaDataFactory;
+    }
+    
     public synchronized void dispose() {
         daoMetaDataCache.clear();
         initialized = false;
