@@ -16,7 +16,6 @@
 
 package org.seasar.dao.impl;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -29,17 +28,22 @@ import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
 import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
-import org.seasar.framework.util.ClassUtil;
-import org.seasar.framework.util.MethodUtil;
+import org.seasar.framework.beans.BeanDesc;
+import org.seasar.framework.beans.PropertyDesc;
+import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
  * @author manhole
  */
 public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
 
+    protected String modifiedPropertyNamesPropertyName;
+
     public UpdateModifiedOnlyCommand(final DataSource dataSource,
-            final StatementFactory statementFactory) {
+            final StatementFactory statementFactory,
+            final String modifiedPropertyNamesPropertyName) {
         super(dataSource, statementFactory);
+        this.modifiedPropertyNamesPropertyName = modifiedPropertyNamesPropertyName;
     }
 
     protected PropertyType[] createUpdatePropertyTypes(final BeanMetaData bmd,
@@ -47,16 +51,10 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
 
         final Set modifiedPropertyNames;
         if (bean instanceof PropertyModifiedSupport) {
-            final ModifiedProperties modifiedProperties = ((PropertyModifiedSupport) bean)
-            .getModifiedProperties();
-            modifiedPropertyNames = modifiedProperties.getPropertyNames();
+            modifiedPropertyNames = getModifiedPropertyNamesByInterface(bean);
         } else {
             try {
-                final Method method = ClassUtil.getMethod(bean.getClass(),
-                        "getModifiedPropertyNames", new Class[] {});
-                final Object result = MethodUtil.invoke(method, bean,
-                        new Object[] {});
-                modifiedPropertyNames = (Set) result;
+                modifiedPropertyNames = getModifiedPropertyNamesByReflection(bean);
             } catch (Exception e) {
                 // TODO 例外メッセージを定義すること
                 throw new IllegalArgumentException(bean.getClass().getName());
@@ -85,4 +83,17 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
         return propertyTypes;
     }
 
+    protected Set getModifiedPropertyNamesByInterface(final Object bean) {
+        final ModifiedProperties modifiedProperties = ((PropertyModifiedSupport) bean)
+                .getModifiedProperties();
+        return modifiedProperties.getPropertyNames();
+    }
+
+    protected Set getModifiedPropertyNamesByReflection(final Object bean) {
+        final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(bean.getClass());
+        final PropertyDesc propertyDesc = beanDesc
+                .getPropertyDesc(this.modifiedPropertyNamesPropertyName);
+        final Object value = propertyDesc.getValue(bean);
+        return (Set) value;
+    }
 }

@@ -126,6 +126,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     // TODO カスタマイズ可能にする
     protected String[] modifiedOnlySuffixes = new String[] { "ModifiedOnly" };
+    
+    // TODO カスタマイズ可能にする
+    protected String modifiedPropertyNamesPropertyName = "modifiedPropertyNames";
 
     protected ResultSetHandlerFactory resultSetHandlerFactory;
 
@@ -552,7 +555,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
     private AbstractSqlCommand createUpdateModifiedOnlyCommand(
             final Method method, final String[] propertyNames) {
         UpdateModifiedOnlyCommand uac = new UpdateModifiedOnlyCommand(
-                dataSource, statementFactory);
+                dataSource, statementFactory, modifiedPropertyNamesPropertyName);
         uac.setBeanMetaData(beanMetaData);
         uac.setPropertyNames(propertyNames);
         uac
