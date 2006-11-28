@@ -30,7 +30,7 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
         super.setUp();
         include("dao.dicon");
     }
-    
+
     public void test_Accessor() {
         // ## Arrange ##
         final String invokeMark = "test_Accessor()";
@@ -55,9 +55,10 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
         final BeanMetaDataFactory bmdFactory = createBeanMetaDataFactory();
         final DatabaseMetaData dbMetaData = getDatabaseMetaData();
         final Class beanClass = Employee.class;// This should have a relation property.
-        final BeanMetaData bmd = bmdFactory.createBeanMetaData(dbMetaData, beanClass);
+        final BeanMetaData bmd = bmdFactory.createBeanMetaData(dbMetaData,
+                beanClass);
         assertNotNull(bmd);
-        assertNotNull(bmd.getBeanClass().getSimpleName());
+        assertNotNull(bmd.getBeanClass());
         assertEquals(Employee.TABLE, bmd.getTableName());
         final int relationPropertyTypeSize = bmd.getRelationPropertyTypeSize();
         assertNotSame(new Integer(0), new Integer(relationPropertyTypeSize));
@@ -65,19 +66,20 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
             assertNotNull(bmd.getRelationPropertyType(i));
         }
     }
-    
+
     public void test_createBeanMetaData_NestLevelOne_Tx() {
         final BeanMetaDataFactory bmdFactory = createBeanMetaDataFactory();
         final DatabaseMetaData dbMetaData = getDatabaseMetaData();
         final Class beanClass = Employee.class;// This should have a relation property.
-        final BeanMetaData bmd = bmdFactory.createBeanMetaData(dbMetaData, beanClass, 1);
+        final BeanMetaData bmd = bmdFactory.createBeanMetaData(dbMetaData,
+                beanClass, 1);
         assertNotNull(bmd);
-        assertNotNull(bmd.getBeanClass().getSimpleName());
+        assertNotNull(bmd.getBeanClass());
         assertEquals(Employee.TABLE, bmd.getTableName());
         final int relationPropertyTypeSize = bmd.getRelationPropertyTypeSize();
         assertEquals(new Integer(0), new Integer(relationPropertyTypeSize));
     }
-    
+
     public void test_newBeanMetaDataImpl() {
         // ## Arrange ##
         final String invokeMark = "test_newBeanMetaDataImpl()";
@@ -127,7 +129,7 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
         // ## Act & Assert ##
         assertEquals(invokeMark, beanMetaDataFactoryImpl.toString());
     }
-    
+
     public void test_getLimitRelationNestLevel() {
         // ## Arrange ##
         final String invokeMark = "test_getLimitRelationNestLevel()";
