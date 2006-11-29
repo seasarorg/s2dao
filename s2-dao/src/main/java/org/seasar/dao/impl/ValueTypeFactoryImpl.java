@@ -36,7 +36,7 @@ public class ValueTypeFactoryImpl implements ValueTypeFactory {
     }
 
     public void setContainer(S2Container container) {
-        this.container = container;
+        this.container = container.getRoot();
     }
 
 }
