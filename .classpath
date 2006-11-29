@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry output="build/s2-dao/classes" kind="src" path="s2-dao/src/main/java"/>
-	<classpathentry output="build/s2-dao/classes" kind="src" path="s2-dao/src/main/resources"/>
-	<classpathentry output="build/s2-dao/test-classes" kind="src" path="s2-dao/src/test/java"/>
-	<classpathentry output="build/s2-dao/test-classes" kind="src" path="s2-dao/src/test/resources"/>
-	<classpathentry output="build/s2-dao-examples/classes" kind="src" path="s2-dao-examples/src/main/java"/>
-	<classpathentry output="build/s2-dao-examples/classes" kind="src" path="s2-dao-examples/src/main/resources"/>
-	<classpathentry output="build/s2-dao-examples/test-classes" kind="src" path="s2-dao-examples/src/test/java"/>
-	<classpathentry output="build/s2-dao-examples/test-classes" kind="src" path="s2-dao-examples/src/test/resources"/>
+	<classpathentry kind="src" output="build/s2-dao/classes" path="s2-dao/src/main/java"/>
+	<classpathentry kind="src" output="build/s2-dao/classes" path="s2-dao/src/main/resources"/>
+	<classpathentry kind="src" output="build/s2-dao/test-classes" path="s2-dao/src/test/java"/>
+	<classpathentry kind="src" output="build/s2-dao/test-classes" path="s2-dao/src/test/resources"/>
+	<classpathentry kind="src" output="build/s2-dao-examples/classes" path="s2-dao-examples/src/main/java"/>
+	<classpathentry kind="src" output="build/s2-dao-examples/classes" path="s2-dao-examples/src/main/resources"/>
+	<classpathentry kind="src" output="build/s2-dao-examples/test-classes" path="s2-dao-examples/src/test/java"/>
+	<classpathentry kind="src" output="build/s2-dao-examples/test-classes" path="s2-dao-examples/src/test/resources"/>
 	<classpathentry kind="src" path="/seasar2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/derby-10.1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/h2-1.0.20061103.jar" sourcepath="lib/h2-1.0.20061103-sources.jar"/>
 	<classpathentry kind="output" path="build/s2-dao/classes"/>
 </classpath>

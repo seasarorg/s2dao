@@ -249,6 +249,13 @@
       <type>jar</type>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.h2</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.0.20061103</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <reporting>
     <plugins>
