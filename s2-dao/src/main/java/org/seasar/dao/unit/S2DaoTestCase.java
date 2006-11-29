@@ -53,6 +53,12 @@ public abstract class S2DaoTestCase extends S2TestCase {
     public S2DaoTestCase(String name) {
         super(name);
     }
+    
+    protected void tearDown() throws Exception {
+        valueTypeFactory = null;
+        annotationReaderFactory = null;
+        super.tearDown();
+    }
 
     protected void assertBeanEquals(String message, DataSet expected,
             Object bean) {
@@ -133,4 +139,5 @@ public abstract class S2DaoTestCase extends S2TestCase {
         beanMetaDataFactoryImpl.setValueTypeFactory(valueTypeFactory);
         return beanMetaDataFactoryImpl;
     }
+    
 }
