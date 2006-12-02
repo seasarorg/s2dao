@@ -25,7 +25,6 @@ import org.seasar.dao.Dbms;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.dao.impl.BeanMetaDataFactoryImpl;
-import org.seasar.dao.impl.BeanMetaDataImpl;
 import org.seasar.dao.impl.DaoMetaDataImpl;
 import org.seasar.dao.impl.FieldAnnotationReaderFactory;
 import org.seasar.dao.impl.ValueTypeFactoryImpl;
@@ -36,7 +35,7 @@ import org.seasar.extension.unit.S2TestCase;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public abstract class S2DaoTestCase extends S2TestCase {
 
@@ -52,7 +51,7 @@ public abstract class S2DaoTestCase extends S2TestCase {
     /**
      * @param name
      */
-    public S2DaoTestCase(String name) {
+    public S2DaoTestCase(final String name) {
         super(name);
     }
 
@@ -63,43 +62,35 @@ public abstract class S2DaoTestCase extends S2TestCase {
         super.tearDown();
     }
 
-    protected void assertBeanEquals(String message, DataSet expected,
-            Object bean) {
+    protected void assertBeanEquals(final String message,
+            final DataSet expected, final Object bean) {
 
-        S2DaoBeanReader reader = new S2DaoBeanReader(bean,
+        final S2DaoBeanReader reader = new S2DaoBeanReader(bean,
                 createBeanMetaData(bean.getClass()));
         assertEquals(message, expected, reader.read());
     }
 
-    protected void assertBeanListEquals(String message, DataSet expected,
-            List list) {
+    protected void assertBeanListEquals(final String message,
+            final DataSet expected, final List list) {
 
-        S2DaoBeanListReader reader = new S2DaoBeanListReader(list,
+        final S2DaoBeanListReader reader = new S2DaoBeanListReader(list,
                 createBeanMetaData(list.get(0).getClass()));
         assertEquals(message, expected, reader.read());
     }
 
     protected Dbms getDbms() {
-        DatabaseMetaData dbMetaData = getDatabaseMetaData();
+        final DatabaseMetaData dbMetaData = getDatabaseMetaData();
         return DbmsManager.getDbms(dbMetaData);
     }
 
-    protected BeanMetaData createBeanMetaData(Class beanClass) {
-        BeanMetaDataImpl beanMetaData = new BeanMetaDataImpl();
-        beanMetaData.setBeanClass(beanClass);
-        beanMetaData.setDatabaseMetaData(getDatabaseMetaData());
-        beanMetaData.setDbms(getDbms());
-        beanMetaData.setAnnotationReaderFactory(getAnnotationReaderFactory());
-        beanMetaData.setValueTypeFactory(getValueTypeFactory());
-        beanMetaData.setBeanMetaDataFactory(createBeanMetaDataFactory());
-        beanMetaData.setRelationNestLevel(0);
-        beanMetaData.initialize();
-        return beanMetaData;
+    protected BeanMetaData createBeanMetaData(final Class beanClass) {
+        final BeanMetaDataFactory factory = getBeanMetaDataFactory();
+        return factory.createBeanMetaData(beanClass);
     }
 
     protected ValueTypeFactory getValueTypeFactory() {
         if (valueTypeFactory == null) {
-            ValueTypeFactoryImpl v = new ValueTypeFactoryImpl();
+            final ValueTypeFactoryImpl v = new ValueTypeFactoryImpl();
             v.setContainer(getContainer());
             valueTypeFactory = v;
         }
@@ -114,16 +105,16 @@ public abstract class S2DaoTestCase extends S2TestCase {
     }
 
     protected void setAnnotationReaderFactory(
-            AnnotationReaderFactory annotationReaderFactory) {
+            final AnnotationReaderFactory annotationReaderFactory) {
         this.annotationReaderFactory = annotationReaderFactory;
     }
 
-    protected void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {
+    protected void setValueTypeFactory(final ValueTypeFactory valueTypeFactory) {
         this.valueTypeFactory = valueTypeFactory;
     }
 
-    protected DaoMetaDataImpl createDaoMetaData(Class daoClass) {
-        DaoMetaDataImpl daoMetaData = new DaoMetaDataImpl();
+    protected DaoMetaDataImpl createDaoMetaData(final Class daoClass) {
+        final DaoMetaDataImpl daoMetaData = new DaoMetaDataImpl();
         daoMetaData.setDaoClass(daoClass);
         daoMetaData.setDataSource(getDataSource());
         daoMetaData.setStatementFactory(BasicStatementFactory.INSTANCE);
