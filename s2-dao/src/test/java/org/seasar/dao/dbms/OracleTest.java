@@ -17,7 +17,6 @@ package org.seasar.dao.dbms;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
-import org.seasar.dao.impl.BeanMetaDataImpl;
 import org.seasar.dao.unit.S2DaoTestCase;
 
 /**
@@ -33,30 +32,19 @@ public class OracleTest extends S2DaoTestCase {
 
     public void testCreateAutoSelectList() throws Exception {
         Dbms dbms = new Oracle();
-        BeanMetaData bmd = createBeanMetaData(Employee.class, dbms);
+        setDbms(dbms);
+        BeanMetaData bmd = createBeanMetaData(Employee.class);
         String sql = dbms.getAutoSelectSql(bmd);
         System.out.println(sql);
     }
 
     public void testCreateAutoSelectList2() throws Exception {
         Dbms dbms = new Oracle();
-        BeanMetaData bmd = createBeanMetaData(Department.class, dbms);
+        setDbms(dbms);
+        BeanMetaData bmd = createBeanMetaData(Department.class);
         String sql = dbms.getAutoSelectSql(bmd);
         System.out.println(sql);
         assertTrue("1", sql.endsWith("FROM DEPT"));
-    }
-
-    private BeanMetaData createBeanMetaData(Class beanClass, Dbms dbms) {
-        BeanMetaDataImpl beanMetaData = new BeanMetaDataImpl();
-        beanMetaData.setBeanClass(beanClass);
-        beanMetaData.setDatabaseMetaData(getDatabaseMetaData());
-        beanMetaData.setDbms(dbms);
-        beanMetaData.setAnnotationReaderFactory(getAnnotationReaderFactory());
-        beanMetaData.setValueTypeFactory(getValueTypeFactory());
-        beanMetaData.setBeanMetaDataFactory(getBeanMetaDataFactory());
-        beanMetaData.setRelationNestLevel(0);
-        beanMetaData.initialize();
-        return beanMetaData;
     }
 
 }

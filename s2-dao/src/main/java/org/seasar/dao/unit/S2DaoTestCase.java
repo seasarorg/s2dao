@@ -45,6 +45,8 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     private BeanMetaDataFactory beanMetaDataFactory;
 
+    private Dbms dbms;
+
     public S2DaoTestCase() {
     }
 
@@ -59,6 +61,7 @@ public abstract class S2DaoTestCase extends S2TestCase {
         valueTypeFactory = null;
         annotationReaderFactory = null;
         beanMetaDataFactory = null;
+        dbms = null;
         super.tearDown();
     }
 
@@ -79,8 +82,11 @@ public abstract class S2DaoTestCase extends S2TestCase {
     }
 
     protected Dbms getDbms() {
-        final DatabaseMetaData dbMetaData = getDatabaseMetaData();
-        return DbmsManager.getDbms(dbMetaData);
+        if (dbms == null) {
+            final DatabaseMetaData dbMetaData = getDatabaseMetaData();
+            dbms = DbmsManager.getDbms(dbMetaData);
+        }
+        return dbms;
     }
 
     protected BeanMetaData createBeanMetaData(final Class beanClass) {
@@ -128,13 +134,21 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     protected BeanMetaDataFactory getBeanMetaDataFactory() {
         if (beanMetaDataFactory == null) {
-            final BeanMetaDataFactoryImpl factory = new BeanMetaDataFactoryImpl();
+            final BeanMetaDataFactoryImpl factory = new BeanMetaDataFactoryImpl() {
+                protected Dbms getDbms() {
+                    return S2DaoTestCase.this.getDbms();
+                }
+            };
             factory.setAnnotationReaderFactory(getAnnotationReaderFactory());
             factory.setValueTypeFactory(getValueTypeFactory());
             factory.setDataSource(getDataSource());
             beanMetaDataFactory = factory;
         }
         return beanMetaDataFactory;
+    }
+
+    protected void setDbms(Dbms dbms) {
+        this.dbms = dbms;
     }
 
 }

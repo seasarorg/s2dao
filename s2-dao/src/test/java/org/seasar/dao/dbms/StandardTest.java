@@ -17,7 +17,6 @@ package org.seasar.dao.dbms;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
-import org.seasar.dao.impl.BeanMetaDataImpl;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.framework.util.DisposableUtil;
 
@@ -33,29 +32,18 @@ public class StandardTest extends S2DaoTestCase {
 
     public void testCreateAutoSelectList() throws Exception {
         Dbms dbms = new Standard();
-        BeanMetaData bmd = createBeanMetaData(Employee.class, dbms);
+        setDbms(dbms);
+        BeanMetaData bmd = createBeanMetaData(Employee.class);
         String sql = dbms.getAutoSelectSql(bmd);
         System.out.println(sql);
     }
 
-    private BeanMetaData createBeanMetaData(Class beanClass, Dbms dbms) {
-        BeanMetaDataImpl beanMetaData = new BeanMetaDataImpl();
-        beanMetaData.setBeanClass(beanClass);
-        beanMetaData.setDatabaseMetaData(getDatabaseMetaData());
-        beanMetaData.setDbms(dbms);
-        beanMetaData.setAnnotationReaderFactory(getAnnotationReaderFactory());
-        beanMetaData.setValueTypeFactory(getValueTypeFactory());
-        beanMetaData.setBeanMetaDataFactory(getBeanMetaDataFactory());
-        beanMetaData.setRelationNestLevel(0);
-        beanMetaData.initialize();
-        return beanMetaData;
-    }
-
     public void testDispose() throws Exception {
         final Standard standard = new Standard();
+        setDbms(standard);
         assertEquals(0, standard.autoSelectFromClauseCache.size());
 
-        final BeanMetaData bmd = createBeanMetaData(Employee.class, standard);
+        final BeanMetaData bmd = createBeanMetaData(Employee.class);
         {
             final String sql = standard.getAutoSelectSql(bmd);
             assertNotNull(sql);
