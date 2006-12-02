@@ -44,16 +44,6 @@ public class DtoMetaDataImpl implements DtoMetaData {
     public DtoMetaDataImpl() {
     }
 
-    /**
-     * @deprecated
-     */
-    public DtoMetaDataImpl(Class beanClass,
-            BeanAnnotationReader beanAnnotationReader) {
-        setBeanClass(beanClass);
-        setBeanAnnotationReader(beanAnnotationReader);
-        initialize();
-    }
-
     public void initialize() {
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(getBeanClass());
         setupPropertyType(beanDesc);
