@@ -33,6 +33,7 @@ import org.seasar.framework.util.DisposableUtil;
 /**
  * @author higa
  * @author manhole
+ * @author jflute
  */
 public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
@@ -115,7 +116,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
     }
 
     protected DaoMetaData createDaoMetaData(Class daoClass) {
-        DaoMetaDataImpl daoMetaData = newDaoMetaDataImpl();
+        DaoMetaDataImpl daoMetaData = createDaoMetaDataImpl();
         daoMetaData.setDaoClass(daoClass);
         daoMetaData.setDataSource(dataSource);
         daoMetaData.setStatementFactory(statementFactory);
@@ -145,7 +146,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         return daoMetaData;
     }
 
-    protected DaoMetaDataImpl newDaoMetaDataImpl() {
+    protected DaoMetaDataImpl createDaoMetaDataImpl() {
         return new DaoMetaDataImpl();
     }
 
