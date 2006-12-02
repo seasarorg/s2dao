@@ -28,6 +28,10 @@ import org.seasar.extension.dataset.types.ColumnTypes;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.framework.beans.PropertyDesc;
 
+/**
+ * @author higa
+ * @author manhole
+ */
 public class S2DaoBeanReader implements DataReader {
 
     private DataSet dataSet = new DataSetImpl();

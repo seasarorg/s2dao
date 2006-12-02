@@ -22,7 +22,8 @@ import org.seasar.dao.BeanMetaDataFactory;
 
 /**
  * @author higa
- * 
+ * @author manhole
+ * @author jflute
  */
 public class S2DaoBeanListReader extends S2DaoBeanReader {
 
