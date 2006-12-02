@@ -20,6 +20,7 @@ import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.unit.S2DaoTestCase;
 
 /**
+ * @author jflute
  * @author manhole
  */
 public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
@@ -50,7 +51,7 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
     }
 
     public void test_createBeanMetaData_Tx() {
-        final BeanMetaDataFactoryImpl bmdFactory = createBeanMetaDataFactory();
+        final BeanMetaDataFactory bmdFactory = getBeanMetaDataFactory();
         final Class beanClass = Employee.class; // This should have a relation property.
         final BeanMetaData bmd = bmdFactory.createBeanMetaData(beanClass);
         assertNotNull(bmd);
@@ -64,7 +65,7 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
     }
 
     public void test_createBeanMetaData_NestLevelOne_Tx() {
-        final BeanMetaDataFactory bmdFactory = createBeanMetaDataFactory();
+        final BeanMetaDataFactory bmdFactory = getBeanMetaDataFactory();
         final Class beanClass = Employee.class;// This should have a relation property.
         final BeanMetaData bmd = bmdFactory.createBeanMetaData(beanClass, 1);
         assertNotNull(bmd);

@@ -17,34 +17,18 @@ package org.seasar.dao.dbms;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
-import org.seasar.dao.impl.BeanMetaDataFactoryImpl;
 import org.seasar.dao.impl.BeanMetaDataImpl;
 import org.seasar.dao.unit.S2DaoTestCase;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public class OracleTest extends S2DaoTestCase {
 
-    /**
-     * Constructor for InvocationImplTest.
-     * 
-     * @param arg0
-     */
-    public OracleTest(String arg0) {
-        super(arg0);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(OracleTest.class);
-    }
-
     protected void setUp() throws Exception {
+        super.setUp();
         include("j2ee.dicon");
-    }
-
-    protected void tearDown() throws Exception {
     }
 
     public void testCreateAutoSelectList() throws Exception {
@@ -69,7 +53,7 @@ public class OracleTest extends S2DaoTestCase {
         beanMetaData.setDbms(dbms);
         beanMetaData.setAnnotationReaderFactory(getAnnotationReaderFactory());
         beanMetaData.setValueTypeFactory(getValueTypeFactory());
-        beanMetaData.setBeanMetaDataFactory(createBeanMetaDataFactory());
+        beanMetaData.setBeanMetaDataFactory(getBeanMetaDataFactory());
         beanMetaData.setRelationNestLevel(0);
         beanMetaData.initialize();
         return beanMetaData;

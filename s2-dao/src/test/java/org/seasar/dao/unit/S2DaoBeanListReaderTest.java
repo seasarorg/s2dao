@@ -45,7 +45,7 @@ public class S2DaoBeanListReaderTest extends S2DaoTestCase {
         List list = new ArrayList();
         list.add(emp);
         S2DaoBeanListReader reader = new S2DaoBeanListReader(list,
-                createBeanMetaDataFactory());
+                getBeanMetaDataFactory());
         DataSet ds = reader.read();
         DataTable table = ds.getTable(0);
         DataRow row = table.getRow(0);

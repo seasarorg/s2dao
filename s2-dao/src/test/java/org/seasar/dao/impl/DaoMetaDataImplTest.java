@@ -80,7 +80,7 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         dmd.setUpdatePrefixes(new String[] { "change" });
         dmd.setDeletePrefixes(new String[] { "terminate" });
         dmd.setValueTypeFactory(getValueTypeFactory());
-        dmd.setBeanMetaDataFactory(createBeanMetaDataFactory());
+        dmd.setBeanMetaDataFactory(getBeanMetaDataFactory());
         dmd.initialize();
 
         InsertAutoDynamicCommand cmd1 = (InsertAutoDynamicCommand) dmd

@@ -114,31 +114,27 @@ public abstract class S2DaoTestCase extends S2TestCase {
     }
 
     protected DaoMetaDataImpl createDaoMetaData(final Class daoClass) {
-        final DaoMetaDataImpl daoMetaData = new DaoMetaDataImpl();
-        daoMetaData.setDaoClass(daoClass);
-        daoMetaData.setDataSource(getDataSource());
-        daoMetaData.setStatementFactory(BasicStatementFactory.INSTANCE);
-        daoMetaData.setResultSetFactory(BasicResultSetFactory.INSTANCE);
-        daoMetaData.setAnnotationReaderFactory(getAnnotationReaderFactory());
-        daoMetaData.setValueTypeFactory(getValueTypeFactory());
-        daoMetaData.setBeanMetaDataFactory(createBeanMetaDataFactory());
-        daoMetaData.initialize();
-        return daoMetaData;
+        final DaoMetaDataImpl dmd = new DaoMetaDataImpl();
+        dmd.setDaoClass(daoClass);
+        dmd.setDataSource(getDataSource());
+        dmd.setStatementFactory(BasicStatementFactory.INSTANCE);
+        dmd.setResultSetFactory(BasicResultSetFactory.INSTANCE);
+        dmd.setAnnotationReaderFactory(getAnnotationReaderFactory());
+        dmd.setValueTypeFactory(getValueTypeFactory());
+        dmd.setBeanMetaDataFactory(getBeanMetaDataFactory());
+        dmd.initialize();
+        return dmd;
     }
 
     protected BeanMetaDataFactory getBeanMetaDataFactory() {
         if (beanMetaDataFactory == null) {
-            beanMetaDataFactory = createBeanMetaDataFactory();
+            final BeanMetaDataFactoryImpl factory = new BeanMetaDataFactoryImpl();
+            factory.setAnnotationReaderFactory(getAnnotationReaderFactory());
+            factory.setValueTypeFactory(getValueTypeFactory());
+            factory.setDataSource(getDataSource());
+            beanMetaDataFactory = factory;
         }
         return beanMetaDataFactory;
-    }
-
-    protected BeanMetaDataFactoryImpl createBeanMetaDataFactory() {
-        final BeanMetaDataFactoryImpl factory = new BeanMetaDataFactoryImpl();
-        factory.setAnnotationReaderFactory(getAnnotationReaderFactory());
-        factory.setValueTypeFactory(getValueTypeFactory());
-        factory.setDataSource(getDataSource());
-        return factory;
     }
 
 }
