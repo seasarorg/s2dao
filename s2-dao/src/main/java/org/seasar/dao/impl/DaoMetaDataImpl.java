@@ -126,7 +126,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     // TODO カスタマイズ可能にする
     protected String[] modifiedOnlySuffixes = new String[] { "ModifiedOnly" };
-    
+
     // TODO カスタマイズ可能にする
     protected String modifiedPropertyNamesPropertyName = "modifiedPropertyNames";
 
@@ -199,15 +199,14 @@ public class DaoMetaDataImpl implements DaoMetaData {
         annotationReader = getAnnotationReaderFactory()
                 .createDaoAnnotationReader(daoBeanDesc);
         setBeanClass(annotationReader.getBeanClass());
-        Connection con = DataSourceUtil.getConnection(dataSource);
+        final Connection con = DataSourceUtil.getConnection(dataSource);
         try {
             final DatabaseMetaData dbMetaData = ConnectionUtil.getMetaData(con);
             dbms = DbmsManager.getDbms(dbMetaData);
-            this.beanMetaData = beanMetaDataFactory.createBeanMetaData(
-                    dbMetaData, beanClass);
         } finally {
             ConnectionUtil.close(con);
         }
+        this.beanMetaData = beanMetaDataFactory.createBeanMetaData(beanClass);
         resultSetHandlerFactory = createResultSetHandlerFactory(this.beanMetaData);
         setupSqlCommand();
     }

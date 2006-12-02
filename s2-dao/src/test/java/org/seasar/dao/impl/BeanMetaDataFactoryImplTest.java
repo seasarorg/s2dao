@@ -15,8 +15,6 @@
  */
 package org.seasar.dao.impl;
 
-import java.sql.DatabaseMetaData;
-
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.unit.S2DaoTestCase;
@@ -52,11 +50,9 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
     }
 
     public void test_createBeanMetaData_Tx() {
-        final BeanMetaDataFactory bmdFactory = createBeanMetaDataFactory();
-        final DatabaseMetaData dbMetaData = getDatabaseMetaData();
-        final Class beanClass = Employee.class;// This should have a relation property.
-        final BeanMetaData bmd = bmdFactory.createBeanMetaData(dbMetaData,
-                beanClass);
+        final BeanMetaDataFactoryImpl bmdFactory = createBeanMetaDataFactory();
+        final Class beanClass = Employee.class; // This should have a relation property.
+        final BeanMetaData bmd = bmdFactory.createBeanMetaData(beanClass);
         assertNotNull(bmd);
         assertNotNull(bmd.getBeanClass());
         assertEquals(Employee.TABLE, bmd.getTableName());
@@ -69,10 +65,8 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
 
     public void test_createBeanMetaData_NestLevelOne_Tx() {
         final BeanMetaDataFactory bmdFactory = createBeanMetaDataFactory();
-        final DatabaseMetaData dbMetaData = getDatabaseMetaData();
         final Class beanClass = Employee.class;// This should have a relation property.
-        final BeanMetaData bmd = bmdFactory.createBeanMetaData(dbMetaData,
-                beanClass, 1);
+        final BeanMetaData bmd = bmdFactory.createBeanMetaData(beanClass, 1);
         assertNotNull(bmd);
         assertNotNull(bmd.getBeanClass());
         assertEquals(Employee.TABLE, bmd.getTableName());
@@ -86,7 +80,7 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
         final BeanMetaDataFactoryImpl beanMetaDataFactoryImpl = new BeanMetaDataFactoryImpl() {
             public String toString() {
                 final BeanMetaDataImpl beanMetaDataImpl = super
-                        .newBeanMetaDataImpl();
+                        .createBeanMetaDataImpl();
                 assertNotNull(beanMetaDataImpl);
                 return invokeMark;
             }
@@ -144,4 +138,18 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
         // ## Act & Assert ##
         assertEquals(invokeMark, beanMetaDataFactoryImpl.toString());
     }
+
+    public void testCreateBeanMetaData_byNullClass() throws Exception {
+        // ## Arrange ##
+        final BeanMetaDataFactoryImpl factory = new BeanMetaDataFactoryImpl();
+        try {
+            // ## Act ##
+            // ## Assert ##
+            factory.createBeanMetaData((Class) null);
+            fail();
+        } catch (final NullPointerException e) {
+            assertTrue((e.getMessage() != null && 0 < e.getMessage().length()));
+        }
+    }
+
 }

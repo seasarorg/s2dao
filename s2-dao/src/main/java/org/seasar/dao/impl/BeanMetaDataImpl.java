@@ -152,9 +152,10 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
             setBeanClass(getBeanClass().getSuperclass());
         }
         originalBeanClass = getBeanClass();
-        beanAnnotationReader = getAnnotationReaderFactory()
-                .createBeanAnnotationReader(getBeanClass());
-        BeanDesc beanDesc = BeanDescFactory.getBeanDesc(getBeanClass());
+        final AnnotationReaderFactory arf = getAnnotationReaderFactory();
+        beanAnnotationReader = arf
+                .createBeanAnnotationReader(originalBeanClass);
+        BeanDesc beanDesc = BeanDescFactory.getBeanDesc(originalBeanClass);
         setupTableName(beanDesc);
         setupVersionNoPropertyName(beanDesc);
         setupTimestampPropertyName(beanDesc);
@@ -510,8 +511,8 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     protected BeanMetaData createRelationBeanMetaData(
             final Class relationBeanClass) {
-        return beanMetaDataFactory.createBeanMetaData(databaseMetaData,
-                relationBeanClass, relationNestLevel + 1);
+        return beanMetaDataFactory.createBeanMetaData(relationBeanClass,
+                relationNestLevel + 1);
     }
 
     protected void addRelationPropertyType(RelationPropertyType rpt) {

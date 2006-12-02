@@ -15,16 +15,22 @@
  */
 package org.seasar.dao.impl;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+
+import javax.sql.DataSource;
 
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
+import org.seasar.extension.jdbc.util.ConnectionUtil;
+import org.seasar.extension.jdbc.util.DataSourceUtil;
 
 /**
  * @author jflute
+ * @author manhole
  */
 public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
@@ -32,46 +38,68 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     protected ValueTypeFactory valueTypeFactory;
 
-    public void setAnnotationReaderFactory(
-            AnnotationReaderFactory annotationReaderFactory) {
-        this.annotationReaderFactory = annotationReaderFactory;
+    protected DataSource dataSource;
+
+    public BeanMetaData createBeanMetaData(final Class beanClass) {
+        return createBeanMetaData(beanClass, 0);
     }
 
-    public void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {
-        this.valueTypeFactory = valueTypeFactory;
+    public BeanMetaData createBeanMetaData(final Class beanClass,
+            final int relationNestLevel) {
+        if (beanClass == null) {
+            throw new NullPointerException("beanClass");
+        }
+        final Connection con = DataSourceUtil.getConnection(dataSource);
+        try {
+            final DatabaseMetaData metaData = ConnectionUtil.getMetaData(con);
+            return createBeanMetaData(metaData, beanClass, relationNestLevel);
+        } finally {
+            ConnectionUtil.close(con);
+        }
     }
 
-    public BeanMetaData createBeanMetaData(final DatabaseMetaData dbMetaData,
-            final Class beanClass) {
-        return createBeanMetaData(dbMetaData, beanClass, 0);
+    protected BeanMetaData createBeanMetaData(
+            final DatabaseMetaData dbMetaData, final Class beanClass,
+            final int relationNestLevel) {
+
+        final BeanMetaDataImpl bmd = createBeanMetaDataImpl();
+        bmd.setBeanClass(beanClass);
+        bmd.setDatabaseMetaData(dbMetaData);
+        bmd.setDbms(DbmsManager.getDbms(dbMetaData));
+        bmd.setAnnotationReaderFactory(annotationReaderFactory);
+        bmd.setValueTypeFactory(valueTypeFactory);
+        bmd
+                .setStopRelationCreation(isLimitRelationNestLevel(relationNestLevel));
+        bmd.setBeanMetaDataFactory(this);
+        bmd.setRelationNestLevel(relationNestLevel);
+        bmd.initialize();
+        return bmd;
     }
 
-    public BeanMetaData createBeanMetaData(final DatabaseMetaData dbMetaData,
-            final Class beanClass, final int relationNestLevel) {
-        BeanMetaDataImpl beanMetaDataImpl = newBeanMetaDataImpl();
-        beanMetaDataImpl.setBeanClass(beanClass);
-        beanMetaDataImpl.setDatabaseMetaData(dbMetaData);
-        beanMetaDataImpl.setDbms(DbmsManager.getDbms(dbMetaData));
-        beanMetaDataImpl.setAnnotationReaderFactory(annotationReaderFactory);
-        beanMetaDataImpl.setValueTypeFactory(valueTypeFactory);
-        beanMetaDataImpl.setStopRelationCreation(isLimitRelationNestLevel(relationNestLevel));
-        beanMetaDataImpl.setBeanMetaDataFactory(this);
-        beanMetaDataImpl.setRelationNestLevel(relationNestLevel);
-        beanMetaDataImpl.initialize();
-        
-        return beanMetaDataImpl;
-    }
-
-    protected BeanMetaDataImpl newBeanMetaDataImpl() {
+    protected BeanMetaDataImpl createBeanMetaDataImpl() {
         return new BeanMetaDataImpl();
     }
-    
+
     protected boolean isLimitRelationNestLevel(final int relationNestLevel) {
         return relationNestLevel == getLimitRelationNestLevel();
     }
-    
+
     protected int getLimitRelationNestLevel() {
         // You can change relation creation range by changing this.
         return 1;
     }
+
+    public void setDataSource(final DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public void setAnnotationReaderFactory(
+            final AnnotationReaderFactory annotationReaderFactory) {
+        this.annotationReaderFactory = annotationReaderFactory;
+    }
+
+    public void setValueTypeFactory(final ValueTypeFactory valueTypeFactory) {
+        this.valueTypeFactory = valueTypeFactory;
+    }
+
 }

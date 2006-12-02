@@ -44,6 +44,8 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     private AnnotationReaderFactory annotationReaderFactory;
 
+    private BeanMetaDataFactory beanMetaDataFactory;
+
     public S2DaoTestCase() {
     }
 
@@ -53,10 +55,11 @@ public abstract class S2DaoTestCase extends S2TestCase {
     public S2DaoTestCase(String name) {
         super(name);
     }
-    
+
     protected void tearDown() throws Exception {
         valueTypeFactory = null;
         annotationReaderFactory = null;
+        beanMetaDataFactory = null;
         super.tearDown();
     }
 
@@ -132,12 +135,19 @@ public abstract class S2DaoTestCase extends S2TestCase {
         return daoMetaData;
     }
 
-    protected BeanMetaDataFactory createBeanMetaDataFactory() {
-        final BeanMetaDataFactoryImpl beanMetaDataFactoryImpl = new BeanMetaDataFactoryImpl();
-        beanMetaDataFactoryImpl
-                .setAnnotationReaderFactory(annotationReaderFactory);
-        beanMetaDataFactoryImpl.setValueTypeFactory(valueTypeFactory);
-        return beanMetaDataFactoryImpl;
+    protected BeanMetaDataFactory getBeanMetaDataFactory() {
+        if (beanMetaDataFactory == null) {
+            beanMetaDataFactory = createBeanMetaDataFactory();
+        }
+        return beanMetaDataFactory;
     }
-    
+
+    protected BeanMetaDataFactoryImpl createBeanMetaDataFactory() {
+        final BeanMetaDataFactoryImpl factory = new BeanMetaDataFactoryImpl();
+        factory.setAnnotationReaderFactory(getAnnotationReaderFactory());
+        factory.setValueTypeFactory(getValueTypeFactory());
+        factory.setDataSource(getDataSource());
+        return factory;
+    }
+
 }

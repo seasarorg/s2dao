@@ -15,15 +15,8 @@
  */
 package org.seasar.dao.unit;
 
-import java.sql.DatabaseMetaData;
-
 import org.seasar.dao.BeanMetaData;
-import org.seasar.dao.Dbms;
 import org.seasar.dao.RelationPropertyType;
-import org.seasar.dao.dbms.DbmsManager;
-import org.seasar.dao.impl.BeanMetaDataImpl;
-import org.seasar.dao.impl.FieldAnnotationReaderFactory;
-import org.seasar.dao.impl.ValueTypeFactoryImpl;
 import org.seasar.extension.dataset.ColumnType;
 import org.seasar.extension.dataset.DataReader;
 import org.seasar.extension.dataset.DataRow;
@@ -42,22 +35,6 @@ public class S2DaoBeanReader implements DataReader {
     private DataTable table = dataSet.addTable("S2DaoBean");
 
     protected S2DaoBeanReader() {
-    }
-
-    /**
-     * @deprecated
-     */
-    public S2DaoBeanReader(Object bean, DatabaseMetaData dbMetaData) {
-        Dbms dbms = DbmsManager.getDbms(dbMetaData);
-        BeanMetaDataImpl beanMetaData = new BeanMetaDataImpl();
-        beanMetaData.setBeanClass(bean.getClass());
-        beanMetaData.setDatabaseMetaData(dbMetaData);
-        beanMetaData.setDbms(dbms);
-        beanMetaData
-                .setAnnotationReaderFactory(new FieldAnnotationReaderFactory());
-        beanMetaData.setValueTypeFactory(new ValueTypeFactoryImpl());
-        beanMetaData.initialize();
-        initialize(bean, beanMetaData);
     }
 
     public S2DaoBeanReader(Object bean, BeanMetaData beanMetaData) {
