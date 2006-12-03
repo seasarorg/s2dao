@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.Dbms;
@@ -52,8 +51,6 @@ import org.seasar.framework.util.StringUtil;
 public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     private static Logger logger = Logger.getLogger(BeanMetaDataImpl.class);
-
-    private static final String MODIFIED_PROPERTIES = "modifiedProperties";
 
     private String tableName;
 
@@ -84,42 +81,9 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     public BeanMetaDataImpl() {
     }
 
-    /**
-     * @deprecated
-     */
-    public BeanMetaDataImpl(Class beanClass, DatabaseMetaData dbMetaData,
-            Dbms dbms) {
-        this(beanClass, dbMetaData, dbms, new FieldAnnotationReaderFactory(),
-                false);
-    }
-
-    /**
-     * @deprecated
-     */
-    public BeanMetaDataImpl(Class beanClass, DatabaseMetaData dbMetaData,
-            Dbms dbms, AnnotationReaderFactory annotationReaderFactory) {
-        this(beanClass, dbMetaData, dbms, annotationReaderFactory, false);
-    }
-
-    /**
-     * @deprecated
-     */
-    public BeanMetaDataImpl(Class beanClass, DatabaseMetaData dbMetaData,
-            Dbms dbms, AnnotationReaderFactory annotationReaderFactory,
-            boolean relation) {
-        setBeanClass(beanClass);
-        setBeanAnnotationReader(annotationReaderFactory
-                .createBeanAnnotationReader(beanClass));
-        setStopRelationCreation(relation);
-        setValueTypeFactory(new ValueTypeFactoryImpl());
-        initialize();
-    }
-
     public void initialize() {
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(getBeanClass());
         setupTableName(beanDesc);
-        setupVersionNoPropertyName(beanDesc);
-        setupTimestampPropertyName(beanDesc);
         setupProperty(beanDesc, databaseMetaData, dbms);
         setupDatabaseMetaData(beanDesc, databaseMetaData, dbms);
         setupPropertiesByColumnName();
@@ -158,8 +122,16 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         return versionNoPropertyName;
     }
 
+    public void setVersionNoPropertyName(String versionNoPropertyName) {
+        this.versionNoPropertyName = versionNoPropertyName;
+    }
+
     public String getTimestampPropertyName() {
         return timestampPropertyName;
+    }
+
+    public void setTimestampPropertyName(String timestampPropertyName) {
+        this.timestampPropertyName = timestampPropertyName;
     }
 
     /**
@@ -312,28 +284,11 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         }
     }
 
-    protected void setupVersionNoPropertyName(BeanDesc beanDesc) {
-        String vna = beanAnnotationReader.getVersionNoPropertyName();
-        if (vna != null) {
-            versionNoPropertyName = vna;
-        }
-    }
-
-    protected void setupTimestampPropertyName(BeanDesc beanDesc) {
-        String tsa = beanAnnotationReader.getTimestampPropertyName();
-        if (tsa != null) {
-            timestampPropertyName = tsa;
-        }
-    }
-
     protected void setupProperty(BeanDesc beanDesc,
             DatabaseMetaData dbMetaData, Dbms dbms) {
 
         for (int i = 0; i < beanDesc.getPropertyDescSize(); ++i) {
             PropertyDesc pd = beanDesc.getPropertyDesc(i);
-            if (MODIFIED_PROPERTIES.equals(pd.getPropertyName())) {
-                continue;
-            }
             PropertyType pt = null;
             if (beanAnnotationReader.hasRelationNo(pd)) {
                 if (!isStopRelationCreation) {

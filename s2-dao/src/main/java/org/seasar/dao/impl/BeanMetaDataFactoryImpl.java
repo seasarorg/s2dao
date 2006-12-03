@@ -60,6 +60,8 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     private static final String GET_MODIFIED_PROPERTIES = "getModifiedProperties";
 
+    private static final String MODIFIED_PROPERTIES = "modifiedProperties";
+
     protected AnnotationReaderFactory annotationReaderFactory;
 
     protected ValueTypeFactory valueTypeFactory;
@@ -91,14 +93,11 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         final BeanMetaDataImpl bmd = createBeanMetaDataImpl();
         final boolean isEnhancedClass = isEnhancedClass(beanClass);
         final Class originalBeanClass;
-        final Class enhancedBeanClass;
         if (isEnhancedClass) {
             // enhance前のクラスがBEANアノテーションで指定されたクラス
             originalBeanClass = beanClass.getSuperclass();
-            enhancedBeanClass = beanClass;
         } else {
             originalBeanClass = beanClass;
-            enhancedBeanClass = enhanceBeanClass(beanClass);
         }
         bmd.setDatabaseMetaData(dbMetaData);
         final Dbms dbms = getDbms();
@@ -111,9 +110,22 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
                 .setStopRelationCreation(isLimitRelationNestLevel(relationNestLevel));
         bmd.setBeanMetaDataFactory(this);
         bmd.setRelationNestLevel(relationNestLevel);
+
+        final String versionNoPropertyName = bar.getVersionNoPropertyName();
+        if (versionNoPropertyName != null) {
+            bmd.setVersionNoPropertyName(versionNoPropertyName);
+        }
+        final String timestampPropertyName = bar.getTimestampPropertyName();
+        if (timestampPropertyName != null) {
+            bmd.setTimestampPropertyName(timestampPropertyName);
+        }
+
         bmd.setBeanClass(originalBeanClass);
         bmd.initialize();
-        bmd.setBeanClass(enhancedBeanClass);
+        if (!isEnhancedClass) {
+            final Class enhancedBeanClass = enhanceBeanClass(beanClass, bmd);
+            bmd.setBeanClass(enhancedBeanClass);
+        }
         return bmd;
     }
 
@@ -122,8 +134,10 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
                 AspectWeaver.SUFFIX_ENHANCED_CLASS);
     }
 
-    private Class enhanceBeanClass(final Class targetClass) {
-        final BeanAspectWeaver aspectWeaver = new BeanAspectWeaver(targetClass);
+    private Class enhanceBeanClass(final Class targetClass,
+            final BeanMetaData bmd) {
+        final BeanAspectWeaver aspectWeaver = new BeanAspectWeaver(targetClass,
+                bmd);
         final Class generateBeanClass = aspectWeaver.generateBeanClass();
         return generateBeanClass;
     }
@@ -164,10 +178,14 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
      */
     private static class BeanAspectWeaver extends AspectWeaver {
 
-        private static final String modifiedPropertiesfieldName = "modifiedProperties_";
+        private static final String modifiedPropertiesfieldName = MODIFIED_PROPERTIES
+                + "_";
 
-        public BeanAspectWeaver(final Class targetClass) {
+        private BeanMetaData beanMetaData;
+
+        public BeanAspectWeaver(final Class targetClass, final BeanMetaData bmd) {
             super(targetClass, null);
+            this.beanMetaData = bmd;
         }
 
         public Class generateBeanClass() {
@@ -223,16 +241,26 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
                 throws CannotCompileException {
             final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(targetClass);
             final int propertyDescSize = beanDesc.getPropertyDescSize();
+            final String versionNoPropertyName = beanMetaData
+                    .getVersionNoPropertyName();
+            final String timestampPropertyName = beanMetaData
+                    .getTimestampPropertyName();
             for (int i = 0; i < propertyDescSize; i++) {
                 final PropertyDesc pd = beanDesc.getPropertyDesc(i);
                 if (!pd.hasWriteMethod() || !pd.hasReadMethod()) {
+                    continue;
+                }
+                final String propertyName = pd.getPropertyName();
+                if (propertyName.equalsIgnoreCase(versionNoPropertyName)) {
+                    continue;
+                }
+                if (propertyName.equalsIgnoreCase(timestampPropertyName)) {
                     continue;
                 }
 
                 final String setterName = pd.getWriteMethod().getName();
                 final String propertyClassName = ClassUtil
                         .getSimpleClassName(pd.getPropertyType());
-                final String propertyName = pd.getPropertyName();
                 final String s = "public void " + setterName + "("
                         + propertyClassName + " " + propertyName + ")"
                         + " { super." + setterName + "(" + propertyName + "); "
