@@ -26,8 +26,10 @@
                 <copy todir="${project.build.directory}/test-jar-staging">
                   <fileset dir="${project.build.testOutputDirectory}">
                     <exclude name="**/*.dicon"/>
+                    <exclude name="log4j.properties"/>
                     <exclude name="data-hsqldb/**"/>
                     <exclude name="data-derby/**"/>
+                    <exclude name="data-h2/**"/>
                   </fileset>
                 </copy>
               </tasks>
@@ -40,7 +42,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.1-SNAPSHOT</version>
         <executions>
           <execution>
             <id>test-jar</id>

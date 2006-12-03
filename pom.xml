@@ -185,6 +185,7 @@
     </repository>
   </repositories>
   <pluginRepositories>
+    <!--
     <pluginRepository>
       <id>people.apache.org m2-snapshot</id>
       <url>http://people.apache.org/repo/m2-snapshot-repository</url>
@@ -195,6 +196,7 @@
         <enabled>false</enabled>
       </releases>
     </pluginRepository>
+    -->
     <pluginRepository>
       <id>snapshots.repository.codehaus.org</id>
       <url>http://snapshots.repository.codehaus.org</url>
