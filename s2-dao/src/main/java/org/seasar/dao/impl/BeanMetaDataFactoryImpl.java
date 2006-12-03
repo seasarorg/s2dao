@@ -123,7 +123,8 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         bmd.setBeanClass(originalBeanClass);
         bmd.initialize();
         if (!isEnhancedClass) {
-            final Class enhancedBeanClass = enhanceBeanClass(beanClass, bmd);
+            final Class enhancedBeanClass = enhanceBeanClass(beanClass,
+                    versionNoPropertyName, timestampPropertyName);
             bmd.setBeanClass(enhancedBeanClass);
         }
         return bmd;
@@ -135,9 +136,9 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
     }
 
     private Class enhanceBeanClass(final Class targetClass,
-            final BeanMetaData bmd) {
+            String versionNoPropertyName, String timestampPropertyName) {
         final BeanAspectWeaver aspectWeaver = new BeanAspectWeaver(targetClass,
-                bmd);
+                versionNoPropertyName, timestampPropertyName);
         final Class generateBeanClass = aspectWeaver.generateBeanClass();
         return generateBeanClass;
     }
@@ -181,11 +182,15 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         private static final String modifiedPropertiesfieldName = MODIFIED_PROPERTIES
                 + "_";
 
-        private BeanMetaData beanMetaData;
+        private String versionNoPropertyName;
 
-        public BeanAspectWeaver(final Class targetClass, final BeanMetaData bmd) {
+        private String timestampPropertyName;
+
+        public BeanAspectWeaver(final Class targetClass,
+                String versionNoPropertyName, String timestampPropertyName) {
             super(targetClass, null);
-            this.beanMetaData = bmd;
+            this.versionNoPropertyName = versionNoPropertyName;
+            this.timestampPropertyName = timestampPropertyName;
         }
 
         public Class generateBeanClass() {
@@ -241,10 +246,6 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
                 throws CannotCompileException {
             final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(targetClass);
             final int propertyDescSize = beanDesc.getPropertyDescSize();
-            final String versionNoPropertyName = beanMetaData
-                    .getVersionNoPropertyName();
-            final String timestampPropertyName = beanMetaData
-                    .getTimestampPropertyName();
             for (int i = 0; i < propertyDescSize; i++) {
                 final PropertyDesc pd = beanDesc.getPropertyDesc(i);
                 if (!pd.hasWriteMethod() || !pd.hasReadMethod()) {
