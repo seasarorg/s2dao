@@ -36,6 +36,7 @@ import org.seasar.extension.unit.S2TestCase;
 /**
  * @author higa
  * @author manhole
+ * @author jflute
  */
 public abstract class S2DaoTestCase extends S2TestCase {
 
@@ -81,42 +82,9 @@ public abstract class S2DaoTestCase extends S2TestCase {
         assertEquals(message, expected, reader.read());
     }
 
-    protected Dbms getDbms() {
-        if (dbms == null) {
-            final DatabaseMetaData dbMetaData = getDatabaseMetaData();
-            dbms = DbmsManager.getDbms(dbMetaData);
-        }
-        return dbms;
-    }
-
     protected BeanMetaData createBeanMetaData(final Class beanClass) {
         final BeanMetaDataFactory factory = getBeanMetaDataFactory();
         return factory.createBeanMetaData(beanClass);
-    }
-
-    protected ValueTypeFactory getValueTypeFactory() {
-        if (valueTypeFactory == null) {
-            final ValueTypeFactoryImpl v = new ValueTypeFactoryImpl();
-            v.setContainer(getContainer());
-            valueTypeFactory = v;
-        }
-        return valueTypeFactory;
-    }
-
-    protected AnnotationReaderFactory getAnnotationReaderFactory() {
-        if (annotationReaderFactory == null) {
-            annotationReaderFactory = new FieldAnnotationReaderFactory();
-        }
-        return annotationReaderFactory;
-    }
-
-    protected void setAnnotationReaderFactory(
-            final AnnotationReaderFactory annotationReaderFactory) {
-        this.annotationReaderFactory = annotationReaderFactory;
-    }
-
-    protected void setValueTypeFactory(final ValueTypeFactory valueTypeFactory) {
-        this.valueTypeFactory = valueTypeFactory;
     }
 
     protected DaoMetaDataImpl createDaoMetaData(final Class daoClass) {
@@ -147,8 +115,41 @@ public abstract class S2DaoTestCase extends S2TestCase {
         return beanMetaDataFactory;
     }
 
-    protected void setDbms(Dbms dbms) {
+    protected Dbms getDbms() {
+        if (dbms == null) {
+            final DatabaseMetaData dbMetaData = getDatabaseMetaData();
+            dbms = DbmsManager.getDbms(dbMetaData);
+        }
+        return dbms;
+    }
+
+    protected void setDbms(final Dbms dbms) {
         this.dbms = dbms;
+    }
+
+    protected AnnotationReaderFactory getAnnotationReaderFactory() {
+        if (annotationReaderFactory == null) {
+            annotationReaderFactory = new FieldAnnotationReaderFactory();
+        }
+        return annotationReaderFactory;
+    }
+
+    protected void setAnnotationReaderFactory(
+            final AnnotationReaderFactory annotationReaderFactory) {
+        this.annotationReaderFactory = annotationReaderFactory;
+    }
+
+    protected ValueTypeFactory getValueTypeFactory() {
+        if (valueTypeFactory == null) {
+            final ValueTypeFactoryImpl v = new ValueTypeFactoryImpl();
+            v.setContainer(getContainer());
+            valueTypeFactory = v;
+        }
+        return valueTypeFactory;
+    }
+
+    protected void setValueTypeFactory(final ValueTypeFactory valueTypeFactory) {
+        this.valueTypeFactory = valueTypeFactory;
     }
 
 }
