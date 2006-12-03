@@ -54,11 +54,11 @@ public abstract class AbstractBeanAnnotationReaderTest extends TestCase {
     public void testGetVersionNoProteryNameAnnotation() {
         Class clazz1 = getBeanClass("AnnotationTestBean1");
         BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
-        String str1 = reader1.getVersionNoProteryNameAnnotation();
+        String str1 = reader1.getVersionNoPropertyName();
         assertEquals("1", "myVersionNo", str1);
         Class clazz2 = getBeanClass("AnnotationTestBean2");
         BeanAnnotationReader reader2 = createBeanAnnotationReader(clazz2);
-        String str2 = reader2.getVersionNoProteryNameAnnotation();
+        String str2 = reader2.getVersionNoPropertyName();
         assertNull("1", str2);
     }
 

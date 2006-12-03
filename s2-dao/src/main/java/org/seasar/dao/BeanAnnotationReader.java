@@ -19,6 +19,7 @@ import org.seasar.framework.beans.PropertyDesc;
 
 /**
  * @author uehara keizou
+ * @author manhole
  */
 public interface BeanAnnotationReader {
 
@@ -26,7 +27,7 @@ public interface BeanAnnotationReader {
 
     String getTableAnnotation();
 
-    String getVersionNoProteryNameAnnotation();
+    String getVersionNoPropertyName();
 
     String getTimestampPropertyName();
 

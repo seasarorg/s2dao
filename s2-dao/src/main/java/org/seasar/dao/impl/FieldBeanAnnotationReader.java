@@ -68,7 +68,7 @@ public class FieldBeanAnnotationReader implements BeanAnnotationReader {
         return null;
     }
 
-    public String getVersionNoProteryNameAnnotation() {
+    public String getVersionNoPropertyName() {
         if (beanDesc.hasField(VERSION_NO_PROPERTY)) {
             Field field = beanDesc.getField(VERSION_NO_PROPERTY);
             return (String) FieldUtil.get(field, null);

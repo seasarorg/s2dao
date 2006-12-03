@@ -313,7 +313,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     }
 
     protected void setupVersionNoPropertyName(BeanDesc beanDesc) {
-        String vna = beanAnnotationReader.getVersionNoProteryNameAnnotation();
+        String vna = beanAnnotationReader.getVersionNoPropertyName();
         if (vna != null) {
             versionNoPropertyName = vna;
         }
