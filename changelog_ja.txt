@@ -1,5 +1,13 @@
 S2Dao 変更履歴
 
+1.0.40-SNAPSHOT
+-------------------------------------------------------------------------------
+更新したプロパティのみをUPDATE文に含める機能を追加しました。[DAO-48]
+
+DtoMetaDataImpl, BeanMetaDataImplから、deprecatedなコンストラクタを削除しました。
+BeanAnnotationReaderのtypoを修正。(getVersionNoProteryNameAnnotation → getVersionNoPropertyName)
+
+
 1.0.39
 -------------------------------------------------------------------------------
 SQLiteにてSelectしたEntityインスタンスにプロパティがセットされない問題に対応しました。[Seasar-user:5015][DAO-41]
