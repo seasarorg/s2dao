@@ -6,4 +6,10 @@
 	<component class="org.seasar.dao.impl.UpdateModifiedOnlyCommandTest$EmpDao">
 		<aspect>dao.interceptor</aspect>
 	</component>
+	<component class="org.seasar.dao.impl.UpdateModifiedOnlyCommandTest$Emp2Dao">
+		<aspect>dao.interceptor</aspect>
+	</component>
+	<component class="org.seasar.dao.impl.UpdateModifiedOnlyCommandTest$DeptDao">
+		<aspect>dao.interceptor</aspect>
+	</component>
 </components>
