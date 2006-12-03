@@ -91,8 +91,6 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     private String timestampPropertyName = "timestamp";
 
-    private AnnotationReaderFactory annotationReaderFactory;
-
     private Dbms dbms;
 
     private DatabaseMetaData databaseMetaData;
@@ -130,19 +128,11 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
             Dbms dbms, AnnotationReaderFactory annotationReaderFactory,
             boolean relation) {
         setBeanClass(beanClass);
-        setAnnotationReaderFactory(annotationReaderFactory);
+        setBeanAnnotationReader(annotationReaderFactory
+                .createBeanAnnotationReader(beanClass));
         setStopRelationCreation(relation);
         setValueTypeFactory(new ValueTypeFactoryImpl());
         initialize();
-    }
-
-    public AnnotationReaderFactory getAnnotationReaderFactory() {
-        return annotationReaderFactory;
-    }
-
-    public void setAnnotationReaderFactory(
-            AnnotationReaderFactory annotationReaderFactory) {
-        this.annotationReaderFactory = annotationReaderFactory;
     }
 
     public void initialize() {
@@ -152,9 +142,6 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
             setBeanClass(getBeanClass().getSuperclass());
         }
         originalBeanClass = getBeanClass();
-        final AnnotationReaderFactory arf = getAnnotationReaderFactory();
-        beanAnnotationReader = arf
-                .createBeanAnnotationReader(originalBeanClass);
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(originalBeanClass);
         setupTableName(beanDesc);
         setupVersionNoPropertyName(beanDesc);

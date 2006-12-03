@@ -21,6 +21,7 @@ import java.sql.DatabaseMetaData;
 import javax.sql.DataSource;
 
 import org.seasar.dao.AnnotationReaderFactory;
+import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.Dbms;
@@ -68,7 +69,9 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         bmd.setDatabaseMetaData(dbMetaData);
         final Dbms dbms = getDbms();
         bmd.setDbms(dbms);
-        bmd.setAnnotationReaderFactory(annotationReaderFactory);
+        final BeanAnnotationReader beanAnnotationReader = annotationReaderFactory
+                .createBeanAnnotationReader(beanClass);
+        bmd.setBeanAnnotationReader(beanAnnotationReader);
         bmd.setValueTypeFactory(valueTypeFactory);
         bmd
                 .setStopRelationCreation(isLimitRelationNestLevel(relationNestLevel));
