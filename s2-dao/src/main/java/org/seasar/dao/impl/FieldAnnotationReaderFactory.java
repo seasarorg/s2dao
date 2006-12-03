@@ -26,7 +26,8 @@ public class FieldAnnotationReaderFactory implements AnnotationReaderFactory {
         return new FieldDaoAnnotationReader(daoBeanDesc);
     }
 
-    public BeanAnnotationReader createBeanAnnotationReader(Class beanClass_) {
-        return new FieldBeanAnnotationReader(beanClass_);
+    public BeanAnnotationReader createBeanAnnotationReader(Class beanClass) {
+        return new FieldBeanAnnotationReader(beanClass);
     }
+
 }
