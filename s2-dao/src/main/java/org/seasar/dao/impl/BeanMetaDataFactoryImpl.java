@@ -15,8 +15,16 @@
  */
 package org.seasar.dao.impl;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+
+import javassist.CannotCompileException;
+import javassist.CtClass;
+import javassist.CtField;
+import javassist.CtMethod;
+import javassist.CtNewMethod;
+import javassist.NotFoundException;
 
 import javax.sql.DataSource;
 
@@ -25,16 +33,32 @@ import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.Dbms;
+import org.seasar.dao.ModifiedProperties;
+import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
+import org.seasar.framework.aop.javassist.AspectWeaver;
+import org.seasar.framework.aop.javassist.EnhancedClassGenerator;
+import org.seasar.framework.beans.BeanDesc;
+import org.seasar.framework.beans.PropertyDesc;
+import org.seasar.framework.beans.factory.BeanDescFactory;
+import org.seasar.framework.exception.CannotCompileRuntimeException;
+import org.seasar.framework.exception.NoSuchFieldRuntimeException;
+import org.seasar.framework.exception.NotFoundRuntimeException;
+import org.seasar.framework.util.ClassLoaderUtil;
+import org.seasar.framework.util.ClassUtil;
+import org.seasar.framework.util.FieldUtil;
+import org.seasar.framework.util.StringUtil;
 
 /**
  * @author jflute
  * @author manhole
  */
 public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
+
+    private static final String GET_MODIFIED_PROPERTIES = "getModifiedProperties";
 
     protected AnnotationReaderFactory annotationReaderFactory;
 
@@ -65,20 +89,43 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
             final int relationNestLevel) {
 
         final BeanMetaDataImpl bmd = createBeanMetaDataImpl();
-        bmd.setBeanClass(beanClass);
+        final boolean isEnhancedClass = isEnhancedClass(beanClass);
+        final Class originalBeanClass;
+        final Class enhancedBeanClass;
+        if (isEnhancedClass) {
+            // enhance前のクラスがBEANアノテーションで指定されたクラス
+            originalBeanClass = beanClass.getSuperclass();
+            enhancedBeanClass = beanClass;
+        } else {
+            originalBeanClass = beanClass;
+            enhancedBeanClass = enhanceBeanClass(beanClass);
+        }
         bmd.setDatabaseMetaData(dbMetaData);
         final Dbms dbms = getDbms();
         bmd.setDbms(dbms);
-        final BeanAnnotationReader beanAnnotationReader = annotationReaderFactory
-                .createBeanAnnotationReader(beanClass);
-        bmd.setBeanAnnotationReader(beanAnnotationReader);
+        final BeanAnnotationReader bar = annotationReaderFactory
+                .createBeanAnnotationReader(originalBeanClass);
+        bmd.setBeanAnnotationReader(bar);
         bmd.setValueTypeFactory(valueTypeFactory);
         bmd
                 .setStopRelationCreation(isLimitRelationNestLevel(relationNestLevel));
         bmd.setBeanMetaDataFactory(this);
         bmd.setRelationNestLevel(relationNestLevel);
+        bmd.setBeanClass(originalBeanClass);
         bmd.initialize();
+        bmd.setBeanClass(enhancedBeanClass);
         return bmd;
+    }
+
+    private boolean isEnhancedClass(final Class targetClass) {
+        return StringUtil.contains(ClassUtil.getSimpleClassName(targetClass),
+                AspectWeaver.SUFFIX_ENHANCED_CLASS);
+    }
+
+    private Class enhanceBeanClass(final Class targetClass) {
+        final BeanAspectWeaver aspectWeaver = new BeanAspectWeaver(targetClass);
+        final Class generateBeanClass = aspectWeaver.generateBeanClass();
+        return generateBeanClass;
     }
 
     protected Dbms getDbms() {
@@ -109,6 +156,108 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     public void setValueTypeFactory(final ValueTypeFactory valueTypeFactory) {
         this.valueTypeFactory = valueTypeFactory;
+    }
+
+    /**
+     * Entityに{@link PropertyModifiedSupport}をimplementsさせるエンハンサ。
+     *
+     */
+    private static class BeanAspectWeaver extends AspectWeaver {
+
+        private static final String modifiedPropertiesfieldName = "modifiedProperties_";
+
+        public BeanAspectWeaver(final Class targetClass) {
+            super(targetClass, null);
+        }
+
+        public Class generateBeanClass() {
+            try {
+                final CtClass enhancedCtClass = getEnhancedCtClass();
+                combineField(enhancedCtClass);
+                combineInterface(enhancedCtClass);
+                combineProperties(enhancedCtClass);
+                final Class beanClass = enhancedClassGenerator
+                        .toClass(ClassLoaderUtil.getClassLoader(targetClass));
+                return beanClass;
+            } catch (final CannotCompileException e) {
+                throw new CannotCompileRuntimeException(e);
+            } catch (final NotFoundException e) {
+                throw new NotFoundRuntimeException(e);
+            }
+        }
+
+        /**
+         * {@link PropertyModifiedSupport}をEntityにimplementsさせ、
+         * {@link ModifiedProperties}を返却するメソッドを実装する。
+         */
+        private void combineInterface(final CtClass enhancedCtClass)
+                throws NotFoundException, CannotCompileException {
+            enhancedCtClass.addInterface(classPool
+                    .get(PropertyModifiedSupport.class.getName()));
+            final String s = "public " + ModifiedProperties.class.getName()
+                    + " " + GET_MODIFIED_PROPERTIES + "() {" + "  return "
+                    + modifiedPropertiesfieldName + "; }";
+            final CtMethod m = CtNewMethod.make(s, enhancedCtClass);
+            enhancedCtClass.addMethod(m);
+        }
+
+        /**
+         * setterが呼ばれたことを記録するインスタンス変数をEntityに実装する。
+         */
+        private void combineField(final CtClass enhancedCtClass)
+                throws CannotCompileException {
+            final String s = "private " + ModifiedProperties.class.getName()
+                    + " " + modifiedPropertiesfieldName + " = new "
+                    + ModifiedPropertiesImpl.class.getName() + "();";
+            final CtField modifiedPropertiesField = CtField.make(s,
+                    enhancedCtClass);
+            enhancedCtClass.addField(modifiedPropertiesField);
+        }
+
+        /**
+         * setterを拡張し、
+         * (1)スーパークラスの同メソッドを呼び、
+         * (2)modifiedPropertiesフィールドへsetterが呼ばれたことを記録します。
+         */
+        private void combineProperties(final CtClass enhancedCtClass)
+                throws CannotCompileException {
+            final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(targetClass);
+            final int propertyDescSize = beanDesc.getPropertyDescSize();
+            for (int i = 0; i < propertyDescSize; i++) {
+                final PropertyDesc pd = beanDesc.getPropertyDesc(i);
+                if (!pd.hasWriteMethod() || !pd.hasReadMethod()) {
+                    continue;
+                }
+
+                final String setterName = pd.getWriteMethod().getName();
+                final String propertyClassName = ClassUtil
+                        .getSimpleClassName(pd.getPropertyType());
+                final String propertyName = pd.getPropertyName();
+                final String s = "public void " + setterName + "("
+                        + propertyClassName + " " + propertyName + ")"
+                        + " { super." + setterName + "(" + propertyName + "); "
+                        + modifiedPropertiesfieldName + ".addPropertyName(\""
+                        + propertyName + "\"); }";
+                final CtMethod m = CtNewMethod.make(s, enhancedCtClass);
+                enhancedCtClass.addMethod(m);
+            }
+        }
+
+        private CtClass getEnhancedCtClass() {
+            final String enhancedClassFieldName = "enhancedClass";
+            try {
+                final Field field = EnhancedClassGenerator.class
+                        .getDeclaredField(enhancedClassFieldName);
+                field.setAccessible(true);
+                final CtClass enhancedCtClass = (CtClass) FieldUtil.get(field,
+                        enhancedClassGenerator);
+                return enhancedCtClass;
+            } catch (final NoSuchFieldException e) {
+                throw new NoSuchFieldRuntimeException(
+                        EnhancedClassGenerator.class, enhancedClassFieldName, e);
+            }
+        }
+
     }
 
 }
