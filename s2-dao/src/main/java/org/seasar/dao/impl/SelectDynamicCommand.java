@@ -25,7 +25,7 @@ import org.seasar.extension.jdbc.impl.BasicSelectHandler;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public class SelectDynamicCommand extends AbstractDynamicCommand {
 
@@ -51,8 +51,14 @@ public class SelectDynamicCommand extends AbstractDynamicCommand {
         BasicSelectHandler selectHandler = new BasicSelectHandler(
                 getDataSource(), ctx.getSql(), resultSetHandler,
                 getStatementFactory(), resultSetFactory);
+        /*
+         * Statement#setFetchSizeをサポートしていないDBMSがあるため、
+         * S2DaoからはsetFetchSizeを行わないようにする。
+         * https://www.seasar.org/issues/browse/DAO-2
+         */
         selectHandler.setFetchSize(-1);
         return selectHandler.execute(ctx.getBindVariables(), ctx
                 .getBindVariableTypes());
     }
+
 }
