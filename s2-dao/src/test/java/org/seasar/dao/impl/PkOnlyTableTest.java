@@ -63,6 +63,19 @@ public class PkOnlyTableTest extends S2DaoTestCase {
         }
     }
 
+    /**
+     * 現状例外になるのでtestメソッドにしない。[DAO-52]
+     */
+    public void UpdateTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(PkOnlyTableDao2.class);
+        SqlCommand cmd = dmd.getSqlCommand("update");
+        PkOnlyTable data = new PkOnlyTable();
+        data.setAaa("value");
+        //TODO FIX BUG
+        cmd.execute(new Object[] { data });
+        assertTrue(true);
+    }
+
     public class PkOnlyTable {
         public static final String TABLE = "PKONLYTABLE";
 
@@ -86,6 +99,8 @@ public class PkOnlyTableTest extends S2DaoTestCase {
 
     public interface PkOnlyTableDao2 {
         Class BEAN = PkOnlyTable.class;
+
+        int update(PkOnlyTable data);
 
         int updateUnlessNull(PkOnlyTable data);
     }
