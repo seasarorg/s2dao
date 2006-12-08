@@ -26,6 +26,7 @@ import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.dao.PrimaryKeyNotFoundRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.framework.exception.SRuntimeException;
 
 /**
  * @author higa
@@ -91,6 +92,9 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
                 continue;
             }
             types.add(pt);
+        }
+        if (types.size() == 0){
+            throw new SRuntimeException("EDAO0020");
         }
         propertyTypes = (PropertyType[]) types.toArray(new PropertyType[types
                 .size()]);
