@@ -18,7 +18,7 @@ package org.seasar.dao.impl;
 import java.util.Iterator;
 import java.util.List;
 
-import org.seasar.dao.NoPersistentPropertyTypeRuntimeException;
+import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
 
@@ -40,9 +40,10 @@ public class NoPersistentPropertyTypeTest extends S2DaoTestCase {
             final SqlCommand command = dmd.getSqlCommand("findAll");
             command.execute(null);
             fail();
-        } catch (NoPersistentPropertyTypeRuntimeException e) {
+        } catch (MethodSetupFailureRuntimeException e) {
             e.printStackTrace();
-            final String message = e.getMessage();
+            assertEquals(true, -1 < e.getMessage().indexOf("EDAO0019"));
+            final String message = e.getCause().getMessage();
             assertEquals(true, -1 < message.indexOf("EDAO0017"));
         }
     }

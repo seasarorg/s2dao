@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
+import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.dbms.Oracle;
 import org.seasar.dao.unit.S2DaoTestCase;
@@ -172,8 +173,11 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         try {
             createDaoMetaData(getDaoClass("IllegalEmployeeAutoDao"));
             fail("1");
-        } catch (IllegalSignatureRuntimeException ex) {
-            System.out.println(ex.getSignature());
+        } catch (MethodSetupFailureRuntimeException ex) {
+            assertTrue("1",
+                    ex.getCause() instanceof IllegalSignatureRuntimeException);
+            System.out.println(((IllegalSignatureRuntimeException) ex
+                    .getCause()).getSignature());
             System.out.println(ex);
         }
     }

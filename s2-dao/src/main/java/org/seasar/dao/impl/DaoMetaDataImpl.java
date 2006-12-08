@@ -42,6 +42,7 @@ import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
+import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
@@ -57,6 +58,7 @@ import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.MethodNotFoundRuntimeException;
 import org.seasar.framework.beans.factory.BeanDescFactory;
 import org.seasar.framework.exception.NoSuchMethodRuntimeException;
+import org.seasar.framework.exception.SRuntimeException;
 import org.seasar.framework.util.ClassUtil;
 import org.seasar.framework.util.InputStreamReaderUtil;
 import org.seasar.framework.util.MethodUtil;
@@ -66,6 +68,7 @@ import org.seasar.framework.util.StringUtil;
 
 /**
  * @author higa
+ * @author azusa
  * 
  */
 public class DaoMetaDataImpl implements DaoMetaData {
@@ -232,22 +235,27 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected void setupMethod(Class daoInterface, Method method) {
-        setupMethodByAnnotation(daoInterface, method);
+        try {
+            setupMethodByAnnotation(daoInterface, method);
 
-        if (!completedSetupMethod(method)) {
-            setupMethodBySqlFile(daoInterface, method);
-        }
+            if (!completedSetupMethod(method)) {
+                setupMethodBySqlFile(daoInterface, method);
+            }
 
-        if (!completedSetupMethod(method)) {
-            setupMethodByInterfaces(daoInterface, method);
-        }
+            if (!completedSetupMethod(method)) {
+                setupMethodByInterfaces(daoInterface, method);
+            }
 
-        if (!completedSetupMethod(method)) {
-            setupMethodBySuperClass(daoInterface, method);
-        }
+            if (!completedSetupMethod(method)) {
+                setupMethodBySuperClass(daoInterface, method);
+            }
 
-        if (!completedSetupMethod(method)) {
-            setupMethodByAuto(method);
+            if (!completedSetupMethod(method)) {
+                setupMethodByAuto(method);
+            }
+        } catch (SRuntimeException e) {
+            throw new MethodSetupFailureRuntimeException(
+                    daoInterface.getName(), method.getName(), e);
         }
     }
 
