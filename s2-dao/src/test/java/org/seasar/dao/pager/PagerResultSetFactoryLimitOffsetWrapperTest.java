@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 /**
  * @author Toshitaka Agata
  */
-public class PagerResultSetFactoryLimitOffsetWapperTest extends TestCase {
+public class PagerResultSetFactoryLimitOffsetWrapperTest extends TestCase {
 
     MockResultSetFactory original;
 
