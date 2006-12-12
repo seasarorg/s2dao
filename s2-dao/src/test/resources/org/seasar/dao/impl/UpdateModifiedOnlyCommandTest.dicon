@@ -12,4 +12,7 @@
 	<component class="org.seasar.dao.impl.UpdateModifiedOnlyCommandTest$DeptDao">
 		<aspect>dao.interceptor</aspect>
 	</component>
+	<component class="org.seasar.dao.impl.UpdateModifiedOnlyCommandTest$EmpByReflectionDao">
+		<aspect>dao.interceptor</aspect>
+	</component>
 </components>

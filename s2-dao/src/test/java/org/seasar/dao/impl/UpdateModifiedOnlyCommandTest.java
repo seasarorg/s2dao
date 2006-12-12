@@ -17,7 +17,11 @@ package org.seasar.dao.impl;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.Set;
 
+import org.seasar.dao.ModifiedProperties;
+import org.seasar.dao.NotFoundModifiedPropertiesRuntimeException;
+import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.PropertyType;
@@ -25,6 +29,7 @@ import org.seasar.framework.util.ClassUtil;
 
 /**
  * @author manhole
+ * @author jflute
  */
 public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
 
@@ -43,6 +48,8 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
     private Emp2Dao emp2Dao;
 
     private DeptDao deptDao;
+
+    private EmpByReflectionDao empByReflectionDao;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -165,6 +172,57 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
 
         // ## Assert ##
 
+    }
+
+    /*
+     * BeanにModifiedPropertiesが何も定義されていない場合のテスト。
+     * ModifiedOnlyのメソッドの引数に、Interfaceを実装してない、かつ、
+     * Reflection用のModifiedPropertiesも定義していないBeanを指定した場合は、
+     * 例外が発生すること。
+     */
+    public void testUpdateModifiedOnlyWithNotSupportBeanTx() throws Exception {
+        final int targetEmpno = 7499;
+        final Emp emp = new Emp();
+        emp.setEmpno(targetEmpno);
+        emp.setEname("UpdateModifiedOnlyWithNotSupportBean");
+        try {
+            empDao.updateModifiedOnly(emp);
+            fail("If the bean doesn't have modified properties, this invoking should throw exception: "
+                    + emp);
+        } catch (NotFoundModifiedPropertiesRuntimeException e) {
+            // OK
+            assertEquals(emp.getClass().getName(), e.getBeanClassName());
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /*
+     * InterfaceではなくReflectionでModifiedPropertiesを取得する方法のテスト。
+     * 'new EmpByReflection()'したInstanceに更新したい値をSetして更新する方法を試す。
+     * (更新前に一度Selectしないと排他制御は動作しないので、ここではTimestampプロパティを含めない)
+     */
+    public void testModifiedPropertiesByReflectionTx() throws Exception {
+        // ## Arrange ##
+        final int targetEmpno = 7499;
+        final EmpByReflection expectedEmp = empByReflectionDao
+                .findById(targetEmpno);
+        final EmpByReflection emp = new EmpByReflection();
+        emp.setEmpno(targetEmpno);
+        emp.setEname("ModifiedPropertiesByReflection");
+
+        // ## Act ##
+        final int updatedCount = empByReflectionDao.updateModifiedOnly(emp);
+        assertEquals(1, updatedCount);
+
+        // ## Assert ##
+        // SetしたColumnの値だけが更新されて、残りは以前の値と同じであること。
+        final EmpByReflection actualEmp = empByReflectionDao
+                .findById(targetEmpno);
+        assertEquals(expectedEmp.getEmpno(), actualEmp.getEmpno());
+        assertEquals("ModifiedPropertiesByReflection", actualEmp.getEname());
+        assertEquals(expectedEmp.getJob(), actualEmp.getJob());
+        assertEquals(expectedEmp.getComm(), actualEmp.getComm());
+        assertEquals(expectedEmp.getSal(), actualEmp.getSal());
     }
 
     public static interface EmpDao {
@@ -411,6 +469,103 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
             buf.append(deptno).append(", ");
             buf.append(dname).append(", ");
             buf.append(loc);
+            return buf.toString();
+        }
+
+    }
+
+    public static interface EmpByReflectionDao {
+
+        Class BEAN = EmpByReflection.class;
+
+        public String findById_ARGS = "empno";
+
+        EmpByReflection findById(long empno);
+
+        int updateModifiedOnly(EmpByReflection emp);
+
+    }
+
+    /**
+     * PropertyModifiedSupportではなくReflectionでModifiedPropertiesを
+     * 取得するテストのためのEntity。
+     * 
+     * 排他制御を含めないように、timestampプロパティは定義していない。
+     * 
+     * @author jflute
+     */
+    public static class EmpByReflection {
+
+        public static final String TABLE = "EMP";
+
+        private long empno;
+
+        private String ename;
+
+        private String job;
+
+        private Float sal;
+
+        private Float comm;
+
+        private java.util.Set _modifiedPropertySet = new java.util.HashSet();
+
+        public long getEmpno() {
+            return this.empno;
+        }
+
+        public void setEmpno(long empno) {
+            _modifiedPropertySet.add("empno");
+            this.empno = empno;
+        }
+
+        public String getEname() {
+            return this.ename;
+        }
+
+        public void setEname(String ename) {
+            _modifiedPropertySet.add("ename");
+            this.ename = ename;
+        }
+
+        public String getJob() {
+            return this.job;
+        }
+
+        public void setJob(String job) {
+            _modifiedPropertySet.add("job");
+            this.job = job;
+        }
+
+        public Float getSal() {
+            return this.sal;
+        }
+
+        public void setSal(Float sal) {
+            _modifiedPropertySet.add("sal");
+            this.sal = sal;
+        }
+
+        public Float getComm() {
+            return this.comm;
+        }
+
+        public void setComm(Float comm) {
+            _modifiedPropertySet.add("comm");
+            this.comm = comm;
+        }
+
+        public java.util.Set getModifiedPropertyNames() {
+            return _modifiedPropertySet;
+        }
+
+        public String toString() {
+            StringBuffer buf = new StringBuffer();
+            buf.append(empno).append(", ");
+            buf.append(ename).append(", ");
+            buf.append(job).append(", ");
+            buf.append(sal).append(", ");
+            buf.append(comm).append(", ");
             return buf.toString();
         }
 

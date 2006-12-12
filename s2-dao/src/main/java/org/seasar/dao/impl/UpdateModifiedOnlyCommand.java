@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.ModifiedProperties;
 import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
+import org.seasar.dao.NotFoundModifiedPropertiesRuntimeException;
 import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
@@ -34,6 +35,7 @@ import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
  * @author manhole
+ * @author jflute
  */
 public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
 
@@ -56,8 +58,11 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
             try {
                 modifiedPropertyNames = getModifiedPropertyNamesByReflection(bean);
             } catch (Exception e) {
-                // TODO 例外メッセージを定義すること
-                throw new IllegalArgumentException(bean.getClass().getName());
+                // If the bean doesn't implement PropertyModifiedSupport
+                // and doesn't declare the property of modifiedPropertyNames, 
+                // user should not use modified-only update method.
+                throw new NotFoundModifiedPropertiesRuntimeException(bean
+                        .getClass().getName(), e);
             }
         }
 
