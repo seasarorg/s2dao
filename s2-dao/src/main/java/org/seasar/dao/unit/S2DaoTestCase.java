@@ -19,13 +19,17 @@ import java.sql.DatabaseMetaData;
 import java.util.List;
 
 import org.seasar.dao.AnnotationReaderFactory;
+import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
+import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
+import org.seasar.dao.impl.BeanEnhancerImpl;
 import org.seasar.dao.impl.BeanMetaDataFactoryImpl;
 import org.seasar.dao.impl.DaoMetaDataImpl;
+import org.seasar.dao.impl.DaoNamingConventionImpl;
 import org.seasar.dao.impl.FieldAnnotationReaderFactory;
 import org.seasar.dao.impl.ValueTypeFactoryImpl;
 import org.seasar.extension.dataset.DataSet;
@@ -46,14 +50,15 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     private BeanMetaDataFactory beanMetaDataFactory;
 
+    private DaoNamingConvention daoNamingConvention;
+
     private Dbms dbms;
+
+    private BeanEnhancer beanEnhancer;
 
     public S2DaoTestCase() {
     }
 
-    /**
-     * @param name
-     */
     public S2DaoTestCase(final String name) {
         super(name);
     }
@@ -96,21 +101,24 @@ public abstract class S2DaoTestCase extends S2TestCase {
         dmd.setAnnotationReaderFactory(getAnnotationReaderFactory());
         dmd.setValueTypeFactory(getValueTypeFactory());
         dmd.setBeanMetaDataFactory(getBeanMetaDataFactory());
+        dmd.setDaoNamingConvention(getDaoNamingConvention());
         dmd.initialize();
         return dmd;
     }
 
     protected BeanMetaDataFactory getBeanMetaDataFactory() {
         if (beanMetaDataFactory == null) {
-            final BeanMetaDataFactoryImpl factory = new BeanMetaDataFactoryImpl() {
+            final BeanMetaDataFactoryImpl impl = new BeanMetaDataFactoryImpl() {
                 protected Dbms getDbms() {
                     return S2DaoTestCase.this.getDbms();
                 }
             };
-            factory.setAnnotationReaderFactory(getAnnotationReaderFactory());
-            factory.setValueTypeFactory(getValueTypeFactory());
-            factory.setDataSource(getDataSource());
-            beanMetaDataFactory = factory;
+            impl.setAnnotationReaderFactory(getAnnotationReaderFactory());
+            impl.setValueTypeFactory(getValueTypeFactory());
+            impl.setDataSource(getDataSource());
+            impl.setDaoNamingConvention(getDaoNamingConvention());
+            impl.setBeanEnhancer(getBeanEnhancer());
+            beanMetaDataFactory = impl;
         }
         return beanMetaDataFactory;
     }
@@ -141,15 +149,40 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     protected ValueTypeFactory getValueTypeFactory() {
         if (valueTypeFactory == null) {
-            final ValueTypeFactoryImpl v = new ValueTypeFactoryImpl();
-            v.setContainer(getContainer());
-            valueTypeFactory = v;
+            final ValueTypeFactoryImpl impl = new ValueTypeFactoryImpl();
+            impl.setContainer(getContainer());
+            valueTypeFactory = impl;
         }
         return valueTypeFactory;
     }
 
     protected void setValueTypeFactory(final ValueTypeFactory valueTypeFactory) {
         this.valueTypeFactory = valueTypeFactory;
+    }
+
+    protected DaoNamingConvention getDaoNamingConvention() {
+        if (daoNamingConvention == null) {
+            daoNamingConvention = new DaoNamingConventionImpl();
+        }
+        return daoNamingConvention;
+    }
+
+    protected void setDaoNamingConvention(
+            final DaoNamingConvention daoNamingConvention) {
+        this.daoNamingConvention = daoNamingConvention;
+    }
+
+    protected BeanEnhancer getBeanEnhancer() {
+        if (beanEnhancer == null) {
+            final BeanEnhancerImpl impl = new BeanEnhancerImpl();
+            impl.setDaoNamingConvention(getDaoNamingConvention());
+            beanEnhancer = impl;
+        }
+        return beanEnhancer;
+    }
+
+    protected void setBeanEnhancer(final BeanEnhancer beanEnhancer) {
+        this.beanEnhancer = beanEnhancer;
     }
 
 }

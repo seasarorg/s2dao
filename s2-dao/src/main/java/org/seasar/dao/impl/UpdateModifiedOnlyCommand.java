@@ -23,15 +23,9 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
-import org.seasar.dao.ModifiedProperties;
 import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
-import org.seasar.dao.NotFoundModifiedPropertiesRuntimeException;
-import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
-import org.seasar.framework.beans.BeanDesc;
-import org.seasar.framework.beans.PropertyDesc;
-import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
  * @author manhole
@@ -39,33 +33,16 @@ import org.seasar.framework.beans.factory.BeanDescFactory;
  */
 public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
 
-    protected String modifiedPropertyNamesPropertyName;
-
     public UpdateModifiedOnlyCommand(final DataSource dataSource,
-            final StatementFactory statementFactory,
-            final String modifiedPropertyNamesPropertyName) {
+            final StatementFactory statementFactory) {
         super(dataSource, statementFactory);
-        this.modifiedPropertyNamesPropertyName = modifiedPropertyNamesPropertyName;
     }
 
     protected PropertyType[] createUpdatePropertyTypes(final BeanMetaData bmd,
             final Object bean, final String[] propertyNames) {
 
-        final Set modifiedPropertyNames;
-        if (bean instanceof PropertyModifiedSupport) {
-            modifiedPropertyNames = getModifiedPropertyNamesByInterface(bean);
-        } else {
-            try {
-                modifiedPropertyNames = getModifiedPropertyNamesByReflection(bean);
-            } catch (Exception e) {
-                // If the bean doesn't implement PropertyModifiedSupport
-                // and doesn't declare the property of modifiedPropertyNames, 
-                // user should not use modified-only update method.
-                throw new NotFoundModifiedPropertiesRuntimeException(bean
-                        .getClass().getName(), e);
-            }
-        }
-
+        final Set modifiedPropertyNames = getBeanMetaData()
+                .getModifiedPropertyNames(bean);
         final List types = new ArrayList();
         final String timestampPropertyName = bmd.getTimestampPropertyName();
         final String versionNoPropertyName = bmd.getVersionNoPropertyName();
@@ -86,19 +63,5 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
         final PropertyType[] propertyTypes = (PropertyType[]) types
                 .toArray(new PropertyType[types.size()]);
         return propertyTypes;
-    }
-
-    protected Set getModifiedPropertyNamesByInterface(final Object bean) {
-        final ModifiedProperties modifiedProperties = ((PropertyModifiedSupport) bean)
-                .getModifiedProperties();
-        return modifiedProperties.getPropertyNames();
-    }
-
-    protected Set getModifiedPropertyNamesByReflection(final Object bean) {
-        final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(bean.getClass());
-        final PropertyDesc propertyDesc = beanDesc
-                .getPropertyDesc(this.modifiedPropertyNamesPropertyName);
-        final Object value = propertyDesc.getValue(bean);
-        return (Set) value;
     }
 }

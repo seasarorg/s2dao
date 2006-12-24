@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.BeanMetaData;
-import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.extension.jdbc.PropertyType;
@@ -34,7 +33,8 @@ import org.seasar.framework.beans.PropertyDesc;
 public class BeanListMetaDataResultSetHandler extends
         AbstractBeanMetaDataResultSetHandler {
 
-    public BeanListMetaDataResultSetHandler(BeanMetaData beanMetaData, RelationRowCreator relationRowCreator) {
+    public BeanListMetaDataResultSetHandler(BeanMetaData beanMetaData,
+            RelationRowCreator relationRowCreator) {
         super(beanMetaData, relationRowCreator);
     }
 
@@ -54,26 +54,25 @@ public class BeanListMetaDataResultSetHandler extends
                 if (rpt == null) {
                     continue;
                 }
-                Object relRow = null;
+                Object relationRow = null;
                 Map relKeyValues = new HashMap();
                 RelationKey relKey = createRelationKey(rs, rpt, columnNames,
                         relKeyValues);
                 if (relKey != null) {
-                    relRow = relRowCache.getRelationRow(i, relKey);
-                    if (relRow == null) {
-                        relRow = createRelationRow(rs, rpt, columnNames,
+                    relationRow = relRowCache.getRelationRow(i, relKey);
+                    if (relationRow == null) {
+                        relationRow = createRelationRow(rs, rpt, columnNames,
                                 relKeyValues);
-                        relRowCache.addRelationRow(i, relKey, relRow);
+                        relRowCache.addRelationRow(i, relKey, relationRow);
                     }
                 }
-                if (relRow != null) {
+                if (relationRow != null) {
                     PropertyDesc pd = rpt.getPropertyDesc();
-                    pd.setValue(row, relRow);
+                    pd.setValue(row, relationRow);
+                    postCreateRow(relationRow);
                 }
             }
-            if (row instanceof PropertyModifiedSupport) {
-                ((PropertyModifiedSupport) row).getModifiedProperties().clear();
-            }
+            postCreateRow(row);
             list.add(row);
         }
         return list;

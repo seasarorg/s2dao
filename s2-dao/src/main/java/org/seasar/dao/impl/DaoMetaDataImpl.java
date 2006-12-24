@@ -36,13 +36,14 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaData;
+import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.DaoNotFoundRuntimeException;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
+import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
-import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
@@ -115,84 +116,13 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected ValueTypeFactory valueTypeFactory;
 
-    protected String[] daoSuffixes = new String[] { "Dao" };
-
-    protected String[] insertPrefixes = new String[] { "insert", "create",
-            "add" };
-
-    protected String[] updatePrefixes = new String[] { "update", "modify",
-            "store" };
-
-    protected String[] deletePrefixes = new String[] { "delete", "remove" };
-
-    protected String[] unlessNullSuffixes = new String[] { "UnlessNull" };
-
-    // TODO カスタマイズ可能にする
-    protected String[] modifiedOnlySuffixes = new String[] { "ModifiedOnly" };
-
-    // TODO カスタマイズ可能にする
-    protected String modifiedPropertyNamesPropertyName = "modifiedPropertyNames";
-
     protected ResultSetHandlerFactory resultSetHandlerFactory;
 
     protected BeanMetaDataFactory beanMetaDataFactory;
 
+    protected DaoNamingConvention daoNamingConvention;
+
     public DaoMetaDataImpl() {
-    }
-
-    /**
-     * @deprecated
-     */
-    public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
-            StatementFactory statementFactory, ResultSetFactory resultSetFactory) {
-        this(daoClass, dataSource, statementFactory, resultSetFactory,
-                new FieldAnnotationReaderFactory(), null, null, null, null,
-                null);
-    }
-
-    /**
-     * @deprecated
-     */
-    public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
-            StatementFactory statementFactory,
-            ResultSetFactory resultSetFactory,
-            AnnotationReaderFactory annotationReaderFactory) {
-        this(daoClass, dataSource, statementFactory, resultSetFactory,
-                annotationReaderFactory, null, null, null, null, null);
-    }
-
-    /**
-     * @deprecated
-     */
-    public DaoMetaDataImpl(Class daoClass, DataSource dataSource,
-            StatementFactory statementFactory,
-            ResultSetFactory resultSetFactory,
-            AnnotationReaderFactory annotationReaderFactory, String encoding,
-            String[] daoSuffixes, String[] insertPrefixes,
-            String[] updatePrefixes, String[] deletePrefixes) {
-        setDaoClass(daoClass);
-        setDataSource(dataSource);
-        setStatementFactory(statementFactory);
-        setResultSetFactory(resultSetFactory);
-        setAnnotationReaderFactory(annotationReaderFactory);
-        setValueTypeFactory(new ValueTypeFactoryImpl());
-        if (encoding != null) {
-            setSqlFileEncoding(encoding);
-        }
-        if (daoSuffixes != null) {
-            setDaoSuffixes(daoSuffixes);
-        }
-        if (insertPrefixes != null) {
-            setInsertPrefixes(insertPrefixes);
-        }
-        if (updatePrefixes != null) {
-            setUpdatePrefixes(updatePrefixes);
-        }
-        if (deletePrefixes != null) {
-            setDeletePrefixes(deletePrefixes);
-        }
-        setBeanMetaDataFactory(new BeanMetaDataFactoryImpl());
-        initialize();
     }
 
     public void initialize() {
@@ -562,7 +492,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
     private AbstractSqlCommand createUpdateModifiedOnlyCommand(
             final Method method, final String[] propertyNames) {
         UpdateModifiedOnlyCommand uac = new UpdateModifiedOnlyCommand(
-                dataSource, statementFactory, modifiedPropertyNamesPropertyName);
+                dataSource, statementFactory);
         uac.setBeanMetaData(beanMetaData);
         uac.setPropertyNames(propertyNames);
         uac
@@ -829,6 +759,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected boolean isInsert(String methodName) {
+        final String[] insertPrefixes = getDaoNamingConvention()
+                .getInsertPrefixes();
         for (int i = 0; i < insertPrefixes.length; ++i) {
             if (methodName.startsWith(insertPrefixes[i])) {
                 return true;
@@ -838,6 +770,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected boolean isUpdate(String methodName) {
+        final String[] updatePrefixes = getDaoNamingConvention()
+                .getUpdatePrefixes();
         for (int i = 0; i < updatePrefixes.length; ++i) {
             if (methodName.startsWith(updatePrefixes[i])) {
                 return true;
@@ -847,6 +781,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected boolean isDelete(String methodName) {
+        final String[] deletePrefixes = getDaoNamingConvention()
+                .getDeletePrefixes();
         for (int i = 0; i < deletePrefixes.length; ++i) {
             if (methodName.startsWith(deletePrefixes[i])) {
                 return true;
@@ -856,6 +792,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected boolean isUnlessNull(String methodName) {
+        final String[] unlessNullSuffixes = getDaoNamingConvention()
+                .getUnlessNullSuffixes();
         for (int i = 0; i < unlessNullSuffixes.length; i++) {
             if (methodName.endsWith(unlessNullSuffixes[i])) {
                 return true;
@@ -865,6 +803,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected boolean isModifiedOnly(final String methodName) {
+        final String[] modifiedOnlySuffixes = getDaoNamingConvention()
+                .getModifiedOnlySuffixes();
         for (int i = 0; i < modifiedOnlySuffixes.length; i++) {
             if (methodName.endsWith(modifiedOnlySuffixes[i])) {
                 return true;
@@ -944,6 +884,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         if (clazz.isInterface()) {
             return clazz;
         }
+        final String[] daoSuffixes = getDaoNamingConvention().getDaoSuffixes();
         for (Class target = clazz; target != AbstractDao.class; target = target
                 .getSuperclass()) {
             Class[] interfaces = target.getInterfaces();
@@ -980,32 +921,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
         this.statementFactory = statementFactory;
     }
 
-    public void setDaoSuffixes(String[] daoSuffixes) {
-        this.daoSuffixes = daoSuffixes;
-    }
-
-    public void setDeletePrefixes(String[] deletePrefixes) {
-        this.deletePrefixes = deletePrefixes;
-    }
-
     protected String getSqlFileEncoding() {
         return sqlFileEncoding;
     }
 
     public void setSqlFileEncoding(String sencoding) {
         this.sqlFileEncoding = sencoding;
-    }
-
-    public void setInsertPrefixes(String[] insertPrefixes) {
-        this.insertPrefixes = insertPrefixes;
-    }
-
-    public void setUpdatePrefixes(String[] updatePrefixes) {
-        this.updatePrefixes = updatePrefixes;
-    }
-
-    public void setUnlessNullSuffixes(String[] suffixes) {
-        this.unlessNullSuffixes = suffixes;
     }
 
     public ValueTypeFactory getValueTypeFactory() {
@@ -1030,6 +951,15 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     public void setBeanMetaDataFactory(BeanMetaDataFactory beanMetaDataFactory) {
         this.beanMetaDataFactory = beanMetaDataFactory;
+    }
+
+    public DaoNamingConvention getDaoNamingConvention() {
+        return daoNamingConvention;
+    }
+
+    public void setDaoNamingConvention(
+            final DaoNamingConvention daoNamingConvention) {
+        this.daoNamingConvention = daoNamingConvention;
     }
 
     public static class ResultSetHandlerFactoryImpl implements

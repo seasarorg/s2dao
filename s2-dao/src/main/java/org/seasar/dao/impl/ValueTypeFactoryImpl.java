@@ -25,6 +25,8 @@ import org.seasar.framework.container.S2Container;
  */
 public class ValueTypeFactoryImpl implements ValueTypeFactory {
 
+    public static final String container_BINDING = "bindingType=must";
+
     private S2Container container;
 
     public ValueType getValueTypeByName(String name) {

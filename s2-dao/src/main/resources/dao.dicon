@@ -18,4 +18,6 @@
 		class="org.seasar.extension.jdbc.types.StringClobType"
 	/>
 	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
+	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
+	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
 </components>

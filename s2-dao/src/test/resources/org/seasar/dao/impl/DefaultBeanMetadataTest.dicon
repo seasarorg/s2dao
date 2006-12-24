@@ -5,4 +5,5 @@
 	<include path="j2ee.dicon"/>
 	<component
 		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"/>
+	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
 </components>

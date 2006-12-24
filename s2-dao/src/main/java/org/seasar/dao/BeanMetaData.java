@@ -15,15 +15,20 @@
  */
 package org.seasar.dao;
 
+import java.util.Set;
+
 import org.seasar.extension.jdbc.ColumnNotFoundRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.framework.beans.PropertyNotFoundRuntimeException;
 
 /**
  * @author higa
- * 
+ * @author manhole
+ * @author jflute
  */
 public interface BeanMetaData extends DtoMetaData {
+
+    public Class getBeanClass();
 
     public String getTableName();
 
@@ -69,4 +74,7 @@ public interface BeanMetaData extends DtoMetaData {
     public String getAutoSelectList();
 
     public boolean isStopRelationCreation();
+
+    public Set getModifiedPropertyNames(Object bean);
+
 }

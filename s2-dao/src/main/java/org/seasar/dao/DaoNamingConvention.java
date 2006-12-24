@@ -16,10 +16,28 @@
 package org.seasar.dao;
 
 /**
+ * S2Daoでの命名規約です。
+ * 
  * @author manhole
  */
-public interface PropertyModifiedSupport {
+public interface DaoNamingConvention {
 
-    ModifiedProperties getModifiedProperties();
+    String getTimestampPropertyName();
+
+    String getVersionNoPropertyName();
+
+    String[] getDaoSuffixes();
+
+    String[] getDeletePrefixes();
+
+    String[] getInsertPrefixes();
+
+    String[] getUnlessNullSuffixes();
+
+    String[] getUpdatePrefixes();
+
+    String[] getModifiedOnlySuffixes();
+
+    String getModifiedPropertyNamesPropertyName();
 
 }

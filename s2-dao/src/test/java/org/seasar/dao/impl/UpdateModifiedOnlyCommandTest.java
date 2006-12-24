@@ -17,11 +17,9 @@ package org.seasar.dao.impl;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-import org.seasar.dao.ModifiedProperties;
 import org.seasar.dao.NotFoundModifiedPropertiesRuntimeException;
-import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.PropertyType;
@@ -36,9 +34,7 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
     /*
      * TODO testing...
      * 
-     * - Entityがinterface PropertyModifiedSupportをimplementsしている場合(余計なエンハンスをしないこと)
-     * - Entityのsetterがfinalだった場合
-     * - SELECTのSqlCommandが、Entity単体を返却する場合と、複数Entityを返す場合をtestする
+     * - Entityがinterface ModifiedPropertyプロパティを持っている場合(余計なエンハンスをしないこと)
      * - "ModifiedOnly"サフィックスが変更された場合にも動くこと
      * 
      */
@@ -99,26 +95,24 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         updateModifiedOnly.execute(new Object[] { emp });
     }
 
-    /*
-     * 関連先のEntityでも、
-     * 更新されたプロパティとtimestampだけをUPDATE文に含むこと。
+    /**
+     * 関連先のEntityでも、更新されたプロパティとtimestampだけをUPDATE文に含むこと。
      * (RelationPropertyTypeの先もエンハンスされていること)
      */
     public void testRelationCreateModifiedPropertiesTx() throws Exception {
         // ## Arrange ##
-
         final Emp2 emp = emp2Dao.findById(7499);
         System.out.println(emp);
         assertEquals(7499, emp.getEmpno());
 
         final Dept dept = emp.getDept();
         assertNotNull(dept);
+
+        // TODO enhanceされたクラスであること、をassertする
         System.out.println(dept);
         System.out.println(dept.getClass());
 
-        /*
-         * ここで更新した1カラムとがUPDATE文に含まれるべき。
-         */
+        // ここで更新した1カラムがUPDATE文に含まれるべき。
         dept.setDname("FOO");
 
         // ## Act ##
@@ -140,38 +134,51 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         assertEquals(1, set.size());
         assertEquals(true, set.contains("dname"));
         updateModifiedOnly.execute(new Object[] { dept });
+
+        final Emp2 emp2 = emp2Dao.findById(7499);
+        assertEquals("FOO", emp2.getDept().getDname());
     }
 
-    public void testByDaoTx() throws Exception {
+    /**
+     * 関連先のEntityでも、更新されたプロパティとtimestampだけをUPDATE文に含むこと。
+     * (RelationPropertyTypeの先もエンハンスされていること)
+     */
+    public void testListRelationCreateModifiedPropertiesTx() throws Exception {
         // ## Arrange ##
-        final Emp emp = empDao.findById(7499);
-        System.out.println(emp);
-        emp.setJob("MANAGER");
+        final List emps = emp2Dao.findByJob("MANAGER");
+        System.out.println(emps);
+        final Emp2 emp1 = ((Emp2) emps.get(0));
+        assertEquals(7566, emp1.getEmpno());
+
+        final Dept dept = emp1.getDept();
+        assertNotNull(dept);
+        assertEquals("RESEARCH", dept.getDname());
+
+        // ここで更新した1カラムがUPDATE文に含まれるべき。
+        dept.setDname("baar");
 
         // ## Act ##
-        empDao.updateModifiedOnly(emp);
+        final DaoMetaDataImpl dmd = createDaoMetaData(DeptDao.class);
+        final UpdateModifiedOnlyCommand updateModifiedOnly = (UpdateModifiedOnlyCommand) dmd
+                .getSqlCommand("updateModifiedOnly");
+        final PropertyType[] propertyTypes = updateModifiedOnly
+                .createUpdatePropertyTypes(dmd.getBeanMetaData(), dept,
+                        updateModifiedOnly.getPropertyNames());
 
         // ## Assert ##
+        final HashSet set = new HashSet();
+        for (int i = 0; i < propertyTypes.length; i++) {
+            final PropertyType type = propertyTypes[i];
+            set.add(type.getPropertyName());
+            System.out.println(type.getPropertyName() + ", "
+                    + type.getColumnName());
+        }
+        assertEquals(1, set.size());
+        assertEquals(true, set.contains("dname"));
+        updateModifiedOnly.execute(new Object[] { dept });
 
-    }
-
-    public void testRelationByDaoTx() throws Exception {
-        // ## Arrange ##
-        final Emp2 emp = emp2Dao.findById(7499);
-        System.out.println(emp);
-
-        final Dept dept = emp.getDept();
-        System.out.println(dept);
-        // enhanceされたクラスであること
-        System.out.println(dept.getClass());
-
-        dept.setLoc("TOKYO");
-
-        // ## Act ##
-        deptDao.updateModifiedOnly(dept);
-
-        // ## Assert ##
-
+        final Emp2 emp2 = emp2Dao.findById(7566);
+        assertEquals("baar", emp2.getDept().getDname());
     }
 
     /*
@@ -244,6 +251,10 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         public String findById_ARGS = "empno";
 
         Emp2 findById(long empno);
+
+        public String findByJob_ARGS = "job";
+
+        List findByJob(String job);
 
         int updateModifiedOnly(Emp2 emp);
 

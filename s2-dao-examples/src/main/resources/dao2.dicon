@@ -7,15 +7,17 @@
 		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"/>
 	<component
 		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
-		<property name="sqlFileEncoding">"ShiftJIS"</property>
-		<property name="daoSuffixes">new String[]{"Manager"}</property>
-		<property name="insertPrefixes">new String[]{"generate"}</property>
-		<property name="deletePrefixes">new String[]{"destory"}</property>
-		<property name="updatePrefixes">new String[]{"change"}</property>
+		<property name="sqlFileEncoding">"MS932"</property>
 	</component>
 	<component name="interceptor"
 		class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
 	<component
 		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
 	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
+	<component class="org.seasar.dao.impl.DaoNamingConventionImpl">
+		<property name="insertPrefixes">new String[]{"generate"}</property>
+		<property name="deletePrefixes">new String[]{"destory"}</property>
+		<property name="updatePrefixes">new String[]{"change"}</property>
+	</component>
+	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
 </components>

@@ -23,15 +23,18 @@ import org.seasar.framework.exception.SRuntimeException;
 public class NotFoundModifiedPropertiesRuntimeException extends
         SRuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     private String beanClassName;
 
-    public NotFoundModifiedPropertiesRuntimeException(String beanClassName,
-            Throwable e) {
-        super("EDAO0021", new Object[] { beanClassName }, e);
+    public NotFoundModifiedPropertiesRuntimeException(
+            final String beanClassName, final String propertyName) {
+        super("EDAO0021", new Object[] { beanClassName, propertyName });
         this.beanClassName = beanClassName;
     }
 
     public String getBeanClassName() {
         return beanClassName;
     }
+
 }

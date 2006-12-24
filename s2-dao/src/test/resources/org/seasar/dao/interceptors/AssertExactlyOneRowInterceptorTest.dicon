@@ -21,4 +21,6 @@
 			</component>
 		</aspect>
 	</component>
+	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
+	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
 </components>

@@ -25,14 +25,6 @@ public class S2DaoInterceptor3Test extends S2TestCase {
 
     private DepartmentAutoDao dao;
 
-    public S2DaoInterceptor3Test(String arg0) {
-        super(arg0);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(S2DaoInterceptor3Test.class);
-    }
-
     public void setUp() {
         include("DepartmentAutoDao.dicon");
     }

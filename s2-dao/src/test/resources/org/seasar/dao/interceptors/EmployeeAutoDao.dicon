@@ -2,17 +2,8 @@
 <!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container//EN"
 "http://www.seasar.org/dtd/components.dtd">
 <components>
-	<include path="j2ee.dicon"/>
-	<component
-		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"/>
-	<component
-		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
-	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
-	<component
-		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl"/>
+	<include path="dao.dicon"/>
 	<component class="org.seasar.dao.interceptors.EmployeeAutoDao">
-		<aspect>
-			<component class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
-		</aspect>
+		<aspect>dao.interceptor</aspect>
 	</component>
 </components>

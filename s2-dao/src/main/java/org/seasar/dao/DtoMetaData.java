@@ -20,13 +20,11 @@ import org.seasar.framework.beans.PropertyNotFoundRuntimeException;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public interface DtoMetaData {
 
     public String COLUMN_SUFFIX = "_COLUMN";
-
-    public Class getBeanClass();
 
     public int getPropertyTypeSize();
 

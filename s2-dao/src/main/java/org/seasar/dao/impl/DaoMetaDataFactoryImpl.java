@@ -24,6 +24,7 @@ import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoMetaDataFactory;
+import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.StatementFactory;
@@ -36,6 +37,22 @@ import org.seasar.framework.util.DisposableUtil;
  * @author jflute
  */
 public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
+
+    public static final String daoMetaDataCache_BINDING = "bindingType=must";
+
+    public static final String dataSource_BINDING = "bindingType=must";
+
+    public static final String statementFactory_BINDING = "bindingType=must";
+
+    public static final String resultSetFactory_BINDING = "bindingType=must";
+
+    public static final String annotationReaderFactory_BINDING = "bindingType=must";
+
+    public static final String valueTypeFactory_BINDING = "bindingType=must";
+
+    public static final String beanMetaDataFactory_BINDING = "bindingType=must";
+
+    public static final String daoNamingConvention_BINDING = "bindingType=must";
 
     protected Map daoMetaDataCache = new HashMap();
 
@@ -51,18 +68,10 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected String sqlFileEncoding;
 
-    protected String[] daoSuffixes;
-
-    protected String[] insertPrefixes;
-
-    protected String[] deletePrefixes;
-
-    protected String[] updatePrefixes;
-
-    protected String[] unlessNullSuffixes;
-
     protected BeanMetaDataFactory beanMetaDataFactory;
-    
+
+    protected DaoNamingConvention daoNamingConvention;
+
     protected boolean initialized;
 
     public DaoMetaDataFactoryImpl(DataSource dataSource,
@@ -80,26 +89,6 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         this.sqlFileEncoding = encoding;
     }
 
-    public void setDaoSuffixes(String[] suffixes) {
-        this.daoSuffixes = suffixes;
-    }
-
-    public void setInsertPrefixes(String[] prefixes) {
-        this.insertPrefixes = prefixes;
-    }
-
-    public void setDeletePrefixes(String[] prefixes) {
-        this.deletePrefixes = prefixes;
-    }
-
-    public void setUpdatePrefixes(String[] prefixes) {
-        this.updatePrefixes = prefixes;
-    }
-
-    public void setUnlessNullSuffixes(String[] suffixes) {
-        this.unlessNullSuffixes = suffixes;
-    }
-    
     public synchronized DaoMetaData getDaoMetaData(Class daoClass) {
         if (!initialized) {
             DisposableUtil.add(this);
@@ -124,23 +113,9 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         daoMetaData.setAnnotationReaderFactory(annotationReaderFactory);
         daoMetaData.setValueTypeFactory(valueTypeFactory);
         daoMetaData.setBeanMetaDataFactory(getBeanMetaDataFactory());
+        daoMetaData.setDaoNamingConvention(getDaoNamingConvention());
         if (sqlFileEncoding != null) {
             daoMetaData.setSqlFileEncoding(sqlFileEncoding);
-        }
-        if (daoSuffixes != null) {
-            daoMetaData.setDaoSuffixes(daoSuffixes);
-        }
-        if (insertPrefixes != null) {
-            daoMetaData.setInsertPrefixes(insertPrefixes);
-        }
-        if (updatePrefixes != null) {
-            daoMetaData.setUpdatePrefixes(updatePrefixes);
-        }
-        if (deletePrefixes != null) {
-            daoMetaData.setDeletePrefixes(deletePrefixes);
-        }
-        if (unlessNullSuffixes != null) {
-            daoMetaData.setUnlessNullSuffixes(unlessNullSuffixes);
         }
         daoMetaData.initialize();
         return daoMetaData;
@@ -157,14 +132,22 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
     protected BeanMetaDataFactory getBeanMetaDataFactory() {
         return beanMetaDataFactory;
     }
-    
+
     public void setBeanMetaDataFactory(BeanMetaDataFactory beanMetaDataFactory) {
         this.beanMetaDataFactory = beanMetaDataFactory;
     }
-    
+
     public synchronized void dispose() {
         daoMetaDataCache.clear();
         initialized = false;
+    }
+
+    public DaoNamingConvention getDaoNamingConvention() {
+        return daoNamingConvention;
+    }
+
+    public void setDaoNamingConvention(DaoNamingConvention daoNamingConvention) {
+        this.daoNamingConvention = daoNamingConvention;
     }
 
 }

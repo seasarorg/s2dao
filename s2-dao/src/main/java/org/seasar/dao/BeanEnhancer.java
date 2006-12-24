@@ -13,30 +13,19 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.dao.impl;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import org.seasar.dao.ModifiedProperties;
+package org.seasar.dao;
 
 /**
  * @author manhole
  */
-public class ModifiedPropertiesImpl implements ModifiedProperties {
+public interface BeanEnhancer {
 
-    private final Set propertyNames = new HashSet();
+    Class enhanceBeanClass(Class beanClass, String versionNoPropertyName,
+            String timestampPropertyName);
 
-    public void addPropertyName(final String propertyName) {
-        propertyNames.add(propertyName);
-    }
-
-    public void clear() {
-        propertyNames.clear();
-    }
-
-    public Set getPropertyNames() {
-        return propertyNames;
-    }
+    /**
+     * エンハンス前のクラスを返します。
+     */
+    Class getOriginalClass(Class beanClass);
 
 }

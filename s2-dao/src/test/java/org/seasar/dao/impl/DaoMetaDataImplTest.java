@@ -70,16 +70,18 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
     }
 
     public void testPrefixTest() {
-        DaoMetaDataImpl dmd = new DaoMetaDataImpl();
+        final DaoMetaDataImpl dmd = new DaoMetaDataImpl();
         dmd.setDaoClass(getDaoClass("Employee8Manager"));
         dmd.setDataSource(getDataSource());
         dmd.setStatementFactory(BasicStatementFactory.INSTANCE);
         dmd.setResultSetFactory(BasicResultSetFactory.INSTANCE);
         dmd.setAnnotationReaderFactory(getAnnotationReaderFactory());
-        dmd.setDaoSuffixes(new String[] { "Manager" });
-        dmd.setInsertPrefixes(new String[] { "generate" });
-        dmd.setUpdatePrefixes(new String[] { "change" });
-        dmd.setDeletePrefixes(new String[] { "terminate" });
+        final DaoNamingConventionImpl daoNamingConvention = new DaoNamingConventionImpl();
+        daoNamingConvention.setDaoSuffixes(new String[] { "Manager" });
+        daoNamingConvention.setInsertPrefixes(new String[] { "generate" });
+        daoNamingConvention.setUpdatePrefixes(new String[] { "change" });
+        daoNamingConvention.setDeletePrefixes(new String[] { "terminate" });
+        dmd.setDaoNamingConvention(daoNamingConvention);
         dmd.setValueTypeFactory(getValueTypeFactory());
         dmd.setBeanMetaDataFactory(getBeanMetaDataFactory());
         dmd.initialize();

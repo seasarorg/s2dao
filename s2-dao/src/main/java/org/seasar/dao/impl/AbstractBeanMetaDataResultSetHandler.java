@@ -37,10 +37,11 @@ public abstract class AbstractBeanMetaDataResultSetHandler implements
         ResultSetHandler {
 
     private BeanMetaData beanMetaData;
-    
+
     private RelationRowCreator relationRowCreator;
 
-    public AbstractBeanMetaDataResultSetHandler(BeanMetaData beanMetaData, RelationRowCreator relationRowCreator) {
+    public AbstractBeanMetaDataResultSetHandler(BeanMetaData beanMetaData,
+            RelationRowCreator relationRowCreator) {
         this.beanMetaData = beanMetaData;
         this.relationRowCreator = relationRowCreator;
     }
@@ -85,7 +86,8 @@ public abstract class AbstractBeanMetaDataResultSetHandler implements
 
     protected Object createRelationRow(ResultSet rs, RelationPropertyType rpt,
             Set columnNames, Map relKeyValues) throws SQLException {
-        return relationRowCreator.createRelationRow(rs, rpt, columnNames, relKeyValues);
+        return relationRowCreator.createRelationRow(rs, rpt, columnNames,
+                relKeyValues);
     }
 
     /*
@@ -106,6 +108,12 @@ public abstract class AbstractBeanMetaDataResultSetHandler implements
             }
         }
         return columnNames;
+    }
+
+    protected void postCreateRow(final Object row) {
+        final BeanMetaData bmd = getBeanMetaData();
+        final Set names = bmd.getModifiedPropertyNames(row);
+        names.clear();
     }
 
 }

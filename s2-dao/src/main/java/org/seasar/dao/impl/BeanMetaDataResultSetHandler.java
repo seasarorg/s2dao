@@ -20,8 +20,6 @@ import java.sql.SQLException;
 import java.util.Set;
 
 import org.seasar.dao.BeanMetaData;
-import org.seasar.dao.ModifiedProperties;
-import org.seasar.dao.PropertyModifiedSupport;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.framework.beans.PropertyDesc;
@@ -29,7 +27,8 @@ import org.seasar.framework.beans.PropertyDesc;
 public class BeanMetaDataResultSetHandler extends
         AbstractBeanMetaDataResultSetHandler {
 
-    public BeanMetaDataResultSetHandler(BeanMetaData beanMetaData, RelationRowCreator relationRowCreator) {
+    public BeanMetaDataResultSetHandler(BeanMetaData beanMetaData,
+            RelationRowCreator relationRowCreator) {
         super(beanMetaData, relationRowCreator);
     }
 
@@ -51,22 +50,13 @@ public class BeanMetaDataResultSetHandler extends
                 if (relationRow != null) {
                     PropertyDesc pd = rpt.getPropertyDesc();
                     pd.setValue(row, relationRow);
+                    postCreateRow(relationRow);
                 }
-                clearPropertyModified(relationRow);
             }
-            clearPropertyModified(row);
+            postCreateRow(row);
             return row;
         } else {
             return null;
-        }
-    }
-
-    private void clearPropertyModified(Object row) {
-        if (row instanceof PropertyModifiedSupport) {
-            final PropertyModifiedSupport propertyModifiedSupport = (PropertyModifiedSupport) row;
-            final ModifiedProperties modifiedProperties = propertyModifiedSupport
-                    .getModifiedProperties();
-            modifiedProperties.clear();
         }
     }
 

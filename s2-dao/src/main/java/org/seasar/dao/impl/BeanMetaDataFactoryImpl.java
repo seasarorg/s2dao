@@ -15,42 +15,28 @@
  */
 package org.seasar.dao.impl;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-
-import javassist.CannotCompileException;
-import javassist.CtClass;
-import javassist.CtField;
-import javassist.CtMethod;
-import javassist.CtNewMethod;
-import javassist.NotFoundException;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
+import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
-import org.seasar.dao.ModifiedProperties;
-import org.seasar.dao.PropertyModifiedSupport;
+import org.seasar.dao.NotFoundModifiedPropertiesRuntimeException;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
+import org.seasar.dao.impl.BeanMetaDataImpl.ModifiedPropertySupport;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
-import org.seasar.framework.aop.javassist.AspectWeaver;
-import org.seasar.framework.aop.javassist.EnhancedClassGenerator;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
-import org.seasar.framework.exception.CannotCompileRuntimeException;
-import org.seasar.framework.exception.NoSuchFieldRuntimeException;
-import org.seasar.framework.exception.NotFoundRuntimeException;
-import org.seasar.framework.util.ClassLoaderUtil;
-import org.seasar.framework.util.ClassUtil;
-import org.seasar.framework.util.FieldUtil;
-import org.seasar.framework.util.StringUtil;
 
 /**
  * @author jflute
@@ -58,15 +44,25 @@ import org.seasar.framework.util.StringUtil;
  */
 public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
-    private static final String GET_MODIFIED_PROPERTIES = "getModifiedProperties";
+    public static final String annotationReaderFactory_BINDING = "bindingType=must";
 
-    private static final String MODIFIED_PROPERTIES = "modifiedProperties";
+    public static final String valueTypeFactory_BINDING = "bindingType=must";
+
+    public static final String dataSource_BINDING = "bindingType=must";
+
+    public static final String daoNamingConvention_BINDING = "bindingType=must";
+
+    public static final String beanEnhancer_BINDING = "bindingType=must";
 
     protected AnnotationReaderFactory annotationReaderFactory;
 
     protected ValueTypeFactory valueTypeFactory;
 
     protected DataSource dataSource;
+
+    protected DaoNamingConvention daoNamingConvention;
+
+    protected BeanEnhancer beanEnhancer;
 
     public BeanMetaData createBeanMetaData(final Class beanClass) {
         return createBeanMetaData(beanClass, 0);
@@ -91,14 +87,8 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
             final int relationNestLevel) {
 
         final BeanMetaDataImpl bmd = createBeanMetaDataImpl();
-        final boolean isEnhancedClass = isEnhancedClass(beanClass);
-        final Class originalBeanClass;
-        if (isEnhancedClass) {
-            // enhance前のクラスがBEANアノテーションで指定されたクラス
-            originalBeanClass = beanClass.getSuperclass();
-        } else {
-            originalBeanClass = beanClass;
-        }
+        final BeanEnhancer enhancer = getBeanEnhancer();
+        final Class originalBeanClass = enhancer.getOriginalClass(beanClass);
         bmd.setDatabaseMetaData(dbMetaData);
         final Dbms dbms = getDbms();
         bmd.setDbms(dbms);
@@ -110,37 +100,34 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
                 .setStopRelationCreation(isLimitRelationNestLevel(relationNestLevel));
         bmd.setBeanMetaDataFactory(this);
         bmd.setRelationNestLevel(relationNestLevel);
+        final DaoNamingConvention namingConvention = getDaoNamingConvention();
 
         final String versionNoPropertyName = bar.getVersionNoPropertyName();
         if (versionNoPropertyName != null) {
             bmd.setVersionNoPropertyName(versionNoPropertyName);
+        } else {
+            bmd.setVersionNoPropertyName(namingConvention
+                    .getVersionNoPropertyName());
         }
         final String timestampPropertyName = bar.getTimestampPropertyName();
         if (timestampPropertyName != null) {
             bmd.setTimestampPropertyName(timestampPropertyName);
+        } else {
+            bmd.setTimestampPropertyName(namingConvention
+                    .getTimestampPropertyName());
         }
 
         bmd.setBeanClass(originalBeanClass);
         bmd.initialize();
-        if (!isEnhancedClass) {
-            final Class enhancedBeanClass = enhanceBeanClass(beanClass,
-                    versionNoPropertyName, timestampPropertyName);
-            bmd.setBeanClass(enhancedBeanClass);
-        }
-        return bmd;
-    }
-
-    private boolean isEnhancedClass(final Class targetClass) {
-        return StringUtil.contains(ClassUtil.getSimpleClassName(targetClass),
-                AspectWeaver.SUFFIX_ENHANCED_CLASS);
-    }
-
-    private Class enhanceBeanClass(final Class targetClass,
-            String versionNoPropertyName, String timestampPropertyName) {
-        final BeanAspectWeaver aspectWeaver = new BeanAspectWeaver(targetClass,
+        final Class enhancedBeanClass = enhancer.enhanceBeanClass(beanClass,
                 versionNoPropertyName, timestampPropertyName);
-        final Class generateBeanClass = aspectWeaver.generateBeanClass();
-        return generateBeanClass;
+
+        // TODO enhanceしないModifiedPropertySupportをサポートする。
+        final ModifiedPropertySupportImpl modifiedPropertySupport = new ModifiedPropertySupportImpl();
+        modifiedPropertySupport.setDaoNamingConvention(namingConvention);
+        bmd.setModifiedPropertySupport(modifiedPropertySupport);
+        bmd.setBeanClass(enhancedBeanClass);
+        return bmd;
     }
 
     protected Dbms getDbms() {
@@ -173,118 +160,51 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         this.valueTypeFactory = valueTypeFactory;
     }
 
-    /**
-     * Entityに{@link PropertyModifiedSupport}をimplementsさせるエンハンサ。
-     *
-     */
-    private static class BeanAspectWeaver extends AspectWeaver {
+    public DaoNamingConvention getDaoNamingConvention() {
+        return daoNamingConvention;
+    }
 
-        private static final String modifiedPropertiesfieldName = MODIFIED_PROPERTIES
-                + "_";
+    public void setDaoNamingConvention(
+            final DaoNamingConvention daoNamingConvention) {
+        this.daoNamingConvention = daoNamingConvention;
+    }
 
-        private String versionNoPropertyName;
+    public BeanEnhancer getBeanEnhancer() {
+        return beanEnhancer;
+    }
 
-        private String timestampPropertyName;
+    public void setBeanEnhancer(final BeanEnhancer beanEnhancer) {
+        this.beanEnhancer = beanEnhancer;
+    }
 
-        public BeanAspectWeaver(final Class targetClass,
-                String versionNoPropertyName, String timestampPropertyName) {
-            super(targetClass, null);
-            this.versionNoPropertyName = versionNoPropertyName;
-            this.timestampPropertyName = timestampPropertyName;
-        }
+    private static class ModifiedPropertySupportImpl implements
+            ModifiedPropertySupport {
 
-        public Class generateBeanClass() {
-            try {
-                final CtClass enhancedCtClass = getEnhancedCtClass();
-                combineField(enhancedCtClass);
-                combineInterface(enhancedCtClass);
-                combineProperties(enhancedCtClass);
-                final Class beanClass = enhancedClassGenerator
-                        .toClass(ClassLoaderUtil.getClassLoader(targetClass));
-                return beanClass;
-            } catch (final CannotCompileException e) {
-                throw new CannotCompileRuntimeException(e);
-            } catch (final NotFoundException e) {
-                throw new NotFoundRuntimeException(e);
+        private DaoNamingConvention daoNamingConvention;
+
+        public Set getModifiedPropertyNames(final Object bean) {
+            final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(bean
+                    .getClass());
+            final String propertyName = getDaoNamingConvention()
+                    .getModifiedPropertyNamesPropertyName();
+            if (!beanDesc.hasPropertyDesc(propertyName)) {
+                throw new NotFoundModifiedPropertiesRuntimeException(bean
+                        .getClass().getName(), propertyName);
             }
+            final PropertyDesc propertyDesc = beanDesc
+                    .getPropertyDesc(propertyName);
+            final Object value = propertyDesc.getValue(bean);
+            final Set names = (Set) value;
+            return names;
         }
 
-        /**
-         * {@link PropertyModifiedSupport}をEntityにimplementsさせ、
-         * {@link ModifiedProperties}を返却するメソッドを実装する。
-         */
-        private void combineInterface(final CtClass enhancedCtClass)
-                throws NotFoundException, CannotCompileException {
-            enhancedCtClass.addInterface(classPool
-                    .get(PropertyModifiedSupport.class.getName()));
-            final String s = "public " + ModifiedProperties.class.getName()
-                    + " " + GET_MODIFIED_PROPERTIES + "() {" + "  return "
-                    + modifiedPropertiesfieldName + "; }";
-            final CtMethod m = CtNewMethod.make(s, enhancedCtClass);
-            enhancedCtClass.addMethod(m);
+        public DaoNamingConvention getDaoNamingConvention() {
+            return daoNamingConvention;
         }
 
-        /**
-         * setterが呼ばれたことを記録するインスタンス変数をEntityに実装する。
-         */
-        private void combineField(final CtClass enhancedCtClass)
-                throws CannotCompileException {
-            final String s = "private " + ModifiedProperties.class.getName()
-                    + " " + modifiedPropertiesfieldName + " = new "
-                    + ModifiedPropertiesImpl.class.getName() + "();";
-            final CtField modifiedPropertiesField = CtField.make(s,
-                    enhancedCtClass);
-            enhancedCtClass.addField(modifiedPropertiesField);
-        }
-
-        /**
-         * setterを拡張し、
-         * (1)スーパークラスの同メソッドを呼び、
-         * (2)modifiedPropertiesフィールドへsetterが呼ばれたことを記録します。
-         */
-        private void combineProperties(final CtClass enhancedCtClass)
-                throws CannotCompileException {
-            final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(targetClass);
-            final int propertyDescSize = beanDesc.getPropertyDescSize();
-            for (int i = 0; i < propertyDescSize; i++) {
-                final PropertyDesc pd = beanDesc.getPropertyDesc(i);
-                if (!pd.hasWriteMethod() || !pd.hasReadMethod()) {
-                    continue;
-                }
-                final String propertyName = pd.getPropertyName();
-                if (propertyName.equalsIgnoreCase(versionNoPropertyName)) {
-                    continue;
-                }
-                if (propertyName.equalsIgnoreCase(timestampPropertyName)) {
-                    continue;
-                }
-
-                final String setterName = pd.getWriteMethod().getName();
-                final String propertyClassName = ClassUtil
-                        .getSimpleClassName(pd.getPropertyType());
-                final String s = "public void " + setterName + "("
-                        + propertyClassName + " " + propertyName + ")"
-                        + " { super." + setterName + "(" + propertyName + "); "
-                        + modifiedPropertiesfieldName + ".addPropertyName(\""
-                        + propertyName + "\"); }";
-                final CtMethod m = CtNewMethod.make(s, enhancedCtClass);
-                enhancedCtClass.addMethod(m);
-            }
-        }
-
-        private CtClass getEnhancedCtClass() {
-            final String enhancedClassFieldName = "enhancedClass";
-            try {
-                final Field field = EnhancedClassGenerator.class
-                        .getDeclaredField(enhancedClassFieldName);
-                field.setAccessible(true);
-                final CtClass enhancedCtClass = (CtClass) FieldUtil.get(field,
-                        enhancedClassGenerator);
-                return enhancedCtClass;
-            } catch (final NoSuchFieldException e) {
-                throw new NoSuchFieldRuntimeException(
-                        EnhancedClassGenerator.class, enhancedClassFieldName, e);
-            }
+        public void setDaoNamingConvention(
+                final DaoNamingConvention daoNamingConvention) {
+            this.daoNamingConvention = daoNamingConvention;
         }
 
     }

@@ -66,9 +66,9 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     private IdentifierGenerator identifierGenerator;
 
-    private String versionNoPropertyName = "versionNo";
+    private String versionNoPropertyName;
 
-    private String timestampPropertyName = "timestamp";
+    private String timestampPropertyName;
 
     private Dbms dbms;
 
@@ -77,6 +77,8 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     private BeanMetaDataFactory beanMetaDataFactory;
 
     private int relationNestLevel;
+
+    private ModifiedPropertySupport modifiedPropertySupport;
 
     public BeanMetaDataImpl() {
     }
@@ -106,7 +108,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     public PropertyType getVersionNoPropertyType()
             throws PropertyNotFoundRuntimeException {
 
-        return getPropertyType(versionNoPropertyName);
+        return getPropertyType(getVersionNoPropertyName());
     }
 
     /**
@@ -115,7 +117,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     public PropertyType getTimestampPropertyType()
             throws PropertyNotFoundRuntimeException {
 
-        return getPropertyType(timestampPropertyName);
+        return getPropertyType(getTimestampPropertyName());
     }
 
     public String getVersionNoPropertyName() {
@@ -208,14 +210,14 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
      * @see org.seasar.dao.BeanMetaData#hasVersionNoPropertyType()
      */
     public boolean hasVersionNoPropertyType() {
-        return hasPropertyType(versionNoPropertyName);
+        return hasPropertyType(getVersionNoPropertyName());
     }
 
     /**
      * @see org.seasar.dao.BeanMetaData#hasTimestampPropertyType()
      */
     public boolean hasTimestampPropertyType() {
-        return hasPropertyType(timestampPropertyName);
+        return hasPropertyType(getTimestampPropertyName());
     }
 
     /**
@@ -529,6 +531,25 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     public void setRelationNestLevel(int relationNestLevel) {
         this.relationNestLevel = relationNestLevel;
+    }
+
+    public ModifiedPropertySupport getModifiedPropertySupport() {
+        return modifiedPropertySupport;
+    }
+
+    public void setModifiedPropertySupport(
+            final ModifiedPropertySupport propertyModifiedSupport) {
+        this.modifiedPropertySupport = propertyModifiedSupport;
+    }
+
+    public Set getModifiedPropertyNames(final Object bean) {
+        return getModifiedPropertySupport().getModifiedPropertyNames(bean);
+    }
+
+    public static interface ModifiedPropertySupport {
+
+        Set getModifiedPropertyNames(Object bean);
+
     }
 
 }
