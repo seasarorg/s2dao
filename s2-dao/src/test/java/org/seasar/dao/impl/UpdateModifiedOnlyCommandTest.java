@@ -65,6 +65,7 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         final Emp emp = (Emp) findById.execute(new Object[] { new Long(7499) });
         System.out.println(emp);
         assertEquals(7499, emp.getEmpno());
+        assertEquals(true, getBeanEnhancer().isEnhancedClass(emp.getClass()));
 
         /*
          * ここで更新した2カラムと、必ず追加されるtimestampの、
@@ -104,9 +105,11 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         final Emp2 emp = emp2Dao.findById(7499);
         System.out.println(emp);
         assertEquals(7499, emp.getEmpno());
+        assertEquals(true, getBeanEnhancer().isEnhancedClass(emp.getClass()));
 
         final Dept dept = emp.getDept();
         assertNotNull(dept);
+        assertEquals(true, getBeanEnhancer().isEnhancedClass(dept.getClass()));
 
         // TODO enhanceされたクラスであること、をassertする
         System.out.println(dept);
@@ -149,10 +152,12 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         System.out.println(emps);
         final Emp2 emp1 = ((Emp2) emps.get(0));
         assertEquals(7566, emp1.getEmpno());
+        assertEquals(true, getBeanEnhancer().isEnhancedClass(emp1.getClass()));
 
         final Dept dept = emp1.getDept();
         assertNotNull(dept);
         assertEquals("RESEARCH", dept.getDname());
+        assertEquals(true, getBeanEnhancer().isEnhancedClass(dept.getClass()));
 
         // ここで更新した1カラムがUPDATE文に含まれるべき。
         dept.setDname("baar");
@@ -196,7 +201,7 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
             empDao.updateModifiedOnly(emp);
             fail("If the bean doesn't have modified properties, this invoking should throw exception: "
                     + emp);
-        } catch (NotFoundModifiedPropertiesRuntimeException e) {
+        } catch (final NotFoundModifiedPropertiesRuntimeException e) {
             // OK
             assertEquals(emp.getClass().getName(), e.getBeanClassName());
             System.out.println(e.getMessage());
@@ -207,6 +212,8 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
      * InterfaceではなくReflectionでModifiedPropertiesを取得する方法のテスト。
      * 'new EmpByReflection()'したInstanceに更新したい値をSetして更新する方法を試す。
      * (更新前に一度Selectしないと排他制御は動作しないので、ここではTimestampプロパティを含めない)
+     * 
+     * また、既にModifiedPropertiesプロパティを持つEntityはエンハンスされないこと。
      */
     public void testModifiedPropertiesByReflectionTx() throws Exception {
         // ## Arrange ##
@@ -230,6 +237,8 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         assertEquals(expectedEmp.getJob(), actualEmp.getJob());
         assertEquals(expectedEmp.getComm(), actualEmp.getComm());
         assertEquals(expectedEmp.getSal(), actualEmp.getSal());
+        assertEquals(false, getBeanEnhancer().isEnhancedClass(
+                actualEmp.getClass()));
     }
 
     public static interface EmpDao {

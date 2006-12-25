@@ -28,4 +28,6 @@ public interface BeanEnhancer {
      */
     Class getOriginalClass(Class beanClass);
 
+    boolean isEnhancedClass(Class beanClass);
+
 }

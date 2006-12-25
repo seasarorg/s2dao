@@ -56,17 +56,32 @@ public class BeanEnhancerImpl implements BeanEnhancer {
         if (isEnhancedClass(beanClass)) {
             return beanClass;
         }
+        if (!shouldEnhance(beanClass)) {
+            return beanClass;
+        }
         final BeanAspectWeaver aspectWeaver = new BeanAspectWeaver(beanClass);
         aspectWeaver.setVersionNoPropertyName(versionNoPropertyName);
         aspectWeaver.setTimestampPropertyName(timestampPropertyName);
         aspectWeaver
                 .setModifiedPropertyNamesPropertyName(getDaoNamingConvention()
                         .getModifiedPropertyNamesPropertyName());
-        final Class generateBeanClass = aspectWeaver.generateBeanClass();
-        return generateBeanClass;
+        final Class generatedBeanClass = aspectWeaver.generateBeanClass();
+        return generatedBeanClass;
     }
 
-    protected boolean isEnhancedClass(final Class beanClass) {
+    private boolean shouldEnhance(final Class beanClass) {
+        final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(beanClass);
+        if (!beanDesc.hasPropertyDesc(getDaoNamingConvention()
+                .getModifiedPropertyNamesPropertyName())) {
+            return true;
+        }
+        return false;
+    }
+
+    /*
+     * entityをエンハンスするのはここだけなので、クラス名を見るだけで充分。
+     */
+    public boolean isEnhancedClass(final Class beanClass) {
         final String simpleClassName = ClassUtil.getSimpleClassName(beanClass);
         return StringUtil.contains(simpleClassName,
                 AspectWeaver.SUFFIX_ENHANCED_CLASS);
