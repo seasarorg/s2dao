@@ -24,6 +24,7 @@ import org.seasar.dao.mock.NullConnection;
 
 /**
  * @author manhole
+ * @author azusa
  */
 public class PagerStatementFactoryTest extends TestCase {
 
@@ -61,7 +62,9 @@ public class PagerStatementFactoryTest extends TestCase {
     public void testCreatePreparedStatement_Pager() throws Exception {
         // ## Arrange ##
         final PagerContext pagerContext = PagerContext.getContext();
-        pagerContext.pushArgs(new Object[] { new DefaultPagerCondition() });
+        DefaultPagerCondition pagerCondition = new DefaultPagerCondition();
+        pagerCondition.setLimit(10);
+        pagerContext.pushArgs(new Object[] { pagerCondition });
         final boolean[] calls = { false };
         final NullConnection con = new NullConnection() {
             public PreparedStatement prepareStatement(String sql,
@@ -84,4 +87,32 @@ public class PagerStatementFactoryTest extends TestCase {
         assertEquals(true, calls[0]);
     }
 
+    /**
+     * Pagerでもoffsetが-1の場合は引数3つのprepareStatementを呼ぶこと。
+     */
+    public void testCreatePreparedStatement_Pager_NoneLimit() throws Exception {
+        // ## Arrange ##
+        final PagerContext pagerContext = PagerContext.getContext();
+        pagerContext.pushArgs(new Object[] { new DefaultPagerCondition() });
+        final boolean[] calls = { false };
+        final NullConnection con = new NullConnection() {
+            public PreparedStatement prepareStatement(String sql)
+            throws SQLException {
+                calls[0] = true;
+                return null;
+            }
+        };
+        try {
+            // ## Act ##
+            final PagerStatementFactory statementFactory = new PagerStatementFactory();
+            // 例外にならなければOK
+            statementFactory.createPreparedStatement(con, "aaaa");
+
+            // ## Assert ##
+        } finally {
+            pagerContext.popArgs();
+        }
+        assertEquals(true, calls[0]);
+    }
+    
 }

@@ -21,6 +21,7 @@ import junit.framework.TestCase;
 
 /**
  * @author Toshitaka Agata
+ * @author azusa
  */
 public class PagerResultSetFactoryWapperTest extends TestCase {
 
@@ -55,6 +56,17 @@ public class PagerResultSetFactoryWapperTest extends TestCase {
         }
     }
 
+    public void testCreateResultSetPagerConditionNoneLimit() throws Exception {
+        try {
+            PagerContext.getContext().pushArgs(createPagerConditionArgsNoneLimit());
+            ResultSet resultSet = wrapper.createResultSet(null);
+            assertEquals(1, original.getCreatedResultSetCount());
+            assertEquals(PagerResultSetWrapper.class, resultSet.getClass());
+        } finally {
+            PagerContext.getContext().popArgs();
+        }
+    }
+
     public void testCreateResultSetSequence() throws Exception {
         try {
             PagerContext.getContext().pushArgs(createPagerConditionArgs());
@@ -80,6 +92,14 @@ public class PagerResultSetFactoryWapperTest extends TestCase {
 
     private Object[] createPagerConditionArgs() {
         DefaultPagerCondition pagerConditionBase = new DefaultPagerCondition();
+        pagerConditionBase.setLimit(10);
         return new Object[] { pagerConditionBase };
     }
+
+    private Object[] createPagerConditionArgsNoneLimit() {
+        DefaultPagerCondition pagerConditionBase = new DefaultPagerCondition();
+        pagerConditionBase.setLimit(10);
+        return new Object[] { pagerConditionBase };
+    }
+    
 }

@@ -21,16 +21,29 @@ import junit.framework.TestCase;
  * PagerContextTest
  * 
  * @author agata
+ * @author azusa
  */
 public class PagerContextTest extends TestCase {
 
     public void testIsPagerCondition() {
+        PagerCondition pagerConderion = new DefaultPagerCondition();
+        pagerConderion.setLimit(10);
         assertEquals(true, PagerContext
-                .isPagerCondition(new Object[] { new DefaultPagerCondition() }));
+                .isPagerCondition(new Object[] { pagerConderion}));
         assertEquals(true, PagerContext.isPagerCondition(new Object[] {
-                new DefaultPagerCondition(), "dummy" }));
+                pagerConderion, "dummy" }));
         assertEquals(false, PagerContext
                 .isPagerCondition(new Object[] { "dummy" }));
+        pagerConderion.setLimit(PagerCondition.NONE_LIMIT);
+        pagerConderion.setOffset(0);
+        assertEquals(false, PagerContext
+                .isPagerCondition(new Object[] { pagerConderion }));
+        pagerConderion.setLimit(PagerCondition.NONE_LIMIT);
+        pagerConderion.setOffset(10);
+        //ログが出る(目視...)
+        assertEquals(false, PagerContext
+                .isPagerCondition(new Object[] { pagerConderion }));
+
     }
 
     public void testGetPagerCondition() {

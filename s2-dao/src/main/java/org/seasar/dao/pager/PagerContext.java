@@ -17,14 +17,19 @@ package org.seasar.dao.pager;
 
 import java.util.Stack;
 
+import org.seasar.framework.log.Logger;
+
 /**
  * ページャの情報をスレッドローカルに保持します。
  * 
  * @author Toshitaka Agata(Nulab,inc.)
+ * @author azusa
  */
 class PagerContext {
 
     private static final Object[] EMPTY_ARGS = new Object[0];
+
+    private static Logger log = Logger.getLogger(PagerContext.class);
 
     /** スレッドローカル */
     private static ThreadLocal threadLocal = new ThreadLocal() {
@@ -69,6 +74,7 @@ class PagerContext {
 
     /**
      * メソッドの引数にPagerConditionが含まれているかどうかを判定します。
+     * <p>ただし、PagerConditon#getLimitがPagerConditon#NONE_LIMITの場合はfalseを返します。</p>
      * 
      * @param args
      *            引数
@@ -78,7 +84,16 @@ class PagerContext {
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
             if (arg instanceof PagerCondition) {
-                return true;
+                PagerCondition conditon = (PagerCondition) arg;
+                if (conditon.getLimit() != PagerCondition.NONE_LIMIT) {
+                    return true;
+                } else {
+                    if (conditon.getOffset() != 0) {
+                        log.log("WDAO0003", new Object[] { new Integer(conditon
+                                .getOffset()) });
+                    }
+                }
+
             }
         }
         return false;
