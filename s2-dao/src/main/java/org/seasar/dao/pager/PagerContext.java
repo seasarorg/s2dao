@@ -89,8 +89,7 @@ class PagerContext {
                     return true;
                 } else {
                     if (conditon.getOffset() != 0) {
-                        log.log("WDAO0003", new Object[] { new Integer(conditon
-                                .getOffset()) });
+                        return true;
                     }
                 }
 

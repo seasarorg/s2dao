@@ -40,8 +40,7 @@ public class PagerContextTest extends TestCase {
                 .isPagerCondition(new Object[] { pagerConderion }));
         pagerConderion.setLimit(PagerCondition.NONE_LIMIT);
         pagerConderion.setOffset(10);
-        //ログが出る(目視...)
-        assertEquals(false, PagerContext
+        assertEquals(true, PagerContext
                 .isPagerCondition(new Object[] { pagerConderion }));
 
     }
