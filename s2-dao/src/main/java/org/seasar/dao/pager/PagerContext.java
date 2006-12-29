@@ -17,8 +17,6 @@ package org.seasar.dao.pager;
 
 import java.util.Stack;
 
-import org.seasar.framework.log.Logger;
-
 /**
  * ページャの情報をスレッドローカルに保持します。
  * 
@@ -28,8 +26,6 @@ import org.seasar.framework.log.Logger;
 class PagerContext {
 
     private static final Object[] EMPTY_ARGS = new Object[0];
-
-    private static Logger log = Logger.getLogger(PagerContext.class);
 
     /** スレッドローカル */
     private static ThreadLocal threadLocal = new ThreadLocal() {
@@ -81,21 +77,15 @@ class PagerContext {
      * @return true/false
      */
     public static boolean isPagerCondition(Object[] args) {
-        for (int i = 0; i < args.length; i++) {
-            Object arg = args[i];
-            if (arg instanceof PagerCondition) {
-                PagerCondition conditon = (PagerCondition) arg;
-                if (conditon.getLimit() != PagerCondition.NONE_LIMIT) {
-                    return true;
-                } else {
-                    if (conditon.getOffset() != 0) {
-                        return true;
-                    }
-                }
-
-            }
+        final PagerCondition condition = getPagerCondition(args);
+        if (condition == null) {
+            return false;
         }
-        return false;
+        if (condition.getLimit() == PagerCondition.NONE_LIMIT
+                && condition.getOffset() == 0) {
+            return false;
+        }
+        return true;
     }
 
     /**
