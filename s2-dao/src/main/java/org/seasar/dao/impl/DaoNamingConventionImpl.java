@@ -28,8 +28,6 @@ public class DaoNamingConventionImpl implements DaoNamingConvention {
 
     private String timestampPropertyName = "timestamp";
 
-    private String modifiedPropertyNamesPropertyName = "modifiedPropertyNames";
-
     private String[] daoSuffixes = new String[] { "Dao" };
 
     private String[] insertPrefixes = new String[] { "insert", "create", "add" };
@@ -41,7 +39,9 @@ public class DaoNamingConventionImpl implements DaoNamingConvention {
 
     private String[] unlessNullSuffixes = new String[] { "UnlessNull" };
 
-    public String[] modifiedOnlySuffixes = new String[] { "ModifiedOnly" };
+    private String[] modifiedOnlySuffixes = new String[] { "ModifiedOnly" };
+
+    private String modifiedPropertyNamesPropertyName = "modifiedPropertyNames";
 
     public String getModifiedPropertyNamesPropertyName() {
         return modifiedPropertyNamesPropertyName;
