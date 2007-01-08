@@ -2,11 +2,17 @@ S2Dao 変更履歴
 
 1.0.40-SNAPSHOT
 -------------------------------------------------------------------------------
-更新したプロパティのみをUPDATE文に含める機能を追加しました。[DAO-48]
+runHsqldb.batでHSQLDBを起動できなくなっていた問題に対応しました。[DAO-44]
+@Bean(table="テーブル名")のテーブル名を書き換えてもfrom句が書き換わらない問題に対応しました。[DAO-46]
+更新したプロパティのみをUPDATE文に含める機能を追加しました。[seasar-s2dao-dev:40][DAO-48]
+PKのみのテーブルをupdateするとSQL構文エラーでSQLExceptionになっていましたが、SQL発行前に例外を投げるようにしました。[DAO-52]
+BeanMetaDataImplの初期化時に発生する例外メッセージを詳細にしました。[DAO-53]
+S2PagerとFOR UPDATEを併用可能にしました。[DAO-57]
 
-DtoMetaDataImpl, BeanMetaDataImplから、deprecatedなコンストラクタを削除しました。
-BeanAnnotationReaderのtypoを修正。(getVersionNoProteryNameAnnotation → getVersionNoPropertyName)
-
+内部的には...
+UpdateAutoDynamicCommandのメソッド名のtypoを修正しました。[DAO-45]
+DaoMetaDataImpl・BeanMetaDataImplまわりをリファクタしました。[DAO-49]
+BeanAnnotationReaderのtypoを修正しました。
 
 1.0.39
 -------------------------------------------------------------------------------
