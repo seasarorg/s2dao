@@ -186,13 +186,20 @@ public class BeanEnhancerImpl implements BeanEnhancer {
                 }
 
                 final String setterName = pd.getWriteMethod().getName();
+                final String getterName = pd.getReadMethod().getName();
                 final String propertyClassName = ClassUtil
                         .getSimpleClassName(pd.getPropertyType());
+                final String oldName = propertyName + "Old";
                 final String s = "public void " + setterName + "("
                         + propertyClassName + " " + propertyName + ")"
-                        + " { super." + setterName + "(" + propertyName + "); "
+                        + " { final " + propertyClassName + " " + oldName
+                        + " = super." + getterName + "(); " + "super."
+                        + setterName + "(" + propertyName + "); " + "if (!"
+                        + EqualsUtil.class.getName() + ".equals(" + oldName
+                        + ", " + propertyName + ")) "
                         + modifiedPropertiesFieldName + ".add(\""
                         + propertyName + "\"); }";
+                //System.out.println(s);
                 final CtMethod m = CtNewMethod.make(s, enhancedCtClass);
                 enhancedCtClass.addMethod(m);
             }
@@ -226,6 +233,48 @@ public class BeanEnhancerImpl implements BeanEnhancer {
 
         public void setTimestampPropertyName(final String timestampPropertyName) {
             this.timestampPropertyName = timestampPropertyName;
+        }
+
+    }
+
+    public static class EqualsUtil {
+
+        public static boolean equals(final long o1, final long o2) {
+            return o1 == o2;
+        }
+
+        public static boolean equals(final int o1, final int o2) {
+            return o1 == o2;
+        }
+
+        public static boolean equals(final short o1, final short o2) {
+            return o1 == o2;
+        }
+
+        public static boolean equals(final char o1, final char o2) {
+            return o1 == o2;
+        }
+
+        public static boolean equals(final boolean o1, final boolean o2) {
+            return o1 == o2;
+        }
+
+        public static boolean equals(final double o1, final double o2) {
+            return o1 == o2;
+        }
+
+        public static boolean equals(final float o1, final float o2) {
+            return o1 == o2;
+        }
+
+        public static boolean equals(final Object o1, final Object o2) {
+            if (o1 == o2) {
+                return true;
+            }
+            if (o1 == null || o2 == null) {
+                return false;
+            }
+            return o1.equals(o2);
         }
 
     }

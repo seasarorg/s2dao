@@ -43,8 +43,6 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
 
     private Emp2Dao emp2Dao;
 
-    private DeptDao deptDao;
-
     private EmpByReflectionDao empByReflectionDao;
 
     protected void setUp() throws Exception {
@@ -91,6 +89,88 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         }
         assertEquals(3, set.size());
         assertEquals(true, set.contains("ename"));
+        assertEquals(true, set.contains("job"));
+        assertEquals(true, set.contains("timestamp"));
+        updateModifiedOnly.execute(new Object[] { emp });
+    }
+
+    /*
+     * setterが呼ばれても値が変更されたプロパティ(とtimestamp)だけをUPDATE文に含むこと。
+     */
+    public void testCreateModifiedPropertiesForChangedTx() throws Exception {
+        // ## Arrange ##
+        final DaoMetaDataImpl dmd = createDaoMetaData(EmpDao.class);
+
+        final SqlCommand findById = dmd.getSqlCommand("findById");
+        final Emp emp = (Emp) findById.execute(new Object[] { new Long(7499) });
+        System.out.println(emp);
+
+        /*
+         * ここで2カラムをのsetterを呼んでいるが、enameは更新されていないので、
+         * jobと必ず追加されるtimestampの、
+         * あわせて2カラムがUPDATE文に含まれるべき。
+         */
+        assertEquals("ALLEN", emp.getEname());
+        emp.setEname("ALLEN");
+        emp.setJob("hoge2");
+
+        // ## Act ##
+        final UpdateModifiedOnlyCommand updateModifiedOnly = (UpdateModifiedOnlyCommand) dmd
+                .getSqlCommand("updateModifiedOnly");
+        final PropertyType[] propertyTypes = updateModifiedOnly
+                .createUpdatePropertyTypes(dmd.getBeanMetaData(), emp,
+                        updateModifiedOnly.getPropertyNames());
+
+        // ## Assert ##
+        final HashSet set = new HashSet();
+        for (int i = 0; i < propertyTypes.length; i++) {
+            final PropertyType type = propertyTypes[i];
+            set.add(type.getPropertyName());
+            System.out.println(type.getPropertyName() + ", "
+                    + type.getColumnName());
+        }
+        assertEquals(2, set.size());
+        assertEquals(true, set.contains("job"));
+        assertEquals(true, set.contains("timestamp"));
+        updateModifiedOnly.execute(new Object[] { emp });
+    }
+
+    /*
+     * 1つも変更されていない場合はSQL発行しない?
+     */
+    public void testCreateModifiedPropertiesNoChangedTx() throws Exception {
+        // ## Arrange ##
+        final DaoMetaDataImpl dmd = createDaoMetaData(EmpDao.class);
+
+        final SqlCommand findById = dmd.getSqlCommand("findById");
+        final Emp emp = (Emp) findById.execute(new Object[] { new Long(7499) });
+        System.out.println(emp);
+
+        /*
+         * ここで2カラムをのsetterを呼んでいるが、enameは更新されていないので、
+         * jobと必ず追加されるtimestampの、
+         * あわせて2カラムがUPDATE文に含まれるべき。
+         */
+        assertEquals("ALLEN", emp.getEname());
+        emp.setEname("ALLEN");
+        emp.setJob("hoge2");
+
+        // ## Act ##
+        final UpdateModifiedOnlyCommand updateModifiedOnly = (UpdateModifiedOnlyCommand) dmd
+                .getSqlCommand("updateModifiedOnly");
+        final PropertyType[] propertyTypes = updateModifiedOnly
+                .createUpdatePropertyTypes(dmd.getBeanMetaData(), emp,
+                        updateModifiedOnly.getPropertyNames());
+
+        // ## Assert ##
+        final HashSet set = new HashSet();
+        for (int i = 0; i < propertyTypes.length; i++) {
+            final PropertyType type = propertyTypes[i];
+            set.add(type.getPropertyName());
+            System.out.println(type.getPropertyName() + ", "
+                    + type.getColumnName());
+        }
+        assertEquals(2, set.size());
         assertEquals(true, set.contains("job"));
         assertEquals(true, set.contains("timestamp"));
         updateModifiedOnly.execute(new Object[] { emp });
