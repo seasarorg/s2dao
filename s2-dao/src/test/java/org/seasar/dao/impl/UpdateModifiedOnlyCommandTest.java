@@ -91,7 +91,9 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         assertEquals(true, set.contains("ename"));
         assertEquals(true, set.contains("job"));
         assertEquals(true, set.contains("timestamp"));
-        updateModifiedOnly.execute(new Object[] { emp });
+        final Object result = updateModifiedOnly.execute(new Object[] { emp });
+        final Integer count = (Integer) result;
+        assertEquals(1, count.intValue());
     }
 
     /*
@@ -132,11 +134,14 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         assertEquals(2, set.size());
         assertEquals(true, set.contains("job"));
         assertEquals(true, set.contains("timestamp"));
-        updateModifiedOnly.execute(new Object[] { emp });
+        final Object result = updateModifiedOnly.execute(new Object[] { emp });
+        final Integer count = (Integer) result;
+        assertEquals(1, count.intValue());
     }
 
     /*
-     * 1つも変更されていない場合はSQL発行しない?
+     * 1つも変更されていない場合でも、timestampプロパティを持つ場合は
+     * timestampだけが更新される。
      */
     public void testCreateModifiedPropertiesNoChangedTx() throws Exception {
         // ## Arrange ##
@@ -145,15 +150,6 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         final SqlCommand findById = dmd.getSqlCommand("findById");
         final Emp emp = (Emp) findById.execute(new Object[] { new Long(7499) });
         System.out.println(emp);
-
-        /*
-         * ここで2カラムをのsetterを呼んでいるが、enameは更新されていないので、
-         * jobと必ず追加されるtimestampの、
-         * あわせて2カラムがUPDATE文に含まれるべき。
-         */
-        assertEquals("ALLEN", emp.getEname());
-        emp.setEname("ALLEN");
-        emp.setJob("hoge2");
 
         // ## Act ##
         final UpdateModifiedOnlyCommand updateModifiedOnly = (UpdateModifiedOnlyCommand) dmd
@@ -170,10 +166,45 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
             System.out.println(type.getPropertyName() + ", "
                     + type.getColumnName());
         }
-        assertEquals(2, set.size());
-        assertEquals(true, set.contains("job"));
+        assertEquals(1, set.size());
         assertEquals(true, set.contains("timestamp"));
-        updateModifiedOnly.execute(new Object[] { emp });
+        final Object result = updateModifiedOnly.execute(new Object[] { emp });
+        final Integer count = (Integer) result;
+        assertEquals(1, count.intValue());
+    }
+
+    /*
+     * プロパティが更新されずtimestampやversionNoも持たない場合は、
+     * UPDATE文が発行されないこと。
+     */
+    public void testNoUpdateTx() throws Exception {
+        // ## Arrange ##
+        final DaoMetaDataImpl dmd = createDaoMetaData(Emp3Dao.class);
+
+        final SqlCommand findById = dmd.getSqlCommand("findById");
+        final Emp3 emp = (Emp3) findById
+                .execute(new Object[] { new Long(7499) });
+        System.out.println(emp);
+
+        // ## Act ##
+        final UpdateModifiedOnlyCommand updateModifiedOnly = (UpdateModifiedOnlyCommand) dmd
+                .getSqlCommand("updateModifiedOnly");
+        final PropertyType[] propertyTypes = updateModifiedOnly
+                .createUpdatePropertyTypes(dmd.getBeanMetaData(), emp,
+                        updateModifiedOnly.getPropertyNames());
+
+        // ## Assert ##
+        final HashSet set = new HashSet();
+        for (int i = 0; i < propertyTypes.length; i++) {
+            final PropertyType type = propertyTypes[i];
+            set.add(type.getPropertyName());
+            System.out.println(type.getPropertyName() + ", "
+                    + type.getColumnName());
+        }
+        assertEquals(0, set.size());
+        final Object result = updateModifiedOnly.execute(new Object[] { emp });
+        final Integer count = (Integer) result;
+        assertEquals(0, count.intValue());
     }
 
     /**
@@ -346,6 +377,22 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         List findByJob(String job);
 
         int updateModifiedOnly(Emp2 emp);
+
+    }
+
+    public static interface Emp3Dao {
+
+        Class BEAN = Emp3.class;
+
+        public String findById_ARGS = "empno";
+
+        Emp3 findById(long empno);
+
+        public String findByJob_ARGS = "job";
+
+        List findByJob(String job);
+
+        int updateModifiedOnly(Emp3 emp);
 
     }
 
@@ -528,6 +575,72 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
             buf.append(timestamp);
             return buf.toString();
         }
+    }
+
+    public static class Emp3 {
+
+        public static final String TABLE = "EMP";
+
+        private long empno;
+
+        private String ename;
+
+        private String job;
+
+        private Float sal;
+
+        private Float comm;
+
+        public long getEmpno() {
+            return this.empno;
+        }
+
+        public void setEmpno(long empno) {
+            this.empno = empno;
+        }
+
+        public String getEname() {
+            return this.ename;
+        }
+
+        public void setEname(String ename) {
+            this.ename = ename;
+        }
+
+        public String getJob() {
+            return this.job;
+        }
+
+        public void setJob(String job) {
+            this.job = job;
+        }
+
+        public Float getSal() {
+            return this.sal;
+        }
+
+        public void setSal(Float sal) {
+            this.sal = sal;
+        }
+
+        public Float getComm() {
+            return this.comm;
+        }
+
+        public void setComm(Float comm) {
+            this.comm = comm;
+        }
+
+        public String toString() {
+            StringBuffer buf = new StringBuffer();
+            buf.append(empno).append(", ");
+            buf.append(ename).append(", ");
+            buf.append(job).append(", ");
+            buf.append(sal).append(", ");
+            buf.append(comm);
+            return buf.toString();
+        }
+
     }
 
     public static class Dept {

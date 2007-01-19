@@ -55,7 +55,7 @@ public class UpdateAutoDynamicCommand extends AbstractSqlCommand implements
                 bean, getPropertyNames());
 
         UpdateAutoHandler handler = new UpdateAutoHandler(getDataSource(),
-                getStatementFactory(), beanMetaData, propertyTypes);
+                getStatementFactory(), bmd, propertyTypes);
         handler.setSql(createUpdateSql(bmd, propertyTypes));
         int i = handler.execute(args);
         if (i < 1) {

@@ -22,9 +22,10 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
-import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
+import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.framework.log.Logger;
 
 /**
  * @author manhole
@@ -32,9 +33,62 @@ import org.seasar.extension.jdbc.StatementFactory;
  */
 public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
 
+    private static Logger logger = Logger
+            .getLogger(UpdateModifiedOnlyCommand.class);
+
+    private static final Integer NO_UPDATE = new Integer(0);
+
     public UpdateModifiedOnlyCommand(final DataSource dataSource,
             final StatementFactory statementFactory) {
         super(dataSource, statementFactory);
+    }
+
+    public Object execute(final Object[] args) {
+        final Object bean = args[0];
+        final BeanMetaData bmd = getBeanMetaData();
+        final PropertyType[] propertyTypes = createUpdatePropertyTypes(bmd,
+                bean, getPropertyNames());
+        if (propertyTypes.length == 0) {
+            if (logger.isDebugEnabled()) {
+                final String s = createNoUpdateLogMessage(bean, bmd);
+                logger.debug(s);
+            }
+            return NO_UPDATE;
+        }
+
+        final UpdateAutoHandler handler = new UpdateAutoHandler(
+                getDataSource(), getStatementFactory(), bmd, propertyTypes);
+        handler.setSql(createUpdateSql(bmd, propertyTypes));
+        final int i = handler.execute(args);
+        if (i < 1) {
+            throw new NotSingleRowUpdatedRuntimeException(args[0], i);
+        }
+        return new Integer(i);
+    }
+
+    private String createNoUpdateLogMessage(final Object bean,
+            final BeanMetaData bmd) {
+        final StringBuffer sb = new StringBuffer();
+        sb.append("skip UPDATE: table=");
+        sb.append(bmd.getTableName());
+        final int size = bmd.getPrimaryKeySize();
+        for (int i = 0; i < size; i++) {
+            if (i == 0) {
+                sb.append(", key{");
+            } else {
+                sb.append(", ");
+            }
+            final String keyName = bmd.getPrimaryKey(i);
+            sb.append(keyName);
+            sb.append("=");
+            sb.append(bmd.getPropertyType(keyName).getPropertyDesc().getValue(
+                    bean));
+            if (i == size - 1) {
+                sb.append("}");
+            }
+        }
+        final String s = new String(sb);
+        return s;
     }
 
     protected PropertyType[] createUpdatePropertyTypes(final BeanMetaData bmd,
@@ -56,11 +110,9 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
                 }
             }
         }
-        if (types.isEmpty()) {
-            throw new NoUpdatePropertyTypeRuntimeException();
-        }
         final PropertyType[] propertyTypes = (PropertyType[]) types
                 .toArray(new PropertyType[types.size()]);
         return propertyTypes;
     }
+
 }
