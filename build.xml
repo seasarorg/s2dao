@@ -22,6 +22,27 @@
 				<include name="j2ee.dicon"/>
 				<include name="log4j.properties"/>
 			</zipfileset>
+
+			<zipfileset prefix="s2dao-tiger" dir="../s2dao-tiger-1.0.x">
+				<exclude name="**/build/**"/>
+				<exclude name="**/target/**"/>
+				<exclude name="*.log"/>
+				<exclude name="**/.settings/**"/>
+				<exclude name="s2-dao-tiger/cobertura.ser"/>
+				<exclude name="s2-dao-tiger-examples/cobertura.ser"/>
+				<exclude name="s2-dao-tiger/*.log"/>
+				<exclude name="s2-dao-tiger-examples/*.log"/>
+			</zipfileset>
+			<zipfileset prefix="s2dao-tiger/lib" 
+				dir="../s2dao-tiger-1.0.x/s2-dao-tiger/target">
+				<include name="s2-dao-tiger-${ver}.jar"/>
+				<include name="s2-dao-tiger-${ver}-sources.jar"/>
+			</zipfileset>
+			<zipfileset prefix="s2dao-tiger/resources" 
+				dir="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources">
+				<include name="j2ee.dicon"/>
+				<include name="log4j.properties"/>
+			</zipfileset>
 		</zip>
 	</target>
 
