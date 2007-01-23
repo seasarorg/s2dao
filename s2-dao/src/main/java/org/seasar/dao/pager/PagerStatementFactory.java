@@ -22,35 +22,53 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.extension.jdbc.impl.BooleanToIntPreparedStatement;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.framework.exception.SQLRuntimeException;
 
 /**
  * @author agata
  * @author manhole
+ * @author azusa
  */
 public class PagerStatementFactory implements StatementFactory {
+
+    private boolean booleanToInt = false;
 
     public PreparedStatement createPreparedStatement(Connection con, String sql) {
         /*
          * https://www.seasar.org/issues/browse/DAO-42
          */
         final Object[] args = PagerContext.getContext().peekArgs();
+        PreparedStatement pstmt = null;
         if (PagerContext.isPagerCondition(args)) {
             try {
-                return con.prepareStatement(sql,
+                pstmt = con.prepareStatement(sql,
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_READ_ONLY);
             } catch (SQLException e) {
                 throw new SQLRuntimeException(e);
             }
+            if (booleanToInt) {
+                return new BooleanToIntPreparedStatement(pstmt, sql);
+            } else {
+                return pstmt;
+            }
+        }
+        pstmt = ConnectionUtil.prepareStatement(con, sql);
+        if (booleanToInt) {
+            return new BooleanToIntPreparedStatement(pstmt, sql);
         } else {
-            return ConnectionUtil.prepareStatement(con, sql);
+            return pstmt;
         }
     }
 
     public CallableStatement createCallableStatement(Connection con, String sql) {
         return ConnectionUtil.prepareCall(con, sql);
+    }
+
+    public void setBooleanToInt(boolean b) {
+        booleanToInt = b;
     }
 
 }
