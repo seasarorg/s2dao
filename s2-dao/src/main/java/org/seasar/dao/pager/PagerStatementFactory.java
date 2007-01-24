@@ -33,7 +33,7 @@ import org.seasar.framework.exception.SQLRuntimeException;
  */
 public class PagerStatementFactory implements StatementFactory {
 
-    private boolean booleanToInt = false;
+    protected boolean booleanToInt = false;
 
     public PreparedStatement createPreparedStatement(Connection con, String sql) {
         /*
@@ -49,20 +49,20 @@ public class PagerStatementFactory implements StatementFactory {
             } catch (SQLException e) {
                 throw new SQLRuntimeException(e);
             }
-            if (booleanToInt) {
-                return new BooleanToIntPreparedStatement(pstmt, sql);
-            } else {
-                return pstmt;
-            }
+            return createPreparedStatement(pstmt, sql);
         }
         pstmt = ConnectionUtil.prepareStatement(con, sql);
+        return createPreparedStatement(pstmt, sql);
+    }
+
+    private PreparedStatement createPreparedStatement(PreparedStatement pstmt, String sql){
         if (booleanToInt) {
             return new BooleanToIntPreparedStatement(pstmt, sql);
         } else {
             return pstmt;
         }
     }
-
+    
     public CallableStatement createCallableStatement(Connection con, String sql) {
         return ConnectionUtil.prepareCall(con, sql);
     }
