@@ -24,6 +24,7 @@ import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
  * @author manhole
+ * @author azusa
  */
 public abstract class AbstractBeanAnnotationReaderTest extends TestCase {
 
@@ -73,14 +74,39 @@ public abstract class AbstractBeanAnnotationReaderTest extends TestCase {
         assertNull("1", str2);
     }
 
-    public void testGetId() {
-        Class clazz1 = getBeanClass("AnnotationTestBean1");
+    public void testGetIds() {
+        Class clazz1 = getBeanClass("AnnotationTestBean4");
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz1);
         BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
-        String str1 = reader1.getId(beanDesc.getPropertyDesc("prop1"));
-        assertEquals("1", "sequence, sequenceName=myseq", str1);
-        String str2 = reader1.getId(beanDesc.getPropertyDesc("prop2"));
-        assertNull("1", str2);
+        String str1 = reader1.getId(beanDesc.getPropertyDesc("aaa"), "_oracle");
+        assertEquals("1", "identity", str1);
+        String str2 = reader1.getId(beanDesc.getPropertyDesc("aaa"), "_mysql");
+        assertEquals("2", "sequence, sequenceName=myseq", str2);
+        String str3 = reader1
+                .getId(beanDesc.getPropertyDesc("aaa"), "_postgre");
+        assertEquals("3", "sequence, sequenceName=myseq_2", str3);
+        String str4 = reader1.getId(beanDesc.getPropertyDesc("bbb"), "_mysql");
+        assertNull("4", str4);
+    }
+
+    public void testGetId1() {
+        Class clazz1 = getBeanClass("AnnotationTestBean5");
+        BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz1);
+        BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
+        String str1 = reader1.getId(beanDesc.getPropertyDesc("aaa"), "_oracle");
+        assertEquals("1", "identity", str1);
+        String str3 = reader1.getId(beanDesc.getPropertyDesc("bbb"), "_oracle");
+        assertNull("2", str3);
+    }
+
+    public void testGetId2() {
+        Class clazz1 = getBeanClass("AnnotationTestBean6");
+        BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz1);
+        BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
+        String str1 = reader1.getId(beanDesc.getPropertyDesc("aaa"), "_oracle");
+        assertEquals("1", "identity", str1);
+        String str3 = reader1.getId(beanDesc.getPropertyDesc("bbb"), "_oracle");
+        assertNull("2", str3);
     }
 
     public void testGetNoPersisteneProps() {

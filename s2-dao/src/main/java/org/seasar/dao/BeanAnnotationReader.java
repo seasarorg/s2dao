@@ -20,6 +20,7 @@ import org.seasar.framework.beans.PropertyDesc;
 /**
  * @author uehara keizou
  * @author manhole
+ * @author azusa
  */
 public interface BeanAnnotationReader {
 
@@ -31,7 +32,7 @@ public interface BeanAnnotationReader {
 
     String getTimestampPropertyName();
 
-    String getId(PropertyDesc pd);
+    String getId(PropertyDesc pd, String dbms);
 
     String[] getNoPersisteneProps();
 

@@ -47,6 +47,7 @@ import org.seasar.framework.util.StringUtil;
  * @author higa
  * @author manhole
  * @author jflute
+ * @author azusa
  */
 public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
@@ -303,7 +304,8 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
                 addPropertyType(pt);
             }
             if (identifierGenerator == null) {
-                String idAnnotation = beanAnnotationReader.getId(pd);
+                String idAnnotation = beanAnnotationReader.getId(pd, dbms
+                        .getSuffix());
                 if (idAnnotation != null) {
                     identifierGenerator = IdentifierGeneratorFactory
                             .createIdentifierGenerator(pd.getPropertyName(),
