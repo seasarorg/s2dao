@@ -19,31 +19,18 @@ import junit.framework.TestCase;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public class DbmsManagerTest extends TestCase {
-
-    /**
-     * Constructor for InvocationImplTest.
-     * 
-     * @param arg0
-     */
-    public DbmsManagerTest(String arg0) {
-        super(arg0);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(DbmsManagerTest.class);
-    }
-
-    protected void setUp() throws Exception {
-    }
-
-    protected void tearDown() throws Exception {
-    }
 
     public void testCreateAutoSelectList() throws Exception {
         assertNotNull("1", DbmsManager.getDbms(""));
         assertNotNull("2", DbmsManager.getDbms("HSQL Database Engine"));
     }
+
+    public void testGetDbmsByProductName() throws Exception {
+        // https://www.seasar.org/issues/browse/DAO-68
+        assertEquals(true, DbmsManager.getDbms("DB2/AIX64") instanceof DB2);
+    }
+
 }
