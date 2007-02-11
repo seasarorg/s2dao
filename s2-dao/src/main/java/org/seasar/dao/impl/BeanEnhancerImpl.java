@@ -28,6 +28,8 @@ import javassist.NotFoundException;
 
 import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.DaoNamingConvention;
+import org.seasar.dao.NotFoundModifiedPropertiesRuntimeException;
+import org.seasar.dao.impl.BeanMetaDataImpl.ModifiedPropertySupport;
 import org.seasar.framework.aop.javassist.AspectWeaver;
 import org.seasar.framework.aop.javassist.EnhancedClassGenerator;
 import org.seasar.framework.beans.BeanDesc;
@@ -44,7 +46,7 @@ import org.seasar.framework.util.StringUtil;
 /**
  * @author manhole
  */
-public class BeanEnhancerImpl implements BeanEnhancer {
+public class BeanEnhancerImpl implements BeanEnhancer, ModifiedPropertySupport {
 
     public static final String daoNamingConvention_BINDING = "bindingType=must";
 
@@ -277,6 +279,28 @@ public class BeanEnhancerImpl implements BeanEnhancer {
             return o1.equals(o2);
         }
 
+    }
+
+    /* (non-Javadoc)
+     * @see org.seasar.dao.BeanEnhancer#getSupporter()
+     */
+    public ModifiedPropertySupport getSupporter() {
+        return this;
+    }
+
+    public Set getModifiedPropertyNames(final Object bean) {
+        final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(bean.getClass());
+        final String propertyName = getDaoNamingConvention()
+                .getModifiedPropertyNamesPropertyName();
+        if (!beanDesc.hasPropertyDesc(propertyName)) {
+            throw new NotFoundModifiedPropertiesRuntimeException(bean
+                    .getClass().getName(), propertyName);
+        }
+        final PropertyDesc propertyDesc = beanDesc
+                .getPropertyDesc(propertyName);
+        final Object value = propertyDesc.getValue(bean);
+        final Set names = (Set) value;
+        return names;
     }
 
 }

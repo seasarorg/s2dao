@@ -15,13 +15,19 @@
  */
 package org.seasar.dao.impl;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.seasar.dao.BeanEnhancer;
+import org.seasar.dao.impl.BeanMetaDataImpl.ModifiedPropertySupport;
 
 /**
  * @author taichi
  *
  */
-public class NullBeanEnhancer implements BeanEnhancer {
+public class NullBeanEnhancer implements BeanEnhancer, ModifiedPropertySupport {
+
+    private static final Set EMPTY_SET = Collections.EMPTY_SET;
 
     /* (non-Javadoc)
      * @see org.seasar.dao.BeanEnhancer#enhanceBeanClass(java.lang.Class, java.lang.String, java.lang.String)
@@ -45,4 +51,17 @@ public class NullBeanEnhancer implements BeanEnhancer {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.seasar.dao.BeanEnhancer#getSupporter()
+     */
+    public ModifiedPropertySupport getSupporter() {
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see org.seasar.dao.impl.BeanMetaDataImpl.ModifiedPropertySupport#getModifiedPropertyNames(java.lang.Object)
+     */
+    public Set getModifiedPropertyNames(Object bean) {
+        return EMPTY_SET;
+    }
 }

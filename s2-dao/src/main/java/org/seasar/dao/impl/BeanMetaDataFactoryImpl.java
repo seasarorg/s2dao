@@ -17,8 +17,6 @@ package org.seasar.dao.impl;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.util.Collections;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -29,15 +27,10 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
-import org.seasar.dao.NotFoundModifiedPropertiesRuntimeException;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
-import org.seasar.dao.impl.BeanMetaDataImpl.ModifiedPropertySupport;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
-import org.seasar.framework.beans.BeanDesc;
-import org.seasar.framework.beans.PropertyDesc;
-import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
  * @author jflute
@@ -122,14 +115,7 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         bmd.initialize();
         final Class enhancedBeanClass = enhancer.enhanceBeanClass(beanClass,
                 versionNoPropertyName, timestampPropertyName);
-        if (enhancer instanceof NullBeanEnhancer) {
-            bmd.setModifiedPropertySupport(new NullModifiedPropertySupport());
-        } else {
-            final ModifiedPropertySupportImpl modifiedPropertySupportImpl = new ModifiedPropertySupportImpl();
-            modifiedPropertySupportImpl
-                    .setDaoNamingConvention(namingConvention);
-            bmd.setModifiedPropertySupport(modifiedPropertySupportImpl);
-        }
+        bmd.setModifiedPropertySupport(enhancer.getSupporter());
         bmd.setBeanClass(enhancedBeanClass);
         return bmd;
     }
@@ -180,48 +166,4 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
     public void setBeanEnhancer(final BeanEnhancer beanEnhancer) {
         this.beanEnhancer = beanEnhancer;
     }
-
-    public static class ModifiedPropertySupportImpl implements
-            ModifiedPropertySupport {
-
-        private DaoNamingConvention daoNamingConvention;
-
-        public Set getModifiedPropertyNames(final Object bean) {
-            final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(bean
-                    .getClass());
-            final String propertyName = getDaoNamingConvention()
-                    .getModifiedPropertyNamesPropertyName();
-            if (!beanDesc.hasPropertyDesc(propertyName)) {
-                throw new NotFoundModifiedPropertiesRuntimeException(bean
-                        .getClass().getName(), propertyName);
-            }
-            final PropertyDesc propertyDesc = beanDesc
-                    .getPropertyDesc(propertyName);
-            final Object value = propertyDesc.getValue(bean);
-            final Set names = (Set) value;
-            return names;
-        }
-
-        public DaoNamingConvention getDaoNamingConvention() {
-            return daoNamingConvention;
-        }
-
-        public void setDaoNamingConvention(
-                final DaoNamingConvention daoNamingConvention) {
-            this.daoNamingConvention = daoNamingConvention;
-        }
-
-    }
-
-    public static class NullModifiedPropertySupport implements
-            ModifiedPropertySupport {
-
-        private static final Set EMPTY_SET = Collections.EMPTY_SET;
-
-        public Set getModifiedPropertyNames(final Object bean) {
-            return EMPTY_SET;
-        }
-
-    }
-
 }

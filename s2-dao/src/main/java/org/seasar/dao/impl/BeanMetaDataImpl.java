@@ -553,5 +553,4 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         Set getModifiedPropertyNames(Object bean);
 
     }
-
 }

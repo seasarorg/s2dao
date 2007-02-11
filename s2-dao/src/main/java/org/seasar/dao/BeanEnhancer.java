@@ -15,6 +15,8 @@
  */
 package org.seasar.dao;
 
+import org.seasar.dao.impl.BeanMetaDataImpl.ModifiedPropertySupport;
+
 /**
  * @author manhole
  */
@@ -30,4 +32,5 @@ public interface BeanEnhancer {
 
     boolean isEnhancedClass(Class beanClass);
 
+    ModifiedPropertySupport getSupporter();
 }
