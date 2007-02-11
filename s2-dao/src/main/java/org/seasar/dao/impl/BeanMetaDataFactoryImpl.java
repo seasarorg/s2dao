@@ -17,6 +17,7 @@ package org.seasar.dao.impl;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -121,11 +122,14 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         bmd.initialize();
         final Class enhancedBeanClass = enhancer.enhanceBeanClass(beanClass,
                 versionNoPropertyName, timestampPropertyName);
-
-        // TODO enhanceしないModifiedPropertySupportをサポートする。
-        final ModifiedPropertySupportImpl modifiedPropertySupport = new ModifiedPropertySupportImpl();
-        modifiedPropertySupport.setDaoNamingConvention(namingConvention);
-        bmd.setModifiedPropertySupport(modifiedPropertySupport);
+        if (enhancer instanceof NullBeanEnhancer) {
+            bmd.setModifiedPropertySupport(new NullModifiedPropertySupport());
+        } else {
+            final ModifiedPropertySupportImpl modifiedPropertySupportImpl = new ModifiedPropertySupportImpl();
+            modifiedPropertySupportImpl
+                    .setDaoNamingConvention(namingConvention);
+            bmd.setModifiedPropertySupport(modifiedPropertySupportImpl);
+        }
         bmd.setBeanClass(enhancedBeanClass);
         return bmd;
     }
@@ -177,7 +181,7 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         this.beanEnhancer = beanEnhancer;
     }
 
-    private static class ModifiedPropertySupportImpl implements
+    public static class ModifiedPropertySupportImpl implements
             ModifiedPropertySupport {
 
         private DaoNamingConvention daoNamingConvention;
@@ -205,6 +209,17 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         public void setDaoNamingConvention(
                 final DaoNamingConvention daoNamingConvention) {
             this.daoNamingConvention = daoNamingConvention;
+        }
+
+    }
+
+    public static class NullModifiedPropertySupport implements
+            ModifiedPropertySupport {
+
+        private static final Set EMPTY_SET = Collections.EMPTY_SET;
+
+        public Set getModifiedPropertyNames(final Object bean) {
+            return EMPTY_SET;
         }
 
     }

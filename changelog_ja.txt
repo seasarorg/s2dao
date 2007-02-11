@@ -5,6 +5,8 @@ S2Dao 変更履歴
 PagerStatementFactoryにbooleanToIntプロパティを追加し、S2PagerとBooleanToIntPreparedStatementを併用可能にしました。[DAO-62]
 IDアノテーションの複数DBに対しての切り替えを可能にしました。[DAO-60]
 プロダクト名"DB2/AIX64"のデータベースに対応しました。[Seasar-user:6052][DAO-68]
+更新したプロパティのみをUPDATE文に含める機能を1.0.40で追加したが、これをOFFにできるようにした。[DAO-69]
+
 
 1.0.40
 -------------------------------------------------------------------------------
