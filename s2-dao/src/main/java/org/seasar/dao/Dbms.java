@@ -15,6 +15,8 @@
  */
 package org.seasar.dao;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.Statement;
 
 /**
@@ -34,4 +36,8 @@ public interface Dbms {
     boolean isSelfGenerate();
 
     String getBaseSql(Statement st);
+
+    ResultSet getProcedures(DatabaseMetaData databaseMetaData,
+            String procedureName);
+
 }

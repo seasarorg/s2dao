@@ -15,12 +15,18 @@
  */
 package org.seasar.dao.dbms;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationPropertyType;
+import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
+import org.seasar.framework.exception.SQLRuntimeException;
 
 /**
  * @author higa
- * 
+ * @author manhole
  */
 public class Oracle extends Standard {
 
@@ -71,4 +77,26 @@ public class Oracle extends Standard {
     public String getSequenceNextValString(String sequenceName) {
         return "select " + sequenceName + ".nextval from dual";
     }
+
+    public ResultSet getProcedures(final DatabaseMetaData databaseMetaData,
+            final String procedureName) {
+        final String[] names = DatabaseMetaDataUtil.convertIdentifier(
+                databaseMetaData, procedureName).split("\\.");
+        final int namesLength = names.length;
+        try {
+            ResultSet rs = null;
+            if (namesLength == 1) {
+                rs = databaseMetaData.getProcedures(null, null, names[0]);
+            } else if (namesLength == 2) {
+                rs = databaseMetaData.getProcedures(names[0], null, names[1]);
+            } else if (namesLength == 3) {
+                rs = databaseMetaData.getProcedures(names[1], names[0],
+                        names[2]);
+            }
+            return rs;
+        } catch (final SQLException e) {
+            throw new SQLRuntimeException(e);
+        }
+    }
+
 }

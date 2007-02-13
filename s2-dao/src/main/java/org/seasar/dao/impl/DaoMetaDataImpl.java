@@ -205,6 +205,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
         final ProcedureHandlerImpl handler = new ProcedureHandlerImpl();
         handler.setDataSource(dataSource);
+        handler.setDbms(dbms);
         handler.setDaoMethod(method);
         handler.setProcedureName(procedureName);
         handler.setResultSetHandlerFactory(resultSetHandlerFactory);

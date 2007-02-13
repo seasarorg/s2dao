@@ -27,13 +27,13 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.seasar.dao.Dbms;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.jdbc.types.ValueTypes;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
-import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.exception.EmptyRuntimeException;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
@@ -60,6 +60,8 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
     protected String[] columnNames;
 
     protected StatementFactory statementFactory = BasicStatementFactory.INSTANCE;
+
+    protected Dbms dbms;
 
     public DataSource getDataSource() {
         return dataSource;
@@ -259,36 +261,23 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
         final Connection con = DataSourceUtil.getConnection(dataSource);
         ResultSet rs = null;
         try {
-            DatabaseMetaData dmd = ConnectionUtil.getMetaData(con);
-            String[] names = DatabaseMetaDataUtil.convertIdentifier(dmd,
-                    procedureName).split("\\.");
-            final int namesLength = names.length;
-            if (namesLength == 1) {
-                rs = dmd.getProcedures(null, null, names[0]);
-            } else if (namesLength == 2) {
-                rs = dmd.getProcedures(null, names[0], names[1]);
-            } else if (namesLength == 3) {
-                rs = dmd.getProcedures(names[0], names[1], names[2]);
-            }
-            int len = 0;
-            ProcedureMetaData procedureMetaData = new ProcedureMetaData();
-            while (rs.next()) {
-                procedureMetaData.setProcedureCat(rs.getString(1));
-                procedureMetaData.setProcedureSchem(rs.getString(2));
-                procedureMetaData.setProcedureName(rs.getString(3));
-                procedureMetaData.setProcedureType(rs.getShort(8));
-                len++;
-            }
-            if (len < 1) {
+            final DatabaseMetaData dmd = ConnectionUtil.getMetaData(con);
+            rs = getDbms().getProcedures(dmd, procedureName);
+            if (rs == null || !rs.next()) {
                 throw new SRuntimeException("EDAO0012",
                         new Object[] { procedureName });
             }
-            if (len > 1) {
+            final ProcedureMetaData procedureMetaData = new ProcedureMetaData();
+            procedureMetaData.setProcedureCat(rs.getString(1));
+            procedureMetaData.setProcedureSchem(rs.getString(2));
+            procedureMetaData.setProcedureName(rs.getString(3));
+            procedureMetaData.setProcedureType(rs.getShort(8));
+            if (rs.next()) {
                 throw new SRuntimeException("EDAO0013",
                         new Object[] { procedureName });
             }
             return procedureMetaData;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new SQLRuntimeException(e);
         } finally {
             try {
@@ -297,6 +286,14 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
                 ConnectionUtil.close(con);
             }
         }
+    }
+
+    public Dbms getDbms() {
+        return dbms;
+    }
+
+    public void setDbms(final Dbms dbms) {
+        this.dbms = dbms;
     }
 
     static class ProcedureMetaData {
