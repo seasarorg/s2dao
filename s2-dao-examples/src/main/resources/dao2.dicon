@@ -4,7 +4,7 @@
 <components namespace="dao">
 	<include path="j2ee.dicon"/>
 	<component
-		class="org.seasar.dao.impl.FieldAnnotationReaderFactory"/>
+		class="org.seasar.dao.impl.AnnotationReaderFactoryImpl"/>
 	<component
 		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
 		<property name="sqlFileEncoding">"MS932"</property>
@@ -14,10 +14,14 @@
 	<component
 		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
 	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
+
 	<component class="org.seasar.dao.impl.DaoNamingConventionImpl">
+<!--
 		<property name="insertPrefixes">new String[]{"generate"}</property>
 		<property name="deletePrefixes">new String[]{"destory"}</property>
 		<property name="updatePrefixes">new String[]{"change"}</property>
+-->
 	</component>
+
 	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
 </components>

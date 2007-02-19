@@ -19,5 +19,5 @@
 	/>
 	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
 	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
-	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
+	<component class="org.seasar.dao.impl.NullBeanEnhancer"/>
 </components>
