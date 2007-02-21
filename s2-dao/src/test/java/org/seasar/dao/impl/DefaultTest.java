@@ -264,6 +264,23 @@ public class DefaultTest extends S2TestCase {
         }
     }
 
+    //[DAO-72]
+    public void InsertByManualSql2Tx() throws Exception {
+        Integer id;
+        {
+            DefaultTable bean = new DefaultTable();
+            bean.setAaa("foooo");
+            defaultTableDao.insertBySql2(bean);
+            id = bean.getId();
+        }
+        {
+            final DefaultTable bean = defaultTableDao.getDefaultTable(id);
+            assertEquals("foooo", bean.getAaa());
+            assertEquals((String) null, bean.getBbb());
+            assertEquals(new Integer(0), bean.getVersionNo());
+        }
+    }
+
     public void testInsertDefaultByManualSqlTx() throws Exception {
         Integer id;
         {
@@ -305,6 +322,8 @@ public class DefaultTest extends S2TestCase {
         public void insert(DefaultTable largeBinary);
 
         public void insertBySql(DefaultTable largeBinary);
+        
+        public void insertBySql2(DefaultTable largeBinary);
 
         public void update(DefaultTable largeBinary);
 
