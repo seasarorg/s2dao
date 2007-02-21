@@ -307,6 +307,20 @@ public class DefaultTest extends S2TestCase {
         assertEquals(1, list.size());
     }
 
+    // [DAO-72]
+    // Bind変数と埋め込み変数コメントが混在する状態で後者の値に「?(はてな)」を含めると
+    // SQL文のDebug文字列生成時にArrayIndexOutOfBoundsExceptionが発生する。
+    // 埋め込み変数コメントに含められた「?(はてな)」をBind変数の一部として認識してしまうようである。
+    public void causeArrayIndexOutOfBoundsByVariableCommentAtDebugSql()
+            throws Exception {
+        try {
+            defaultTableDao.causeArrayIndexOutOfBounds(new Integer(2), "x?xx?");
+            fail("Expect ArrayIndexOutOfBoundsException!");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static interface DefaultTableDao {
 
         public Class BEAN = DefaultTable.class;
@@ -319,10 +333,14 @@ public class DefaultTest extends S2TestCase {
 
         public List getDefaultTables();
 
+        public String causeArrayIndexOutOfBounds_ARGS = "id, comment";// [DAO-72]
+
+        public List causeArrayIndexOutOfBounds(Integer id, String comment);// [DAO-72]
+
         public void insert(DefaultTable largeBinary);
 
         public void insertBySql(DefaultTable largeBinary);
-        
+
         public void insertBySql2(DefaultTable largeBinary);
 
         public void update(DefaultTable largeBinary);
