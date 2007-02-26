@@ -9,6 +9,7 @@ IDアノテーションの複数DBに対しての切り替えを可能にしま�
 Oracleで"パッケージ名.プロシージャ名"形式でPROCEDUREアノテーションを記述できるようにしました。[DAO-65]
 Daoから取得したSerializableなBeanをデシリアライズする際ならびに、finalなBeanを取得する際に例外になっていたため、デフォルトのdao.diconではBeanを拡張しないようにしました。[DAO-71][DAO-74]
 IDアノテーションをRDDBMSごとに切り替えれるようにしました。 [Seasar-user:5797][DAO-60]
+Tigerアノテーションと定数アノテーションを併用可能にしました。[Seasar-user:6203] [DAO-70]
 
 使用されていないためorg.seasar.dao.node.AddWhereIfNodeを削除しました。
 
