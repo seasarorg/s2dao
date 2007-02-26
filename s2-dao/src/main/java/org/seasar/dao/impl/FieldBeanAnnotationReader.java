@@ -18,6 +18,7 @@ package org.seasar.dao.impl;
 import java.lang.reflect.Field;
 
 import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.Dbms;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
@@ -80,9 +81,9 @@ public class FieldBeanAnnotationReader implements BeanAnnotationReader {
         return null;
     }
 
-    public String getId(PropertyDesc pd, String dbms) {
-
-        String id = getField(pd.getPropertyName() + dbms + ID_SUFFIX);
+    public String getId(PropertyDesc pd, Dbms dbms) {
+        String id = getField(pd.getPropertyName() + dbms.getSuffix()
+                + ID_SUFFIX);
         if (id != null) {
             return id;
         }

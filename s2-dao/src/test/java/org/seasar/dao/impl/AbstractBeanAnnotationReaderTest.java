@@ -18,6 +18,9 @@ package org.seasar.dao.impl;
 import junit.framework.TestCase;
 
 import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.dbms.MySQL;
+import org.seasar.dao.dbms.Oracle;
+import org.seasar.dao.dbms.PostgreSQL;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
@@ -78,14 +81,17 @@ public abstract class AbstractBeanAnnotationReaderTest extends TestCase {
         Class clazz1 = getBeanClass("AnnotationTestBean4");
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz1);
         BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
-        String str1 = reader1.getId(beanDesc.getPropertyDesc("aaa"), "_oracle");
+        String str1 = reader1.getId(beanDesc.getPropertyDesc("aaa"),
+                new Oracle());
         assertEquals("1", "identity", str1);
-        String str2 = reader1.getId(beanDesc.getPropertyDesc("aaa"), "_mysql");
+        String str2 = reader1.getId(beanDesc.getPropertyDesc("aaa"),
+                new MySQL());
         assertEquals("2", "sequence, sequenceName=myseq", str2);
-        String str3 = reader1
-                .getId(beanDesc.getPropertyDesc("aaa"), "_postgre");
+        String str3 = reader1.getId(beanDesc.getPropertyDesc("aaa"),
+                new PostgreSQL());
         assertEquals("3", "sequence, sequenceName=myseq_2", str3);
-        String str4 = reader1.getId(beanDesc.getPropertyDesc("bbb"), "_mysql");
+        String str4 = reader1.getId(beanDesc.getPropertyDesc("bbb"),
+                new MySQL());
         assertNull("4", str4);
     }
 
@@ -93,9 +99,11 @@ public abstract class AbstractBeanAnnotationReaderTest extends TestCase {
         Class clazz1 = getBeanClass("AnnotationTestBean5");
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz1);
         BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
-        String str1 = reader1.getId(beanDesc.getPropertyDesc("aaa"), "_oracle");
+        String str1 = reader1.getId(beanDesc.getPropertyDesc("aaa"),
+                new Oracle());
         assertEquals("1", "identity", str1);
-        String str3 = reader1.getId(beanDesc.getPropertyDesc("bbb"), "_oracle");
+        String str3 = reader1.getId(beanDesc.getPropertyDesc("bbb"),
+                new Oracle());
         assertNull("2", str3);
     }
 
@@ -103,9 +111,11 @@ public abstract class AbstractBeanAnnotationReaderTest extends TestCase {
         Class clazz1 = getBeanClass("AnnotationTestBean6");
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(clazz1);
         BeanAnnotationReader reader1 = createBeanAnnotationReader(clazz1);
-        String str1 = reader1.getId(beanDesc.getPropertyDesc("aaa"), "_oracle");
+        String str1 = reader1.getId(beanDesc.getPropertyDesc("aaa"),
+                new Oracle());
         assertEquals("1", "identity", str1);
-        String str3 = reader1.getId(beanDesc.getPropertyDesc("bbb"), "_oracle");
+        String str3 = reader1.getId(beanDesc.getPropertyDesc("bbb"),
+                new Oracle());
         assertNull("2", str3);
     }
 

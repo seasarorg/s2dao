@@ -32,7 +32,7 @@ public interface BeanAnnotationReader {
 
     String getTimestampPropertyName();
 
-    String getId(PropertyDesc pd, String dbms);
+    String getId(PropertyDesc pd, Dbms dbms);
 
     String[] getNoPersisteneProps();
 

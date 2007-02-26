@@ -304,8 +304,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
                 addPropertyType(pt);
             }
             if (identifierGenerator == null) {
-                String idAnnotation = beanAnnotationReader.getId(pd, dbms
-                        .getSuffix());
+                String idAnnotation = beanAnnotationReader.getId(pd, dbms);
                 if (idAnnotation != null) {
                     identifierGenerator = IdentifierGeneratorFactory
                             .createIdentifierGenerator(pd.getPropertyName(),
