@@ -7,6 +7,8 @@ IDアノテーションの複数DBに対しての切り替えを可能にしま�
 プロダクト名"DB2/AIX64"のデータベースに対応しました。[Seasar-user:6052][DAO-68]
 1.0.40で追加した更新したプロパティのみをUPDATE文に含める機能を、OFFにできるようにしました。[DAO-69]
 Oracleで"パッケージ名.プロシージャ名"形式でPROCEDUREアノテーションを記述できるようにしました。[DAO-65]
+Daoから取得したSerializableなBeanをデシリアライズする際ならびに、finalなBeanを取得する際に例外になっていたため、デフォルトのdao.diconではBeanを拡張しないようにしました。[DAO-71][DAO-74]
+IDアノテーションをRDDBMSごとに切り替えれるようにしました。 [Seasar-user:5797][DAO-60]
 
 使用されていないためorg.seasar.dao.node.AddWhereIfNodeを削除しました。
 
