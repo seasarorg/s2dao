@@ -18,6 +18,7 @@ package org.seasar.dao.impl;
 import junit.framework.TestCase;
 
 import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.dbms.HSQL;
 import org.seasar.dao.dbms.MySQL;
 import org.seasar.dao.dbms.Oracle;
 import org.seasar.dao.dbms.PostgreSQL;
@@ -102,9 +103,12 @@ public abstract class AbstractBeanAnnotationReaderTest extends TestCase {
         String str1 = reader1.getId(beanDesc.getPropertyDesc("aaa"),
                 new Oracle());
         assertEquals("1", "identity", str1);
+        String str2 = reader1
+                .getId(beanDesc.getPropertyDesc("aaa"), new HSQL());
+        assertNull("2", str2);
         String str3 = reader1.getId(beanDesc.getPropertyDesc("bbb"),
                 new Oracle());
-        assertNull("2", str3);
+        assertNull("3", str3);
     }
 
     public void testGetId2() {
