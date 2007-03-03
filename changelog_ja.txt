@@ -10,6 +10,8 @@ Oracleで"パッケージ名.プロシージャ名"形式でPROCEDUREアノテ�
 Daoから取得したSerializableなBeanをデシリアライズする際ならびに、finalなBeanを取得する際に例外になっていたため、デフォルトのdao.diconではBeanを拡張しないようにしました。[DAO-71][DAO-74]
 IDアノテーションをRDDBMSごとに切り替えれるようにしました。 [Seasar-user:5797][DAO-60]
 Tigerアノテーションと定数アノテーションを併用可能にしました。[Seasar-user:6203] [DAO-70]
+S2Dao-TigerのSQLアノテーションで、複数DBMSの切り替えに対応してなかったので、対応しました。[DAO-75]
+exmapleならびにテスト実行時のデータソース設定は、Seasar2.3使用時はj2ee.dicon、Seasar2.4使用時はjdbc.diconに記述するようになりました。[DAO-76]
 
 使用されていないためorg.seasar.dao.node.AddWhereIfNodeを削除しました。
 
