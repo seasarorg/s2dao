@@ -3,7 +3,6 @@
 	"http://www.seasar.org/dtd/components21.dtd">
 <components namespace="jdbc">
 	<include path="jta.dicon"/>
-	<include path="jdbc-extension.dicon"/>
 	<component 
 		name="resultSetFactory"
 		class="org.seasar.dao.pager.PagerResultSetFactoryWrapper">
