@@ -32,24 +32,20 @@ public class PathResolverImpl implements PathResolver {
     }
 
     public String resolvePath(String context, String path) {
-        System.out.println("path=" + path);
         if (olderS23 && "j2ee.dicon".equals(path)) {
             path = "j2ee_s23" + suffix + ".dicon";
         } else if ("jdbc.dicon".equals(path)) {
             path = "jdbc" + suffix + ".dicon";
         }
-        System.out.println("resolvePath=" + path);
         return path;
     }
 
     protected static boolean isOlderS23() {
         try {
             Class.forName("org.seasar.framework.env.Env");
-            System.out.println("S24");
             return false;
         } catch (Throwable ignore) {
         }
-        System.out.println("S23");
         return true;
     }
 
