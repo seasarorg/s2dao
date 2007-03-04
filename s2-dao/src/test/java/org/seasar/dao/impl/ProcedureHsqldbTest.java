@@ -28,7 +28,7 @@ public class ProcedureHsqldbTest extends S2DaoTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        include("j2ee.dicon");
+        include("j2ee-test.dicon");
     }
 
     public void test1() throws Exception {

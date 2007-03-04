@@ -34,7 +34,7 @@ public class S2DaoTestCaseTest extends S2DaoTestCase {
     }
 
     protected void setUp() {
-        include("j2ee.dicon");
+        include("j2ee-test.dicon");
     }
 
     public void testAssertBeanEquals() {

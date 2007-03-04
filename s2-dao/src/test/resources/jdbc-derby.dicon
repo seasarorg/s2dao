@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
+	"http://www.seasar.org/dtd/components21.dtd">
+
+<components namespace="jdbc">
+	<include path="jta.dicon"/>
+	<include path="jdbc-extension.dicon"/>
+	<component 
+		name="resultSetFactory"
+		class="org.seasar.dao.pager.PagerResultSetFactoryWrapper">
+		<arg>
+			<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+		</arg>
+		<property name="useScrollCursor">true</property>
+	</component>
+	<!--
+	<component 
+		name="resultSetFactory"
+		class="org.seasar.dao.pager.PagerResultSetFactoryLimitOffsetWrapper">
+		<arg>
+			<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+		</arg>
+		<arg>dataSource</arg>
+	</component>
+	-->
+
+	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
+		<arg>
+			<component class="org.seasar.dao.pager.PagerStatementFactory"/>
+		</arg>
+		<property name="fetchSize">100</property>
+		<!--
+		<property name="maxRows">100</property>
+		-->
+	</component>
+
+	<!--
+	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
+		<arg>
+			<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
+		</arg>
+		<property name="fetchSize">100</property>
+		<! - -
+		<property name="maxRows">100</property>
+		- - >
+	</component>
+	<component class="org.seasar.extension.jdbc.impl.OracleResultSetFactory"/>
+	<component class="org.seasar.extension.jdbc.impl.BooleanToIntStatementFactory"/>
+	-->
+
+	<component name="xaDataSource"
+		class="org.seasar.extension.dbcp.impl.XADataSourceImpl">
+		<property name="driverClassName">
+			"org.apache.derby.jdbc.EmbeddedDriver"
+		</property>
+		<property name="URL">
+			"jdbc:derby:" 
+				+ @org.seasar.framework.util.ResourceUtil@getBuildDir(@org.seasar.dao.impl.ClobTest@class).getCanonicalPath() 
+				+ "/data-derby"
+		</property>
+		<property name="user">"seasar"</property>
+		<property name="password">"seasarpwd"</property>
+	</component>
+
+
+	<component name="connectionPool"
+		class="org.seasar.extension.dbcp.impl.ConnectionPoolImpl">
+		<property name="timeout">600</property>
+		<property name="maxPoolSize">10</property>
+		<!-- JTAトランザクションが開始されていない場合にコネクションを
+		     取得できないようにするには次のプロパティをfalseにしてください．-->
+		<property name="allowLocalTx">true</property>
+		<destroyMethod name="close"/>
+	</component>
+	<component name="dataSource"
+		class="org.seasar.extension.dbcp.impl.DataSourceImpl"/>
+
+	
+</components>

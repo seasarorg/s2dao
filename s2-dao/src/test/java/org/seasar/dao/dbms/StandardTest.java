@@ -27,7 +27,7 @@ import org.seasar.framework.util.DisposableUtil;
 public class StandardTest extends S2DaoTestCase {
 
     protected void setUp() throws Exception {
-        include("j2ee.dicon");
+        include("j2ee-test.dicon");
     }
 
     public void testCreateAutoSelectList() throws Exception {

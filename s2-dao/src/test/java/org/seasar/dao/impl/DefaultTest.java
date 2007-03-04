@@ -38,8 +38,12 @@ public class DefaultTest extends S2TestCase {
     private PkOnlyTableDao pkOnlyTableDao;
 
     protected void setUp() throws Exception {
-        super.setUp();
+        PathResolverImpl.setSuffix("-derby");
         include("DefaultTest.dicon");
+    }
+
+    protected void tearDown() throws Exception {
+        PathResolverImpl.setSuffix(null);
     }
 
     public void testLearningMetaDataForColumnsTx() throws Exception {

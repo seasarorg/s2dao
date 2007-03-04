@@ -40,7 +40,7 @@ public class DeleteBatchAutoStaticCommandTest extends S2DaoTestCase {
     }
 
     public void setUp() {
-        include("j2ee.dicon");
+        include("j2ee-test.dicon");
     }
 
     public static void main(String[] args) {

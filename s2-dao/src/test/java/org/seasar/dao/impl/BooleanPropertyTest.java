@@ -26,7 +26,7 @@ import org.seasar.dao.unit.S2DaoTestCase;
 public class BooleanPropertyTest extends S2DaoTestCase {
 
     public void setUp() {
-        include("j2ee.dicon");
+        include("j2ee-test.dicon");
     }
 
     public void testInsertAndSelectTx() throws Exception {

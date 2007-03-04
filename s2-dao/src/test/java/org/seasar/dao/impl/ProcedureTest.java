@@ -124,8 +124,13 @@ public class ProcedureTest extends S2TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        PathResolverImpl.setSuffix("-derby");
         include("ProcedureTest.dicon");
         procedureParam = new HashMap();
+    }
+
+    protected void tearDown() throws Exception {
+        PathResolverImpl.setSuffix(null);
     }
 
     public void testAaa1Tx() throws Exception {

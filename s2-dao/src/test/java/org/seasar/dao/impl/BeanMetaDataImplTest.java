@@ -27,7 +27,7 @@ import org.seasar.extension.jdbc.PropertyType;
 public abstract class BeanMetaDataImplTest extends S2DaoTestCase {
 
     protected void setUp() throws Exception {
-        include("j2ee.dicon");
+        include("j2ee-test.dicon");
     }
 
     protected abstract Class getBeanClass(String className);

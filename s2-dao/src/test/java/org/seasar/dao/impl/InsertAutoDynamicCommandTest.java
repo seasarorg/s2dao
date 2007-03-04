@@ -137,7 +137,7 @@ public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
     }
 
     public void setUp() {
-        include("j2ee.dicon");
+        include("j2ee-test.dicon");
     }
 
     public static interface SeqTable1Dao {

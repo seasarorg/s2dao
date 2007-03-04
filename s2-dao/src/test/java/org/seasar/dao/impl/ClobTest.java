@@ -28,7 +28,12 @@ public class ClobTest extends S2TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        PathResolverImpl.setSuffix("-derby");
         include("ClobTest.dicon");
+    }
+
+    protected void tearDown() throws Exception {
+        PathResolverImpl.setSuffix(null);
     }
 
     public void test1Tx() throws Exception {
