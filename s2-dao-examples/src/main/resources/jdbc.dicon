@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
 	"http://www.seasar.org/dtd/components21.dtd">
+<!-- 
+このファイルはSeasar2.4を使う場合のjdbc.diconの雛形です。このファイルを使う場合は
+同じディレクトリとs2-dao/src/test/resourcesにあるj2ee.diconをリネームして読み込まれないようにしてください。
+ -->
 <components namespace="jdbc">
 	<include path="jta.dicon"/>
 	<include path="jdbc-extension.dicon"/>
