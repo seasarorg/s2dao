@@ -16,11 +16,6 @@
 	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
 
 	<component class="org.seasar.dao.impl.DaoNamingConventionImpl">
-<!--
-		<property name="insertPrefixes">new String[]{"generate"}</property>
-		<property name="deletePrefixes">new String[]{"destory"}</property>
-		<property name="updatePrefixes">new String[]{"change"}</property>
--->
 	</component>
 
 	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
