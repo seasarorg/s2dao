@@ -27,7 +27,7 @@ public class OracleTest extends S2DaoTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        include("j2ee-test.dicon");
+        include("j2ee.dicon");
     }
 
     public void testCreateAutoSelectList() throws Exception {

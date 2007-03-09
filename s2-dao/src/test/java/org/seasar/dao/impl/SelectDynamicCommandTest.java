@@ -173,7 +173,7 @@ public class SelectDynamicCommandTest extends S2DaoTestCase {
     }
 
     public void setUp() {
-        include("j2ee-test.dicon");
+        include("j2ee.dicon");
     }
 
     public static void main(String[] args) {

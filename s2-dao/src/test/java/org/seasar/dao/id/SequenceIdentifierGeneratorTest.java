@@ -38,7 +38,7 @@ public class SequenceIdentifierGeneratorTest extends S2TestCase {
     }
 
     protected void setUp() throws Exception {
-        include("j2ee-test.dicon");
+        include("j2ee.dicon");
     }
 
     protected void tearDown() throws Exception {

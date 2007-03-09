@@ -50,7 +50,7 @@ public class BeanMetaDataResultSetHandler2Test extends S2DaoTestCase {
     }
 
     public void setUp() {
-        include("j2ee-test.dicon");
+        include("j2ee.dicon");
     }
 
     protected void setUpAfterBindFields() throws Throwable {

@@ -32,7 +32,7 @@ public class H2Test extends S2DaoTestCase {
 
     protected void setUp() throws Exception {
         PathResolverImpl.setSuffix("-h2");
-        include("j2ee-test.dicon");
+        include("j2ee.dicon");
     }
 
     protected void tearDown() throws Exception {

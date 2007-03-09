@@ -26,7 +26,7 @@ public class ResultSetToBeanTest extends S2DaoTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        include("j2ee-test.dicon");
+        include("j2ee.dicon");
     }
 
     // https://www.seasar.org/issues/browse/DAO-26
