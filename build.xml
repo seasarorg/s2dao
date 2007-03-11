@@ -3,6 +3,9 @@
 
 	<target name="dist">
 		<mkdir dir="target"/>
+
+		<copy file="s2-dao/src/test/resources/j2ee_s23.dicon" tofile="s2-dao/src/test/resources/j2ee.dicon"  />
+		<copy file="s2-dao/src/test/resources/j2ee_s23.dicon" tofile="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources/j2ee.dicon"  />
 		<zip zipfile="target/s2-dao-${ver}.zip">
 			<zipfileset prefix="s2dao" dir=".">
 				<exclude name="**/build/**"/>
@@ -20,6 +23,7 @@
 			</zipfileset>
 			<zipfileset prefix="s2dao/resources" dir="s2-dao/src/test/resources">
 				<include name="j2ee.dicon"/>
+				<include name="jdbc.dicon"/>
 				<include name="log4j.properties"/>
 			</zipfileset>
 
@@ -41,9 +45,12 @@
 			<zipfileset prefix="s2dao-tiger/resources" 
 				dir="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources">
 				<include name="j2ee.dicon"/>
+				<include name="jdbc.dicon"/>
 				<include name="log4j.properties"/>
 			</zipfileset>
 		</zip>
+		<delete file="s2-dao/src/test/resources/j2ee.dicon" />
+		<delete file="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources/j2ee.dicon" />
 	</target>
 
 </project>
