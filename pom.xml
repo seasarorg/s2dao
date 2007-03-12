@@ -99,11 +99,31 @@
       <url>http://d.hatena.ne.jp/taichitaichi/</url>
       <timezone>+9</timezone>
     </developer>
+    <developer>
+      <id>skirnir</id>
+      <name>YOKOTA Takehiko</name>
+      <email></email>
+      <url></url>
+      <timezone></timezone>
+    </developer>
+    <developer>
+      <id>azusa</id>
+      <name>SETO Azusa</name>
+      <email>azusa@fieldnotes.jp</email>
+      <url>http://www.fieldnotes.jp/d/</url>
+      <timezone>+9</timezone>
+    </developer>
   </developers>
   <contributors>
     <contributor>
       <name>Satoshi Kimura</name>
     </contributor>
+    <contributor>
+      <name>Ryo Miyagi</name>
+    </contributor>
+    <contributor>
+      <name>Jundo Ishikawa</name>
+    </contributor> 
   </contributors>
   <licenses>
     <license>
