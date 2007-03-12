@@ -83,18 +83,42 @@ public class Oracle extends Standard {
         final String[] names = DatabaseMetaDataUtil.convertIdentifier(
                 databaseMetaData, procedureName).split("\\.");
         final int namesLength = names.length;
+        ResultSet rs =  null;
         try {
-            ResultSet rs = null;
             if (namesLength == 1) {
-                rs = databaseMetaData.getProcedures(null, null, names[0]);
+                // まず、自スキーマから探索
+                rs = databaseMetaData.getProcedures(null, "", names[0]);
+                if (!rs.isBeforeFirst()) {
+                    rs.close();
+                    // 全スキーマから探索
+                    return databaseMetaData.getProcedures(null, null, names[0]);
+                } else {
+                    return rs;
+                }
             } else if (namesLength == 2) {
-                rs = databaseMetaData.getProcedures(names[0], null, names[1]);
+                // 自スキーマのプロシージャを探索
+                rs = databaseMetaData.getProcedures(null, names[0], names[1]);
+                if (!rs.isBeforeFirst()) {
+                    rs.close();
+                    // 全スキーマからパッケージを探索
+                    return databaseMetaData.getProcedures(names[0], null,
+                            names[1]);
+                } else {
+                   return rs;
+                }
             } else if (namesLength == 3) {
-                rs = databaseMetaData.getProcedures(names[1], names[0],
+                return databaseMetaData.getProcedures(names[1], names[0],
                         names[2]);
+            } else {
+                throw new IllegalArgumentException();
             }
-            return rs;
         } catch (final SQLException e) {
+            if (rs != null){
+                try {
+                    rs.close();
+                } catch (Exception ignore) {
+                }
+            }
             throw new SQLRuntimeException(e);
         }
     }
