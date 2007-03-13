@@ -5,7 +5,7 @@
 		<mkdir dir="target"/>
 
 		<copy file="s2-dao/src/test/resources/j2ee_s23.dicon" tofile="s2-dao/src/test/resources/j2ee.dicon"  />
-		<copy file="s2-dao/src/test/resources/j2ee_s23.dicon" tofile="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources/j2ee.dicon"  />
+		<copy file="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources/j2ee_s23.dicon" tofile="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources/j2ee.dicon"  />
 		<zip zipfile="target/s2-dao-${ver}.zip">
 			<zipfileset prefix="s2dao" dir=".">
 				<exclude name="**/build/**"/>
