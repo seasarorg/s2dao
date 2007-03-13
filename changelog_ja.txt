@@ -1,6 +1,6 @@
 S2Dao 変更履歴
 
-1.0.41-SNAPSHOT
+1.0.41-RC1
 -------------------------------------------------------------------------------
 PagerStatementFactoryにbooleanToIntプロパティを追加し、S2PagerとBooleanToIntPreparedStatementを併用可能にしました。[DAO-62]
 IDアノテーションの複数DBに対しての切り替えを可能にしました。[Seasar-user:5797][DAO-60]
