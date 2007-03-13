@@ -1,5 +1,5 @@
 <project name="s2dao" default="dist" basedir=".">
-	<property name="ver" value="1.0.41-SNAPSHOT"/>
+	<property name="ver" value="1.0.41-RC1"/>
 
 	<target name="dist">
 		<mkdir dir="target"/>
