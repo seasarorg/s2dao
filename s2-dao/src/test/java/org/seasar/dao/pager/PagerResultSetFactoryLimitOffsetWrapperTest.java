@@ -29,6 +29,7 @@ public class PagerResultSetFactoryLimitOffsetWrapperTest extends TestCase {
     protected void setUp() throws Exception {
         original = new MockResultSetFactory();
         wrapper = new PagerResultSetFactoryLimitOffsetWrapper(original, "MySQL");
+        PagerContext.init();
     }
 
     /*

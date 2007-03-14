@@ -29,6 +29,10 @@ import org.seasar.extension.jdbc.impl.BooleanToIntPreparedStatement;
  */
 public class PagerStatementFactoryTest extends TestCase {
 
+    protected void setUp() throws Exception {
+        PagerContext.init();
+    }
+
     /**
      * Pagerで無い場合は引数1つのprepareStatementを呼ぶこと。
      */

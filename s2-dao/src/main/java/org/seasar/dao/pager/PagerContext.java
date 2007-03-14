@@ -23,16 +23,14 @@ import java.util.Stack;
  * @author Toshitaka Agata(Nulab,inc.)
  * @author azusa
  */
-class PagerContext {
+public class PagerContext {
+
+    private static final PagerContext instance = new PagerContext();
 
     private static final Object[] EMPTY_ARGS = new Object[0];
 
     /** スレッドローカル */
-    private static ThreadLocal threadLocal = new ThreadLocal() {
-        protected Object initialValue() {
-            return new PagerContext();
-        }
-    };
+    private static ThreadLocal threadLocal = createThreadLocal();
 
     /** Stack */
     private Stack argsStack = new Stack();
@@ -103,6 +101,23 @@ class PagerContext {
             }
         }
         return null;
+    }
+
+    public static void init() {
+        threadLocal = createThreadLocal();
+    }
+
+    public static void destroy() {
+        threadLocal.set(null);
+        threadLocal = null;
+    }
+
+    private static ThreadLocal createThreadLocal() {
+        return new ThreadLocal() {
+            protected Object initialValue() {
+                return new PagerContext();
+            }
+        };
     }
 
 }

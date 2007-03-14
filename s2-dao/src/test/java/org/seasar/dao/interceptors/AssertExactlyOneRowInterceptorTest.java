@@ -16,6 +16,7 @@
 package org.seasar.dao.interceptors;
 
 import org.seasar.dao.NotExactlyOneRowUpdatedRuntimeException;
+import org.seasar.dao.pager.PagerContext;
 import org.seasar.extension.unit.S2TestCase;
 
 /**
@@ -28,6 +29,7 @@ public class AssertExactlyOneRowInterceptorTest extends S2TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         include("AssertExactlyOneRowInterceptorTest.dicon");
+        PagerContext.init();
     }
 
     public void testOneRowTx() throws Exception {

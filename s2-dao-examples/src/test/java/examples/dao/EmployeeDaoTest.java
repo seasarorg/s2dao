@@ -17,6 +17,7 @@ package examples.dao;
 
 import java.util.List;
 
+import org.seasar.dao.pager.PagerContext;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.dataset.DataSet;
 
@@ -30,6 +31,7 @@ public class EmployeeDaoTest extends S2DaoTestCase {
 
     public void setUp() {
         include("examples/dao/EmployeeDao.dicon");
+        PagerContext.init();
     }
 
     public void testGetAllEmployee() throws Exception {

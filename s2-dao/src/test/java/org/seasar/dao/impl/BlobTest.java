@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Random;
 
+import org.seasar.dao.pager.PagerContext;
 import org.seasar.extension.unit.S2TestCase;
 
 /**
@@ -36,6 +37,7 @@ public class BlobTest extends S2TestCase {
         super.setUp();
         PathResolverImpl.setSuffix("-derby");
         include("BlobTest.dicon");
+        PagerContext.init();
     }
 
     protected void tearDown() throws Exception {

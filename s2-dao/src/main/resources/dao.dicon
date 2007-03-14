@@ -11,6 +11,8 @@
 		<arg>
 			<component class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
 		</arg>
+		<initMethod>@org.seasar.dao.pager.PagerContext@init()</initMethod>
+		<destroyMethod>@org.seasar.dao.pager.PagerContext@destroy()</destroyMethod>
 	</component>
 	<component class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
 	<component 

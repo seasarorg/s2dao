@@ -17,6 +17,7 @@ package org.seasar.dao.impl;
 
 import java.io.Serializable;
 
+import org.seasar.dao.pager.PagerContext;
 import org.seasar.extension.unit.S2TestCase;
 
 /**
@@ -30,6 +31,7 @@ public class ClobTest extends S2TestCase {
         super.setUp();
         PathResolverImpl.setSuffix("-derby");
         include("ClobTest.dicon");
+        PagerContext.init();
     }
 
     protected void tearDown() throws Exception {

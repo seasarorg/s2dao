@@ -32,6 +32,7 @@ public class PagerResultSetFactoryWapperTest extends TestCase {
     protected void setUp() throws Exception {
         original = new MockResultSetFactory();
         wrapper = new PagerResultSetFactoryWrapper(original);
+        PagerContext.init();
     }
 
     public void testCreateResultSetNotPagerCondition() throws Exception {

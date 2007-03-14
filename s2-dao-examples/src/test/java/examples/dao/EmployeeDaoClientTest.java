@@ -15,9 +15,15 @@
  */
 package examples.dao;
 
+import org.seasar.dao.pager.PagerContext;
+
 import junit.framework.TestCase;
 
 public class EmployeeDaoClientTest extends TestCase {
+
+    protected void setUp() throws Exception {
+        PagerContext.init();
+    }
 
     public void testNoException() throws Exception {
         EmployeeDaoClient.main(new String[] {});
