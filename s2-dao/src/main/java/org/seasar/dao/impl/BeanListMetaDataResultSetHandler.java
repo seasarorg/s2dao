@@ -56,6 +56,7 @@ public class BeanListMetaDataResultSetHandler extends
                 }
                 Object relationRow = null;
                 Map relKeyValues = new HashMap();
+                // TODO 1レコード目でnullが返るなら、2レコード目以降は不要では?
                 RelationKey relKey = createRelationKey(rs, rpt, columnNames,
                         relKeyValues);
                 if (relKey != null) {
