@@ -26,7 +26,8 @@ import org.seasar.dao.RelationRowCreator;
 public class BeanArrayMetaDataResultSetHandler extends
         BeanListMetaDataResultSetHandler {
 
-    public BeanArrayMetaDataResultSetHandler(BeanMetaData beanMetaData, RelationRowCreator relationRowCreator) {
+    public BeanArrayMetaDataResultSetHandler(BeanMetaData beanMetaData,
+            RelationRowCreator relationRowCreator) {
         super(beanMetaData, relationRowCreator);
     }
 

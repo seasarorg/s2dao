@@ -93,7 +93,7 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
             }
             types.add(pt);
         }
-        if (types.size() == 0){
+        if (types.size() == 0) {
             throw new SRuntimeException("EDAO0020");
         }
         propertyTypes = (PropertyType[]) types.toArray(new PropertyType[types

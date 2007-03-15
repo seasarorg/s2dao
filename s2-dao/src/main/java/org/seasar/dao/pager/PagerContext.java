@@ -113,7 +113,7 @@ public class PagerContext {
      * ThreadLocalのインスタンスに、PagerContextを設定します。
      *
      */
-    public static void start(){
+    public static void start() {
         threadLocal.set(new PagerContext());
     }
 
@@ -121,7 +121,7 @@ public class PagerContext {
      * ThreadLocalのインスタンスに設定されているPagerContextをクリアします。
      *
      */
-    public static void end(){
+    public static void end() {
         threadLocal.set(null);
     }
 

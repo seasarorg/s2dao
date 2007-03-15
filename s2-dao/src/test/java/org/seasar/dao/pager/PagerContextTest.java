@@ -29,7 +29,7 @@ public class PagerContextTest extends TestCase {
         PagerCondition pagerConderion = new DefaultPagerCondition();
         pagerConderion.setLimit(10);
         assertEquals(true, PagerContext
-                .isPagerCondition(new Object[] { pagerConderion}));
+                .isPagerCondition(new Object[] { pagerConderion }));
         assertEquals(true, PagerContext.isPagerCondition(new Object[] {
                 pagerConderion, "dummy" }));
         assertEquals(false, PagerContext

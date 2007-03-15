@@ -83,7 +83,7 @@ public class Oracle extends Standard {
         final String[] names = DatabaseMetaDataUtil.convertIdentifier(
                 databaseMetaData, procedureName).split("\\.");
         final int namesLength = names.length;
-        ResultSet rs =  null;
+        ResultSet rs = null;
         try {
             if (namesLength == 1) {
                 // まず、自スキーマから探索
@@ -104,7 +104,7 @@ public class Oracle extends Standard {
                     return databaseMetaData.getProcedures(names[0], null,
                             names[1]);
                 } else {
-                   return rs;
+                    return rs;
                 }
             } else if (namesLength == 3) {
                 return databaseMetaData.getProcedures(names[1], names[0],
@@ -113,7 +113,7 @@ public class Oracle extends Standard {
                 throw new IllegalArgumentException();
             }
         } catch (final SQLException e) {
-            if (rs != null){
+            if (rs != null) {
                 try {
                     rs.close();
                 } catch (Exception ignore) {

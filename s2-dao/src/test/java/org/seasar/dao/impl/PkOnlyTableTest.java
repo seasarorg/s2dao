@@ -60,9 +60,9 @@ public class PkOnlyTableTest extends S2DaoTestCase {
             data.setAaa("value");
             cmd.execute(new Object[] { data });
             fail();
-         //TODO 発生する例外が変わってしまいました...
-//        } catch (NoUpdatePropertyTypeRuntimeException e) {
-        } catch(MethodSetupFailureRuntimeException e){
+            //TODO 発生する例外が変わってしまいました...
+            //        } catch (NoUpdatePropertyTypeRuntimeException e) {
+        } catch (MethodSetupFailureRuntimeException e) {
             assertTrue(true);
         }
     }
@@ -75,7 +75,7 @@ public class PkOnlyTableTest extends S2DaoTestCase {
         try {
             createDaoMetaData(PkOnlyTableDao2.class);
             fail();
-        } catch(MethodSetupFailureRuntimeException e){
+        } catch (MethodSetupFailureRuntimeException e) {
             assertTrue(true);
             e.printStackTrace();
         }

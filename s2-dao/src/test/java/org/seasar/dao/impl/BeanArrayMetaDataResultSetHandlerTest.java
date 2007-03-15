@@ -30,7 +30,8 @@ public class BeanArrayMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle() throws Exception {
         ResultSetHandler handler = new BeanArrayMetaDataResultSetHandler(
-                createBeanMetaData(Employee.class), new RelationRowCreatorImpl());
+                createBeanMetaData(Employee.class),
+                new RelationRowCreatorImpl());
         String sql = "select * from emp";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
