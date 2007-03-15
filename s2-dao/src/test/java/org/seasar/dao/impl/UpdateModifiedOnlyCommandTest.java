@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.seasar.dao.NotFoundModifiedPropertiesRuntimeException;
 import org.seasar.dao.SqlCommand;
-import org.seasar.dao.pager.PagerContext;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.framework.util.ClassUtil;
@@ -51,7 +50,6 @@ public class UpdateModifiedOnlyCommandTest extends S2DaoTestCase {
         include(ClassUtil.getSimpleClassName(
                 UpdateModifiedOnlyCommandTest.class).replace('.', '/')
                 + ".dicon");
-        PagerContext.init();
     }
 
     /*

@@ -29,11 +29,13 @@ import org.seasar.framework.container.factory.S2ContainerFactory;
 public class FunctionTest extends TestCase {
 
     protected void setUp() throws Exception {
+        super.setUp();
         PathResolverImpl.setSuffix("-derby");
     }
 
     protected void tearDown() throws Exception {
         PathResolverImpl.setSuffix(null);
+        super.tearDown();
     }
 
     public void testCallFunctionDirectory() throws Exception {

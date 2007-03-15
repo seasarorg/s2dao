@@ -31,6 +31,7 @@ import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 public class H2Test extends S2DaoTestCase {
 
     protected void setUp() throws Exception {
+        super.setUp();
         PathResolverImpl.setSuffix("-h2");
         include("j2ee.dicon");
     }

@@ -9,8 +9,13 @@
 		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
 		<property name="sqlFileEncoding">"MS932"</property>
 	</component>
-	<component name="interceptor"
-		class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
+	<component
+		name="interceptor"
+		class="org.seasar.dao.pager.PagerS2DaoInterceptorWrapper">
+		<arg>
+			<component class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
+		</arg>
+	</component>
 	<component
 		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
 	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>

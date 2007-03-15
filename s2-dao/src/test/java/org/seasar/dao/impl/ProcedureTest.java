@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.seasar.dao.pager.PagerContext;
 import org.seasar.extension.jdbc.impl.MapListResultSetHandler;
 import org.seasar.extension.unit.S2TestCase;
 
@@ -128,11 +127,11 @@ public class ProcedureTest extends S2TestCase {
         PathResolverImpl.setSuffix("-derby");
         include("ProcedureTest.dicon");
         procedureParam = new HashMap();
-        PagerContext.init();
     }
 
     protected void tearDown() throws Exception {
         PathResolverImpl.setSuffix(null);
+        super.tearDown();
     }
 
     public void testAaa1Tx() throws Exception {

@@ -20,6 +20,7 @@ import java.util.List;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoMetaDataFactory;
 import org.seasar.dao.EntityManager;
+import org.seasar.dao.pager.PagerContext;
 import org.seasar.extension.unit.S2TestCase;
 
 public class EntityManagerImplTest extends S2TestCase {
@@ -56,11 +57,18 @@ public class EntityManagerImplTest extends S2TestCase {
         assertEquals("1", new Integer(14), count);
     }
 
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp();
         include("dao.dicon");
+        PagerContext.start();
         DaoMetaDataFactory factory = (DaoMetaDataFactory) getComponent(DaoMetaDataFactory.class);
         DaoMetaData daoMetaData = factory.getDaoMetaData(EmployeeDao.class);
         entityManager = new EntityManagerImpl(daoMetaData);
+    }
+
+    protected void tearDown() throws Exception {
+        PagerContext.end();
+        super.tearDown();
     }
 
 }

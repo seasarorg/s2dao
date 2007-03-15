@@ -13,14 +13,19 @@
 	<component
 		class="org.seasar.dao.interceptors.AssertExactlyOneRowInterceptorTest$EmployeeDao"
 	>
+		<aspect>interceptor</aspect>
+	</component>
+	<component
+		name="interceptor"
+		class="org.seasar.dao.pager.PagerS2DaoInterceptorWrapper">
+		<arg>
+			<component class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
+		</arg>
 		<aspect>
-			<component class="org.seasar.dao.interceptors.S2DaoInterceptor">
-				<aspect>
-					<component class="org.seasar.dao.interceptors.AssertExactlyOneRowInterceptor" />
-				</aspect>
-			</component>
+			<component class="org.seasar.dao.interceptors.AssertExactlyOneRowInterceptor" />
 		</aspect>
 	</component>
+	
 	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
 	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
 </components>

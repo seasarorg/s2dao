@@ -16,7 +16,6 @@
 package org.seasar.dao.interceptors;
 
 import org.seasar.dao.NoRowsUpdatedRuntimeException;
-import org.seasar.dao.pager.PagerContext;
 import org.seasar.extension.unit.S2TestCase;
 
 /**
@@ -29,7 +28,6 @@ public class AssertAtLeastOneRowInterceptorTest extends S2TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         include("AssertAtLeastOneRowInterceptorTest.dicon");
-        PagerContext.init();
     }
 
     public void testMoreThanOneRowTx() throws Exception {

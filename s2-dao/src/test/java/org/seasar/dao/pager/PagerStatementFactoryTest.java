@@ -30,7 +30,13 @@ import org.seasar.extension.jdbc.impl.BooleanToIntPreparedStatement;
 public class PagerStatementFactoryTest extends TestCase {
 
     protected void setUp() throws Exception {
-        PagerContext.init();
+        super.setUp();
+        PagerContext.start();
+    }
+
+    protected void tearDown() throws Exception {
+        PagerContext.end();
+        super.tearDown();
     }
 
     /**

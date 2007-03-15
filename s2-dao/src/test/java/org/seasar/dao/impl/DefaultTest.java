@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.seasar.dao.pager.PagerContext;
 import org.seasar.extension.jdbc.impl.MapListResultSetHandler;
 import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.extension.unit.S2TestCase;
@@ -39,13 +38,14 @@ public class DefaultTest extends S2TestCase {
     private PkOnlyTableDao pkOnlyTableDao;
 
     protected void setUp() throws Exception {
+        super.setUp();
         PathResolverImpl.setSuffix("-derby");
         include("DefaultTest.dicon");
-        PagerContext.init();
     }
 
     protected void tearDown() throws Exception {
         PathResolverImpl.setSuffix(null);
+        super.tearDown();
     }
 
     public void testLearningMetaDataForColumnsTx() throws Exception {
