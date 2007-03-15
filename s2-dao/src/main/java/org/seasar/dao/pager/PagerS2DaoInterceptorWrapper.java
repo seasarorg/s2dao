@@ -59,11 +59,13 @@ public class PagerS2DaoInterceptorWrapper extends AbstractInterceptor {
      * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
      */
     public Object invoke(MethodInvocation invocation) throws Throwable {
+            PagerContext.start();
         try {
             PagerContext.getContext().pushArgs(invocation.getArguments());
             return interceptor.invoke(invocation);
         } finally {
             PagerContext.getContext().popArgs();
+            PagerContext.end();
         }
     }
 }

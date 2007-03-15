@@ -25,8 +25,6 @@ import java.util.Stack;
  */
 public class PagerContext {
 
-    private static final PagerContext instance = new PagerContext();
-
     private static final Object[] EMPTY_ARGS = new Object[0];
 
     /** スレッドローカル */
@@ -103,11 +101,35 @@ public class PagerContext {
         return null;
     }
 
-    public static void init() {
+    /**
+     * ThreadLocalのインスタンスを生成します。(テスト時にstaticイニシャライザが走らないため)
+     *
+     */
+    public static synchronized void init() {
         threadLocal = createThreadLocal();
     }
 
-    public static void destroy() {
+    /**
+     * ThreadLocalのインスタンスに、PagerContextを設定します。
+     *
+     */
+    public static void start(){
+        threadLocal.set(new PagerContext());
+    }
+
+    /**
+     * ThreadLocalのインスタンスに設定されているPagerContextをクリアします。
+     *
+     */
+    public static void end(){
+        threadLocal.set(null);
+    }
+
+    /**
+     * ThreadLocalをクリアします。
+     *
+     */
+    public static synchronized void destroy() {
         threadLocal.set(null);
         threadLocal = null;
     }
