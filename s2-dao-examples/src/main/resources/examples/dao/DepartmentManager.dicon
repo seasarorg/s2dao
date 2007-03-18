@@ -2,7 +2,7 @@
 <!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container//EN"
 "http://www.seasar.org/dtd/components.dtd">
 <components>
-	<include path="dao3.dicon"/>
+	<include path="dao-customized.dicon"/>
 	<component class="examples.dao.DepartmentManager">
 		<aspect>dao.interceptor</aspect>
 	</component>
