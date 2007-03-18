@@ -2,7 +2,7 @@
 <!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container//EN"
 "http://www.seasar.org/dtd/components.dtd">
 <components>
-	<include path="dao2.dicon"/>
+	<include path="dao-enhance.dicon"/>
 	<component class="org.seasar.dao.impl.UpdateModifiedOnlyCommandTest$EmpDao">
 		<aspect>dao.interceptor</aspect>
 	</component>

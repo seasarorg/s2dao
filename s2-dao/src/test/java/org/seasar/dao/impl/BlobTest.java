@@ -34,13 +34,7 @@ public class BlobTest extends S2TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        PathResolverImpl.setSuffix("-derby");
         include("BlobTest.dicon");
-    }
-
-    protected void tearDown() throws Exception {
-        PathResolverImpl.setSuffix(null);
-        super.tearDown();
     }
 
     /*

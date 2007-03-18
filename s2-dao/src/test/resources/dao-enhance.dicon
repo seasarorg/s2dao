@@ -3,12 +3,8 @@
 	"http://www.seasar.org/dtd/components21.dtd">
 <components namespace="dao">
 	<include path="j2ee.dicon"/>
-	<component
-		class="org.seasar.dao.impl.AnnotationReaderFactoryImpl"/>
-	<component
-		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
-		<property name="sqlFileEncoding">"MS932"</property>
-	</component>
+	<component class="org.seasar.dao.impl.AnnotationReaderFactoryImpl"/>
+	<component class="org.seasar.dao.impl.DaoMetaDataFactoryImpl"/>
 	<component
 		name="interceptor"
 		class="org.seasar.dao.pager.PagerS2DaoInterceptorWrapper">
@@ -16,12 +12,13 @@
 			<component class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
 		</arg>
 	</component>
-	<component
-		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
+	<component class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
+	<component 
+		name="stringClobType" 
+		class="org.seasar.extension.jdbc.types.StringClobType"
+	/>
 	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
 
-	<component class="org.seasar.dao.impl.DaoNamingConventionImpl">
-	</component>
-
+	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
 	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
 </components>

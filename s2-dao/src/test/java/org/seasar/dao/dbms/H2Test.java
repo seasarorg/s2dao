@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import org.seasar.dao.Dbms;
-import org.seasar.dao.impl.PathResolverImpl;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.impl.BasicSelectHandler;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
@@ -32,13 +31,7 @@ public class H2Test extends S2DaoTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        PathResolverImpl.setSuffix("-h2");
-        include("j2ee.dicon");
-    }
-
-    protected void tearDown() throws Exception {
-        PathResolverImpl.setSuffix(null);
-        super.tearDown();
+        include("j2ee-h2.dicon");
     }
 
     public void test1() throws Exception {

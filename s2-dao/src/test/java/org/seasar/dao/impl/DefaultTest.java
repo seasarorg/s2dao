@@ -39,13 +39,7 @@ public class DefaultTest extends S2TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        PathResolverImpl.setSuffix("-derby");
         include("DefaultTest.dicon");
-    }
-
-    protected void tearDown() throws Exception {
-        PathResolverImpl.setSuffix(null);
-        super.tearDown();
     }
 
     public void testLearningMetaDataForColumnsTx() throws Exception {

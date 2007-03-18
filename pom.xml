@@ -202,6 +202,7 @@
   <modules>
     <module>s2-dao</module>
     <module>s2-dao-examples</module>
+    <module>s2-dao-s24-test</module>
   </modules>
   <repositories>
     <repository>
@@ -235,27 +236,6 @@
     </pluginRepository>
   </pluginRepositories>
   <dependencies>
-    <dependency>
-      <groupId>org.seasar.container</groupId>
-      <artifactId>s2-extension</artifactId>
-      <version>2.3.18</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
-      <version>1.0</version>
-      <type>jar</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-      <version>1.0</version>
-      <type>jar</type>
-      <scope>runtime</scope>
-      <optional>true</optional>
-    </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>

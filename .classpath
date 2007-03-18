@@ -8,9 +8,19 @@
 	<classpathentry kind="src" output="build/s2-dao-examples/classes" path="s2-dao-examples/src/main/resources"/>
 	<classpathentry kind="src" output="build/s2-dao-examples/test-classes" path="s2-dao-examples/src/test/java"/>
 	<classpathentry kind="src" output="build/s2-dao-examples/test-classes" path="s2-dao-examples/src/test/resources"/>
-	<classpathentry kind="src" path="/seasar2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/derby-10.1.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/h2-1.0.20061103.jar" sourcepath="lib/h2-1.0.20061103-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/derby-10.1.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/h2-1.0.20061103.jar" sourcepath="lib/h2-1.0.20061103-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/aopalliance-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-j2ee_1.4_spec-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hsqldb.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javassist-3.4.ga.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/junit-3.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ognl-2.6.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/s2-extension-2.3.18.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/s2-framework-2.3.18.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-2.5.1-final-20040804.jar"/>
 	<classpathentry kind="output" path="build/s2-dao/classes"/>
 </classpath>
