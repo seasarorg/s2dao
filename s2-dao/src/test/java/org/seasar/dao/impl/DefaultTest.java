@@ -264,23 +264,6 @@ public class DefaultTest extends S2TestCase {
         }
     }
 
-    //[DAO-72]
-    public void InsertByManualSql2Tx() throws Exception {
-        Integer id;
-        {
-            DefaultTable bean = new DefaultTable();
-            bean.setAaa("foooo");
-            defaultTableDao.insertBySql2(bean);
-            id = bean.getId();
-        }
-        {
-            final DefaultTable bean = defaultTableDao.getDefaultTable(id);
-            assertEquals("foooo", bean.getAaa());
-            assertEquals((String) null, bean.getBbb());
-            assertEquals(new Integer(0), bean.getVersionNo());
-        }
-    }
-
     public void testInsertDefaultByManualSqlTx() throws Exception {
         Integer id;
         {
@@ -307,20 +290,6 @@ public class DefaultTest extends S2TestCase {
         assertEquals(1, list.size());
     }
 
-    // [DAO-72]
-    // Bind変数と埋め込み変数コメントが混在する状態で後者の値に「?(はてな)」を含めると
-    // SQL文のDebug文字列生成時にArrayIndexOutOfBoundsExceptionが発生する。
-    // 埋め込み変数コメントに含められた「?(はてな)」をBind変数の一部として認識してしまうようである。
-    public void causeArrayIndexOutOfBoundsByVariableCommentAtDebugSql()
-            throws Exception {
-        try {
-            defaultTableDao.causeArrayIndexOutOfBounds(new Integer(2), "x?xx?");
-            fail("Expect ArrayIndexOutOfBoundsException!");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static interface DefaultTableDao {
 
         public Class BEAN = DefaultTable.class;
@@ -332,10 +301,6 @@ public class DefaultTest extends S2TestCase {
         public String getDefaultTables_QUERY = "ORDER BY ID";
 
         public List getDefaultTables();
-
-        public String causeArrayIndexOutOfBounds_ARGS = "id, comment";// [DAO-72]
-
-        public List causeArrayIndexOutOfBounds(Integer id, String comment);// [DAO-72]
 
         public void insert(DefaultTable largeBinary);
 

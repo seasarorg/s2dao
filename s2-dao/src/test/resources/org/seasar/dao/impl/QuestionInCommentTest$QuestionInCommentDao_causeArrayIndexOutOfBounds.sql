@@ -1,6 +1,6 @@
 select * 
 /*$comment*/
-  from DEFAULT_TABLE
+  from EMP
  where id = /*id*/1
 ;
 
