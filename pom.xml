@@ -109,9 +109,16 @@
     <developer>
       <id>azusa</id>
       <name>SETO Azusa</name>
-      <email>azusa@fieldnotes.jp</email>
+      <email>azusa _at_ fieldnotes.jp</email>
       <url>http://www.fieldnotes.jp/d/</url>
       <timezone>+9</timezone>
+    </developer>
+    <developer>
+      <id>jundu</id>
+      <name>Jundo Ishikawa</name>
+      <email></email>
+      <url></url>
+      <timezone></timezone>
     </developer>
   </developers>
   <contributors>
@@ -121,9 +128,6 @@
     <contributor>
       <name>Ryo Miyagi</name>
     </contributor>
-    <contributor>
-      <name>Jundo Ishikawa</name>
-    </contributor> 
   </contributors>
   <licenses>
     <license>
