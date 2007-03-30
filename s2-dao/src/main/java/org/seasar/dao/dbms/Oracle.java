@@ -86,32 +86,35 @@ public class Oracle extends Standard {
         ResultSet rs = null;
         try {
             if (namesLength == 1) {
-                // まず、自スキーマから探索
+                // カレントスキーマからプロシージャ/ファンクションを探索
                 rs = databaseMetaData.getProcedures(null, "", names[0]);
                 if (!rs.isBeforeFirst()) {
                     rs.close();
-                    // 全スキーマから探索
-                    return databaseMetaData.getProcedures(null, null, names[0]);
-                } else {
-                    return rs;
+                    // 全スキーマからプロシージャ/ファンクションを探索
+                    rs = databaseMetaData.getProcedures(null, null, names[0]);
                 }
             } else if (namesLength == 2) {
-                // 自スキーマのプロシージャを探索
+                // 指定したスキーマからプロシージャ/ファンクションを探索
                 rs = databaseMetaData.getProcedures(null, names[0], names[1]);
                 if (!rs.isBeforeFirst()) {
                     rs.close();
-                    // 全スキーマからパッケージを探索
-                    return databaseMetaData.getProcedures(names[0], null,
-                            names[1]);
-                } else {
-                    return rs;
+                    // カレントスキーマからパッケージを探索
+                    rs = databaseMetaData.getProcedures(names[0], "", names[1]);
+                    if (!rs.isBeforeFirst()) {
+                        rs.close();
+                        // 全スキーマからパッケージを探索
+                        rs = databaseMetaData.getProcedures(names[0], null,
+                                names[1]);
+                    }
                 }
             } else if (namesLength == 3) {
-                return databaseMetaData.getProcedures(names[1], names[0],
+                // 指定したスキーマからパッケージを探索
+                rs = databaseMetaData.getProcedures(names[1], names[0],
                         names[2]);
             } else {
                 throw new IllegalArgumentException();
             }
+            return rs;
         } catch (final SQLException e) {
             if (rs != null) {
                 try {
