@@ -18,6 +18,7 @@ package org.seasar.dao.dbms;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.unit.S2DaoTestCase;
+import org.seasar.framework.exception.SRuntimeException;
 import org.seasar.framework.util.DisposableUtil;
 
 /**
@@ -28,13 +29,13 @@ public class StandardTest extends S2DaoTestCase {
 
     protected void setUp() throws Exception {
         include("j2ee.dicon");
+        Dbms dbms = new Standard();
+        setDbms(dbms);
     }
 
     public void testCreateAutoSelectList() throws Exception {
-        Dbms dbms = new Standard();
-        setDbms(dbms);
         BeanMetaData bmd = createBeanMetaData(Employee.class);
-        String sql = dbms.getAutoSelectSql(bmd);
+        String sql = getDbms().getAutoSelectSql(bmd);
         System.out.println(sql);
     }
 
@@ -61,4 +62,23 @@ public class StandardTest extends S2DaoTestCase {
         assertEquals(0, standard.autoSelectFromClauseCache.size());
     }
 
+    public void testGetIdentitySelectString() throws Exception{
+        try {
+            getDbms().getIdentitySelectString();
+            fail();
+        } catch (SRuntimeException e){
+            assertEquals("EDAO0022", e.getMessageCode());
+            System.out.println(e);
+        }
+    }
+    
+    public void testGetSequenceNextValString() throws Exception{
+        try {
+            getDbms().getSequenceNextValString(null);
+            fail();
+        } catch(SRuntimeException e){
+            assertEquals("EDAO0022", e.getMessageCode());
+            System.out.println(e);
+        }
+    }
 }

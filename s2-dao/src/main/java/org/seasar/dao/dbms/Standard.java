@@ -29,6 +29,7 @@ import org.seasar.dao.Dbms;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.exception.SQLRuntimeException;
+import org.seasar.framework.exception.SRuntimeException;
 import org.seasar.framework.util.Disposable;
 import org.seasar.framework.util.DisposableUtil;
 
@@ -107,11 +108,11 @@ public class Standard implements Dbms, Disposable {
     }
 
     public String getIdentitySelectString() {
-        return null;
+        throw new SRuntimeException("EDAO0022" , new String[]{("Identity")});
     }
 
     public String getSequenceNextValString(String sequenceName) {
-        return null;
+        throw new SRuntimeException("EDAO0022" , new String[]{("Sequence")});
     }
 
     public boolean isSelfGenerate() {
