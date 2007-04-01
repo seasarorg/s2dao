@@ -45,7 +45,7 @@ public class QuestionInCommentTest extends S2TestCase {
     // Bind変数と埋め込み変数コメントが混在する状態で後者の値に「?(はてな)」を含めると
     // SQL文のDebug文字列生成時にArrayIndexOutOfBoundsExceptionが発生する。
     // 埋め込み変数コメントに含められた「?(はてな)」をBind変数の一部として認識してしまうようである。
-    public void testCauseArrayIndexOutOfBoundsByVariableCommentAtDebugSql() {
+    public void testCauseArrayIndexOutOfBoundsByVariableCommentAtDebugSqlTx() {
         try {
             dao.causeArrayIndexOutOfBounds(new Integer(2), "x?xx?");
             fail();
