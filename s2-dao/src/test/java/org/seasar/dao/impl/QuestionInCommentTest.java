@@ -18,6 +18,7 @@ package org.seasar.dao.impl;
 import java.util.List;
 
 import org.seasar.extension.unit.S2TestCase;
+import org.seasar.framework.exception.SRuntimeException;
 
 /**
  * @author azusa
@@ -31,12 +32,8 @@ public class QuestionInCommentTest extends S2TestCase {
         include("QuestionInCommentTest.dicon");
     }
 
-    public void testNormal() throws Exception {
-        dao.selectAll();
-    }
-
     //[DAO-72]
-    public void InsertByManualSql2Tx() throws Exception {
+    public void testInsertByManualSql2Tx() throws Exception {
         Employee emp = new Employee();
         emp.setEmpno(2222);
         emp.setEname("aaaaaaaaaaaa");
@@ -48,8 +45,14 @@ public class QuestionInCommentTest extends S2TestCase {
     // Bind変数と埋め込み変数コメントが混在する状態で後者の値に「?(はてな)」を含めると
     // SQL文のDebug文字列生成時にArrayIndexOutOfBoundsExceptionが発生する。
     // 埋め込み変数コメントに含められた「?(はてな)」をBind変数の一部として認識してしまうようである。
-    public void causeArrayIndexOutOfBoundsByVariableCommentAtDebugSql() {
-        dao.causeArrayIndexOutOfBounds(new Integer(2), "x?xx?");
+    public void testCauseArrayIndexOutOfBoundsByVariableCommentAtDebugSql() {
+        try {
+            dao.causeArrayIndexOutOfBounds(new Integer(2), "x?xx?");
+            fail();
+        } catch(SRuntimeException e){
+            System.out.println(e);
+            assertEquals("EDAO0023", e.getMessageCode());
+        }
     }
 
     public static interface QuestionInCommentDao {
@@ -57,8 +60,6 @@ public class QuestionInCommentTest extends S2TestCase {
         public Class BEAN = Employee.class;
 
         public String causeArrayIndexOutOfBounds_ARGS = "id, comment";// [DAO-72]
-
-        public List selectAll();
 
         public List causeArrayIndexOutOfBounds(Integer id, String comment);// [DAO-72]
 

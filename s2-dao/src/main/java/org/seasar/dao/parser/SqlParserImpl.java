@@ -121,7 +121,8 @@ public class SqlParserImpl implements SqlParser {
         } else if (comment != null && 0 < comment.length()) {
             String before = tokenizer.getBefore();
             peek().addChild(
-                    new SqlNode(before.substring(before.lastIndexOf("/*"))));
+                    new SqlNode(before.substring(before.lastIndexOf("/*"))
+                            .replaceAll("\\?", "")));
         }
     }
 
