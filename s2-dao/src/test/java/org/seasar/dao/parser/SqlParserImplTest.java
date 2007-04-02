@@ -461,4 +461,17 @@ public class SqlParserImplTest extends TestCase {
                         .getSql());
     }
 
+    /*
+     * https://www.seasar.org/issues/browse/DAO-72
+     * 
+     */
+    public void testDeleteQuestion() throws Exception {
+        final SqlParser parser = new SqlParserImpl(
+                "SELECT AAA \n--comment? \r--comment2? \r\nFROM HOGE");
+        final Node root = parser.parse();
+        final CommandContext ctx = new CommandContextImpl();
+        root.accept(ctx);
+        System.out.println(ctx.getSql());
+        assertEquals("SELECT AAA \n--comment \r--comment2 \r\nFROM HOGE", ctx.getSql());
+    }
 }

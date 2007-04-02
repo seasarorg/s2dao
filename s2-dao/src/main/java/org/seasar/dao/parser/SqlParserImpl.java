@@ -48,6 +48,7 @@ public class SqlParserImpl implements SqlParser {
         if (sql.endsWith(";")) {
             sql = sql.substring(0, sql.length() - 1);
         }
+        sql = deleteQuestionInLineComment(sql);
         tokenizer = new SqlTokenizerImpl(sql);
     }
 
@@ -57,6 +58,23 @@ public class SqlParserImpl implements SqlParser {
             parseToken();
         }
         return pop();
+    }
+
+    protected String deleteQuestionInLineComment(String sql) {
+//        String[] sqlParts = sql.split("\r\n[\\r\\n]");
+        String[] sqlParts = sql.split("\\n");
+        StringBuffer buf = new StringBuffer();
+        for (int i=0; i<sqlParts.length; i++){
+            if (sqlParts[i].trim().startsWith("--")){
+                buf.append(sqlParts[i].replaceAll("\\?", ""));
+            } else {
+                buf.append(sqlParts[i]);
+            }
+            if ( i+1 != sqlParts.length ){
+                buf.append("\n");
+            }
+        }
+        return buf.toString();
     }
 
     protected void parseToken() {
@@ -92,8 +110,7 @@ public class SqlParserImpl implements SqlParser {
             if (sql.startsWith(",")) {
                 if (sql.startsWith(", ")) {
                     node.addChild(new PrefixSqlNode(", ", sql.substring(2)));
-                } else {
-                    node.addChild(new PrefixSqlNode(",", sql.substring(1)));
+                } else {                    node.addChild(new PrefixSqlNode(",", sql.substring(1)));
                 }
             } else if ("AND".equalsIgnoreCase(token)
                     || "OR".equalsIgnoreCase(token)) {
