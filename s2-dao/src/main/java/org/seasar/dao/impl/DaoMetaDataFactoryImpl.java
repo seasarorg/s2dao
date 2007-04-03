@@ -74,6 +74,9 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected boolean initialized;
 
+    public DaoMetaDataFactoryImpl() {
+    }
+
     public DaoMetaDataFactoryImpl(DataSource dataSource,
             StatementFactory statementFactory,
             ResultSetFactory resultSetFactory,
@@ -148,6 +151,23 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     public void setDaoNamingConvention(DaoNamingConvention daoNamingConvention) {
         this.daoNamingConvention = daoNamingConvention;
+    }
+
+    public void setAnnotationReaderFactory(
+            AnnotationReaderFactory annotationReaderFactory) {
+        this.annotationReaderFactory = annotationReaderFactory;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public void setResultSetFactory(ResultSetFactory resultSetFactory) {
+        this.resultSetFactory = resultSetFactory;
+    }
+
+    public void setStatementFactory(StatementFactory statementFactory) {
+        this.statementFactory = statementFactory;
     }
 
 }
