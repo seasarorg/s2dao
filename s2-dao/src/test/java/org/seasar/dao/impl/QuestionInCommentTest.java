@@ -49,7 +49,7 @@ public class QuestionInCommentTest extends S2TestCase {
         try {
             dao.causeArrayIndexOutOfBounds(new Integer(2), "x?xx?");
             fail();
-        } catch(SRuntimeException e){
+        } catch (SRuntimeException e) {
             System.out.println(e);
             assertEquals("EDAO0023", e.getMessageCode());
         }

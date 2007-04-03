@@ -59,7 +59,7 @@ public class EmbeddedValueNode extends AbstractNode {
             value = pd.getValue(value);
             clazz = pd.getPropertyType();
         }
-        if (value.toString().indexOf("?") > -1){
+        if (value.toString().indexOf("?") > -1) {
             throw new SRuntimeException("EDAO0023");
         }
         if (value != null) {

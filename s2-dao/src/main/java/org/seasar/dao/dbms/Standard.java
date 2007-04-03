@@ -108,11 +108,11 @@ public class Standard implements Dbms, Disposable {
     }
 
     public String getIdentitySelectString() {
-        throw new SRuntimeException("EDAO0022" , new String[]{("Identity")});
+        throw new SRuntimeException("EDAO0022", new String[] { ("Identity") });
     }
 
     public String getSequenceNextValString(String sequenceName) {
-        throw new SRuntimeException("EDAO0022" , new String[]{("Sequence")});
+        throw new SRuntimeException("EDAO0022", new String[] { ("Sequence") });
     }
 
     public boolean isSelfGenerate() {

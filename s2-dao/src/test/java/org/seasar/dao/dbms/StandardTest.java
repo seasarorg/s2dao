@@ -62,21 +62,21 @@ public class StandardTest extends S2DaoTestCase {
         assertEquals(0, standard.autoSelectFromClauseCache.size());
     }
 
-    public void testGetIdentitySelectString() throws Exception{
+    public void testGetIdentitySelectString() throws Exception {
         try {
             getDbms().getIdentitySelectString();
             fail();
-        } catch (SRuntimeException e){
+        } catch (SRuntimeException e) {
             assertEquals("EDAO0022", e.getMessageCode());
             System.out.println(e);
         }
     }
-    
-    public void testGetSequenceNextValString() throws Exception{
+
+    public void testGetSequenceNextValString() throws Exception {
         try {
             getDbms().getSequenceNextValString(null);
             fail();
-        } catch(SRuntimeException e){
+        } catch (SRuntimeException e) {
             assertEquals("EDAO0022", e.getMessageCode());
             System.out.println(e);
         }
