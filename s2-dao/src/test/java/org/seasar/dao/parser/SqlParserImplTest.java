@@ -441,7 +441,7 @@ public class SqlParserImplTest extends TestCase {
         root.accept(ctx);
         System.out.println(ctx.getSql());
         assertEquals(
-                "SELECT AAA,BBB -- UGO \r\nFROM HOGE WHERE AAA=? AND FUGA=/* PIRO */ccc",
+                "SELECT AAA,BBB -- UGO \nFROM HOGE WHERE AAA=? AND FUGA=/* PIRO */ccc",
                 ctx.getSql());
     }
 
@@ -467,11 +467,63 @@ public class SqlParserImplTest extends TestCase {
      */
     public void testDeleteQuestion() throws Exception {
         final SqlParser parser = new SqlParserImpl(
-                "SELECT AAA \n--comment? \r--comment2? \r\nFROM HOGE");
+                "SELECT AAA \r\n--comment? \r\n--comment2? \r\nFROM HOGE");
         final Node root = parser.parse();
         final CommandContext ctx = new CommandContextImpl();
         root.accept(ctx);
         System.out.println(ctx.getSql());
-        assertEquals("SELECT AAA \n--comment \r--comment2 \r\nFROM HOGE", ctx.getSql());
+        assertEquals("SELECT AAA \n--comment \n--comment2 \nFROM HOGE", ctx
+                .getSql());
     }
+
+    public void testDeleteQuestion2() throws Exception {
+        final SqlParser parser = new SqlParserImpl(
+                "SELECT AAA \r--comment? \r--comment2? \rFROM HOGE");
+        final Node root = parser.parse();
+        final CommandContext ctx = new CommandContextImpl();
+        root.accept(ctx);
+        System.out.println(ctx.getSql());
+        assertEquals("SELECT AAA \n--comment \n--comment2 \nFROM HOGE", ctx
+                .getSql());
+    }
+
+    public void testDeleteQuestion3() throws Exception {
+        final SqlParser parser = new SqlParserImpl(
+                "SELECT AAA \n--comment? \n--comment2? \nFROM HOGE");
+        final Node root = parser.parse();
+        final CommandContext ctx = new CommandContextImpl();
+        root.accept(ctx);
+        System.out.println(ctx.getSql());
+        assertEquals("SELECT AAA \n--comment \n--comment2 \nFROM HOGE", ctx
+                .getSql());
+    }
+
+    /*
+     * ELSEコメント内に?、その後通常コメント内に?
+     */
+    public void testDeleteQuestion4() throws Exception {
+        final SqlParser parser = new SqlParserImpl(
+                "SELECT AAA FROM HOGE where /*IF hoge != null */ aa = /*fuga*/gaga --ELSE bb = ? /*END*/ /* comment? */");
+        final Node root = parser.parse();
+        final CommandContext ctx = new CommandContextImpl();
+        root.accept(ctx);
+        System.out.println(ctx.getSql());
+        assertEquals("SELECT AAA FROM HOGE where bb = ?  /* comment */", ctx
+                .getSql());
+    }
+
+    /*
+     * 埋め込み変数として?、行の途中にあるラインコメントの中に?
+     */
+    public void testDeleteQuestion5() throws Exception {
+        final SqlParser parser = new SqlParserImpl(
+                "SELECT AAA FROM HOGE where aa = ?  -- comment?");
+        final Node root = parser.parse();
+        final CommandContext ctx = new CommandContextImpl();
+        root.accept(ctx);
+        System.out.println(ctx.getSql());
+        assertEquals("SELECT AAA FROM HOGE where aa = ?  -- comment", ctx
+                .getSql());
+    }
+
 }

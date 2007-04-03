@@ -61,16 +61,20 @@ public class SqlParserImpl implements SqlParser {
     }
 
     protected String deleteQuestionInLineComment(String sql) {
-//        String[] sqlParts = sql.split("\r\n[\\r\\n]");
-        String[] sqlParts = sql.split("\\n");
+        String[] sqlParts = sql.split("\\r\\n");
+        if (sqlParts.length == 1) {
+            sqlParts = sql.split("[\\n\\r]");
+        }
         StringBuffer buf = new StringBuffer();
-        for (int i=0; i<sqlParts.length; i++){
-            if (sqlParts[i].trim().startsWith("--")){
-                buf.append(sqlParts[i].replaceAll("\\?", ""));
+        for (int i = 0; i < sqlParts.length; i++) {
+            int pos = sqlParts[i].indexOf("--");
+            if (pos != -1 && (sqlParts[i].indexOf("ELSE") == -1)) {
+                buf.append(sqlParts[i].substring(0, pos));
+                buf.append(sqlParts[i].substring(pos).replaceAll("\\?", ""));
             } else {
                 buf.append(sqlParts[i]);
             }
-            if ( i+1 != sqlParts.length ){
+            if (i + 1 != sqlParts.length) {
                 buf.append("\n");
             }
         }
@@ -110,7 +114,8 @@ public class SqlParserImpl implements SqlParser {
             if (sql.startsWith(",")) {
                 if (sql.startsWith(", ")) {
                     node.addChild(new PrefixSqlNode(", ", sql.substring(2)));
-                } else {                    node.addChild(new PrefixSqlNode(",", sql.substring(1)));
+                } else {
+                    node.addChild(new PrefixSqlNode(",", sql.substring(1)));
                 }
             } else if ("AND".equalsIgnoreCase(token)
                     || "OR".equalsIgnoreCase(token)) {
