@@ -43,6 +43,10 @@ public class PagerResultSetFactoryWrapper implements ResultSetFactory {
         this.resultSetFactory = resultSetFactory;
     }
 
+    public boolean isUseScrollCursor() {
+        return useScrollCursor;
+    }
+
     /**
      * @param useScrollCursor
      */
