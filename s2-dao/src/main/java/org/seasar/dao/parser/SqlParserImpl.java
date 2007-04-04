@@ -16,6 +16,7 @@
 package org.seasar.dao.parser;
 
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import org.seasar.dao.EndCommentNotFoundRuntimeException;
 import org.seasar.dao.IfConditionNotFoundRuntimeException;
@@ -39,6 +40,8 @@ import org.seasar.framework.util.StringUtil;
  */
 public class SqlParserImpl implements SqlParser {
 
+    private static final Pattern lineBreak = Pattern.compile("(\\r(\\n)?|\\n)");
+
     private SqlTokenizer tokenizer;
 
     private Stack nodeStack = new Stack();
@@ -61,7 +64,7 @@ public class SqlParserImpl implements SqlParser {
     }
 
     protected String deleteQuestionInLineComment(String sql) {
-        String[] sqlParts = sql.split("(\\r(\\n)?|\\n)");
+        String[] sqlParts = lineBreak.split(sql);
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < sqlParts.length; i++) {
             int pos = sqlParts[i].indexOf("--");
