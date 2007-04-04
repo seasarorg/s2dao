@@ -1,11 +1,24 @@
 <project name="s2dao" default="dist" basedir=".">
 	<property name="ver" value="1.0.41-RC2-SNAPSHOT"/>
 
-	<target name="dist">
+	<target name="fix-site">
+		<mkdir dir="target/site/en"/>
+		<move todir="target/site/en">
+			<fileset dir="target/site">
+				<exclude name="apidocs/**"/>
+				<exclude name="en/**"/>
+				<exclude name="ja/**"/>
+				<exclude name="index.html.en"/>
+				<exclude name="index.html.ja"/>
+			</fileset>
+		</move>
+		<delete file="target/site/ja/index.html.en"/>
+		<delete file="target/site/ja/index.html.ja"/>
+	</target>
+
+	<target name="dist" depends="fix-site">
 		<mkdir dir="target"/>
 
-		<copy file="s2-dao/src/test/resources/j2ee_s23.dicon" tofile="s2-dao/src/test/resources/j2ee.dicon"  />
-		<copy file="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources/j2ee_s23.dicon" tofile="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources/j2ee.dicon"  />
 		<zip zipfile="target/s2-dao-${ver}.zip">
 			<zipfileset prefix="s2dao" dir=".">
 				<exclude name="**/build/**"/>
@@ -23,10 +36,11 @@
 			</zipfileset>
 			<zipfileset prefix="s2dao/resources" dir="s2-dao/src/test/resources">
 				<include name="j2ee.dicon"/>
-				<include name="jdbc.dicon"/>
 				<include name="log4j.properties"/>
 			</zipfileset>
-
+			<zipfileset prefix="s2dao/resources" dir="s2-dao-s24-test/src/test/resources">
+				<include name="jdbc.dicon"/>
+			</zipfileset>
 			<zipfileset prefix="s2dao-tiger" dir="../s2dao-tiger-1.0.x">
 				<exclude name="**/build/**"/>
 				<exclude name="**/target/**"/>
@@ -42,15 +56,19 @@
 				<include name="s2-dao-tiger-${ver}.jar"/>
 				<include name="s2-dao-tiger-${ver}-sources.jar"/>
 			</zipfileset>
-			<zipfileset prefix="s2dao-tiger/resources" 
-				dir="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources">
+			<zipfileset prefix="s2dao-tiger/resources" dir="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources">
 				<include name="j2ee.dicon"/>
-				<include name="jdbc.dicon"/>
 				<include name="log4j.properties"/>
 			</zipfileset>
+			<zipfileset prefix="s2dao-tiger/resources" dir="s2-dao-s24-test/src/test/resources">
+				<include name="jdbc.dicon"/>
+			</zipfileset>
+			<zipfileset prefix="doc" dir="../s2dao-www">
+				<exclude name="**/download/**"/>
+				<exclude name=".project"/>
+				<exclude name="**/.settings/**"/>
+			</zipfileset>
 		</zip>
-		<delete file="s2-dao/src/test/resources/j2ee.dicon" />
-		<delete file="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources/j2ee.dicon" />
 	</target>
 
 </project>
