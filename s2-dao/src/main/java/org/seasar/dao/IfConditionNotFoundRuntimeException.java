@@ -23,6 +23,8 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class IfConditionNotFoundRuntimeException extends SRuntimeException {
 
+    private static final long serialVersionUID = 259337549494135085L;
+
     public IfConditionNotFoundRuntimeException() {
         super("EDAO0004");
     }

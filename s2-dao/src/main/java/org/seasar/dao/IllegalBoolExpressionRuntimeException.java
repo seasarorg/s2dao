@@ -23,6 +23,8 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class IllegalBoolExpressionRuntimeException extends SRuntimeException {
 
+    private static final long serialVersionUID = -8348943728701368297L;
+
     private String expression;
 
     public IllegalBoolExpressionRuntimeException(String expression) {

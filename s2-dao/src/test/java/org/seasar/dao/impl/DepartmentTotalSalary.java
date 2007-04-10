@@ -20,6 +20,8 @@ import java.math.BigDecimal;
 
 public class DepartmentTotalSalary implements Serializable {
 
+    private static final long serialVersionUID = -7661032204184374726L;
+
     private Integer deptno;
 
     private BigDecimal totalSalary;

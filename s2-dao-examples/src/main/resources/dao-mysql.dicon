@@ -11,5 +11,7 @@
 		class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
 	<component
 		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
+	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
 	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
+	<component class="org.seasar.dao.impl.NullBeanEnhancer"/>
 </components>

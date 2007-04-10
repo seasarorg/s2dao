@@ -476,9 +476,9 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
                 .getSqlCommand("getEmployees");
         System.out.println(cmd.getSql());
-        Object results = cmd.execute(new Object[] { condition });
+        cmd.execute(new Object[] { condition });
         setProperty(condition, "orderByString", "ENAME");
-        results = cmd.execute(new Object[] { condition });
+        cmd.execute(new Object[] { condition });
     }
 
     public void testStartsWithBeginComment() throws Exception {

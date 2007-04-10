@@ -23,6 +23,8 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class EndCommentNotFoundRuntimeException extends SRuntimeException {
 
+    private static final long serialVersionUID = -5756867141190556673L;
+
     public EndCommentNotFoundRuntimeException() {
         super("EDAO0007");
     }

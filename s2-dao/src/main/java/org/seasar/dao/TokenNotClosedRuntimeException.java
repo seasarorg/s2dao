@@ -23,6 +23,8 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class TokenNotClosedRuntimeException extends SRuntimeException {
 
+    private static final long serialVersionUID = 1810292133352210436L;
+
     private String token;
 
     private String sql;

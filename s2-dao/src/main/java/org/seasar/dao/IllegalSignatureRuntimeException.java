@@ -23,6 +23,8 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class IllegalSignatureRuntimeException extends SRuntimeException {
 
+    private static final long serialVersionUID = 2103105332861528055L;
+
     private String signature;
 
     public IllegalSignatureRuntimeException(String messageCode, String signature) {

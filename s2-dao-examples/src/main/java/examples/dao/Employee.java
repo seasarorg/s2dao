@@ -20,6 +20,8 @@ import java.sql.Timestamp;
 
 public class Employee implements Serializable {
 
+    private static final long serialVersionUID = -5960260125251941419L;
+
     public static final String TABLE = "EMP";
 
     public static final int department_RELNO = 0;

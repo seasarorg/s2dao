@@ -23,6 +23,8 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class PrimaryKeyNotFoundRuntimeException extends SRuntimeException {
 
+    private static final long serialVersionUID = -714079806115499952L;
+
     private Class targetClass;
 
     public PrimaryKeyNotFoundRuntimeException(Class targetClass) {

@@ -17,10 +17,8 @@ package org.seasar.dao.impl;
 
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.MethodSetupFailureRuntimeException;
-import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
-import org.seasar.framework.exception.SRuntimeException;
 
 /**
  * @author taichi 

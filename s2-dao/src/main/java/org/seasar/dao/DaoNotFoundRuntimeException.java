@@ -23,6 +23,8 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class DaoNotFoundRuntimeException extends SRuntimeException {
 
+    private static final long serialVersionUID = -7309453150662894099L;
+
     private Class targetClass;
 
     public DaoNotFoundRuntimeException(Class targetClass) {

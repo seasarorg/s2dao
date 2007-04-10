@@ -19,6 +19,8 @@ import java.io.Serializable;
 
 public class Employee implements Serializable {
 
+    private static final long serialVersionUID = -110044497095536515L;
+
     public static final String TABLE = "EMP";
 
     public static final int department_RELNO = 0;

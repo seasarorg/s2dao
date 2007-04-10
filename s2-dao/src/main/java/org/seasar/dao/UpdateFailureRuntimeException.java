@@ -23,6 +23,8 @@ import org.seasar.framework.exception.SRuntimeException;
  */
 public class UpdateFailureRuntimeException extends SRuntimeException {
 
+    private static final long serialVersionUID = 4521479608466408509L;
+
     private Object bean;
 
     private int rows;
