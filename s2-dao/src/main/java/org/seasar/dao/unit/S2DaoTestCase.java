@@ -32,6 +32,7 @@ import org.seasar.dao.impl.DaoMetaDataImpl;
 import org.seasar.dao.impl.DaoNamingConventionImpl;
 import org.seasar.dao.impl.FieldAnnotationReaderFactory;
 import org.seasar.dao.impl.ValueTypeFactoryImpl;
+import org.seasar.dao.pager.PagerContext;
 import org.seasar.extension.dataset.DataSet;
 import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
@@ -68,6 +69,7 @@ public abstract class S2DaoTestCase extends S2TestCase {
         annotationReaderFactory = null;
         beanMetaDataFactory = null;
         dbms = null;
+        PagerContext.end();
         super.tearDown();
     }
 
