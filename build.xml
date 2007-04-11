@@ -29,6 +29,7 @@
 				<exclude name="s2-dao-examples/cobertura.ser"/>
 				<exclude name="s2-dao/*.log"/>
 				<exclude name="s2-dao-examples/*.log"/>
+				<exclude name="copyZip.bat"/>
 			</zipfileset>
 			<zipfileset prefix="s2dao/lib" dir="s2-dao/target">
 				<include name="s2-dao-${ver}.jar"/>
