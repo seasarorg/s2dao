@@ -24,8 +24,10 @@ import junit.framework.TestCase;
 public class DbmsManagerTest extends TestCase {
 
     public void testCreateAutoSelectList() throws Exception {
-        assertNotNull("1", DbmsManager.getDbms(""));
-        assertNotNull("2", DbmsManager.getDbms("HSQL Database Engine"));
+        assertTrue("1", DbmsManager.getDbms("") instanceof Standard);
+        assertTrue("2",
+                DbmsManager.getDbms("HSQL Database Engine") instanceof HSQL);
+        assertTrue("3", DbmsManager.getDbms("AAAAAAAAAAA") instanceof Standard);
     }
 
     public void testGetDbmsByProductName() throws Exception {
