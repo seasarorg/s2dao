@@ -31,6 +31,8 @@ public class DbmsManagerTest extends TestCase {
     public void testGetDbmsByProductName() throws Exception {
         // https://www.seasar.org/issues/browse/DAO-68
         assertEquals(true, DbmsManager.getDbms("DB2/AIX64") instanceof DB2);
+        assertEquals(true,
+                DbmsManager.getDbms("DB2 UDB for AS/400") instanceof DB2);
     }
 
 }

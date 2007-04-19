@@ -37,17 +37,12 @@ import org.seasar.framework.util.ResourceUtil;
  */
 public final class DbmsManager {
 
-    private static Map dbmses = new HashMap();
+    private static Properties dbmsClassNames;
+
+    private static Map dbmsInstances = new HashMap();
 
     static {
-        Properties dbmsClassNames = ResourceUtil
-                .getProperties("dbms.properties");
-        for (Iterator i = dbmsClassNames.keySet().iterator(); i.hasNext();) {
-            String productName = (String) i.next();
-            Dbms dbms = (Dbms) ClassUtil.newInstance(dbmsClassNames
-                    .getProperty(productName));
-            dbmses.put(productName, dbms);
-        }
+        dbmsClassNames = ResourceUtil.getProperties("dbms.properties");
     }
 
     private DbmsManager() {
@@ -70,10 +65,21 @@ public final class DbmsManager {
     }
 
     public static Dbms getDbms(String productName) {
-        Dbms dbms = (Dbms) dbmses.get(productName);
+        Dbms dbms = (Dbms) dbmsInstances.get(productName);
         if (dbms == null) {
-            dbms = (Dbms) dbmses.get("");
+            String className = dbmsClassNames.getProperty("");
+            for (Iterator i = dbmsClassNames.keySet().iterator(); i.hasNext();) {
+                String productPrefix = (String) i.next();
+                if (productName.startsWith(productPrefix)) {
+                    className = (String) dbmsClassNames
+                            .getProperty(productPrefix);
+                    break;
+                }
+            }
+            dbms = (Dbms) ClassUtil.newInstance(className);
+            dbmsInstances.put(productName, dbms);
         }
         return dbms;
+
     }
 }
