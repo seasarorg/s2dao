@@ -71,8 +71,7 @@ public final class DbmsManager {
             for (Iterator i = dbmsClassNames.keySet().iterator(); i.hasNext();) {
                 String productPrefix = (String) i.next();
                 if (productName.startsWith(productPrefix)) {
-                    className = (String) dbmsClassNames
-                            .getProperty(productPrefix);
+                    className = dbmsClassNames.getProperty(productPrefix);
                     break;
                 }
             }
