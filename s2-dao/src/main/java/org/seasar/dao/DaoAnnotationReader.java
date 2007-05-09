@@ -45,6 +45,11 @@ public interface DaoAnnotationReader {
     Class getBeanClass();
 
     /**
+     * @return
+     */
+    Class getBeanClass(Method method);
+
+    /**
      * @param methodName
      * @return
      */

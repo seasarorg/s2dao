@@ -17,6 +17,9 @@ package org.seasar.dao.impl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.framework.beans.BeanDesc;
@@ -30,6 +33,8 @@ import org.seasar.framework.util.StringUtil;
 public class FieldDaoAnnotationReader implements DaoAnnotationReader {
 
     public String BEAN = "BEAN";
+
+    public String BEAN_SUFFIX = "_BEAN";
 
     public String PROCEDURE_SUFFIX = "_PROCEDURE";
 
@@ -86,6 +91,34 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
     public Class getBeanClass() {
         Field beanField = daoBeanDesc.getField(BEAN);
         return (Class) FieldUtil.get(beanField, null);
+    }
+
+    public Class getBeanClass(Method method) {
+        String fieldName = method.getName() + BEAN_SUFFIX;
+        if (daoBeanDesc.hasField(fieldName)) {
+            Field field = daoBeanDesc.getField(fieldName);
+            return (Class) FieldUtil.get(field, null);
+        }
+        if (List.class.isAssignableFrom(method.getReturnType())) {
+            return null;
+        }
+        if (method.getReturnType().isArray()) {
+            return method.getReturnType().getComponentType();
+        }
+        if (isSingleValueType(method.getReturnType())) {
+            return null;
+        }
+        return method.getReturnType();
+    }
+
+    protected static boolean isSingleValueType(Class clazz) {
+        if (clazz.isPrimitive()) {
+            return true;
+        }
+        return clazz == String.class || clazz == Boolean.class
+                || Number.class.isAssignableFrom(clazz)
+                || Date.class.isAssignableFrom(clazz)
+                || Calendar.class.isAssignableFrom(clazz);
     }
 
     public String[] getNoPersistentProps(Method method) {

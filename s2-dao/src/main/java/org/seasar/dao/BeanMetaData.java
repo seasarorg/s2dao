@@ -28,8 +28,6 @@ import org.seasar.framework.beans.PropertyNotFoundRuntimeException;
  */
 public interface BeanMetaData extends DtoMetaData {
 
-    public Class getBeanClass();
-
     public String getTableName();
 
     public PropertyType getVersionNoPropertyType()

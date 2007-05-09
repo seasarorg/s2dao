@@ -40,6 +40,7 @@ import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.DaoNotFoundRuntimeException;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.DtoMetaData;
+import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.RelationRowCreator;
@@ -116,9 +117,13 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected ValueTypeFactory valueTypeFactory;
 
-    protected ResultSetHandlerFactory resultSetHandlerFactory;
-
     protected BeanMetaDataFactory beanMetaDataFactory;
+
+    public static final String dtoMetaDataFactory_BINDING = "bindingType=may";
+
+    protected DtoMetaDataFactory dtoMetaDataFactory;
+
+    protected ResultSetHandlerFactory resultSetHandlerFactory;
 
     protected DaoNamingConvention daoNamingConvention;
 
@@ -140,13 +145,22 @@ public class DaoMetaDataImpl implements DaoMetaData {
             ConnectionUtil.close(con);
         }
         this.beanMetaData = beanMetaDataFactory.createBeanMetaData(beanClass);
-        resultSetHandlerFactory = createResultSetHandlerFactory(this.beanMetaData);
+        dtoMetaDataFactory = createDtoMetaDataFactory();
+        resultSetHandlerFactory = createResultSetHandlerFactory();
         setupSqlCommand();
     }
 
-    protected ResultSetHandlerFactory createResultSetHandlerFactory(
-            final BeanMetaData beanMetaData) {
-        return new ResultSetHandlerFactoryImpl(beanMetaData);
+    protected ResultSetHandlerFactory createResultSetHandlerFactory() {
+        return new ResultSetHandlerFactoryImpl(beanMetaData, annotationReader,
+                dtoMetaDataFactory);
+    }
+
+    protected DtoMetaDataFactory createDtoMetaDataFactory() {
+        DtoMetaDataFactoryImpl factory = new DtoMetaDataFactoryImpl();
+        factory.setBeanAnnotationReader(getAnnotationReaderFactory()
+                .createBeanAnnotationReader(beanClass));
+        factory.setValueTypeFactory(valueTypeFactory);
+        return factory;
     }
 
     protected void setupSqlCommand() {
@@ -954,6 +968,20 @@ public class DaoMetaDataImpl implements DaoMetaData {
         this.beanMetaDataFactory = beanMetaDataFactory;
     }
 
+    /**
+     * @return Returns the dtoMetaDataFactory.
+     */
+    public DtoMetaDataFactory getDtoMetaDataFactory() {
+        return dtoMetaDataFactory;
+    }
+
+    /**
+     * @param dtoMetaDataFactory The dtoMetaDataFactory to set.
+     */
+    public void setDtoMetaDataFactory(DtoMetaDataFactory dtoMetaDataFactory) {
+        this.dtoMetaDataFactory = dtoMetaDataFactory;
+    }
+
     public DaoNamingConvention getDaoNamingConvention() {
         return daoNamingConvention;
     }
@@ -968,22 +996,58 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
         final BeanMetaData beanMetaData;
 
-        public ResultSetHandlerFactoryImpl(BeanMetaData beanMetaData) {
+        final DaoAnnotationReader annotationReader;
+
+        final DtoMetaDataFactory dtoMetaDataFactory;
+
+        public ResultSetHandlerFactoryImpl(BeanMetaData beanMetaData,
+                DaoAnnotationReader annotationReader,
+                DtoMetaDataFactory dtoMetaDataFactory) {
             this.beanMetaData = beanMetaData;
+            this.annotationReader = annotationReader;
+            this.dtoMetaDataFactory = dtoMetaDataFactory;
         }
 
         public ResultSetHandler createResultSetHandler(final Method method) {
-            final Class beanClass = beanMetaData.getBeanClass();
-            if (List.class.isAssignableFrom(method.getReturnType())) {
-                return createBeanListMetaDataResultSetHandler();
-            } else if (isBeanClassAssignable(beanClass, method.getReturnType())) {
-                return createBeanMetaDataResultSetHandler();
-            } else if (method.getReturnType().isAssignableFrom(
-                    Array.newInstance(beanClass, 0).getClass())) {
-                return createBeanArrayMetaDataResultSetHandler();
+            DtoMetaData dtoMetaData = null;
+            Class beanClass = beanMetaData.getBeanClass();
+            Class clazz = annotationReader.getBeanClass(method);
+            if (clazz != null && !clazz.isAssignableFrom(beanClass)) {
+                dtoMetaData = dtoMetaDataFactory.getDtoMetaData(clazz);
+                if (List.class.isAssignableFrom(method.getReturnType())) {
+                    return createDtoListMetaDataResultSetHandler(dtoMetaData);
+                } else if (method.getReturnType() == clazz) {
+                    return createDtoMetaDataResultSetHandler(dtoMetaData);
+                } else if (method.getReturnType().isArray()) {
+                    return createDtoArrayMetaDataResultSetHandler(dtoMetaData);
+                }
             } else {
-                return createObjectResultSetHandler();
+                if (List.class.isAssignableFrom(method.getReturnType())) {
+                    return createBeanListMetaDataResultSetHandler();
+                } else if (isBeanClassAssignable(beanClass, method
+                        .getReturnType())) {
+                    return createBeanMetaDataResultSetHandler();
+                } else if (method.getReturnType().isAssignableFrom(
+                        Array.newInstance(beanClass, 0).getClass())) {
+                    return createBeanArrayMetaDataResultSetHandler();
+                }
             }
+            return createObjectResultSetHandler();
+        }
+
+        protected ResultSetHandler createDtoListMetaDataResultSetHandler(
+                DtoMetaData dtoMetaData) {
+            return new DtoListMetaDataResultSetHandler(dtoMetaData);
+        }
+
+        protected ResultSetHandler createDtoMetaDataResultSetHandler(
+                DtoMetaData dtoMetaData) {
+            return new DtoMetaDataResultSetHandler(dtoMetaData);
+        }
+
+        protected ResultSetHandler createDtoArrayMetaDataResultSetHandler(
+                DtoMetaData dtoMetaData) {
+            return new DtoArrayMetaDataResultSetHandler(dtoMetaData);
         }
 
         protected ResultSetHandler createBeanListMetaDataResultSetHandler() {

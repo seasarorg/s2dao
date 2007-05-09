@@ -15,27 +15,26 @@
  */
 package org.seasar.dao.impl;
 
+import java.lang.reflect.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
-public interface EmployeeDao {
+import org.seasar.dao.DtoMetaData;
 
-    public Class BEAN = Employee.class;
+public class DtoArrayMetaDataResultSetHandler extends
+        DtoListMetaDataResultSetHandler {
 
-    public List getAllEmployees();
+    public DtoArrayMetaDataResultSetHandler(DtoMetaData dtoMetaData) {
+        super(dtoMetaData);
+    }
 
-    public Employee[] getAllEmployeeArray();
-
-    public String findAll_SQL = "SELECT empno, ename, dname FROM emp, dept where emp.deptno = dept.deptno";
-
-    public EmployeeDto[] findAll();
-
-    public String getEmployee_ARGS = "empno";
-
-    public Employee getEmployee(int empno);
-
-    public int getCount();
-
-    public void update(Employee employee);
-
-    public Employee[] getEmployeesByDeptno(int deptno);
+    /**
+     * @see org.seasar.extension.jdbc.ResultSetHandler#handle(java.sql.ResultSet)
+     */
+    public Object handle(ResultSet rs) throws SQLException {
+        List list = (List) super.handle(rs);
+        return list.toArray((Object[]) Array.newInstance(getDtoMetaData()
+                .getBeanClass(), list.size()));
+    }
 }

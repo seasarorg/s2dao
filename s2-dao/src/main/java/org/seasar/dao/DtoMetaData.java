@@ -26,6 +26,8 @@ public interface DtoMetaData {
 
     public String COLUMN_SUFFIX = "_COLUMN";
 
+    public Class getBeanClass();
+
     public int getPropertyTypeSize();
 
     public PropertyType getPropertyType(int index);

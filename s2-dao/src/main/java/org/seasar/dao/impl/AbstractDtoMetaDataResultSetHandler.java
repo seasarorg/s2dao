@@ -16,44 +16,39 @@
 package org.seasar.dao.impl;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
-import org.seasar.dao.BeanMetaData;
-import org.seasar.dao.RelationPropertyType;
-import org.seasar.dao.RelationRowCreator;
+import org.seasar.dao.DtoMetaData;
 import org.seasar.extension.jdbc.PropertyType;
+import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.framework.beans.PropertyDesc;
+import org.seasar.framework.util.CaseInsensitiveSet;
 import org.seasar.framework.util.ClassUtil;
 import org.seasar.framework.util.StringUtil;
 
-public abstract class AbstractBeanMetaDataResultSetHandler extends
-        AbstractDtoMetaDataResultSetHandler {
+public abstract class AbstractDtoMetaDataResultSetHandler implements
+        ResultSetHandler {
 
-    private BeanMetaData beanMetaData;
+    private DtoMetaData dtoMetaData;
 
-    private RelationRowCreator relationRowCreator;
-
-    public AbstractBeanMetaDataResultSetHandler(BeanMetaData beanMetaData,
-            RelationRowCreator relationRowCreator) {
-        super(beanMetaData);
-        this.beanMetaData = beanMetaData;
-        this.relationRowCreator = relationRowCreator;
+    public AbstractDtoMetaDataResultSetHandler(DtoMetaData dtoMetaData) {
+        this.dtoMetaData = dtoMetaData;
     }
 
-    public BeanMetaData getBeanMetaData() {
-        return beanMetaData;
+    public DtoMetaData getDtoMetaData() {
+        return dtoMetaData;
     }
 
     protected Object createRow(ResultSet rs, Set columnNames)
             throws SQLException {
 
-        Object row = ClassUtil.newInstance(beanMetaData.getBeanClass());
-        for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
-            PropertyType pt = beanMetaData.getPropertyType(i);
+        Object row = ClassUtil.newInstance(dtoMetaData.getBeanClass());
+        for (int i = 0; i < dtoMetaData.getPropertyTypeSize(); ++i) {
+            PropertyType pt = dtoMetaData.getPropertyType(i);
             if (columnNames.contains(pt.getColumnName())) {
                 ValueType valueType = pt.getValueType();
                 Object value = valueType.getValue(rs, pt.getColumnName());
@@ -82,16 +77,23 @@ public abstract class AbstractBeanMetaDataResultSetHandler extends
         return row;
     }
 
-    protected Object createRelationRow(ResultSet rs, RelationPropertyType rpt,
-            Set columnNames, Map relKeyValues) throws SQLException {
-        return relationRowCreator.createRelationRow(rs, rpt, columnNames,
-                relKeyValues);
+    /*
+     * https://www.seasar.org/issues/browse/DAO-41
+     * SQLiteでは[TABLE名.COLUMN名]がcolumnNamesに入るため、[COLUMN名]だけにしておく。
+     */
+    protected Set createColumnNames(final ResultSetMetaData rsmd)
+            throws SQLException {
+        final int count = rsmd.getColumnCount();
+        final Set columnNames = new CaseInsensitiveSet();
+        for (int i = 0; i < count; ++i) {
+            final String columnName = rsmd.getColumnLabel(i + 1);
+            final int pos = columnName.lastIndexOf('.');
+            if (-1 < pos) {
+                columnNames.add(columnName.substring(pos + 1));
+            } else {
+                columnNames.add(columnName);
+            }
+        }
+        return columnNames;
     }
-
-    protected void postCreateRow(final Object row) {
-        final BeanMetaData bmd = getBeanMetaData();
-        final Set names = bmd.getModifiedPropertyNames(row);
-        names.clear();
-    }
-
 }

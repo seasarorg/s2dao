@@ -30,6 +30,7 @@ import org.seasar.dao.impl.BeanEnhancerImpl;
 import org.seasar.dao.impl.BeanMetaDataFactoryImpl;
 import org.seasar.dao.impl.DaoMetaDataImpl;
 import org.seasar.dao.impl.DaoNamingConventionImpl;
+import org.seasar.dao.impl.DtoMetaDataImpl;
 import org.seasar.dao.impl.FieldAnnotationReaderFactory;
 import org.seasar.dao.impl.ValueTypeFactoryImpl;
 import org.seasar.dao.pager.PagerContext;
@@ -92,6 +93,16 @@ public abstract class S2DaoTestCase extends S2TestCase {
     protected BeanMetaData createBeanMetaData(final Class beanClass) {
         final BeanMetaDataFactory factory = getBeanMetaDataFactory();
         return factory.createBeanMetaData(beanClass);
+    }
+
+    protected DtoMetaDataImpl createDtoMetaData(final Class dtoClass) {
+        final DtoMetaDataImpl dmd = new DtoMetaDataImpl();
+        dmd.setBeanClass(dtoClass);
+        dmd.setBeanAnnotationReader(getAnnotationReaderFactory()
+                .createBeanAnnotationReader(dtoClass));
+        dmd.setValueTypeFactory(getValueTypeFactory());
+        dmd.initialize();
+        return dmd;
     }
 
     protected DaoMetaDataImpl createDaoMetaData(final Class daoClass) {

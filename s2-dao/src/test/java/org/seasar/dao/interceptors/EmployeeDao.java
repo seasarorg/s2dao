@@ -23,6 +23,12 @@ public interface EmployeeDao {
 
     public List getAllEmployees();
 
+    public String findEmployeeDto_SQL = "select empno, ename, dname from emp, dept where empno = ? and emp.deptno = dept.deptno";
+
+    public String findEmployeeDto_ARGS = "empno";
+
+    public EmployeeDto findEmployeeDto(int empno);
+
     public String getEmployee_ARGS = "empno";
 
     public Employee getEmployee(int empno);

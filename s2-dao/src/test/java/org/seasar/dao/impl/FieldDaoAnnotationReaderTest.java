@@ -15,6 +15,9 @@
  */
 package org.seasar.dao.impl;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.seasar.dao.DaoMetaDataFactory;
@@ -47,6 +50,21 @@ public class FieldDaoAnnotationReaderTest extends TestCase {
 
     public void testBeanClass() throws Exception {
         assertEquals(Aaa.class, annotationReader.getBeanClass());
+    }
+
+    public void testBeanClassByMethod() throws Exception {
+        Method method = AaaDao.class.getMethod("findAll", null);
+        assertEquals(Aaa.class, annotationReader.getBeanClass(method));
+
+        method = AaaDao.class.getMethod("findArray", null);
+        assertEquals(Aaa.class, annotationReader.getBeanClass(method));
+
+        method = AaaDao.class.getMethod("find", new Class[] { int.class });
+        assertEquals(Aaa.class, annotationReader.getBeanClass(method));
+    }
+
+    public void testIsSingleValueType() throws Exception {
+        assertTrue(FieldDaoAnnotationReader.isSingleValueType(void.class));
     }
 
     public void testQuery() throws Exception {
@@ -90,6 +108,8 @@ public class FieldDaoAnnotationReaderTest extends TestCase {
 
         public Class BEAN = Aaa.class;
 
+        public Class findAll_BEAN = Aaa.class;
+
         public String getAaaById1_ARGS = "aaa1, aaa2";
 
         public Aaa getAaaById1(int id);
@@ -101,6 +121,12 @@ public class FieldDaoAnnotationReaderTest extends TestCase {
         public String getAaaById3_SQL = "SELECT * FROM AAA";
 
         public Aaa getAaaById3(int id);
+
+        public List findAll();
+
+        public Aaa[] findArray();
+
+        public Aaa find(int id);
 
         public String createAaa1_NO_PERSISTENT_PROPS = "abc";
 

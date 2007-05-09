@@ -15,27 +15,27 @@
  */
 package org.seasar.dao.impl;
 
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Set;
 
-public interface EmployeeDao {
+import org.seasar.dao.DtoMetaData;
 
-    public Class BEAN = Employee.class;
+public class DtoMetaDataResultSetHandler extends
+        AbstractDtoMetaDataResultSetHandler {
 
-    public List getAllEmployees();
+    public DtoMetaDataResultSetHandler(DtoMetaData dtoMetaData) {
+        super(dtoMetaData);
+    }
 
-    public Employee[] getAllEmployeeArray();
+    public Object handle(ResultSet resultSet) throws SQLException {
+        if (resultSet.next()) {
+            Set columnNames = createColumnNames(resultSet.getMetaData());
+            Object row = createRow(resultSet, columnNames);
+            return row;
+        } else {
+            return null;
+        }
+    }
 
-    public String findAll_SQL = "SELECT empno, ename, dname FROM emp, dept where emp.deptno = dept.deptno";
-
-    public EmployeeDto[] findAll();
-
-    public String getEmployee_ARGS = "empno";
-
-    public Employee getEmployee(int empno);
-
-    public int getCount();
-
-    public void update(Employee employee);
-
-    public Employee[] getEmployeesByDeptno(int deptno);
 }

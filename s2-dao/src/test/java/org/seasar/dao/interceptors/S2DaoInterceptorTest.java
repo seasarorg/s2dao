@@ -45,6 +45,12 @@ public class S2DaoInterceptorTest extends S2TestCase {
         assertEquals("1", "SCOTT", employee.getEname());
     }
 
+    public void testSelectDto() throws Exception {
+        EmployeeDto dto = dao.findEmployeeDto(7788);
+        assertEquals("SCOTT", dto.getEname());
+        assertEquals("RESEARCH", dto.getDname());
+    }
+
     public void testSelectObject() throws Exception {
         int count = dao.getCount();
         System.out.println("count:" + count);

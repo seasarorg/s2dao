@@ -13,29 +13,12 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.dao.impl;
+package org.seasar.dao;
 
-import java.util.List;
+/**
+ * @author higa
+ */
+public interface DtoMetaDataFactory {
 
-public interface EmployeeDao {
-
-    public Class BEAN = Employee.class;
-
-    public List getAllEmployees();
-
-    public Employee[] getAllEmployeeArray();
-
-    public String findAll_SQL = "SELECT empno, ename, dname FROM emp, dept where emp.deptno = dept.deptno";
-
-    public EmployeeDto[] findAll();
-
-    public String getEmployee_ARGS = "empno";
-
-    public Employee getEmployee(int empno);
-
-    public int getCount();
-
-    public void update(Employee employee);
-
-    public Employee[] getEmployeesByDeptno(int deptno);
+    DtoMetaData getDtoMetaData(Class dtoClass);
 }

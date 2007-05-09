@@ -69,6 +69,16 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
                 rsh.getBeanMetaData().getBeanClass()));
     }
 
+    public void testSelectDtoArray() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeDao"));
+        SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
+                .getSqlCommand("findAll");
+        assertNotNull("1", cmd);
+        DtoArrayMetaDataResultSetHandler rsh = (DtoArrayMetaDataResultSetHandler) cmd
+                .getResultSetHandler();
+        assertEquals(EmployeeDto.class, rsh.getDtoMetaData().getBeanClass());
+    }
+
     public void testPrefixTest() {
         final DaoMetaDataImpl dmd = new DaoMetaDataImpl();
         dmd.setDaoClass(getDaoClass("Employee8Manager"));

@@ -15,27 +15,30 @@
  */
 package org.seasar.dao.impl;
 
-import java.util.List;
+/**
+ * @author higa
+ *
+ */
+public class EmployeeDto extends Employee {
 
-public interface EmployeeDao {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-    public Class BEAN = Employee.class;
+    private String dname;
 
-    public List getAllEmployees();
+    /**
+     * @return Returns the dname.
+     */
+    public String getDname() {
+        return dname;
+    }
 
-    public Employee[] getAllEmployeeArray();
-
-    public String findAll_SQL = "SELECT empno, ename, dname FROM emp, dept where emp.deptno = dept.deptno";
-
-    public EmployeeDto[] findAll();
-
-    public String getEmployee_ARGS = "empno";
-
-    public Employee getEmployee(int empno);
-
-    public int getCount();
-
-    public void update(Employee employee);
-
-    public Employee[] getEmployeesByDeptno(int deptno);
+    /**
+     * @param dname The dname to set.
+     */
+    public void setDname(String dname) {
+        this.dname = dname;
+    }
 }
