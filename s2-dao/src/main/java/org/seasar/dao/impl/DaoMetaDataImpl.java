@@ -53,6 +53,8 @@ import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.extension.jdbc.impl.MapListResultSetHandler;
+import org.seasar.extension.jdbc.impl.MapResultSetHandler;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
@@ -1013,6 +1015,15 @@ public class DaoMetaDataImpl implements DaoMetaData {
             Class beanClass = beanMetaData.getBeanClass();
             Class clazz = annotationReader.getBeanClass(method);
             if (clazz != null && !clazz.isAssignableFrom(beanClass)) {
+                if (Map.class.isAssignableFrom(clazz)) {
+                    if (List.class.isAssignableFrom(method.getReturnType())) {
+                        return createMapListResultSetHandler();
+                    } else if (method.getReturnType().isArray()) {
+                        return createMapArrayResultSetHandler();
+                    } else {
+                        return createMapResultSetHandler();
+                    }
+                }
                 dtoMetaData = dtoMetaDataFactory.getDtoMetaData(clazz);
                 if (List.class.isAssignableFrom(method.getReturnType())) {
                     return createDtoListMetaDataResultSetHandler(dtoMetaData);
@@ -1048,6 +1059,18 @@ public class DaoMetaDataImpl implements DaoMetaData {
         protected ResultSetHandler createDtoArrayMetaDataResultSetHandler(
                 DtoMetaData dtoMetaData) {
             return new DtoArrayMetaDataResultSetHandler(dtoMetaData);
+        }
+
+        protected ResultSetHandler createMapListResultSetHandler() {
+            return new MapListResultSetHandler();
+        }
+
+        protected ResultSetHandler createMapResultSetHandler() {
+            return new MapResultSetHandler();
+        }
+
+        protected ResultSetHandler createMapArrayResultSetHandler() {
+            return new MapArrayResultSetHandler();
         }
 
         protected ResultSetHandler createBeanListMetaDataResultSetHandler() {

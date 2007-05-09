@@ -15,30 +15,24 @@
  */
 package org.seasar.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-public interface EmployeeDao {
+import org.seasar.extension.jdbc.impl.MapListResultSetHandler;
 
-    public Class BEAN = Employee.class;
+/**
+ * @author higa
+ * 
+ */
+public class MapArrayResultSetHandler extends MapListResultSetHandler {
 
-    public List getAllEmployees();
+    public MapArrayResultSetHandler() {
+    }
 
-    public Employee[] getAllEmployeeArray();
-
-    public Map[] getAllEmployeeMap();
-
-    public String findAll_SQL = "SELECT empno, ename, dname FROM emp, dept where emp.deptno = dept.deptno";
-
-    public EmployeeDto[] findAll();
-
-    public String getEmployee_ARGS = "empno";
-
-    public Employee getEmployee(int empno);
-
-    public int getCount();
-
-    public void update(Employee employee);
-
-    public Employee[] getEmployeesByDeptno(int deptno);
+    public Object handle(ResultSet resultSet) throws SQLException {
+        List list = (List) super.handle(resultSet);
+        return list.toArray(new Map[list.size()]);
+    }
 }

@@ -16,6 +16,7 @@
 package org.seasar.dao.interceptors;
 
 import java.util.List;
+import java.util.Map;
 
 import org.seasar.extension.unit.S2TestCase;
 
@@ -49,6 +50,14 @@ public class S2DaoInterceptorTest extends S2TestCase {
         EmployeeDto dto = dao.findEmployeeDto(7788);
         assertEquals("SCOTT", dto.getEname());
         assertEquals("RESEARCH", dto.getDname());
+    }
+
+    public void testSelectMap() throws Exception {
+        Map[] ret = dao.getLabelValue();
+        assertTrue(ret.length > 0);
+        for (int i = 0; i < ret.length; i++) {
+            System.out.println(ret[i]);
+        }
     }
 
     public void testSelectObject() throws Exception {

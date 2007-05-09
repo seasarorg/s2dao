@@ -16,6 +16,7 @@
 package org.seasar.dao.interceptors;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EmployeeDao {
 
@@ -28,6 +29,10 @@ public interface EmployeeDao {
     public String findEmployeeDto_ARGS = "empno";
 
     public EmployeeDto findEmployeeDto(int empno);
+
+    public String getLabelValue_SQL = "select empno as value, ename as label from emp";
+
+    public Map[] getLabelValue();
 
     public String getEmployee_ARGS = "empno";
 
