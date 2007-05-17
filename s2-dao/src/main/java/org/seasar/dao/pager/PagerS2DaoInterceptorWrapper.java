@@ -66,8 +66,8 @@ public class PagerS2DaoInterceptorWrapper extends AbstractInterceptor {
             started = true;
             pagerContext = PagerContext.getContext();
         }
+        pagerContext.pushArgs(invocation.getArguments());
         try {
-            pagerContext.pushArgs(invocation.getArguments());
             return interceptor.invoke(invocation);
         } finally {
             pagerContext.popArgs();
