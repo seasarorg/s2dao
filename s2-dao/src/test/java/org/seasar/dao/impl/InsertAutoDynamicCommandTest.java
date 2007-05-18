@@ -63,9 +63,32 @@ public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
         // ## Assert ##
         try {
             cmd.execute(new Object[] { table });
+            fail();
         } catch (SRuntimeException e) {
             final String message = e.getMessage();
             assertEquals(true, StringUtil.contains(message, "EDAO0014"));
+        }
+    }
+
+    /*
+     * https://www.seasar.org/issues/browse/DAO-89
+     * TABLEと関連付いていないDaoとBeanではINSERT時にわかりやすいエラーメッセージを出すこと。
+     */
+    public void testInsertNoTableTx() throws Exception {
+        // ## Arrange ##
+        final DaoMetaData dmd = createDaoMetaData(FooDtoDao.class);
+        final SqlCommand cmd = dmd.getSqlCommand("insert");
+        final FooDto dto = new FooDto();
+
+        // ## Act ##
+        // ## Assert ##
+        try {
+            cmd.execute(new Object[] { dto });
+            fail();
+        } catch (SRuntimeException e) {
+            final String message = e.getMessage();
+            System.out.println(message);
+            assertEquals(true, StringUtil.contains(message, "EDAO0024"));
         }
     }
 
@@ -220,6 +243,40 @@ public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
     public static class Emp {
 
         public static final String TABLE = "EMP";
+
+        private Integer empno;
+
+        private String ename;
+
+        public Integer getEmpno() {
+            return this.empno;
+        }
+
+        public void setEmpno(Integer empno) {
+            this.empno = empno;
+        }
+
+        public String getEname() {
+            return this.ename;
+        }
+
+        public void setEname(String ename) {
+            this.ename = ename;
+        }
+
+    }
+
+    public static interface FooDtoDao {
+
+        public Class BEAN = FooDto.class;
+
+        public void insert(FooDto employee);
+
+    }
+
+    public static class FooDto {
+
+        public static final String TABLE = "DUMMY_TABLE";
 
         private Integer empno;
 

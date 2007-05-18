@@ -90,6 +90,11 @@ public class InsertAutoDynamicCommand implements SqlCommand {
 
     protected PropertyType[] createInsertPropertyTypes(BeanMetaData bmd,
             Object bean, String[] propertyNames) {
+
+        if (0 == propertyNames.length) {
+            throw new SRuntimeException("EDAO0024", new Object[] { bean
+                    .getClass().getName() });
+        }
         List types = new ArrayList();
         final String timestampPropertyName = bmd.getTimestampPropertyName();
         final String versionNoPropertyName = bmd.getVersionNoPropertyName();
