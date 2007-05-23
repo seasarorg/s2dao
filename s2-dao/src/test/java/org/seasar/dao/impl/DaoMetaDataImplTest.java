@@ -23,6 +23,7 @@ import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.SqlCommand;
+import org.seasar.dao.SqlFileNotFoundRuntimeException;
 import org.seasar.dao.dbms.Oracle;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.PropertyType;
@@ -631,6 +632,24 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
                 .getSqlCommand("getEmployeesByJob");
         final List emps = (List) cmd.execute(new Object[] { null });
         assertEquals(14, emps.size());
+    }
+
+    public void testNoSqlFile() throws Exception {
+        // ## Arrange ##
+        final Class daoClass = getDaoClass("Employee11Dao");
+
+        // ## Act ##
+        // ## Assert ##
+        try {
+            createDaoMetaData(daoClass);
+            fail();
+        } catch (final MethodSetupFailureRuntimeException e) {
+            System.out.println(e.getMessage());
+            final SqlFileNotFoundRuntimeException cause = (SqlFileNotFoundRuntimeException) e
+                    .getCause();
+            assertEquals("EDAO0025", cause.getMessageCode());
+        }
+
     }
 
 }

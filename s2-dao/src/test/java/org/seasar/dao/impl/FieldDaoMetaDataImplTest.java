@@ -74,6 +74,8 @@ public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
             return Employee9Dao.class;
         } else if (className.equals("Employee10Dao")) {
             return Employee10Dao.class;
+        } else if (className.equals("Employee11Dao")) {
+            return Employee11Dao.class;
         } else if (className.equals("Employee8Manager")) {
             return Employee8Manager.class;
         } else if (className.equals("DepartmentTotalSalaryDao")) {
@@ -85,6 +87,14 @@ public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
         }
         fail(className);
         return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.seasar.dao.impl.DaoMetaDataImplTest#testDaoExtend2()
+     */
+    public void testDaoExtend2() throws Exception {
+        // TODO Auto-generated method stub
+        super.testDaoExtend2();
     }
 
 }

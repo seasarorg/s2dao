@@ -19,9 +19,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author uehara keizou
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * @author manhole
  */
 public interface DaoAnnotationReader {
 
@@ -67,5 +65,7 @@ public interface DaoAnnotationReader {
      * @return
      */
     String getSQL(Method method, String suffix);
+
+    boolean isSqlFile(Method method);
 
 }

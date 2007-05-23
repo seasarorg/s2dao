@@ -46,6 +46,7 @@ import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.SqlCommand;
+import org.seasar.dao.SqlFileNotFoundRuntimeException;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.dao.handler.ProcedureHandlerImpl;
@@ -194,6 +195,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
             if (!completedSetupMethod(method)) {
                 setupMethodBySuperClass(daoInterface, method);
+            }
+
+            if (!completedSetupMethod(method)
+                    && annotationReader.isSqlFile(method)) {
+                throw new SqlFileNotFoundRuntimeException(daoInterface, method);
             }
 
             if (!completedSetupMethod(method)) {

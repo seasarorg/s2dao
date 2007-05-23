@@ -48,6 +48,8 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
 
     public String PERSISTENT_PROPS_SUFFIX = "_PERSISTENT_PROPS";
 
+    public String SQL_FILE_SUFFIX = "_SQL_FILE";
+
     protected BeanDesc daoBeanDesc;
 
     /**
@@ -111,7 +113,7 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
         return method.getReturnType();
     }
 
-    protected static boolean isSingleValueType(Class clazz) {
+    protected boolean isSingleValueType(Class clazz) {
         if (clazz.isPrimitive()) {
             return true;
         }
@@ -150,6 +152,14 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
             return (String) FieldUtil.get(queryField, null);
         }
         return null;
+    }
+
+    public boolean isSqlFile(final Method method) {
+        final String fieldName = method.getName() + SQL_FILE_SUFFIX;
+        if (daoBeanDesc.hasField(fieldName)) {
+            return true;
+        }
+        return false;
     }
 
 }

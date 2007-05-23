@@ -15,10 +15,7 @@
  */
 package org.seasar.dao.impl;
 
-import java.lang.reflect.Method;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.seasar.dao.DaoMetaDataFactory;
 import org.seasar.framework.beans.BeanDesc;
@@ -27,88 +24,27 @@ import org.seasar.framework.beans.factory.BeanDescFactory;
 /**
  * @author manhole
  */
-public class FieldDaoAnnotationReaderTest extends TestCase {
-
-    private FieldDaoAnnotationReader annotationReader;
-
-    public void testBasic() throws Exception {
-        final BeanDesc daoDesc = BeanDescFactory.getBeanDesc(AaaDao.class);
-        FieldDaoAnnotationReader reader = new FieldDaoAnnotationReader(daoDesc);
-        assertEquals(Aaa.class, reader.getBeanClass());
-
-        String query = reader.getQuery(AaaDao.class.getMethod("getAaaById2",
-                new Class[] { int.class }));
-        assertEquals("A > B", query);
-    }
+public class FieldDaoAnnotationReaderTest extends
+        AbstractDaoAnnotationReaderImplTest {
 
     protected void setUp() throws Exception {
         super.setUp();
+        clazz = AbstractAaaDaoImpl.class;
         BeanDesc daoDesc = BeanDescFactory
                 .getBeanDesc(AbstractAaaDaoImpl.class);
         annotationReader = new FieldDaoAnnotationReader(daoDesc);
-    }
-
-    public void testBeanClass() throws Exception {
-        assertEquals(Aaa.class, annotationReader.getBeanClass());
-    }
-
-    public void testBeanClassByMethod() throws Exception {
-        Method method = AaaDao.class.getMethod("findAll", null);
-        assertEquals(Aaa.class, annotationReader.getBeanClass(method));
-
-        method = AaaDao.class.getMethod("findArray", null);
-        assertEquals(Aaa.class, annotationReader.getBeanClass(method));
-
-        method = AaaDao.class.getMethod("find", new Class[] { int.class });
-        assertEquals(Aaa.class, annotationReader.getBeanClass(method));
+        aaaClazz = Aaa.class;
+        daoClazz = AaaDao.class;
     }
 
     public void testIsSingleValueType() throws Exception {
-        assertTrue(FieldDaoAnnotationReader.isSingleValueType(void.class));
-    }
-
-    public void testQuery() throws Exception {
-        String query = annotationReader.getQuery(AbstractAaaDaoImpl.class
-                .getMethod("getAaaById2", new Class[] { int.class }));
-        assertEquals("A > B", query);
-    }
-
-    public void testSql() throws Exception {
-        String sql = annotationReader.getSQL(AbstractAaaDaoImpl.class
-                .getMethod("getAaaById3", new Class[] { int.class }), null);
-        assertEquals("SELECT * FROM AAA", sql);
-    }
-
-    public void testArgNames() throws Exception {
-        String[] argNames = annotationReader
-                .getArgNames(AbstractAaaDaoImpl.class.getMethod("getAaaById1",
-                        new Class[] { int.class }));
-        assertEquals(2, argNames.length);
-        assertEquals("aaa1", argNames[0]);
-        assertEquals("aaa2", argNames[1]);
-    }
-
-    public void testNoPersistentProps() throws Exception {
-        final String[] noPersistentProps = annotationReader
-                .getNoPersistentProps(AbstractAaaDaoImpl.class.getMethod(
-                        "createAaa1", new Class[] { Aaa.class }));
-        assertEquals(1, noPersistentProps.length);
-        assertEquals("abc", noPersistentProps[0]);
-    }
-
-    public void testPersistentProps() throws Exception {
-        final String[] persistentProps = annotationReader
-                .getPersistentProps(AbstractAaaDaoImpl.class.getMethod(
-                        "createAaa2", new Class[] { Aaa.class }));
-        assertEquals(1, persistentProps.length);
-        assertEquals("def", persistentProps[0]);
+        assertTrue(((FieldDaoAnnotationReader) annotationReader)
+                .isSingleValueType(void.class));
     }
 
     public static interface AaaDao {
 
         public Class BEAN = Aaa.class;
-
-        public Class findAll_BEAN = Aaa.class;
 
         public String getAaaById1_ARGS = "aaa1, aaa2";
 
@@ -121,6 +57,8 @@ public class FieldDaoAnnotationReaderTest extends TestCase {
         public String getAaaById3_SQL = "SELECT * FROM AAA";
 
         public Aaa getAaaById3(int id);
+
+        public Class findAll_BEAN = Aaa.class;
 
         public List findAll();
 
@@ -135,6 +73,20 @@ public class FieldDaoAnnotationReaderTest extends TestCase {
         public String createAaa2_PERSISTENT_PROPS = "def";
 
         public Aaa createAaa2(Aaa aaa);
+
+        public String selectB_SQL = "SELECT * FROM DDD";
+
+        public String selectB_oracle_SQL = "SELECT * FROM BBB";
+
+        public Aaa selectB(int id);
+
+        public String selectC_oracle_SQL = "SELECT * FROM CCC";
+
+        public Aaa selectC(int id);
+
+        public String findUsingSqlFile_SQL_FILE = null;
+
+        public Aaa findUsingSqlFile(int id);
 
     }
 

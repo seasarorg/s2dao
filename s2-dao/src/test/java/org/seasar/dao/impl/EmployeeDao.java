@@ -22,6 +22,8 @@ public interface EmployeeDao {
 
     public Class BEAN = Employee.class;
 
+    public String getAllEmployees_SQL_FILE = null;
+
     public List getAllEmployees();
 
     public Employee[] getAllEmployeeArray();
@@ -34,7 +36,11 @@ public interface EmployeeDao {
 
     public String getEmployee_ARGS = "empno";
 
+    public String getEmployee_SQL_FILE = null;
+
     public Employee getEmployee(int empno);
+
+    public String getCount_SQL_FILE = null;
 
     public int getCount();
 
