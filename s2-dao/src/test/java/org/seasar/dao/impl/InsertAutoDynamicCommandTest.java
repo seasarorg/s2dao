@@ -85,7 +85,7 @@ public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
         try {
             cmd.execute(new Object[] { dto });
             fail();
-        } catch (SRuntimeException e) {
+        } catch (final SRuntimeException e) {
             final String message = e.getMessage();
             System.out.println(message);
             assertEquals(true, StringUtil.contains(message, "EDAO0024"));
