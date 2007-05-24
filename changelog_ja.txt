@@ -3,9 +3,10 @@ S2Dao 変更履歴
 1.0.43
 -------------------------------------------------------------------------------
 DBを特定する処理を改善し、DatabaseMetaData#getDatabaseProductName()が"DB2"ではじまっていればDB2と判定するようにしました。[DAO-85]
-S2PagerのgetCountメソッドで、order by句を削除して実行可能にしました。[DAO-88] [Seasar-user:7549]
+S2PagerのgetCountメソッドで、order by句を削除して実行可能にしました。[DAO-88][Seasar-user:7549]
 select系の戻り値で複数のDTO、Mapをサポートしました。[DAO-91][DAO-92]
 Sybaseに対応しました。[Seasar-user:7450][DAO-87]
+PagerS2DaoInterceptorWrapperでpushに失敗した場合でもpopされてしまう問題に対応しました。[DAO-61][Seasar-user:5851]
 Tableに関連付いていないEntityでINSERTした際のエラーメッセージをわかりやすくしました。[DAO-89]
 SqlFileアノテーションを導入し、SQLファイル名が誤っている場合に早期検出できるようにしました。[DAO-90]
 
