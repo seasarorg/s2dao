@@ -76,6 +76,8 @@ public class FieldDaoMetaDataImplTest extends DaoMetaDataImplTest {
             return Employee10Dao.class;
         } else if (className.equals("Employee11Dao")) {
             return Employee11Dao.class;
+        } else if (className.equals("Employee12Dao")) {
+            return Employee12Dao.class;
         } else if (className.equals("Employee8Manager")) {
             return Employee8Manager.class;
         } else if (className.equals("DepartmentTotalSalaryDao")) {

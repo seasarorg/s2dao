@@ -256,6 +256,17 @@ public class DaoMetaDataImpl implements DaoMetaData {
         } else if (ResourceUtil.isExist(standardPath)) {
             String sql = readText(standardPath);
             setupMethodByManual(method, sql);
+        } else if (isDelete(method.getName())) {
+            String query = annotationReader.getQuery(method);
+            if (StringUtil.isNotBlank(query)) {
+                if (query.trim().toUpperCase().startsWith("WHERE")) {
+                    setupMethodByManual(method, "DELETE FROM "
+                            + beanMetaData.getTableName() + " " + query);
+                } else {
+                    setupMethodByManual(method, "DELETE FROM "
+                            + beanMetaData.getTableName() + " WHERE " + query);
+                }
+            }
         }
     }
 

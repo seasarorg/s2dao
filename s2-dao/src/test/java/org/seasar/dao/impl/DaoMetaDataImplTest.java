@@ -652,4 +652,15 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
 
     }
 
+    public void testDeleteByQuery() throws Exception {
+        final Class daoClass = getDaoClass("Employee12Dao");
+        DaoMetaData metaData = createDaoMetaData(daoClass);
+        UpdateDynamicCommand cmd = (UpdateDynamicCommand) metaData
+                .getSqlCommand("delete");
+        assertEquals("DELETE FROM EMP WHERE EMPNO = /*no*/1111", cmd.getSql());
+
+        cmd = (UpdateDynamicCommand) metaData.getSqlCommand("deleteNoWhere");
+        assertEquals("DELETE FROM EMP WHERE EMPNO = ?", cmd.getSql());
+
+    }
 }
