@@ -18,7 +18,7 @@ package org.seasar.dao.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.ValueTypeFactory;
@@ -35,23 +35,17 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
 
     protected boolean initialized = false;
 
-    protected BeanAnnotationReader beanAnnotationReader;
+    protected AnnotationReaderFactory annotationReaderFactory;
 
     protected ValueTypeFactory valueTypeFactory;
 
-    /**
-     * @return Returns the beanAnnotationReader.
-     */
-    public BeanAnnotationReader getBeanAnnotationReader() {
-        return beanAnnotationReader;
+    public AnnotationReaderFactory getAnnotationReaderFactory() {
+        return annotationReaderFactory;
     }
 
-    /**
-     * @param beanAnnotationReader The beanAnnotationReader to set.
-     */
-    public void setBeanAnnotationReader(
-            BeanAnnotationReader beanAnnotationReader) {
-        this.beanAnnotationReader = beanAnnotationReader;
+    public void setAnnotationReaderFactory(
+            AnnotationReaderFactory annotationReaderFactory) {
+        this.annotationReaderFactory = annotationReaderFactory;
     }
 
     /**
@@ -80,7 +74,7 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
         }
         dmd = new DtoMetaDataImpl();
         dmd.setBeanClass(dtoClass);
-        dmd.setBeanAnnotationReader(beanAnnotationReader);
+        dmd.setBeanAnnotationReader(annotationReaderFactory.createBeanAnnotationReader(dtoClass));
         dmd.setValueTypeFactory(valueTypeFactory);
         dmd.initialize();
         cache.put(key, dmd);

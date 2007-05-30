@@ -160,8 +160,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected DtoMetaDataFactory createDtoMetaDataFactory() {
         DtoMetaDataFactoryImpl factory = new DtoMetaDataFactoryImpl();
-        factory.setBeanAnnotationReader(getAnnotationReaderFactory()
-                .createBeanAnnotationReader(beanClass));
+        factory.setAnnotationReaderFactory(getAnnotationReaderFactory());
         factory.setValueTypeFactory(valueTypeFactory);
         return factory;
     }

@@ -18,6 +18,7 @@ package org.seasar.dao.impl;
 import junit.framework.TestCase;
 
 import org.seasar.dao.DtoMetaData;
+import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.framework.util.DisposableUtil;
 
 /**
@@ -30,8 +31,7 @@ public class DtoMetaDataFactoryImplTest extends TestCase {
 
     protected void setUp() throws Exception {
         factory = new DtoMetaDataFactoryImpl();
-        factory.setBeanAnnotationReader(new FieldBeanAnnotationReader(
-                EmployeeDto.class));
+        factory.setAnnotationReaderFactory(new FieldAnnotationReaderFactory());
         factory.setValueTypeFactory(new ValueTypeFactoryImpl());
     }
 
@@ -46,5 +46,11 @@ public class DtoMetaDataFactoryImplTest extends TestCase {
         DtoMetaData dmd = factory.getDtoMetaData(EmployeeDto.class);
         assertNotNull(dmd);
         assertSame(dmd, factory.getDtoMetaData(EmployeeDto.class));
+    }
+    
+    public void testColumnAnnotationToDto() {
+        DtoMetaData dmd = factory.getDtoMetaData(EmployeeDto2.class);
+        PropertyType pt = dmd.getPropertyType("departmentName");
+        assertEquals("dname", pt.getColumnName());
     }
 }
