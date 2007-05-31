@@ -19,40 +19,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.Map;
 
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.ResultSetHandler;
 
-public class DtoListMetaDataResultSetHandlerTest extends S2DaoTestCase {
+public class MapListResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle() throws Exception {
-        ResultSetHandler handler = new DtoListMetaDataResultSetHandler(
-                createDtoMetaData(EmployeeDto.class));
-        String sql = "select empno, ename, dname from emp, dept where empno = 7788 and emp.deptno = dept.deptno";
-        Connection con = getConnection();
-        PreparedStatement ps = con.prepareStatement(sql);
-        List ret = null;
-        try {
-            ResultSet rs = ps.executeQuery();
-            try {
-                ret = (List) handler.handle(rs);
-            } finally {
-                rs.close();
-            }
-        } finally {
-            ps.close();
-        }
-        assertNotNull(ret);
-        assertEquals(1, ret.size());
-        EmployeeDto dto = (EmployeeDto) ret.get(0);
-        assertEquals(7788, dto.getEmpno());
-        assertEquals("SCOTT", dto.getEname());
-        assertEquals("RESEARCH", dto.getDname());
-    }
-
-    public void testHandle2() throws Exception {
-        ResultSetHandler handler = new DtoListMetaDataResultSetHandler(
-                createDtoMetaData(EmployeeDto3.class));
+        ResultSetHandler handler = new MapListResultSetHandler();
         String sql = "select employee_id, employee_name from emp4 where employee_id = 7369";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -69,9 +44,9 @@ public class DtoListMetaDataResultSetHandlerTest extends S2DaoTestCase {
         }
         assertNotNull(ret);
         assertEquals(1, ret.size());
-        EmployeeDto3 dto = (EmployeeDto3) ret.get(0);
-        assertEquals(7369, dto.getEmployeeId());
-        assertEquals("SMITH", dto.getEmployeeName());
+        Map m = (Map) ret.get(0);
+        assertEquals(new Integer(7369), m.get("employeeId"));
+        assertEquals("SMITH", m.get("employeeName"));
     }
 
     public void setUp() {

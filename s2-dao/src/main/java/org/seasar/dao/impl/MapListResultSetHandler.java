@@ -17,20 +17,26 @@ package org.seasar.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-/**
- * @author higa
- * 
- */
-public class MapArrayResultSetHandler extends MapListResultSetHandler {
+import org.seasar.extension.jdbc.PropertyType;
 
-    public MapArrayResultSetHandler() {
+public class MapListResultSetHandler extends AbstractMapResultSetHandler {
+
+    public MapListResultSetHandler() {
     }
 
+    /**
+     * @see org.seasar.extension.jdbc.ResultSetHandler#handle(java.sql.ResultSet)
+     */
     public Object handle(ResultSet resultSet) throws SQLException {
-        List list = (List) super.handle(resultSet);
-        return list.toArray(new Map[list.size()]);
+        PropertyType[] propertyTypes = createPropertyTypes(resultSet
+                .getMetaData());
+        List list = new ArrayList();
+        while (resultSet.next()) {
+            list.add(createRow(resultSet, propertyTypes));
+        }
+        return list;
     }
 }

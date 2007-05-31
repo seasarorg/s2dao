@@ -18,17 +18,16 @@ package org.seasar.dao.impl;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.seasar.dao.DtoMetaData;
+import org.seasar.dao.util.DaoNamingConventionUtil;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.util.CaseInsensitiveSet;
 import org.seasar.framework.util.ClassUtil;
-import org.seasar.framework.util.StringUtil;
 
 public abstract class AbstractDtoMetaDataResultSetHandler implements
         ResultSetHandler {
@@ -59,18 +58,14 @@ public abstract class AbstractDtoMetaDataResultSetHandler implements
                 Object value = valueType.getValue(rs, pt.getPropertyName());
                 PropertyDesc pd = pt.getPropertyDesc();
                 pd.setValue(row, value);
-            } else if (!pt.isPersistent()) {
-                for (Iterator iter = columnNames.iterator(); iter.hasNext();) {
-                    String columnName = (String) iter.next();
-                    String columnName2 = StringUtil
-                            .replace(columnName, "_", "");
-                    if (columnName2.equalsIgnoreCase(pt.getColumnName())) {
-                        ValueType valueType = pt.getValueType();
-                        Object value = valueType.getValue(rs, columnName);
-                        PropertyDesc pd = pt.getPropertyDesc();
-                        pd.setValue(row, value);
-                        break;
-                    }
+            } else {
+                String possibleName = DaoNamingConventionUtil
+                        .fromPropertyNameToColumnName(pt.getPropertyName());
+                if (columnNames.contains(possibleName)) {
+                    ValueType valueType = pt.getValueType();
+                    Object value = valueType.getValue(rs, possibleName);
+                    PropertyDesc pd = pt.getPropertyDesc();
+                    pd.setValue(row, value);
                 }
             }
         }
