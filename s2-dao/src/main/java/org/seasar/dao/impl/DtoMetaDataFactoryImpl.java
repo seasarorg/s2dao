@@ -74,7 +74,8 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
         }
         dmd = new DtoMetaDataImpl();
         dmd.setBeanClass(dtoClass);
-        dmd.setBeanAnnotationReader(annotationReaderFactory.createBeanAnnotationReader(dtoClass));
+        dmd.setBeanAnnotationReader(annotationReaderFactory
+                .createBeanAnnotationReader(dtoClass));
         dmd.setValueTypeFactory(valueTypeFactory);
         dmd.initialize();
         cache.put(key, dmd);

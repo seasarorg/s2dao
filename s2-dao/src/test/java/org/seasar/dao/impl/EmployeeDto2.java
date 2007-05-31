@@ -24,6 +24,7 @@ public class EmployeeDto2 extends Employee {
     private static final long serialVersionUID = 1L;
 
     public static final String departmentName_COLUMN = "dname";
+
     private String departmentName;
 
     /**
