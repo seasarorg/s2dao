@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.seasar.dao.DaoMetaData;
+import org.seasar.dao.IllegalAnnotationRuntimeException;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.SqlCommand;
@@ -663,4 +664,31 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         assertEquals("DELETE FROM EMP WHERE EMPNO = ?", cmd.getSql());
 
     }
+
+    public void testAssertAnnotation() throws Exception {
+        final Class daoClass = getDaoClass("Employee13Dao");
+        try {
+            createDaoMetaData(daoClass);
+        } catch (MethodSetupFailureRuntimeException e) {
+            IllegalAnnotationRuntimeException cause = (IllegalAnnotationRuntimeException) e
+                    .getCause();
+            System.out.println(cause);
+            assertEquals("EDAO0026", cause.getMessageCode());
+        }
+
+    }
+
+    public void testAssertAnnotation2() throws Exception {
+        final Class daoClass = getDaoClass("Employee14Dao");
+        try {
+            createDaoMetaData(daoClass);
+        } catch (MethodSetupFailureRuntimeException e) {
+            IllegalAnnotationRuntimeException cause = (IllegalAnnotationRuntimeException) e
+                    .getCause();
+            System.out.println(cause);
+            assertEquals("EDAO0026", cause.getMessageCode());
+        }
+
+    }
+
 }

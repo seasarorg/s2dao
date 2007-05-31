@@ -47,7 +47,7 @@ public class DtoMetaDataFactoryImplTest extends TestCase {
         assertNotNull(dmd);
         assertSame(dmd, factory.getDtoMetaData(EmployeeDto.class));
     }
-    
+
     public void testColumnAnnotationToDto() {
         DtoMetaData dmd = factory.getDtoMetaData(EmployeeDto2.class);
         PropertyType pt = dmd.getPropertyType("departmentName");

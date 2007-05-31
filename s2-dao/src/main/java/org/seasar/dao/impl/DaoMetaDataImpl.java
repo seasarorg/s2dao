@@ -41,6 +41,7 @@ import org.seasar.dao.DaoNotFoundRuntimeException;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.DtoMetaDataFactory;
+import org.seasar.dao.IllegalAnnotationRuntimeException;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.RelationRowCreator;
@@ -182,6 +183,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected void setupMethod(Class daoInterface, Method method) {
         try {
+            assertAnnotation(method);
+
             setupMethodByAnnotation(daoInterface, method);
 
             if (!completedSetupMethod(method)) {
@@ -218,6 +221,14 @@ public class DaoMetaDataImpl implements DaoMetaData {
         String procedureName = annotationReader.getStoredProcedureName(method);
         if (procedureName != null) {
             setupProcedureMethod(method, procedureName);
+        }
+    }
+
+    protected void assertAnnotation(Method method) {
+        if (isInsert(method.getName()) || isUpdate(method.getName())) {
+            if (annotationReader.getQuery(method) != null) {
+                throw new IllegalAnnotationRuntimeException("Query");
+            }
         }
     }
 
