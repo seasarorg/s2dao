@@ -58,6 +58,10 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     protected BeanEnhancer beanEnhancer;
 
+    public static final String convertClassName_BINDING = "bindingType=may";
+
+    private boolean convertClassName = false;
+
     public BeanMetaData createBeanMetaData(final Class beanClass) {
         return createBeanMetaData(beanClass, 0);
     }
@@ -112,11 +116,13 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         }
 
         bmd.setBeanClass(originalBeanClass);
+        bmd.setConvertClassName(convertClassName);
         bmd.initialize();
         final Class enhancedBeanClass = enhancer.enhanceBeanClass(beanClass,
                 versionNoPropertyName, timestampPropertyName);
         bmd.setModifiedPropertySupport(enhancer.getSupporter());
         bmd.setBeanClass(enhancedBeanClass);
+
         return bmd;
     }
 
@@ -165,5 +171,13 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     public void setBeanEnhancer(final BeanEnhancer beanEnhancer) {
         this.beanEnhancer = beanEnhancer;
+    }
+
+    public boolean isConvertClassName() {
+        return convertClassName;
+    }
+
+    public void setConvertClassName(boolean convertClassName) {
+        this.convertClassName = convertClassName;
     }
 }

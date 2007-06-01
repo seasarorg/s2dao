@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
+	"http://www.seasar.org/dtd/components21.dtd">
+<components namespace="dao">
+	<include path="j2ee.dicon"/>
+	<component
+		class="org.seasar.dao.impl.AnnotationReaderFactoryImpl"/>
+	<component
+		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
+		<property name="sqlFileEncoding">"MS932"</property>
+	</component>
+	<component
+		name="interceptor"
+		class="org.seasar.dao.pager.PagerS2DaoInterceptorWrapper">
+		<arg>
+			<component class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
+		</arg>
+	</component>
+	<component
+		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
+	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl">
+		<property name="convertClassName">true</property>
+	</component>
+
+
+	<component class="org.seasar.dao.impl.DaoNamingConventionImpl">
+		<property name="insertPrefixes">new String[]{"generate"}</property>
+		<property name="deletePrefixes">new String[]{"destory"}</property>
+		<property name="updatePrefixes">new String[]{"change"}</property>
+	</component>
+
+	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
+</components>

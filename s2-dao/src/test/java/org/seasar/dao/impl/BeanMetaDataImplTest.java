@@ -138,6 +138,18 @@ public abstract class BeanMetaDataImplTest extends S2DaoTestCase {
         runTestEmployee(createBeanMetaData(Employee3B.class));
     }
 
+    public void testConvertClassName() throws Exception {
+        BeanMetaDataFactoryImpl factory = (BeanMetaDataFactoryImpl) getBeanMetaDataFactory();
+        factory.setConvertClassName(true);
+        BeanMetaData metaData = factory.createBeanMetaData(NoPkTable.class);
+        assertEquals("NO_PK_TABLE", metaData.getTableName());
+    }
+
+    public void tearDownConvertClassName() throws Exception {
+        BeanMetaDataFactoryImpl factory = (BeanMetaDataFactoryImpl) getBeanMetaDataFactory();
+        factory.setConvertClassName(false);
+    }
+
     private void runTestEmployee(BeanMetaData bmd) {
         assertEquals(3, bmd.getPropertyTypeSize());
         {

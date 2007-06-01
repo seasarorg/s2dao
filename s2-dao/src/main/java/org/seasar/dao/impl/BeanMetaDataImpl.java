@@ -30,6 +30,7 @@ import org.seasar.dao.IdentifierGenerator;
 import org.seasar.dao.NoPersistentPropertyTypeRuntimeException;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.id.IdentifierGeneratorFactory;
+import org.seasar.dao.util.DaoNamingConventionUtil;
 import org.seasar.extension.jdbc.ColumnNotFoundRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
@@ -80,6 +81,8 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     private int relationNestLevel;
 
     private ModifiedPropertySupport modifiedPropertySupport;
+
+    private boolean convertClassName = false;
 
     public BeanMetaDataImpl() {
     }
@@ -283,7 +286,14 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         if (ta != null) {
             tableName = ta;
         } else {
-            tableName = ClassUtil.getShortClassName(beanDesc.getBeanClass());
+            if (convertClassName) {
+                tableName = DaoNamingConventionUtil
+                        .fromEntityNameToTableName(ClassUtil
+                                .getShortClassName(beanDesc.getBeanClass()));
+            } else {
+                tableName = ClassUtil
+                        .getShortClassName(beanDesc.getBeanClass());
+            }
         }
     }
 
@@ -551,5 +561,13 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
         Set getModifiedPropertyNames(Object bean);
 
+    }
+
+    public boolean isConvertClassName() {
+        return convertClassName;
+    }
+
+    public void setConvertClassName(boolean convertClassName) {
+        this.convertClassName = convertClassName;
     }
 }

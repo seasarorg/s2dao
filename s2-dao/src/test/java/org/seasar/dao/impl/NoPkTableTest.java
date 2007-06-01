@@ -33,6 +33,9 @@ public class NoPkTableTest extends S2DaoTestCase {
 
     public void testCRUDTx() throws Exception {
         {
+            noPkTableDao.delete("AAAA");
+        }
+        {
             final NoPkTable[] beans = noPkTableDao.findAll();
             assertEquals(0, beans.length);
         }
@@ -78,9 +81,9 @@ public class NoPkTableTest extends S2DaoTestCase {
 
         int update(NoPkTable noPkTable);
 
-        String delete_SQL = "a";
+        String delete_QUERY = "AAA = ?";
 
-        int delete(NoPkTable noPkTable);
+        int delete(String aaa);
 
     }
 
