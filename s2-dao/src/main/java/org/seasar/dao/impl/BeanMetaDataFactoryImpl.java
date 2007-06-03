@@ -24,6 +24,7 @@ import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.BeanMetaDataCustomizer;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
@@ -58,9 +59,9 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     protected BeanEnhancer beanEnhancer;
 
-    public static final String convertClassName_BINDING = "bindingType=may";
+    public static final String beanMetaDataCustomizer_BINDING = "bindingType=may";
 
-    private boolean convertClassName = false;
+    protected BeanMetaDataCustomizer beanMetaDataCustomizer = new DefaultBeanMetaDataCustomizer();
 
     public BeanMetaData createBeanMetaData(final Class beanClass) {
         return createBeanMetaData(beanClass, 0);
@@ -116,7 +117,7 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         }
 
         bmd.setBeanClass(originalBeanClass);
-        bmd.setConvertClassName(convertClassName);
+        bmd.setBeanMetaDataCustomizer(beanMetaDataCustomizer);
         bmd.initialize();
         final Class enhancedBeanClass = enhancer.enhanceBeanClass(beanClass,
                 versionNoPropertyName, timestampPropertyName);
@@ -173,11 +174,13 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         this.beanEnhancer = beanEnhancer;
     }
 
-    public boolean isConvertClassName() {
-        return convertClassName;
+    public BeanMetaDataCustomizer getBeanMetaDataCustomizer() {
+        return beanMetaDataCustomizer;
     }
 
-    public void setConvertClassName(boolean convertClassName) {
-        this.convertClassName = convertClassName;
+    public void setBeanMetaDataCustomizer(
+            BeanMetaDataCustomizer tableNameConverter) {
+        this.beanMetaDataCustomizer = tableNameConverter;
     }
+
 }

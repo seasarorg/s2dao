@@ -17,9 +17,8 @@
 		name="stringClobType" 
 		class="org.seasar.extension.jdbc.types.StringClobType"
 	/>
-	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl">
-		<property name="convertClassName">false</property>
-	</component>
+	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
 	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
 	<component class="org.seasar.dao.impl.NullBeanEnhancer"/>
+	<component class="org.seasar.dao.impl.DefaultBeanMetaDataCustomizer" />
 </components>

@@ -18,10 +18,7 @@
 	</component>
 	<component
 		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
-	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl">
-		<property name="convertClassName">true</property>
-	</component>
-
+	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
 
 	<component class="org.seasar.dao.impl.DaoNamingConventionImpl">
 		<property name="insertPrefixes">new String[]{"generate"}</property>
@@ -30,4 +27,5 @@
 	</component>
 
 	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
+	<component class="org.seasar.dao.impl.DecamelizeBeanMetaDataCustomizer" />	
 </components>
