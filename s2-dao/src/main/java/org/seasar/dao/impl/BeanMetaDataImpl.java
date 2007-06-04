@@ -286,8 +286,9 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         if (ta != null) {
             tableName = ta;
         } else {
-            tableName = beanMetaDataCustomizer.fromEntityNameToTableName(ClassUtil
-                    .getShortClassName(beanDesc.getBeanClass()));
+            tableName = beanMetaDataCustomizer
+                    .fromEntityNameToTableName(ClassUtil
+                            .getShortClassName(beanDesc.getBeanClass()));
         }
     }
 
@@ -561,7 +562,8 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         return beanMetaDataCustomizer;
     }
 
-    public void setBeanMetaDataCustomizer(BeanMetaDataCustomizer beanMetaDataCustomizer) {
+    public void setBeanMetaDataCustomizer(
+            BeanMetaDataCustomizer beanMetaDataCustomizer) {
         this.beanMetaDataCustomizer = beanMetaDataCustomizer;
     }
 
