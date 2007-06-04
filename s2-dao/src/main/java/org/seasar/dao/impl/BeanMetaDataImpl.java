@@ -288,14 +288,6 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         } else {
             tableName = beanMetaDataCustomizer.fromEntityNameToTableName(ClassUtil
                     .getShortClassName(beanDesc.getBeanClass()));
-            //            if (convertClassName) {
-            //                tableName = DaoNamingConventionUtil
-            //                        .fromEntityNameToTableName(ClassUtil
-            //                                .getShortClassName(beanDesc.getBeanClass()));
-            //            } else {
-            //                tableName = ClassUtil
-            //                        .getShortClassName(beanDesc.getBeanClass());
-            //            }
         }
     }
 
@@ -569,8 +561,8 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         return beanMetaDataCustomizer;
     }
 
-    public void setBeanMetaDataCustomizer(BeanMetaDataCustomizer tableNameConverter) {
-        this.beanMetaDataCustomizer = tableNameConverter;
+    public void setBeanMetaDataCustomizer(BeanMetaDataCustomizer beanMetaDataCustomizer) {
+        this.beanMetaDataCustomizer = beanMetaDataCustomizer;
     }
 
 }
