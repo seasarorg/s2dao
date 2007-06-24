@@ -33,9 +33,6 @@ public class NoPkTableTest extends S2DaoTestCase {
 
     public void testCRUDTx() throws Exception {
         {
-            noPkTableDao.delete("AAAA");
-        }
-        {
             final NoPkTable[] beans = noPkTableDao.findAll();
             assertEquals(0, beans.length);
         }
@@ -63,6 +60,17 @@ public class NoPkTableTest extends S2DaoTestCase {
             assertEquals(1, beans.length);
             assertEquals("a2", beans[0].getAaa());
             assertEquals(1, beans[0].getBbb().intValue());
+        }
+        // delete
+        {
+            noPkTableDao.delete("hoge");
+            final NoPkTable[] beans = noPkTableDao.findAll();
+            assertEquals(1, beans.length);
+        }
+        {
+            noPkTableDao.delete("a2");
+            final NoPkTable[] beans = noPkTableDao.findAll();
+            assertEquals(0, beans.length);
         }
     }
 
