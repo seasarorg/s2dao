@@ -29,7 +29,7 @@ import org.seasar.dao.Dbms;
 import org.seasar.dao.IdentifierGenerator;
 import org.seasar.dao.NoPersistentPropertyTypeRuntimeException;
 import org.seasar.dao.RelationPropertyType;
-import org.seasar.dao.BeanMetaDataCustomizer;
+import org.seasar.dao.TableNaming;
 import org.seasar.dao.id.IdentifierGeneratorFactory;
 import org.seasar.extension.jdbc.ColumnNotFoundRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
@@ -82,7 +82,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     private ModifiedPropertySupport modifiedPropertySupport;
 
-    private BeanMetaDataCustomizer beanMetaDataCustomizer;
+    private TableNaming tableNaming;
 
     public BeanMetaDataImpl() {
     }
@@ -286,9 +286,8 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         if (ta != null) {
             tableName = ta;
         } else {
-            tableName = beanMetaDataCustomizer
-                    .fromEntityNameToTableName(ClassUtil
-                            .getShortClassName(beanDesc.getBeanClass()));
+            tableName = tableNaming.fromEntityNameToTableName(ClassUtil
+                    .getShortClassName(beanDesc.getBeanClass()));
         }
     }
 
@@ -558,13 +557,12 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     }
 
-    public BeanMetaDataCustomizer getBeanMetaDataCustomizer() {
-        return beanMetaDataCustomizer;
+    public TableNaming getTableNaming() {
+        return tableNaming;
     }
 
-    public void setBeanMetaDataCustomizer(
-            BeanMetaDataCustomizer beanMetaDataCustomizer) {
-        this.beanMetaDataCustomizer = beanMetaDataCustomizer;
+    public void setTableNaming(TableNaming tableNaming) {
+        this.tableNaming = tableNaming;
     }
 
 }

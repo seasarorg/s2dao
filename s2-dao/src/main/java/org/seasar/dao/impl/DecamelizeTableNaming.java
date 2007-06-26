@@ -15,14 +15,14 @@
  */
 package org.seasar.dao.impl;
 
-import org.seasar.dao.BeanMetaDataCustomizer;
+import org.seasar.dao.TableNaming;
 import org.seasar.dao.util.DaoNamingConventionUtil;
 
 /**
  * @author azusa
  *
  */
-public class DecamelizeBeanMetaDataCustomizer implements BeanMetaDataCustomizer {
+public class DecamelizeTableNaming implements TableNaming {
 
     public String fromEntityNameToTableName(String entityName) {
         return DaoNamingConventionUtil.fromEntityNameToTableName(entityName);

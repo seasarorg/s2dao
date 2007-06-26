@@ -141,7 +141,7 @@ public abstract class BeanMetaDataImplTest extends S2DaoTestCase {
     public void testConvertClassName() throws Exception {
         BeanMetaDataFactoryImpl factory = (BeanMetaDataFactoryImpl) getBeanMetaDataFactory();
         factory
-                .setBeanMetaDataCustomizer(new DecamelizeBeanMetaDataCustomizer());
+                .setTableNaming(new DecamelizeTableNaming());
         BeanMetaData metaData = factory.createBeanMetaData(NoPkTable.class);
         assertEquals("NO_PK_TABLE", metaData.getTableName());
     }

@@ -20,5 +20,4 @@
 	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
 	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
 	<component class="org.seasar.dao.impl.NullBeanEnhancer"/>
-	<component class="org.seasar.dao.impl.DefaultBeanMetaDataCustomizer"/>
 </components>

@@ -27,5 +27,5 @@
 	</component>
 
 	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
-	<component class="org.seasar.dao.impl.DecamelizeBeanMetaDataCustomizer" />	
+	<component class="org.seasar.dao.impl.DecamelizeTableNaming" />	
 </components>

@@ -13,18 +13,14 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.dao.impl;
-
-import org.seasar.dao.BeanMetaDataCustomizer;
+package org.seasar.dao;
 
 /**
  * @author azusa
  *
  */
-public class DefaultBeanMetaDataCustomizer implements BeanMetaDataCustomizer {
+public interface TableNaming {
 
-    public String fromEntityNameToTableName(String entityName) {
-        return entityName;
-    }
+    public String fromEntityNameToTableName(String entityName);
 
 }

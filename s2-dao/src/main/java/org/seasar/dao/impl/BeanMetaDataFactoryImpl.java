@@ -24,10 +24,10 @@ import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaData;
-import org.seasar.dao.BeanMetaDataCustomizer;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
+import org.seasar.dao.TableNaming;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
@@ -59,9 +59,9 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     protected BeanEnhancer beanEnhancer;
 
-    public static final String beanMetaDataCustomizer_BINDING = "bindingType=may";
+    public static final String tableNaming_BINDING = "bindingType=may";
 
-    protected BeanMetaDataCustomizer beanMetaDataCustomizer = new DefaultBeanMetaDataCustomizer();
+    protected TableNaming tableNaming = new DefaultTableNaming();
 
     public BeanMetaData createBeanMetaData(final Class beanClass) {
         return createBeanMetaData(beanClass, 0);
@@ -117,7 +117,7 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         }
 
         bmd.setBeanClass(originalBeanClass);
-        bmd.setBeanMetaDataCustomizer(beanMetaDataCustomizer);
+        bmd.setTableNaming(tableNaming);
         bmd.initialize();
         final Class enhancedBeanClass = enhancer.enhanceBeanClass(beanClass,
                 versionNoPropertyName, timestampPropertyName);
@@ -174,13 +174,12 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         this.beanEnhancer = beanEnhancer;
     }
 
-    public BeanMetaDataCustomizer getBeanMetaDataCustomizer() {
-        return beanMetaDataCustomizer;
+    public TableNaming getTableNaming() {
+        return tableNaming;
     }
 
-    public void setBeanMetaDataCustomizer(
-            BeanMetaDataCustomizer tableNameConverter) {
-        this.beanMetaDataCustomizer = tableNameConverter;
+    public void setTableNaming(TableNaming tableNameConverter) {
+        this.tableNaming = tableNameConverter;
     }
 
 }

@@ -27,5 +27,4 @@
 	</component>
 
 	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
-	<component class="org.seasar.dao.impl.DefaultBeanMetaDataCustomizer" />
 </components>
