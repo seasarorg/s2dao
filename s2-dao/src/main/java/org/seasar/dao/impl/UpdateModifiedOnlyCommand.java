@@ -81,7 +81,7 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
             final String keyName = bmd.getPrimaryKey(i);
             sb.append(keyName);
             sb.append("=");
-            sb.append(bmd.getPropertyType(keyName).getPropertyDesc().getValue(
+            sb.append(bmd.getPropertyTypeByColumnName(keyName).getPropertyDesc().getValue(
                     bean));
             if (i == size - 1) {
                 sb.append("}");
