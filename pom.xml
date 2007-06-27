@@ -9,7 +9,7 @@
   <artifactId>s2-dao-project</artifactId>
   <packaging>pom</packaging>
   <name>S2Dao Project</name>
-  <version>1.0.44-SNAPSHOT</version>
+  <version>1.0.44</version>
   <description></description>
   <url>http://s2dao.seasar.org/</url>
   <issueManagement>
@@ -196,12 +196,12 @@
       </plugin>
       -->
     </plugins>
-     <extensions>
-       <extension>
-         <groupId>org.apache.maven.wagon</groupId>
-         <artifactId>wagon-webdav</artifactId>
-       </extension>
-     </extensions>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+      </extension>
+    </extensions>
   </build>
   <modules>
     <module>s2-dao</module>
