@@ -51,6 +51,7 @@ public class SelectDynamicCommand extends AbstractDynamicCommand {
         BasicSelectHandler selectHandler = new BasicSelectHandler(
                 getDataSource(), ctx.getSql(), resultSetHandler,
                 getStatementFactory(), resultSetFactory);
+        injectDaoClass(selectHandler);
         /*
          * Statement#setFetchSizeをサポートしていないDBMSがあるため、
          * S2DaoからはsetFetchSizeを行わないようにする。

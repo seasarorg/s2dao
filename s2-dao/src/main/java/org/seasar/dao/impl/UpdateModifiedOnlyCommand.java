@@ -58,6 +58,7 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
 
         final UpdateAutoHandler handler = new UpdateAutoHandler(
                 getDataSource(), getStatementFactory(), bmd, propertyTypes);
+        injectDaoClass(handler);
         handler.setSql(createUpdateSql(bmd, propertyTypes));
         final int i = handler.execute(args);
         if (i < 1) {
@@ -81,8 +82,8 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
             final String keyName = bmd.getPrimaryKey(i);
             sb.append(keyName);
             sb.append("=");
-            sb.append(bmd.getPropertyTypeByColumnName(keyName).getPropertyDesc().getValue(
-                    bean));
+            sb.append(bmd.getPropertyTypeByColumnName(keyName)
+                    .getPropertyDesc().getValue(bean));
             if (i == size - 1) {
                 sb.append("}");
             }

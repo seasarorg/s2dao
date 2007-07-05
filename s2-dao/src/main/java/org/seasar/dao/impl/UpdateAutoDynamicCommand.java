@@ -56,6 +56,7 @@ public class UpdateAutoDynamicCommand extends AbstractSqlCommand implements
 
         UpdateAutoHandler handler = new UpdateAutoHandler(getDataSource(),
                 getStatementFactory(), bmd, propertyTypes);
+        injectDaoClass(handler);
         handler.setSql(createUpdateSql(bmd, propertyTypes));
         int i = handler.execute(args);
         if (i < 1) {

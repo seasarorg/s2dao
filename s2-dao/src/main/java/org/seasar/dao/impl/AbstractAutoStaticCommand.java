@@ -48,6 +48,7 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
     public Object execute(Object[] args) {
         AbstractAutoHandler handler = createAutoHandler();
         handler.setSql(getSql());
+        injectDaoClass(handler);
         int rows = handler.execute(args);
         if (rows != 1) {
             throw new NotSingleRowUpdatedRuntimeException(args[0], rows);

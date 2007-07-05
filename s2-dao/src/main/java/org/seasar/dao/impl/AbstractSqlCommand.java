@@ -17,14 +17,17 @@ package org.seasar.dao.impl;
 
 import javax.sql.DataSource;
 
+import org.seasar.dao.InjectDaoClassSupport;
 import org.seasar.dao.SqlCommand;
 import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.extension.jdbc.impl.BasicHandler;
 
 /**
  * @author higa
  * 
  */
-public abstract class AbstractSqlCommand implements SqlCommand {
+public abstract class AbstractSqlCommand implements SqlCommand,
+        InjectDaoClassSupport {
 
     private DataSource dataSource;
 
@@ -33,6 +36,8 @@ public abstract class AbstractSqlCommand implements SqlCommand {
     private String sql;
 
     private Class notSingleRowUpdatedExceptionClass;
+
+    private Class daoClass;
 
     public AbstractSqlCommand(DataSource dataSource,
             StatementFactory statementFactory) {
@@ -63,5 +68,15 @@ public abstract class AbstractSqlCommand implements SqlCommand {
     public void setNotSingleRowUpdatedExceptionClass(
             Class notSingleRowUpdatedExceptionClass) {
         this.notSingleRowUpdatedExceptionClass = notSingleRowUpdatedExceptionClass;
+    }
+
+    public void setDaoClass(Class daoClass) {
+        this.daoClass = daoClass;
+    }
+
+    protected void injectDaoClass(BasicHandler handler) {
+        if (daoClass != null) {
+            handler.setLoggerClass(daoClass);
+        }
     }
 }

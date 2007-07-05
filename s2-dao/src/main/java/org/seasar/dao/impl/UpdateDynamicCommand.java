@@ -39,6 +39,7 @@ public class UpdateDynamicCommand extends AbstractDynamicCommand {
         CommandContext ctx = apply(args);
         BasicUpdateHandler updateHandler = new BasicUpdateHandler(
                 getDataSource(), ctx.getSql(), getStatementFactory());
+        injectDaoClass(updateHandler);
         return new Integer(updateHandler.execute(ctx.getBindVariables(), ctx
                 .getBindVariableTypes()));
     }

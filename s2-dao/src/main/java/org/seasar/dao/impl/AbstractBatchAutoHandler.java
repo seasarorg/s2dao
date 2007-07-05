@@ -71,9 +71,7 @@ public abstract class AbstractBatchAutoHandler extends AbstractAutoHandler {
 
     protected void execute(PreparedStatement ps, Object bean) {
         setupBindVariables(bean);
-        if (getLogger().isDebugEnabled()) {
-            getLogger().debug(getCompleteSql(getBindVariables()));
-        }
+        logSql(getBindVariables(), getArgTypes(getBindVariables()));
         bindArgs(ps, getBindVariables(), getBindVariableValueTypes());
         PreparedStatementUtil.addBatch(ps);
     }

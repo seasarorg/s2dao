@@ -46,8 +46,6 @@ import org.seasar.framework.util.StatementUtil;
 public abstract class AbstractAutoHandler extends BasicHandler implements
         UpdateHandler {
 
-    private static Logger logger = Logger.getLogger(AbstractAutoHandler.class);
-
     private BeanMetaData beanMetaData;
 
     private Object[] bindVariables;
@@ -74,8 +72,8 @@ public abstract class AbstractAutoHandler extends BasicHandler implements
         return beanMetaData;
     }
 
-    protected static Logger getLogger() {
-        return logger;
+    protected Logger getLogger() {
+        return Logger.getLogger(loggerClass);
     }
 
     protected Object[] getBindVariables() {
@@ -135,9 +133,7 @@ public abstract class AbstractAutoHandler extends BasicHandler implements
     protected int execute(Connection connection, Object bean) {
         preUpdateBean(bean);
         setupBindVariables(bean);
-        if (logger.isDebugEnabled()) {
-            logger.debug(getCompleteSql(bindVariables));
-        }
+        logSql(bindVariables, getArgTypes(bindVariables));
         PreparedStatement ps = prepareStatement(connection);
         int ret = -1;
         try {

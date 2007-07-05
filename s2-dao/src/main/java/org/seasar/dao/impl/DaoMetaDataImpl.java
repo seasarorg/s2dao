@@ -43,6 +43,7 @@ import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.IllegalAnnotationRuntimeException;
 import org.seasar.dao.IllegalSignatureRuntimeException;
+import org.seasar.dao.InjectDaoClassSupport;
 import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
@@ -130,6 +131,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected ResultSetHandlerFactory resultSetHandlerFactory;
 
     protected DaoNamingConvention daoNamingConvention;
+
+    protected boolean useDaoClassForLog = false;
 
     public DaoMetaDataImpl() {
     }
@@ -885,6 +888,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
         if (cmd == null) {
             throw new MethodNotFoundRuntimeException(daoClass, methodName, null);
         }
+        if (useDaoClassForLog) {
+            if (cmd instanceof InjectDaoClassSupport) {
+                ((InjectDaoClassSupport) cmd).setDaoClass(daoClass);
+            }
+        }
         return cmd;
     }
 
@@ -1128,6 +1136,14 @@ public class DaoMetaDataImpl implements DaoMetaData {
                     || clazz.isAssignableFrom(beanClass);
         }
 
+    }
+
+    public boolean isUseDaoClassForLog() {
+        return useDaoClassForLog;
+    }
+
+    public void setUseDaoClassForLog(boolean setUserDaoClassForLog) {
+        this.useDaoClassForLog = setUserDaoClassForLog;
     }
 
 }
