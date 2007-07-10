@@ -34,6 +34,7 @@ import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.jdbc.types.ValueTypes;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
+import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.exception.EmptyRuntimeException;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
@@ -262,10 +263,15 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
         ResultSet rs = null;
         try {
             final DatabaseMetaData dmd = ConnectionUtil.getMetaData(con);
-            rs = getDbms().getProcedures(dmd, procedureName);
+            rs = getDbms().getProcedures(dmd,
+                    DatabaseMetaDataUtil.convertIdentifier(dmd, procedureName));
             if (rs == null || !rs.next()) {
-                throw new SRuntimeException("EDAO0012",
-                        new Object[] { procedureName });
+                rs.close();
+                rs = getDbms().getProcedures(dmd, procedureName);
+                if (rs == null || !rs.next()) {
+                    throw new SRuntimeException("EDAO0012",
+                            new Object[] { procedureName });
+                }
             }
             final ProcedureMetaData procedureMetaData = new ProcedureMetaData();
             procedureMetaData.setProcedureCat(rs.getString(1));

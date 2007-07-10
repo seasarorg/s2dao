@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.RelationPropertyType;
-import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
 import org.seasar.framework.util.Disposable;
@@ -136,8 +135,7 @@ public class Standard implements Dbms, Disposable {
 
     public ResultSet getProcedures(final DatabaseMetaData databaseMetaData,
             final String procedureName) {
-        final String[] names = DatabaseMetaDataUtil.convertIdentifier(
-                databaseMetaData, procedureName).split("\\.");
+        final String[] names = procedureName.split("\\.");
         final int namesLength = names.length;
         try {
             ResultSet rs = null;
