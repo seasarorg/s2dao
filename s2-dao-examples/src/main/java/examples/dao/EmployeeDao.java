@@ -23,6 +23,8 @@ public interface EmployeeDao {
 
     public List getAllEmployees();
 
+    public List getEmps(EmployeeSearchCondition dto);
+
     public String getEmployee_ARGS = "empno";
 
     public Employee getEmployee(int empno);
