@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2006 the Seasar Foundation and the Others.
+ * Copyright 2004-2007 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,20 @@ import javax.sql.DataSource;
 import org.seasar.extension.jdbc.ResultSetFactory;
 
 /**
- * @author yamamoto
- * @author agata
+ * @author jundu
+ *
  */
-public class PagerResultSetFactoryLimitOffsetWrapper extends
-        AbstractPagerResultSetFactory implements ResultSetFactory {
+public class PagerResultSetFactoryRownumWrapper extends
+        AbstractPagerResultSetFactory {
 
     /**
      * コンストラクタ(test only)
      * 
      * @param resultSetFactory
      *            オリジナルのResultSetFactory
+     * @param productName RDBMSを表す文字列
      */
-    PagerResultSetFactoryLimitOffsetWrapper(ResultSetFactory resultSetFactory,
+    PagerResultSetFactoryRownumWrapper(ResultSetFactory resultSetFactory,
             String productName) {
         super(resultSetFactory, productName);
     }
@@ -42,26 +43,25 @@ public class PagerResultSetFactoryLimitOffsetWrapper extends
      * 
      * @param resultSetFactory
      *            オリジナルのResultSetFactory
+     * @param dataSource 接続対象のデータソース
      */
-    public PagerResultSetFactoryLimitOffsetWrapper(
+    public PagerResultSetFactoryRownumWrapper(
             ResultSetFactory resultSetFactory, DataSource dataSource) {
         super(resultSetFactory, dataSource);
     }
 
-    /**
-     * limit offsetを付加したSQLを作成します。
-     * 
-     * @param baseSQL
-     * @param limit
-     * @param offset
-     * @return
-     */
     String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
+        if (offset < 0) {
+            throw new IllegalArgumentException("offset is must ");
+        }
         StringBuffer sqlBuf = new StringBuffer(baseSQL);
-        sqlBuf.append(" LIMIT ");
-        sqlBuf.append(limit);
-        sqlBuf.append(" OFFSET ");
-        sqlBuf.append(offset);
+        sqlBuf
+                .insert(0,
+                        "SELECT * FROM (SELECT ROWNUM AS S2DAO_ROWNUMBER, S2DAO_ORIGINAL_DATA.* FROM (");
+        sqlBuf.append(") S2DAO_ORIGINAL_DATA) WHERE S2DAO_ROWNUMBER BETWEEN ");
+        sqlBuf.append(offset + 1);
+        sqlBuf.append(" AND ");
+        sqlBuf.append(offset + limit);
         return sqlBuf.toString();
     }
 
@@ -72,7 +72,8 @@ public class PagerResultSetFactoryLimitOffsetWrapper extends
         } else {
             sqlBuf.append(baseSQL);
         }
-        sqlBuf.append(") AS total");
+        sqlBuf.append(")");
         return sqlBuf.toString();
     }
+
 }
