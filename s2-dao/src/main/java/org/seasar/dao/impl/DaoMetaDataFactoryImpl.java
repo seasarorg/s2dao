@@ -94,18 +94,28 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         this.sqlFileEncoding = encoding;
     }
 
-    public synchronized DaoMetaData getDaoMetaData(Class daoClass) {
+    public DaoMetaData getDaoMetaData(Class daoClass) {
         if (!initialized) {
             DisposableUtil.add(this);
             initialized = true;
         }
         String key = daoClass.getName();
-        DaoMetaData dmd = (DaoMetaData) daoMetaDataCache.get(key);
+        DaoMetaData dmd;
+        synchronized (daoMetaDataCache) {
+            dmd = (DaoMetaData) daoMetaDataCache.get(key);
+        }
         if (dmd != null) {
             return dmd;
         }
         DaoMetaData dmdi = createDaoMetaData(daoClass);
-        daoMetaDataCache.put(key, dmdi);
+        synchronized (daoMetaDataCache) {
+            dmd = (DaoMetaData) daoMetaDataCache.get(daoClass);
+            if (dmd != null) {
+                return dmd;
+            } else {
+                daoMetaDataCache.put(key, dmdi);
+            }
+        }
         return dmdi;
     }
 
