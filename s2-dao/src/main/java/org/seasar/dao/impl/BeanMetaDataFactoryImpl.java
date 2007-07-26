@@ -81,15 +81,16 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         }
     }
 
-    protected BeanMetaData createBeanMetaData(
-            final DatabaseMetaData dbMetaData, final Class beanClass,
-            final int relationNestLevel) {
-
+    public BeanMetaData createBeanMetaData(final DatabaseMetaData dbMetaData,
+            final Class beanClass, final int relationNestLevel) {
+        if (beanClass == null) {
+            throw new NullPointerException("beanClass");
+        }
         final BeanMetaDataImpl bmd = createBeanMetaDataImpl();
         final BeanEnhancer enhancer = getBeanEnhancer();
         final Class originalBeanClass = enhancer.getOriginalClass(beanClass);
         bmd.setDatabaseMetaData(dbMetaData);
-        final Dbms dbms = getDbms();
+        final Dbms dbms = getDbms(dbMetaData);
         bmd.setDbms(dbms);
         final BeanAnnotationReader bar = annotationReaderFactory
                 .createBeanAnnotationReader(originalBeanClass);
@@ -129,6 +130,10 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     protected Dbms getDbms() {
         return DbmsManager.getDbms(dataSource);
+    }
+
+    protected Dbms getDbms(DatabaseMetaData dbMetaData) {
+        return DbmsManager.getDbms(dbMetaData);
     }
 
     protected BeanMetaDataImpl createBeanMetaDataImpl() {

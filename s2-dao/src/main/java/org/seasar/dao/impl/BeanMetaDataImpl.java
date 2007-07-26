@@ -431,8 +431,8 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     protected BeanMetaData createRelationBeanMetaData(
             final Class relationBeanClass) {
-        return beanMetaDataFactory.createBeanMetaData(relationBeanClass,
-                relationNestLevel + 1);
+        return beanMetaDataFactory.createBeanMetaData(databaseMetaData,
+                relationBeanClass, relationNestLevel + 1);
     }
 
     protected void addRelationPropertyType(RelationPropertyType rpt) {
