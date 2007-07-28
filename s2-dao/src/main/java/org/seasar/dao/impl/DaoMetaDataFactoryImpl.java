@@ -74,7 +74,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected boolean initialized;
 
-    protected boolean userDaoClassForLog = false;
+    protected boolean useDaoClassForLog = false;
 
     public DaoMetaDataFactoryImpl() {
     }
@@ -129,7 +129,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         daoMetaData.setValueTypeFactory(valueTypeFactory);
         daoMetaData.setBeanMetaDataFactory(getBeanMetaDataFactory());
         daoMetaData.setDaoNamingConvention(getDaoNamingConvention());
-        daoMetaData.setUseDaoClassForLog(userDaoClassForLog);
+        daoMetaData.setUseDaoClassForLog(useDaoClassForLog);
         if (sqlFileEncoding != null) {
             daoMetaData.setSqlFileEncoding(sqlFileEncoding);
         }
@@ -183,8 +183,8 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         this.statementFactory = statementFactory;
     }
 
-    public void setUserDaoClassForLog(boolean userDaoClassForLog) {
-        this.userDaoClassForLog = userDaoClassForLog;
+    public void setUseDaoClassForLog(boolean userDaoClassForLog) {
+        this.useDaoClassForLog = userDaoClassForLog;
     }
 
 }

@@ -8,7 +8,7 @@
 	</component>
 	<component class="org.seasar.dao.impl.AnnotationReaderFactoryImpl"/>
 	<component class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
-		<property name="userDaoClassForLog">true</property>
+		<property name="useDaoClassForLog">true</property>
 	</component>
 	<component
 		name="interceptor"
