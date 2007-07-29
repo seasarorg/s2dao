@@ -4,7 +4,9 @@ S2Dao 変更履歴
 -------------------------------------------------------------------------------
 OracleのROWNUM疑似列を使ったPager実装を追加しました。[DAO-105]
 Dao初期化時にConnectionPoolから全てのConnectionが貸し出されているとロックされてしまう問題に対応しました。[DAO-33]
-
+プロシージャー取得時に、DatabaseMetaDataUtil#convertIdentifierを経由したプロシジャー名でプロシジャーを取得できない場合は、convertIdentifierを通さないで再度取得するようにしました。[DAO-104]
+DaoMetaDataFactoryImplのuseDaoClassForLogプロパティがtrueの場合は、Daoのクラスを引数にとってログ出力するようにしました。[DAO-66]
+SQL実行時のログは、Handlerの中で直接出力していましたが、S2JDBCのBasicHandler#logSql経由で出力するように変更しました。[DAO-102]
 
 1.0.44
 -------------------------------------------------------------------------------
