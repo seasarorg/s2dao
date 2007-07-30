@@ -62,6 +62,9 @@ public class PagerResultSetFactoryRownumWrapper extends
         sqlBuf.append(offset + 1);
         sqlBuf.append(" AND ");
         sqlBuf.append(offset + limit);
+        sqlBuf.append(" AND ROWNUM <= ");
+        sqlBuf.append(limit);
+        sqlBuf.append(" ORDER BY S2DAO_ROWNUMBER");
         return sqlBuf.toString();
     }
 
