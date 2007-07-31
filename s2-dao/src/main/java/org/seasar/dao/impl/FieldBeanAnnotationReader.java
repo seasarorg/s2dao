@@ -47,8 +47,8 @@ public class FieldBeanAnnotationReader implements BeanAnnotationReader {
 
     private BeanDesc beanDesc;
 
-    public FieldBeanAnnotationReader(Class beanClass_) {
-        this.beanDesc = BeanDescFactory.getBeanDesc(beanClass_);
+    public FieldBeanAnnotationReader(Class beanClass) {
+        this.beanDesc = BeanDescFactory.getBeanDesc(beanClass);
     }
 
     public String getColumnAnnotation(PropertyDesc pd) {
