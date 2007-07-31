@@ -1,7 +1,8 @@
 S2Dao 変更履歴
 
-1.0.45-SNAPSHOT
+1.0.45
 -------------------------------------------------------------------------------
+Dao の初期化と Connection の取得との間でデッドロックが発生する問題を解消しました。[DAO-33]
 OracleのROWNUM疑似列を使ったPager実装を追加しました。[DAO-105]
 Dao初期化時にConnectionPoolから全てのConnectionが貸し出されているとロックされてしまう問題に対応しました。[DAO-33]
 プロシージャー取得時に、DatabaseMetaDataUtil#convertIdentifierを経由したプロシジャー名でプロシジャーを取得できない場合は、convertIdentifierを通さないで再度取得するようにしました。[DAO-104]
