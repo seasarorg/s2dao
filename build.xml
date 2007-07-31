@@ -1,5 +1,5 @@
 <project name="s2dao" default="dist" basedir=".">
-	<property name="ver" value="1.0.45"/>
+	<property name="ver" value="46-SNAPSHOT"/>
 
 	<target name="fix-site">
 		<mkdir dir="target/site/en"/>
