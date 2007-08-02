@@ -86,6 +86,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
     private static final Pattern startWithSelectPattern = Pattern.compile(
             "^\\s*select\\s", Pattern.CASE_INSENSITIVE);
 
+    private static final Pattern beginCommentPattern = Pattern.compile(
+            "/\\*BEGIN\\*/\\s*WHERE", Pattern.CASE_INSENSITIVE);
+
     private static final Pattern startWithBeginCommentPattern = Pattern
             .compile("/\\*BEGIN\\*/\\s*WHERE .+", Pattern.CASE_INSENSITIVE);
 
@@ -367,12 +370,18 @@ public class DaoMetaDataImpl implements DaoMetaData {
             String sql = dbms.getAutoSelectSql(getBeanMetaData());
             buf.append(sql);
             if (query != null) {
+                String adjustedQuery = query;
                 boolean began = false;
+                boolean whereContained = sql.lastIndexOf("WHERE") > 0;
                 if (startsWithOrderBy(query)) {
                     buf.append(" ");
                 } else if (startsWithBeginComment(query)) {
                     buf.append(" ");
-                } else if (sql.lastIndexOf("WHERE") < 0) {
+                    if (whereContained) {
+                        Matcher matcher = beginCommentPattern.matcher(query);
+                        adjustedQuery = matcher.replaceFirst("/*BEGIN*/AND");
+                    }
+                } else if (!whereContained) {
                     if (startsWithIfComment(query)) {
                         buf.append("/*BEGIN*/");
                         began = true;
@@ -385,7 +394,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
                     }
                     buf.append(" AND ");
                 }
-                buf.append(query);
+                buf.append(adjustedQuery);
                 if (began) {
                     buf.append("/*END*/");
                 }
