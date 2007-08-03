@@ -21,7 +21,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.seasar.dao.AnnotationReaderFactory;
-import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaData;
@@ -102,6 +101,11 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
             factory.setValueTypeFactory(valueTypeFactory);
             dtoMetaDataFactory = factory;
         }
+        if (resultSetHandlerFactory == null) {
+            final ResultSetHandlerFactoryImpl factory = new ResultSetHandlerFactoryImpl();
+            factory.setDtoMetaDataFactory(dtoMetaDataFactory);
+            resultSetHandlerFactory = factory;
+        }
     }
 
     public DaoMetaDataFactoryImpl(final DataSource dataSource,
@@ -148,9 +152,6 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         final BeanDesc daoBeanDesc = BeanDescFactory.getBeanDesc(daoClass);
         final DaoAnnotationReader daoAnnotationReader = annotationReaderFactory
                 .createDaoAnnotationReader(daoBeanDesc);
-        final Class beanClass = daoAnnotationReader.getBeanClass();
-        final BeanMetaData beanMetaData = beanMetaDataFactory
-                .createBeanMetaData(beanClass);
 
         final DaoMetaDataImpl daoMetaData = createDaoMetaDataImpl();
         daoMetaData.setDaoClass(daoClass);
@@ -161,16 +162,9 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         daoMetaData.setBeanMetaDataFactory(getBeanMetaDataFactory());
         daoMetaData.setDaoNamingConvention(getDaoNamingConvention());
         daoMetaData.setUseDaoClassForLog(useDaoClassForLog);
-        daoMetaData.setBeanClass(beanClass);
         daoMetaData.setDaoAnnotationReader(daoAnnotationReader);
         daoMetaData.setDtoMetaDataFactory(dtoMetaDataFactory);
-        if (resultSetHandlerFactory == null) {
-            final ResultSetHandlerFactoryImpl factory = new ResultSetHandlerFactoryImpl(
-                    beanMetaData, daoAnnotationReader, dtoMetaDataFactory);
-            daoMetaData.setResultSetHandlerFactory(factory);
-        } else {
-            daoMetaData.setResultSetHandlerFactory(resultSetHandlerFactory);
-        }
+        daoMetaData.setResultSetHandlerFactory(resultSetHandlerFactory);
         if (sqlFileEncoding != null) {
             daoMetaData.setSqlFileEncoding(sqlFileEncoding);
         }

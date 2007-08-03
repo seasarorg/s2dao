@@ -19,25 +19,28 @@ import org.seasar.framework.beans.MethodNotFoundRuntimeException;
 
 /**
  * @author higa
+ * @author manhole
  * 
  */
 public interface DaoMetaData {
 
-    public Class getBeanClass();
+    Class getBeanClass();
 
-    public BeanMetaData getBeanMetaData();
+    BeanMetaData getBeanMetaData();
 
-    public boolean hasSqlCommand(String methodName);
+    DaoAnnotationReader getDaoAnnotationReader();
 
-    public SqlCommand getSqlCommand(String methodName)
+    boolean hasSqlCommand(String methodName);
+
+    SqlCommand getSqlCommand(String methodName)
             throws MethodNotFoundRuntimeException;
 
-    public SqlCommand createFindCommand(String query);
+    SqlCommand createFindCommand(String query);
 
-    public SqlCommand createFindArrayCommand(String query);
+    SqlCommand createFindArrayCommand(String query);
 
-    public SqlCommand createFindBeanCommand(String query);
+    SqlCommand createFindBeanCommand(String query);
 
-    public SqlCommand createFindObjectCommand(String query);
+    SqlCommand createFindObjectCommand(String query);
 
 }

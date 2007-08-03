@@ -120,8 +120,6 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected BeanMetaDataFactory beanMetaDataFactory;
 
-    public static final String dtoMetaDataFactory_BINDING = "bindingType=may";
-
     protected DtoMetaDataFactory dtoMetaDataFactory;
 
     protected ResultSetHandlerFactory resultSetHandlerFactory;
@@ -134,7 +132,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     public void initialize() {
-        Class daoClass = getDaoClass();
+        beanClass = daoAnnotationReader.getBeanClass();
         daoInterface = getDaoInterface(daoClass);
         daoBeanDesc = BeanDescFactory.getBeanDesc(daoClass);
         final Connection con = DataSourceUtil.getConnection(dataSource);
@@ -222,6 +220,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         handler.setDataSource(dataSource);
         handler.setDbms(dbms);
         handler.setDaoMethod(method);
+        handler.setDaoMetaData(this);
         handler.setProcedureName(procedureName);
         handler.setResultSetHandlerFactory(resultSetHandlerFactory);
         handler.setStatementFactory(statementFactory);
@@ -418,7 +417,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected ResultSetHandler createResultSetHandler(Method method) {
-        return resultSetHandlerFactory.createResultSetHandler(method);
+        return resultSetHandlerFactory.getResultSetHandler(this, method);
     }
 
     protected boolean isBeanClassAssignable(Class clazz) {
@@ -849,7 +848,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return beanClass;
     }
 
-    public void setBeanClass(final Class beanClass) {
+    protected void setBeanClass(final Class beanClass) {
         this.beanClass = beanClass;
     }
 
@@ -1012,6 +1011,10 @@ public class DaoMetaDataImpl implements DaoMetaData {
     public void setResultSetHandlerFactory(
             ResultSetHandlerFactory resultSetHandlerFactory) {
         this.resultSetHandlerFactory = resultSetHandlerFactory;
+    }
+
+    public DaoAnnotationReader getDaoAnnotationReader() {
+        return daoAnnotationReader;
     }
 
     public void setDaoAnnotationReader(

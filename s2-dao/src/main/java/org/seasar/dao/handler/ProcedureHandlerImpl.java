@@ -23,7 +23,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.ResultSetHandlerFactory;
+import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
 import org.seasar.framework.util.ResultSetUtil;
@@ -35,6 +37,8 @@ import org.seasar.framework.util.StatementUtil;
 public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
 
     private Method daoMethod;
+
+    private DaoMetaData daoMetaData;
 
     private ResultSetHandlerFactory resultSetHandlerFactory;
 
@@ -68,8 +72,9 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
             if (rs == null) {
                 throw new IllegalStateException("JDBC Driver's BUG");
             }
-            return resultSetHandlerFactory.createResultSetHandler(daoMethod)
-                    .handle(rs);
+            final ResultSetHandler resultSetHandler = resultSetHandlerFactory
+                    .getResultSetHandler(daoMetaData, daoMethod);
+            return resultSetHandler.handle(rs);
         } finally {
             ResultSetUtil.close(rs);
         }
@@ -106,6 +111,10 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
     public void setResultSetHandlerFactory(
             ResultSetHandlerFactory resultSetHandlerFactory) {
         this.resultSetHandlerFactory = resultSetHandlerFactory;
+    }
+
+    public void setDaoMetaData(final DaoMetaData daoMetaData) {
+        this.daoMetaData = daoMetaData;
     }
 
 }

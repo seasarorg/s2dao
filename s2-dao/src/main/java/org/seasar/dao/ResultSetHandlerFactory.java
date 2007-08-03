@@ -24,6 +24,7 @@ import org.seasar.extension.jdbc.ResultSetHandler;
  */
 public interface ResultSetHandlerFactory {
 
-    ResultSetHandler createResultSetHandler(final Method daoMethod);
+    ResultSetHandler getResultSetHandler(DaoMetaData daoMetaData,
+            Method daoMethod);
 
 }

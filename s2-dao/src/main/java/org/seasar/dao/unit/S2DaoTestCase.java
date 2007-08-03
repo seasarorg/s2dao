@@ -121,9 +121,7 @@ public abstract class S2DaoTestCase extends S2TestCase {
         final BeanDesc daoBeanDesc = BeanDescFactory.getBeanDesc(daoClass);
         final DaoAnnotationReader daoAnnotationReader = getAnnotationReaderFactory()
                 .createDaoAnnotationReader(daoBeanDesc);
-        final Class beanClass = daoAnnotationReader.getBeanClass();
         final BeanMetaDataFactory bmdf = getBeanMetaDataFactory();
-        final BeanMetaData beanMetaData = bmdf.createBeanMetaData(beanClass);
         final DtoMetaDataFactory dmdf = getDtoMetaDataFactory();
 
         dmd.setDaoClass(daoClass);
@@ -133,16 +131,9 @@ public abstract class S2DaoTestCase extends S2TestCase {
         dmd.setValueTypeFactory(getValueTypeFactory());
         dmd.setBeanMetaDataFactory(bmdf);
         dmd.setDaoNamingConvention(getDaoNamingConvention());
-        dmd.setBeanClass(beanClass);
         dmd.setDaoAnnotationReader(daoAnnotationReader);
         dmd.setDtoMetaDataFactory(dmdf);
-        if (resultSetHandlerFactory == null) {
-            final ResultSetHandlerFactoryImpl factory = new ResultSetHandlerFactoryImpl(
-                    beanMetaData, daoAnnotationReader, dmdf);
-            dmd.setResultSetHandlerFactory(factory);
-        } else {
-            dmd.setResultSetHandlerFactory(resultSetHandlerFactory);
-        }
+        dmd.setResultSetHandlerFactory(getResultSetHandlerFactory());
         dmd.initialize();
         return dmd;
     }
@@ -227,6 +218,11 @@ public abstract class S2DaoTestCase extends S2TestCase {
     }
 
     protected ResultSetHandlerFactory getResultSetHandlerFactory() {
+        if (resultSetHandlerFactory == null) {
+            final ResultSetHandlerFactoryImpl factory = new ResultSetHandlerFactoryImpl();
+            factory.setDtoMetaDataFactory(getDtoMetaDataFactory());
+            resultSetHandlerFactory = factory;
+        }
         return resultSetHandlerFactory;
     }
 

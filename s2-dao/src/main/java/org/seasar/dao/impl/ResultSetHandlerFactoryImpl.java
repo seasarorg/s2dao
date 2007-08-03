@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.DaoAnnotationReader;
+import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.RelationRowCreator;
@@ -36,21 +37,16 @@ import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
  */
 public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
 
-    private final BeanMetaData beanMetaData;
+    public static final String dtoMetaDataFactory_BINDING = "bindingType=must";
 
-    private final DaoAnnotationReader daoAnnotationReader;
+    private DtoMetaDataFactory dtoMetaDataFactory;
 
-    private final DtoMetaDataFactory dtoMetaDataFactory;
+    public ResultSetHandler getResultSetHandler(final DaoMetaData daoMetaData,
+            final Method method) {
 
-    public ResultSetHandlerFactoryImpl(final BeanMetaData beanMetaData,
-            final DaoAnnotationReader daoAnnotationReader,
-            final DtoMetaDataFactory dtoMetaDataFactory) {
-        this.beanMetaData = beanMetaData;
-        this.daoAnnotationReader = daoAnnotationReader;
-        this.dtoMetaDataFactory = dtoMetaDataFactory;
-    }
-
-    public ResultSetHandler createResultSetHandler(final Method method) {
+        final BeanMetaData beanMetaData = daoMetaData.getBeanMetaData();
+        final DaoAnnotationReader daoAnnotationReader = daoMetaData
+                .getDaoAnnotationReader();
         final Class beanClass = daoAnnotationReader.getBeanClass();
         final Class clazz = daoAnnotationReader.getBeanClass(method);
         if ((clazz != null) && !clazz.isAssignableFrom(beanClass)) {
@@ -74,12 +70,12 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
             }
         } else {
             if (List.class.isAssignableFrom(method.getReturnType())) {
-                return createBeanListMetaDataResultSetHandler();
+                return createBeanListMetaDataResultSetHandler(beanMetaData);
             } else if (isBeanClassAssignable(beanClass, method.getReturnType())) {
-                return createBeanMetaDataResultSetHandler();
+                return createBeanMetaDataResultSetHandler(beanMetaData);
             } else if (method.getReturnType().isAssignableFrom(
                     Array.newInstance(beanClass, 0).getClass())) {
-                return createBeanArrayMetaDataResultSetHandler();
+                return createBeanArrayMetaDataResultSetHandler(beanMetaData);
             }
         }
         return createObjectResultSetHandler();
@@ -112,17 +108,20 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
         return new MapArrayResultSetHandler();
     }
 
-    protected ResultSetHandler createBeanListMetaDataResultSetHandler() {
+    protected ResultSetHandler createBeanListMetaDataResultSetHandler(
+            final BeanMetaData beanMetaData) {
         return new BeanListMetaDataResultSetHandler(beanMetaData,
                 createRelationRowCreator());
     }
 
-    protected ResultSetHandler createBeanMetaDataResultSetHandler() {
+    protected ResultSetHandler createBeanMetaDataResultSetHandler(
+            final BeanMetaData beanMetaData) {
         return new BeanMetaDataResultSetHandler(beanMetaData,
                 createRelationRowCreator());
     }
 
-    protected ResultSetHandler createBeanArrayMetaDataResultSetHandler() {
+    protected ResultSetHandler createBeanArrayMetaDataResultSetHandler(
+            final BeanMetaData beanMetaData) {
         return new BeanArrayMetaDataResultSetHandler(beanMetaData,
                 createRelationRowCreator());
     }
@@ -139,6 +138,11 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
             final Class clazz) {
         return beanClass.isAssignableFrom(clazz)
                 || clazz.isAssignableFrom(beanClass);
+    }
+
+    public void setDtoMetaDataFactory(
+            final DtoMetaDataFactory dtoMetaDataFactory) {
+        this.dtoMetaDataFactory = dtoMetaDataFactory;
     }
 
 }
