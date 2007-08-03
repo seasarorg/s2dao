@@ -22,22 +22,29 @@ import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
+import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
+import org.seasar.dao.DtoMetaDataFactory;
+import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.dao.impl.BeanEnhancerImpl;
 import org.seasar.dao.impl.BeanMetaDataFactoryImpl;
 import org.seasar.dao.impl.DaoMetaDataImpl;
 import org.seasar.dao.impl.DaoNamingConventionImpl;
+import org.seasar.dao.impl.DtoMetaDataFactoryImpl;
 import org.seasar.dao.impl.DtoMetaDataImpl;
 import org.seasar.dao.impl.FieldAnnotationReaderFactory;
+import org.seasar.dao.impl.ResultSetHandlerFactoryImpl;
 import org.seasar.dao.impl.ValueTypeFactoryImpl;
 import org.seasar.dao.pager.PagerContext;
 import org.seasar.extension.dataset.DataSet;
 import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.unit.S2TestCase;
+import org.seasar.framework.beans.BeanDesc;
+import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
  * @author higa
@@ -57,6 +64,10 @@ public abstract class S2DaoTestCase extends S2TestCase {
     private Dbms dbms;
 
     private BeanEnhancer beanEnhancer;
+
+    private ResultSetHandlerFactory resultSetHandlerFactory;
+
+    private DtoMetaDataFactory dtoMetaDataFactory;
 
     public S2DaoTestCase() {
     }
@@ -107,14 +118,31 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     protected DaoMetaDataImpl createDaoMetaData(final Class daoClass) {
         final DaoMetaDataImpl dmd = new DaoMetaDataImpl();
+        final BeanDesc daoBeanDesc = BeanDescFactory.getBeanDesc(daoClass);
+        final DaoAnnotationReader daoAnnotationReader = getAnnotationReaderFactory()
+                .createDaoAnnotationReader(daoBeanDesc);
+        final Class beanClass = daoAnnotationReader.getBeanClass();
+        final BeanMetaDataFactory bmdf = getBeanMetaDataFactory();
+        final BeanMetaData beanMetaData = bmdf.createBeanMetaData(beanClass);
+        final DtoMetaDataFactory dmdf = getDtoMetaDataFactory();
+
         dmd.setDaoClass(daoClass);
         dmd.setDataSource(getDataSource());
         dmd.setStatementFactory(BasicStatementFactory.INSTANCE);
         dmd.setResultSetFactory(BasicResultSetFactory.INSTANCE);
-        dmd.setAnnotationReaderFactory(getAnnotationReaderFactory());
         dmd.setValueTypeFactory(getValueTypeFactory());
-        dmd.setBeanMetaDataFactory(getBeanMetaDataFactory());
+        dmd.setBeanMetaDataFactory(bmdf);
         dmd.setDaoNamingConvention(getDaoNamingConvention());
+        dmd.setBeanClass(beanClass);
+        dmd.setDaoAnnotationReader(daoAnnotationReader);
+        dmd.setDtoMetaDataFactory(dmdf);
+        if (resultSetHandlerFactory == null) {
+            final ResultSetHandlerFactoryImpl factory = new ResultSetHandlerFactoryImpl(
+                    beanMetaData, daoAnnotationReader, dmdf);
+            dmd.setResultSetHandlerFactory(factory);
+        } else {
+            dmd.setResultSetHandlerFactory(resultSetHandlerFactory);
+        }
         dmd.initialize();
         return dmd;
     }
@@ -196,6 +224,29 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     protected void setBeanEnhancer(final BeanEnhancer beanEnhancer) {
         this.beanEnhancer = beanEnhancer;
+    }
+
+    protected ResultSetHandlerFactory getResultSetHandlerFactory() {
+        return resultSetHandlerFactory;
+    }
+
+    protected void setResultSetHandlerFactory(
+            ResultSetHandlerFactory resultSetHandlerFactory) {
+        this.resultSetHandlerFactory = resultSetHandlerFactory;
+    }
+
+    protected DtoMetaDataFactory getDtoMetaDataFactory() {
+        if (dtoMetaDataFactory == null) {
+            final DtoMetaDataFactoryImpl factory = new DtoMetaDataFactoryImpl();
+            factory.setAnnotationReaderFactory(annotationReaderFactory);
+            factory.setValueTypeFactory(valueTypeFactory);
+            dtoMetaDataFactory = factory;
+        }
+        return dtoMetaDataFactory;
+    }
+
+    protected void setDtoMetaDataFactory(DtoMetaDataFactory dtoMetaDataFactory) {
+        this.dtoMetaDataFactory = dtoMetaDataFactory;
     }
 
 }

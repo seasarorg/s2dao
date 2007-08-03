@@ -21,13 +21,19 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.seasar.dao.AnnotationReaderFactory;
+import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
+import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoMetaDataFactory;
 import org.seasar.dao.DaoNamingConvention;
+import org.seasar.dao.DtoMetaDataFactory;
+import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.framework.beans.BeanDesc;
+import org.seasar.framework.beans.factory.BeanDescFactory;
 import org.seasar.framework.util.Disposable;
 import org.seasar.framework.util.DisposableUtil;
 
@@ -37,6 +43,8 @@ import org.seasar.framework.util.DisposableUtil;
  * @author jflute
  */
 public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
+
+    public static final String INIT_METHOD = "initialize";
 
     public static final String daoMetaDataCache_BINDING = "bindingType=must";
 
@@ -53,6 +61,10 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
     public static final String beanMetaDataFactory_BINDING = "bindingType=must";
 
     public static final String daoNamingConvention_BINDING = "bindingType=must";
+
+    public static final String resultSetHandlerFactory_BINDING = "bindingType=may";
+
+    public static final String dtoMetaDataFactory_BINDING = "bindingType=may";
 
     protected Map daoMetaDataCache = new HashMap();
 
@@ -76,30 +88,43 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected boolean useDaoClassForLog = false;
 
+    protected ResultSetHandlerFactory resultSetHandlerFactory;
+
+    protected DtoMetaDataFactory dtoMetaDataFactory;
+
     public DaoMetaDataFactoryImpl() {
     }
 
-    public DaoMetaDataFactoryImpl(DataSource dataSource,
-            StatementFactory statementFactory,
-            ResultSetFactory resultSetFactory,
-            AnnotationReaderFactory readerFactory) {
+    public void initialize() {
+        if (dtoMetaDataFactory == null) {
+            final DtoMetaDataFactoryImpl factory = new DtoMetaDataFactoryImpl();
+            factory.setAnnotationReaderFactory(annotationReaderFactory);
+            factory.setValueTypeFactory(valueTypeFactory);
+            dtoMetaDataFactory = factory;
+        }
+    }
+
+    public DaoMetaDataFactoryImpl(final DataSource dataSource,
+            final StatementFactory statementFactory,
+            final ResultSetFactory resultSetFactory,
+            final AnnotationReaderFactory annotationReaderFactory) {
 
         this.dataSource = dataSource;
         this.statementFactory = statementFactory;
         this.resultSetFactory = resultSetFactory;
-        this.annotationReaderFactory = readerFactory;
+        this.annotationReaderFactory = annotationReaderFactory;
     }
 
-    public void setSqlFileEncoding(String encoding) {
-        this.sqlFileEncoding = encoding;
+    public void setSqlFileEncoding(final String encoding) {
+        sqlFileEncoding = encoding;
     }
 
-    public DaoMetaData getDaoMetaData(Class daoClass) {
+    public DaoMetaData getDaoMetaData(final Class daoClass) {
         if (!initialized) {
             DisposableUtil.add(this);
             initialized = true;
         }
-        String key = daoClass.getName();
+        final String key = daoClass.getName();
         DaoMetaData dmd;
         synchronized (daoMetaDataCache) {
             dmd = (DaoMetaData) daoMetaDataCache.get(key);
@@ -107,7 +132,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         if (dmd != null) {
             return dmd;
         }
-        DaoMetaData dmdi = createDaoMetaData(daoClass);
+        final DaoMetaData dmdi = createDaoMetaData(daoClass);
         synchronized (daoMetaDataCache) {
             dmd = (DaoMetaData) daoMetaDataCache.get(daoClass);
             if (dmd != null) {
@@ -119,17 +144,33 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         return dmdi;
     }
 
-    protected DaoMetaData createDaoMetaData(Class daoClass) {
-        DaoMetaDataImpl daoMetaData = createDaoMetaDataImpl();
+    protected DaoMetaData createDaoMetaData(final Class daoClass) {
+        final BeanDesc daoBeanDesc = BeanDescFactory.getBeanDesc(daoClass);
+        final DaoAnnotationReader daoAnnotationReader = annotationReaderFactory
+                .createDaoAnnotationReader(daoBeanDesc);
+        final Class beanClass = daoAnnotationReader.getBeanClass();
+        final BeanMetaData beanMetaData = beanMetaDataFactory
+                .createBeanMetaData(beanClass);
+
+        final DaoMetaDataImpl daoMetaData = createDaoMetaDataImpl();
         daoMetaData.setDaoClass(daoClass);
         daoMetaData.setDataSource(dataSource);
         daoMetaData.setStatementFactory(statementFactory);
         daoMetaData.setResultSetFactory(resultSetFactory);
-        daoMetaData.setAnnotationReaderFactory(annotationReaderFactory);
         daoMetaData.setValueTypeFactory(valueTypeFactory);
         daoMetaData.setBeanMetaDataFactory(getBeanMetaDataFactory());
         daoMetaData.setDaoNamingConvention(getDaoNamingConvention());
         daoMetaData.setUseDaoClassForLog(useDaoClassForLog);
+        daoMetaData.setBeanClass(beanClass);
+        daoMetaData.setDaoAnnotationReader(daoAnnotationReader);
+        daoMetaData.setDtoMetaDataFactory(dtoMetaDataFactory);
+        if (resultSetHandlerFactory == null) {
+            final ResultSetHandlerFactoryImpl factory = new ResultSetHandlerFactoryImpl(
+                    beanMetaData, daoAnnotationReader, dtoMetaDataFactory);
+            daoMetaData.setResultSetHandlerFactory(factory);
+        } else {
+            daoMetaData.setResultSetHandlerFactory(resultSetHandlerFactory);
+        }
         if (sqlFileEncoding != null) {
             daoMetaData.setSqlFileEncoding(sqlFileEncoding);
         }
@@ -141,7 +182,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         return new DaoMetaDataImpl();
     }
 
-    public void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {
+    public void setValueTypeFactory(final ValueTypeFactory valueTypeFactory) {
         this.valueTypeFactory = valueTypeFactory;
     }
 
@@ -149,7 +190,8 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         return beanMetaDataFactory;
     }
 
-    public void setBeanMetaDataFactory(BeanMetaDataFactory beanMetaDataFactory) {
+    public void setBeanMetaDataFactory(
+            final BeanMetaDataFactory beanMetaDataFactory) {
         this.beanMetaDataFactory = beanMetaDataFactory;
     }
 
@@ -162,29 +204,40 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         return daoNamingConvention;
     }
 
-    public void setDaoNamingConvention(DaoNamingConvention daoNamingConvention) {
+    public void setDaoNamingConvention(
+            final DaoNamingConvention daoNamingConvention) {
         this.daoNamingConvention = daoNamingConvention;
     }
 
     public void setAnnotationReaderFactory(
-            AnnotationReaderFactory annotationReaderFactory) {
+            final AnnotationReaderFactory annotationReaderFactory) {
         this.annotationReaderFactory = annotationReaderFactory;
     }
 
-    public void setDataSource(DataSource dataSource) {
+    public void setDataSource(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    public void setResultSetFactory(ResultSetFactory resultSetFactory) {
+    public void setResultSetFactory(final ResultSetFactory resultSetFactory) {
         this.resultSetFactory = resultSetFactory;
     }
 
-    public void setStatementFactory(StatementFactory statementFactory) {
+    public void setStatementFactory(final StatementFactory statementFactory) {
         this.statementFactory = statementFactory;
     }
 
-    public void setUseDaoClassForLog(boolean userDaoClassForLog) {
-        this.useDaoClassForLog = userDaoClassForLog;
+    public void setUseDaoClassForLog(final boolean userDaoClassForLog) {
+        useDaoClassForLog = userDaoClassForLog;
+    }
+
+    public void setResultSetHandlerFactory(
+            final ResultSetHandlerFactory resultSetHandlerFactory) {
+        this.resultSetHandlerFactory = resultSetHandlerFactory;
+    }
+
+    public void setDtoMetaDataFactory(
+            final DtoMetaDataFactory dtoMetaDataFactory) {
+        this.dtoMetaDataFactory = dtoMetaDataFactory;
     }
 
 }

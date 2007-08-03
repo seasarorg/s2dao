@@ -36,23 +36,23 @@ import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
  */
 public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
 
-    final BeanMetaData beanMetaData;
+    private final BeanMetaData beanMetaData;
 
-    final DaoAnnotationReader annotationReader;
+    private final DaoAnnotationReader daoAnnotationReader;
 
-    final DtoMetaDataFactory dtoMetaDataFactory;
+    private final DtoMetaDataFactory dtoMetaDataFactory;
 
     public ResultSetHandlerFactoryImpl(final BeanMetaData beanMetaData,
-            final DaoAnnotationReader annotationReader,
+            final DaoAnnotationReader daoAnnotationReader,
             final DtoMetaDataFactory dtoMetaDataFactory) {
         this.beanMetaData = beanMetaData;
-        this.annotationReader = annotationReader;
+        this.daoAnnotationReader = daoAnnotationReader;
         this.dtoMetaDataFactory = dtoMetaDataFactory;
     }
 
     public ResultSetHandler createResultSetHandler(final Method method) {
-        final Class beanClass = beanMetaData.getBeanClass();
-        final Class clazz = annotationReader.getBeanClass(method);
+        final Class beanClass = daoAnnotationReader.getBeanClass();
+        final Class clazz = daoAnnotationReader.getBeanClass(method);
         if ((clazz != null) && !clazz.isAssignableFrom(beanClass)) {
             if (Map.class.isAssignableFrom(clazz)) {
                 if (List.class.isAssignableFrom(method.getReturnType())) {

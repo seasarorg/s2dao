@@ -28,8 +28,6 @@ import org.seasar.dao.SqlFileNotFoundRuntimeException;
 import org.seasar.dao.dbms.Oracle;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.PropertyType;
-import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
-import org.seasar.extension.jdbc.impl.BasicStatementFactory;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
@@ -91,21 +89,15 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
     }
 
     public void testPrefixTest() {
-        final DaoMetaDataImpl dmd = new DaoMetaDataImpl();
-        dmd.setDaoClass(getDaoClass("Employee8Manager"));
-        dmd.setDataSource(getDataSource());
-        dmd.setStatementFactory(BasicStatementFactory.INSTANCE);
-        dmd.setResultSetFactory(BasicResultSetFactory.INSTANCE);
-        dmd.setAnnotationReaderFactory(getAnnotationReaderFactory());
         final DaoNamingConventionImpl daoNamingConvention = new DaoNamingConventionImpl();
         daoNamingConvention.setDaoSuffixes(new String[] { "Manager" });
         daoNamingConvention.setInsertPrefixes(new String[] { "generate" });
         daoNamingConvention.setUpdatePrefixes(new String[] { "change" });
         daoNamingConvention.setDeletePrefixes(new String[] { "terminate" });
-        dmd.setDaoNamingConvention(daoNamingConvention);
-        dmd.setValueTypeFactory(getValueTypeFactory());
-        dmd.setBeanMetaDataFactory(getBeanMetaDataFactory());
-        dmd.initialize();
+        setDaoNamingConvention(daoNamingConvention);
+
+        final Class daoClass = getDaoClass("Employee8Manager");
+        final DaoMetaDataImpl dmd = createDaoMetaData(daoClass);
 
         InsertAutoDynamicCommand cmd1 = (InsertAutoDynamicCommand) dmd
                 .getSqlCommand("generate");

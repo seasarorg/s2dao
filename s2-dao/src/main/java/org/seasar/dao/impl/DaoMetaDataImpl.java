@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
-import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoAnnotationReader;
@@ -101,13 +100,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected DataSource dataSource;
 
-    protected DaoAnnotationReader annotationReader;
+    protected DaoAnnotationReader daoAnnotationReader;
 
     protected StatementFactory statementFactory;
 
     protected ResultSetFactory resultSetFactory;
-
-    protected AnnotationReaderFactory annotationReaderFactory;
 
     protected String sqlFileEncoding = "JISAutoDetect";
 
@@ -140,9 +137,6 @@ public class DaoMetaDataImpl implements DaoMetaData {
         Class daoClass = getDaoClass();
         daoInterface = getDaoInterface(daoClass);
         daoBeanDesc = BeanDescFactory.getBeanDesc(daoClass);
-        annotationReader = getAnnotationReaderFactory()
-                .createDaoAnnotationReader(daoBeanDesc);
-        setBeanClass(annotationReader.getBeanClass());
         final Connection con = DataSourceUtil.getConnection(dataSource);
         try {
             final DatabaseMetaData dbMetaData = ConnectionUtil.getMetaData(con);
@@ -151,21 +145,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
             ConnectionUtil.close(con);
         }
         this.beanMetaData = beanMetaDataFactory.createBeanMetaData(beanClass);
-        dtoMetaDataFactory = createDtoMetaDataFactory();
-        resultSetHandlerFactory = createResultSetHandlerFactory();
         setupSqlCommand();
-    }
-
-    protected ResultSetHandlerFactory createResultSetHandlerFactory() {
-        return new ResultSetHandlerFactoryImpl(beanMetaData, annotationReader,
-                dtoMetaDataFactory);
-    }
-
-    protected DtoMetaDataFactory createDtoMetaDataFactory() {
-        DtoMetaDataFactoryImpl factory = new DtoMetaDataFactoryImpl();
-        factory.setAnnotationReaderFactory(getAnnotationReaderFactory());
-        factory.setValueTypeFactory(valueTypeFactory);
-        return factory;
     }
 
     protected void setupSqlCommand() {
@@ -202,7 +182,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
             }
 
             if (!completedSetupMethod(method)
-                    && annotationReader.isSqlFile(method)) {
+                    && daoAnnotationReader.isSqlFile(method)) {
                 throw new SqlFileNotFoundRuntimeException(daoInterface, method);
             }
 
@@ -216,11 +196,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected void setupMethodByAnnotation(Class daoInterface, Method method) {
-        String sql = annotationReader.getSQL(method, dbms.getSuffix());
+        String sql = daoAnnotationReader.getSQL(method, dbms.getSuffix());
         if (sql != null) {
             setupMethodByManual(method, sql);
         }
-        String procedureName = annotationReader.getStoredProcedureName(method);
+        String procedureName = daoAnnotationReader
+                .getStoredProcedureName(method);
         if (procedureName != null) {
             setupProcedureMethod(method, procedureName);
         }
@@ -228,7 +209,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected void assertAnnotation(Method method) {
         if (isInsert(method.getName()) || isUpdate(method.getName())) {
-            if (annotationReader.getQuery(method) != null) {
+            if (daoAnnotationReader.getQuery(method) != null) {
                 throw new IllegalAnnotationRuntimeException("Query");
             }
         }
@@ -269,7 +250,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
             String sql = readText(standardPath);
             setupMethodByManual(method, sql);
         } else if (isDelete(method.getName())) {
-            String query = annotationReader.getQuery(method);
+            String query = daoAnnotationReader.getQuery(method);
             if (StringUtil.isNotBlank(query)) {
                 if (query.trim().toUpperCase().startsWith("WHERE")) {
                     setupMethodByManual(method, "DELETE FROM "
@@ -344,7 +325,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected void setupSelectMethodByManual(Method method, String sql) {
         SelectDynamicCommand cmd = createSelectDynamicCommand(createResultSetHandler(method));
         cmd.setSql(sql);
-        cmd.setArgNames(annotationReader.getArgNames(method));
+        cmd.setArgNames(daoAnnotationReader.getArgNames(method));
         cmd.setArgTypes(method.getParameterTypes());
         sqlCommands.put(method.getName(), cmd);
     }
@@ -450,7 +431,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         UpdateDynamicCommand cmd = new UpdateDynamicCommand(dataSource,
                 statementFactory);
         cmd.setSql(sql);
-        String[] argNames = annotationReader.getArgNames(method);
+        String[] argNames = daoAnnotationReader.getArgNames(method);
         if (argNames.length == 0 && isUpdateSignatureForBean(method)) {
             argNames = new String[] { StringUtil.decapitalize(ClassUtil
                     .getShortClassName(beanClass)) };
@@ -568,7 +549,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected String[] getPersistentPropertyNames(Method method) {
         List names = new ArrayList();
-        String[] props = annotationReader.getNoPersistentProps(method);
+        String[] props = daoAnnotationReader.getNoPersistentProps(method);
         if (props != null) {
             for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
                 PropertyType pt = beanMetaData.getPropertyType(i);
@@ -578,7 +559,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 }
             }
         } else {
-            props = annotationReader.getPersistentProps(method);
+            props = daoAnnotationReader.getPersistentProps(method);
             if (props != null) {
                 names.addAll(Arrays.asList(props));
                 for (int i = 0; i < beanMetaData.getPrimaryKeySize(); ++i) {
@@ -617,8 +598,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected void setupSelectMethodByAuto(Method method) {
         final ResultSetHandler handler = createResultSetHandler(method);
-        final String[] argNames = annotationReader.getArgNames(method);
-        final String query = annotationReader.getQuery(method);
+        final String[] argNames = daoAnnotationReader.getArgNames(method);
+        final String query = daoAnnotationReader.getQuery(method);
         SelectDynamicCommand cmd = null;
         if (query != null && !startsWithOrderBy(query)) {
             cmd = setupQuerySelectMethodByAuto(method, handler, argNames, query);
@@ -737,13 +718,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return buf.toString();
     }
 
-    private DtoMetaDataImpl createDtoMetaData(Class dtoClass) {
-        final DtoMetaDataImpl dtoMetaData = new DtoMetaDataImpl();
-        dtoMetaData.setBeanClass(dtoClass);
-        dtoMetaData.setBeanAnnotationReader(getAnnotationReaderFactory()
-                .createBeanAnnotationReader(dtoClass));
-        dtoMetaData.setValueTypeFactory(getValueTypeFactory());
-        dtoMetaData.initialize();
+    private DtoMetaData createDtoMetaData(Class dtoClass) {
+        final DtoMetaData dtoMetaData = dtoMetaDataFactory
+                .getDtoMetaData(dtoClass);
         for (int i = 0; i < beanMetaData.getPropertyTypeSize(); i++) {
             PropertyType master = beanMetaData.getPropertyType(i);
             String name = master.getPropertyName();
@@ -872,7 +849,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return beanClass;
     }
 
-    protected void setBeanClass(Class beanClass) {
+    public void setBeanClass(final Class beanClass) {
         this.beanClass = beanClass;
     }
 
@@ -961,15 +938,6 @@ public class DaoMetaDataImpl implements DaoMetaData {
         this.dbms = dbms;
     }
 
-    public AnnotationReaderFactory getAnnotationReaderFactory() {
-        return annotationReaderFactory;
-    }
-
-    public void setAnnotationReaderFactory(
-            AnnotationReaderFactory annotationReaderFactory) {
-        this.annotationReaderFactory = annotationReaderFactory;
-    }
-
     public void setResultSetFactory(ResultSetFactory resultSetFactory) {
         this.resultSetFactory = resultSetFactory;
     }
@@ -1039,6 +1007,16 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     public void setUseDaoClassForLog(boolean setUserDaoClassForLog) {
         this.useDaoClassForLog = setUserDaoClassForLog;
+    }
+
+    public void setResultSetHandlerFactory(
+            ResultSetHandlerFactory resultSetHandlerFactory) {
+        this.resultSetHandlerFactory = resultSetHandlerFactory;
+    }
+
+    public void setDaoAnnotationReader(
+            final DaoAnnotationReader daoAnnotationReader) {
+        this.daoAnnotationReader = daoAnnotationReader;
     }
 
 }
