@@ -17,7 +17,6 @@ package org.seasar.dao.impl;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -45,7 +44,6 @@ import org.seasar.dao.IllegalAnnotationRuntimeException;
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.InjectDaoClassSupport;
 import org.seasar.dao.MethodSetupFailureRuntimeException;
-import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.SqlFileNotFoundRuntimeException;
@@ -56,8 +54,6 @@ import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
-import org.seasar.extension.jdbc.impl.MapListResultSetHandler;
-import org.seasar.extension.jdbc.impl.MapResultSetHandler;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
@@ -1035,116 +1031,6 @@ public class DaoMetaDataImpl implements DaoMetaData {
     public void setDaoNamingConvention(
             final DaoNamingConvention daoNamingConvention) {
         this.daoNamingConvention = daoNamingConvention;
-    }
-
-    public static class ResultSetHandlerFactoryImpl implements
-            ResultSetHandlerFactory {
-
-        final BeanMetaData beanMetaData;
-
-        final DaoAnnotationReader annotationReader;
-
-        final DtoMetaDataFactory dtoMetaDataFactory;
-
-        public ResultSetHandlerFactoryImpl(BeanMetaData beanMetaData,
-                DaoAnnotationReader annotationReader,
-                DtoMetaDataFactory dtoMetaDataFactory) {
-            this.beanMetaData = beanMetaData;
-            this.annotationReader = annotationReader;
-            this.dtoMetaDataFactory = dtoMetaDataFactory;
-        }
-
-        public ResultSetHandler createResultSetHandler(final Method method) {
-            DtoMetaData dtoMetaData = null;
-            Class beanClass = beanMetaData.getBeanClass();
-            Class clazz = annotationReader.getBeanClass(method);
-            if (clazz != null && !clazz.isAssignableFrom(beanClass)) {
-                if (Map.class.isAssignableFrom(clazz)) {
-                    if (List.class.isAssignableFrom(method.getReturnType())) {
-                        return createMapListResultSetHandler();
-                    } else if (method.getReturnType().isArray()) {
-                        return createMapArrayResultSetHandler();
-                    } else {
-                        return createMapResultSetHandler();
-                    }
-                }
-                dtoMetaData = dtoMetaDataFactory.getDtoMetaData(clazz);
-                if (List.class.isAssignableFrom(method.getReturnType())) {
-                    return createDtoListMetaDataResultSetHandler(dtoMetaData);
-                } else if (method.getReturnType() == clazz) {
-                    return createDtoMetaDataResultSetHandler(dtoMetaData);
-                } else if (method.getReturnType().isArray()) {
-                    return createDtoArrayMetaDataResultSetHandler(dtoMetaData);
-                }
-            } else {
-                if (List.class.isAssignableFrom(method.getReturnType())) {
-                    return createBeanListMetaDataResultSetHandler();
-                } else if (isBeanClassAssignable(beanClass, method
-                        .getReturnType())) {
-                    return createBeanMetaDataResultSetHandler();
-                } else if (method.getReturnType().isAssignableFrom(
-                        Array.newInstance(beanClass, 0).getClass())) {
-                    return createBeanArrayMetaDataResultSetHandler();
-                }
-            }
-            return createObjectResultSetHandler();
-        }
-
-        protected ResultSetHandler createDtoListMetaDataResultSetHandler(
-                DtoMetaData dtoMetaData) {
-            return new DtoListMetaDataResultSetHandler(dtoMetaData);
-        }
-
-        protected ResultSetHandler createDtoMetaDataResultSetHandler(
-                DtoMetaData dtoMetaData) {
-            return new DtoMetaDataResultSetHandler(dtoMetaData);
-        }
-
-        protected ResultSetHandler createDtoArrayMetaDataResultSetHandler(
-                DtoMetaData dtoMetaData) {
-            return new DtoArrayMetaDataResultSetHandler(dtoMetaData);
-        }
-
-        protected ResultSetHandler createMapListResultSetHandler() {
-            return new MapListResultSetHandler();
-        }
-
-        protected ResultSetHandler createMapResultSetHandler() {
-            return new MapResultSetHandler();
-        }
-
-        protected ResultSetHandler createMapArrayResultSetHandler() {
-            return new MapArrayResultSetHandler();
-        }
-
-        protected ResultSetHandler createBeanListMetaDataResultSetHandler() {
-            return new BeanListMetaDataResultSetHandler(beanMetaData,
-                    createRelationRowCreator());
-        }
-
-        protected ResultSetHandler createBeanMetaDataResultSetHandler() {
-            return new BeanMetaDataResultSetHandler(beanMetaData,
-                    createRelationRowCreator());
-        }
-
-        protected ResultSetHandler createBeanArrayMetaDataResultSetHandler() {
-            return new BeanArrayMetaDataResultSetHandler(beanMetaData,
-                    createRelationRowCreator());
-        }
-
-        protected ResultSetHandler createObjectResultSetHandler() {
-            return new ObjectResultSetHandler();
-        }
-
-        protected RelationRowCreator createRelationRowCreator() {
-            return new RelationRowCreatorImpl();
-        }
-
-        protected boolean isBeanClassAssignable(Class beanClass, Class clazz) {
-            return beanClass.isAssignableFrom(clazz)
-                    || clazz.isAssignableFrom(beanClass);
-        }
-
     }
 
     public boolean isUseDaoClassForLog() {
