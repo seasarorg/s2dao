@@ -24,7 +24,8 @@ import org.seasar.extension.jdbc.ResultSetHandler;
  */
 public interface ResultSetHandlerFactory {
 
-    ResultSetHandler getResultSetHandler(DaoMetaData daoMetaData,
-            Method daoMethod);
+    ResultSetHandler getResultSetHandler(
+            final DaoAnnotationReader daoAnnotationReader,
+            final BeanMetaData beanMetaData, final Method method);
 
 }

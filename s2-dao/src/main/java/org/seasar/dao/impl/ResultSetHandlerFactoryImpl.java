@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.DaoAnnotationReader;
-import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.RelationRowCreator;
@@ -41,12 +40,10 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
 
     private DtoMetaDataFactory dtoMetaDataFactory;
 
-    public ResultSetHandler getResultSetHandler(final DaoMetaData daoMetaData,
-            final Method method) {
+    public ResultSetHandler getResultSetHandler(
+            final DaoAnnotationReader daoAnnotationReader,
+            final BeanMetaData beanMetaData, final Method method) {
 
-        final BeanMetaData beanMetaData = daoMetaData.getBeanMetaData();
-        final DaoAnnotationReader daoAnnotationReader = daoMetaData
-                .getDaoAnnotationReader();
         final Class beanClass = daoAnnotationReader.getBeanClass();
         final Class clazz = daoAnnotationReader.getBeanClass(method);
         if ((clazz != null) && !clazz.isAssignableFrom(beanClass)) {

@@ -147,21 +147,21 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected void setupSqlCommand() {
-        BeanDesc idbd = BeanDescFactory.getBeanDesc(daoInterface);
-        String[] names = idbd.getMethodNames();
+        final BeanDesc idbd = BeanDescFactory.getBeanDesc(daoInterface);
+        final String[] names = idbd.getMethodNames();
         for (int i = 0; i < names.length; ++i) {
-            Method[] methods = daoBeanDesc.getMethods(names[i]);
+            final Method[] methods = daoBeanDesc.getMethods(names[i]);
             if (methods.length == 1 && MethodUtil.isAbstract(methods[0])) {
                 setupMethod(methods[0]);
             }
         }
     }
 
-    protected void setupMethod(Method method) {
+    protected void setupMethod(final Method method) {
         setupMethod(daoInterface, method);
     }
 
-    protected void setupMethod(Class daoInterface, Method method) {
+    protected void setupMethod(final Class daoInterface, final Method method) {
         try {
             assertAnnotation(method);
 
@@ -187,25 +187,26 @@ public class DaoMetaDataImpl implements DaoMetaData {
             if (!completedSetupMethod(method)) {
                 setupMethodByAuto(method);
             }
-        } catch (SRuntimeException e) {
+        } catch (final SRuntimeException e) {
             throw new MethodSetupFailureRuntimeException(
                     daoInterface.getName(), method.getName(), e);
         }
     }
 
-    protected void setupMethodByAnnotation(Class daoInterface, Method method) {
-        String sql = daoAnnotationReader.getSQL(method, dbms.getSuffix());
+    protected void setupMethodByAnnotation(final Class daoInterface,
+            final Method method) {
+        final String sql = daoAnnotationReader.getSQL(method, dbms.getSuffix());
         if (sql != null) {
             setupMethodByManual(method, sql);
         }
-        String procedureName = daoAnnotationReader
+        final String procedureName = daoAnnotationReader
                 .getStoredProcedureName(method);
         if (procedureName != null) {
             setupProcedureMethod(method, procedureName);
         }
     }
 
-    protected void assertAnnotation(Method method) {
+    protected void assertAnnotation(final Method method) {
         if (isInsert(method.getName()) || isUpdate(method.getName())) {
             if (daoAnnotationReader.getQuery(method) != null) {
                 throw new IllegalAnnotationRuntimeException("Query");
@@ -220,7 +221,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
         handler.setDataSource(dataSource);
         handler.setDbms(dbms);
         handler.setDaoMethod(method);
-        handler.setDaoMetaData(this);
+        handler.setDaoAnnotationReader(daoAnnotationReader);
+        handler.setBeanMetaData(beanMetaData);
         handler.setProcedureName(procedureName);
         handler.setResultSetHandlerFactory(resultSetHandlerFactory);
         handler.setStatementFactory(statementFactory);
@@ -231,25 +233,27 @@ public class DaoMetaDataImpl implements DaoMetaData {
         sqlCommands.put(method.getName(), command);
     }
 
-    protected String readText(String path) {
-        InputStream is = ResourceUtil.getResourceAsStream(path);
-        Reader reader = InputStreamReaderUtil.create(is, getSqlFileEncoding());
+    protected String readText(final String path) {
+        final InputStream is = ResourceUtil.getResourceAsStream(path);
+        final Reader reader = InputStreamReaderUtil.create(is,
+                getSqlFileEncoding());
         return ReaderUtil.readText(reader);
     }
 
-    protected void setupMethodBySqlFile(Class daoInterface, Method method) {
-        String base = daoInterface.getName().replace('.', '/') + "_"
+    protected void setupMethodBySqlFile(final Class daoInterface,
+            final Method method) {
+        final String base = daoInterface.getName().replace('.', '/') + "_"
                 + method.getName();
-        String dbmsPath = base + dbms.getSuffix() + ".sql";
-        String standardPath = base + ".sql";
+        final String dbmsPath = base + dbms.getSuffix() + ".sql";
+        final String standardPath = base + ".sql";
         if (ResourceUtil.isExist(dbmsPath)) {
-            String sql = readText(dbmsPath);
+            final String sql = readText(dbmsPath);
             setupMethodByManual(method, sql);
         } else if (ResourceUtil.isExist(standardPath)) {
-            String sql = readText(standardPath);
+            final String sql = readText(standardPath);
             setupMethodByManual(method, sql);
         } else if (isDelete(method.getName())) {
-            String query = daoAnnotationReader.getQuery(method);
+            final String query = daoAnnotationReader.getQuery(method);
             if (StringUtil.isNotBlank(query)) {
                 if (query.trim().toUpperCase().startsWith("WHERE")) {
                     setupMethodByManual(method, "DELETE FROM "
@@ -262,46 +266,48 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
     }
 
-    protected void setupMethodByInterfaces(Class daoInterface, Method method) {
-        Class[] interfaces = daoInterface.getInterfaces();
+    protected void setupMethodByInterfaces(final Class daoInterface,
+            final Method method) {
+        final Class[] interfaces = daoInterface.getInterfaces();
         if (interfaces == null) {
             return;
         }
         for (int i = 0; i < interfaces.length; i++) {
-            Method interfaceMethod = getSameSignatureMethod(interfaces[i],
-                    method);
+            final Method interfaceMethod = getSameSignatureMethod(
+                    interfaces[i], method);
             if (interfaceMethod != null) {
                 setupMethod(interfaces[i], interfaceMethod);
             }
         }
     }
 
-    protected void setupMethodBySuperClass(Class daoInterface, Method method) {
-        Class superDaoClass = daoInterface.getSuperclass();
+    protected void setupMethodBySuperClass(final Class daoInterface,
+            final Method method) {
+        final Class superDaoClass = daoInterface.getSuperclass();
         if (superDaoClass != null && !Object.class.equals(superDaoClass)) {
-            Method superClassMethod = getSameSignatureMethod(superDaoClass,
-                    method);
+            final Method superClassMethod = getSameSignatureMethod(
+                    superDaoClass, method);
             if (superClassMethod != null) {
                 setupMethod(superDaoClass, method);
             }
         }
     }
 
-    protected boolean completedSetupMethod(Method method) {
+    protected boolean completedSetupMethod(final Method method) {
         return sqlCommands.get(method.getName()) != null;
     }
 
-    private Method getSameSignatureMethod(Class clazz, Method method) {
+    private Method getSameSignatureMethod(final Class clazz, final Method method) {
         try {
-            String methodName = method.getName();
-            Class[] parameterTypes = method.getParameterTypes();
+            final String methodName = method.getName();
+            final Class[] parameterTypes = method.getParameterTypes();
             return ClassUtil.getMethod(clazz, methodName, parameterTypes);
-        } catch (NoSuchMethodRuntimeException e) {
+        } catch (final NoSuchMethodRuntimeException e) {
             return null;
         }
     }
 
-    protected void setupMethodByManual(Method method, String sql) {
+    protected void setupMethodByManual(final Method method, final String sql) {
         if (isSelect(method)) {
             setupSelectMethodByManual(method, sql);
         } else {
@@ -309,7 +315,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
     }
 
-    protected void setupMethodByAuto(Method method) {
+    protected void setupMethodByAuto(final Method method) {
         if (isInsert(method.getName())) {
             setupInsertMethodByAuto(method);
         } else if (isUpdate(method.getName())) {
@@ -321,8 +327,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
     }
 
-    protected void setupSelectMethodByManual(Method method, String sql) {
-        SelectDynamicCommand cmd = createSelectDynamicCommand(createResultSetHandler(method));
+    protected void setupSelectMethodByManual(final Method method,
+            final String sql) {
+        final SelectDynamicCommand cmd = createSelectDynamicCommand(createResultSetHandler(method));
         cmd.setSql(sql);
         cmd.setArgNames(daoAnnotationReader.getArgNames(method));
         cmd.setArgTypes(method.getParameterTypes());
@@ -330,20 +337,20 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected SelectDynamicCommand createSelectDynamicCommand(
-            ResultSetHandler rsh) {
+            final ResultSetHandler rsh) {
         return new SelectDynamicCommand(dataSource, statementFactory, rsh,
                 resultSetFactory);
     }
 
     protected SelectDynamicCommand createSelectDynamicCommand(
-            ResultSetHandler resultSetHandler, String query) {
+            final ResultSetHandler resultSetHandler, final String query) {
 
-        SelectDynamicCommand cmd = createSelectDynamicCommand(resultSetHandler);
-        StringBuffer buf = new StringBuffer(255);
+        final SelectDynamicCommand cmd = createSelectDynamicCommand(resultSetHandler);
+        final StringBuffer buf = new StringBuffer(255);
         if (startsWithSelect(query)) {
             buf.append(query);
         } else {
-            String sql = dbms.getAutoSelectSql(getBeanMetaData());
+            final String sql = dbms.getAutoSelectSql(getBeanMetaData());
             buf.append(sql);
             if (query != null) {
                 String adjustedQuery = query;
@@ -354,7 +361,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 } else if (startsWithBeginComment(query)) {
                     buf.append(" ");
                     if (whereContained) {
-                        Matcher matcher = beginCommentPattern.matcher(query);
+                        final Matcher matcher = beginCommentPattern
+                                .matcher(query);
                         adjustedQuery = matcher.replaceFirst("/*BEGIN*/AND");
                     }
                 } else if (!whereContained) {
@@ -380,25 +388,25 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return cmd;
     }
 
-    protected boolean startsWithIfComment(String query) {
-        Matcher m = startWithIfCommentPattern.matcher(query);
+    protected boolean startsWithIfComment(final String query) {
+        final Matcher m = startWithIfCommentPattern.matcher(query);
         if (m.lookingAt()) {
             return true;
         }
         return false;
     }
 
-    protected boolean startsWithBeginComment(String query) {
-        Matcher m = startWithBeginCommentPattern.matcher(query);
+    protected boolean startsWithBeginComment(final String query) {
+        final Matcher m = startWithBeginCommentPattern.matcher(query);
         if (m.lookingAt()) {
             return true;
         }
         return false;
     }
 
-    protected static boolean startsWithSelect(String query) {
+    protected static boolean startsWithSelect(final String query) {
         if (query != null) {
-            Matcher m = startWithSelectPattern.matcher(query);
+            final Matcher m = startWithSelectPattern.matcher(query);
             if (m.lookingAt()) {
                 return true;
             }
@@ -406,9 +414,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return false;
     }
 
-    protected static boolean startsWithOrderBy(String query) {
+    protected static boolean startsWithOrderBy(final String query) {
         if (query != null) {
-            Matcher m = startWithOrderByPattern.matcher(query);
+            final Matcher m = startWithOrderByPattern.matcher(query);
             if (m.lookingAt()) {
                 return true;
             }
@@ -416,18 +424,20 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return false;
     }
 
-    protected ResultSetHandler createResultSetHandler(Method method) {
-        return resultSetHandlerFactory.getResultSetHandler(this, method);
+    protected ResultSetHandler createResultSetHandler(final Method method) {
+        return resultSetHandlerFactory.getResultSetHandler(daoAnnotationReader,
+                beanMetaData, method);
     }
 
-    protected boolean isBeanClassAssignable(Class clazz) {
+    protected boolean isBeanClassAssignable(final Class clazz) {
         return beanClass.isAssignableFrom(clazz)
                 || clazz.isAssignableFrom(beanClass);
     }
 
     // update & insert & delete
-    protected void setupUpdateMethodByManual(Method method, String sql) {
-        UpdateDynamicCommand cmd = new UpdateDynamicCommand(dataSource,
+    protected void setupUpdateMethodByManual(final Method method,
+            final String sql) {
+        final UpdateDynamicCommand cmd = new UpdateDynamicCommand(dataSource,
                 statementFactory);
         cmd.setSql(sql);
         String[] argNames = daoAnnotationReader.getArgNames(method);
@@ -442,16 +452,16 @@ public class DaoMetaDataImpl implements DaoMetaData {
         sqlCommands.put(method.getName(), cmd);
     }
 
-    protected boolean isUpdateSignatureForBean(Method method) {
+    protected boolean isUpdateSignatureForBean(final Method method) {
         return method.getParameterTypes().length == 1
                 && isBeanClassAssignable(method.getParameterTypes()[0]);
     }
 
-    protected Class getNotSingleRowUpdatedExceptionClass(Method method) {
-        Class[] exceptionTypes = method.getExceptionTypes();
+    protected Class getNotSingleRowUpdatedExceptionClass(final Method method) {
+        final Class[] exceptionTypes = method.getExceptionTypes();
         if (exceptionTypes != null) {
             for (int i = 0; i < exceptionTypes.length; ++i) {
-                Class exceptionType = exceptionTypes[i];
+                final Class exceptionType = exceptionTypes[i];
                 if (exceptionType.getName().indexOf(NOT_SINGLE_ROW_UPDATED) >= 0) {
                     return exceptionType;
                 }
@@ -460,12 +470,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return null;
     }
 
-    protected void setupInsertMethodByAuto(Method method) {
+    protected void setupInsertMethodByAuto(final Method method) {
         checkAutoUpdateMethod(method);
-        String[] propertyNames = getPersistentPropertyNames(method);
+        final String[] propertyNames = getPersistentPropertyNames(method);
         final SqlCommand command;
         if (isUpdateSignatureForBean(method)) {
-            InsertAutoDynamicCommand cmd = new InsertAutoDynamicCommand();
+            final InsertAutoDynamicCommand cmd = new InsertAutoDynamicCommand();
             cmd.setBeanMetaData(getBeanMetaData());
             cmd.setDataSource(dataSource);
             cmd
@@ -474,7 +484,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
             cmd.setStatementFactory(statementFactory);
             command = cmd;
         } else {
-            InsertBatchAutoStaticCommand cmd = new InsertBatchAutoStaticCommand(
+            final InsertBatchAutoStaticCommand cmd = new InsertBatchAutoStaticCommand(
                     dataSource, statementFactory, getBeanMetaData(),
                     propertyNames);
             command = cmd;
@@ -483,9 +493,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     // update
-    protected void setupUpdateMethodByAuto(Method method) {
+    protected void setupUpdateMethodByAuto(final Method method) {
         checkAutoUpdateMethod(method);
-        String[] propertyNames = getPersistentPropertyNames(method);
+        final String[] propertyNames = getPersistentPropertyNames(method);
         AbstractSqlCommand cmd;
         if (isUpdateSignatureForBean(method)) {
             if (isUnlessNull(method.getName())) {
@@ -508,11 +518,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
      * @param propertyNames
      * @return
      */
-    private AbstractSqlCommand createUpdateAutoDynamicCommand(Method method,
-            String[] propertyNames) {
+    private AbstractSqlCommand createUpdateAutoDynamicCommand(
+            final Method method, final String[] propertyNames) {
         AbstractSqlCommand cmd;
-        UpdateAutoDynamicCommand uac = new UpdateAutoDynamicCommand(dataSource,
-                statementFactory);
+        final UpdateAutoDynamicCommand uac = new UpdateAutoDynamicCommand(
+                dataSource, statementFactory);
         uac.setBeanMetaData(beanMetaData);
         uac.setPropertyNames(propertyNames);
         uac
@@ -523,7 +533,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     private AbstractSqlCommand createUpdateModifiedOnlyCommand(
             final Method method, final String[] propertyNames) {
-        UpdateModifiedOnlyCommand uac = new UpdateModifiedOnlyCommand(
+        final UpdateModifiedOnlyCommand uac = new UpdateModifiedOnlyCommand(
                 dataSource, statementFactory);
         uac.setBeanMetaData(beanMetaData);
         uac.setPropertyNames(propertyNames);
@@ -532,9 +542,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return uac;
     }
 
-    protected void setupDeleteMethodByAuto(Method method) {
+    protected void setupDeleteMethodByAuto(final Method method) {
         checkAutoUpdateMethod(method);
-        String[] propertyNames = getPersistentPropertyNames(method);
+        final String[] propertyNames = getPersistentPropertyNames(method);
         SqlCommand cmd = null;
         if (isUpdateSignatureForBean(method)) {
             cmd = new DeleteAutoStaticCommand(dataSource, statementFactory,
@@ -546,12 +556,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
         sqlCommands.put(method.getName(), cmd);
     }
 
-    protected String[] getPersistentPropertyNames(Method method) {
-        List names = new ArrayList();
+    protected String[] getPersistentPropertyNames(final Method method) {
+        final List names = new ArrayList();
         String[] props = daoAnnotationReader.getNoPersistentProps(method);
         if (props != null) {
             for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
-                PropertyType pt = beanMetaData.getPropertyType(i);
+                final PropertyType pt = beanMetaData.getPropertyType(i);
                 if (pt.isPersistent()
                         && !isPropertyExist(props, pt.getPropertyName())) {
                     names.add(pt.getPropertyName());
@@ -562,8 +572,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
             if (props != null) {
                 names.addAll(Arrays.asList(props));
                 for (int i = 0; i < beanMetaData.getPrimaryKeySize(); ++i) {
-                    String pk = beanMetaData.getPrimaryKey(i);
-                    PropertyType pt = beanMetaData
+                    final String pk = beanMetaData.getPrimaryKey(i);
+                    final PropertyType pt = beanMetaData
                             .getPropertyTypeByColumnName(pk);
                     names.add(pt.getPropertyName());
                 }
@@ -577,7 +587,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
         if (names.size() == 0) {
             for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
-                PropertyType pt = beanMetaData.getPropertyType(i);
+                final PropertyType pt = beanMetaData.getPropertyType(i);
                 if (pt.isPersistent()) {
                     names.add(pt.getPropertyName());
                 }
@@ -586,7 +596,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return (String[]) names.toArray(new String[names.size()]);
     }
 
-    protected boolean isPropertyExist(String[] props, String propertyName) {
+    protected boolean isPropertyExist(final String[] props,
+            final String propertyName) {
         for (int i = 0; i < props.length; ++i) {
             if (props[i].equalsIgnoreCase(propertyName)) {
                 return true;
@@ -595,7 +606,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return false;
     }
 
-    protected void setupSelectMethodByAuto(Method method) {
+    protected void setupSelectMethodByAuto(final Method method) {
         final ResultSetHandler handler = createResultSetHandler(method);
         final String[] argNames = daoAnnotationReader.getArgNames(method);
         final String query = daoAnnotationReader.getQuery(method);
@@ -609,13 +620,15 @@ public class DaoMetaDataImpl implements DaoMetaData {
         sqlCommands.put(method.getName(), cmd);
     }
 
-    protected boolean isQuerySelectMethodByAuto(Method method, String query) {
+    protected boolean isQuerySelectMethodByAuto(final Method method,
+            final String query) {
         return query != null && !startsWithOrderBy(query);
     }
 
-    protected SelectDynamicCommand setupQuerySelectMethodByAuto(Method method,
-            ResultSetHandler handler, String[] argNames, String query) {
-        Class[] types = method.getParameterTypes();
+    protected SelectDynamicCommand setupQuerySelectMethodByAuto(
+            final Method method, final ResultSetHandler handler,
+            final String[] argNames, final String query) {
+        final Class[] types = method.getParameterTypes();
         final SelectDynamicCommand cmd = createSelectDynamicCommand(handler,
                 query);
         cmd.setArgNames(argNames);
@@ -624,8 +637,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected SelectDynamicCommand setupNonQuerySelectMethodByAuto(
-            Method method, ResultSetHandler handler, String[] argNames,
-            String query) {
+            final Method method, final ResultSetHandler handler,
+            final String[] argNames, final String query) {
         if (isAutoSelectSqlByDto(method, argNames)) {
             return setupNonQuerySelectMethodByDto(method, handler, argNames,
                     query);
@@ -635,13 +648,14 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
     }
 
-    protected boolean isAutoSelectSqlByDto(Method method, String[] argNames) {
+    protected boolean isAutoSelectSqlByDto(final Method method,
+            final String[] argNames) {
         return argNames.length == 0 && method.getParameterTypes().length == 1;
     }
 
     protected SelectDynamicCommand setupNonQuerySelectMethodByDto(
-            Method method, ResultSetHandler handler, String[] argNames,
-            String query) {
+            final Method method, final ResultSetHandler handler,
+            final String[] argNames, final String query) {
         final SelectDynamicCommand cmd = createSelectDynamicCommand(handler);
         Class clazz = method.getParameterTypes()[0];
         if (isUpdateSignatureForBean(method)) {
@@ -659,8 +673,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected SelectDynamicCommand setupNonQuerySelectMethodByArgs(
-            Method method, ResultSetHandler handler, String[] argNames,
-            String query) {
+            final Method method, final ResultSetHandler handler,
+            final String[] argNames, final String query) {
         final SelectDynamicCommand cmd = createSelectDynamicCommand(handler);
         final Class[] types = method.getParameterTypes();
         String sql = createAutoSelectSql(argNames);
@@ -673,22 +687,22 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return cmd;
     }
 
-    protected String createAutoSelectSqlByDto(Class dtoClass) {
-        String sql = dbms.getAutoSelectSql(getBeanMetaData());
-        StringBuffer buf = new StringBuffer(sql);
+    protected String createAutoSelectSqlByDto(final Class dtoClass) {
+        final String sql = dbms.getAutoSelectSql(getBeanMetaData());
+        final StringBuffer buf = new StringBuffer(sql);
         // TODO どうするか要検討
         if (dtoClass.isPrimitive()) {
             return sql;
         }
-        DtoMetaData dmd = createDtoMetaData(dtoClass);
+        final DtoMetaData dmd = createDtoMetaData(dtoClass);
         boolean began = false;
         if (!(sql.lastIndexOf("WHERE") > 0)) {
             buf.append("/*BEGIN*/ WHERE ");
             began = true;
         }
         for (int i = 0; i < dmd.getPropertyTypeSize(); ++i) {
-            PropertyType pt = dmd.getPropertyType(i);
-            String aliasName = pt.getColumnName();
+            final PropertyType pt = dmd.getPropertyType(i);
+            final String aliasName = pt.getColumnName();
             if (!beanMetaData.hasPropertyTypeByAliasName(aliasName)) {
                 continue;
             }
@@ -696,8 +710,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
                     .isPersistent()) {
                 continue;
             }
-            String columnName = beanMetaData.convertFullColumnName(aliasName);
-            String propertyName = "dto." + pt.getPropertyName();
+            final String columnName = beanMetaData
+                    .convertFullColumnName(aliasName);
+            final String propertyName = "dto." + pt.getPropertyName();
             buf.append("/*IF ");
             buf.append(propertyName);
             buf.append(" != null*/");
@@ -717,23 +732,23 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return buf.toString();
     }
 
-    private DtoMetaData createDtoMetaData(Class dtoClass) {
+    private DtoMetaData createDtoMetaData(final Class dtoClass) {
         final DtoMetaData dtoMetaData = dtoMetaDataFactory
                 .getDtoMetaData(dtoClass);
         for (int i = 0; i < beanMetaData.getPropertyTypeSize(); i++) {
-            PropertyType master = beanMetaData.getPropertyType(i);
-            String name = master.getPropertyName();
+            final PropertyType master = beanMetaData.getPropertyType(i);
+            final String name = master.getPropertyName();
             if (dtoMetaData.hasPropertyType(name)) {
-                PropertyType slave = dtoMetaData.getPropertyType(name);
+                final PropertyType slave = dtoMetaData.getPropertyType(name);
                 slave.setColumnName(master.getColumnName());
             }
         }
         return dtoMetaData;
     }
 
-    protected String createAutoSelectSql(String[] argNames) {
-        String sql = dbms.getAutoSelectSql(getBeanMetaData());
-        StringBuffer buf = new StringBuffer(sql);
+    protected String createAutoSelectSql(final String[] argNames) {
+        final String sql = dbms.getAutoSelectSql(getBeanMetaData());
+        final StringBuffer buf = new StringBuffer(sql);
         if (argNames.length != 0) {
             boolean began = false;
             if (!(sql.lastIndexOf("WHERE") > 0)) {
@@ -741,7 +756,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 began = true;
             }
             for (int i = 0; i < argNames.length; ++i) {
-                String columnName = beanMetaData
+                final String columnName = beanMetaData
                         .convertFullColumnName(argNames[i]);
                 buf.append("/*IF ");
                 buf.append(argNames[i]);
@@ -763,7 +778,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return buf.toString();
     }
 
-    protected void checkAutoUpdateMethod(Method method) {
+    protected void checkAutoUpdateMethod(final Method method) {
         if (method.getParameterTypes().length != 1
                 || !isBeanClassAssignable(method.getParameterTypes()[0])
                 && !method.getParameterTypes()[0].isAssignableFrom(List.class)
@@ -773,7 +788,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
     }
 
-    protected boolean isSelect(Method method) {
+    protected boolean isSelect(final Method method) {
         if (isInsert(method.getName())) {
             return false;
         }
@@ -786,7 +801,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return true;
     }
 
-    protected boolean isInsert(String methodName) {
+    protected boolean isInsert(final String methodName) {
         final String[] insertPrefixes = getDaoNamingConvention()
                 .getInsertPrefixes();
         for (int i = 0; i < insertPrefixes.length; ++i) {
@@ -797,7 +812,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return false;
     }
 
-    protected boolean isUpdate(String methodName) {
+    protected boolean isUpdate(final String methodName) {
         final String[] updatePrefixes = getDaoNamingConvention()
                 .getUpdatePrefixes();
         for (int i = 0; i < updatePrefixes.length; ++i) {
@@ -808,7 +823,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return false;
     }
 
-    protected boolean isDelete(String methodName) {
+    protected boolean isDelete(final String methodName) {
         final String[] deletePrefixes = getDaoNamingConvention()
                 .getDeletePrefixes();
         for (int i = 0; i < deletePrefixes.length; ++i) {
@@ -819,7 +834,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return false;
     }
 
-    protected boolean isUnlessNull(String methodName) {
+    protected boolean isUnlessNull(final String methodName) {
         final String[] unlessNullSuffixes = getDaoNamingConvention()
                 .getUnlessNullSuffixes();
         for (int i = 0; i < unlessNullSuffixes.length; i++) {
@@ -862,10 +877,10 @@ public class DaoMetaDataImpl implements DaoMetaData {
     /**
      * @see org.seasar.dao.DaoMetaData#getSqlCommand(java.lang.String)
      */
-    public SqlCommand getSqlCommand(String methodName)
+    public SqlCommand getSqlCommand(final String methodName)
             throws MethodNotFoundRuntimeException {
 
-        SqlCommand cmd = (SqlCommand) sqlCommands.get(methodName);
+        final SqlCommand cmd = (SqlCommand) sqlCommands.get(methodName);
         if (cmd == null) {
             throw new MethodNotFoundRuntimeException(daoClass, methodName, null);
         }
@@ -880,19 +895,19 @@ public class DaoMetaDataImpl implements DaoMetaData {
     /**
      * @see org.seasar.dao.DaoMetaData#hasSqlCommand(java.lang.String)
      */
-    public boolean hasSqlCommand(String methodName) {
+    public boolean hasSqlCommand(final String methodName) {
         return sqlCommands.containsKey(methodName);
     }
 
     /**
      * @see org.seasar.dao.DaoMetaData#createFindCommand(java.lang.String)
      */
-    public SqlCommand createFindCommand(String query) {
+    public SqlCommand createFindCommand(final String query) {
         return createSelectDynamicCommand(new BeanListMetaDataResultSetHandler(
                 beanMetaData, new RelationRowCreatorImpl()), query);
     }
 
-    public SqlCommand createFindArrayCommand(String query) {
+    public SqlCommand createFindArrayCommand(final String query) {
         return createSelectDynamicCommand(
                 new BeanArrayMetaDataResultSetHandler(beanMetaData,
                         new RelationRowCreatorImpl()), query);
@@ -901,7 +916,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
     /**
      * @see org.seasar.dao.DaoMetaData#createFindBeanCommand(java.lang.String)
      */
-    public SqlCommand createFindBeanCommand(String query) {
+    public SqlCommand createFindBeanCommand(final String query) {
         return createSelectDynamicCommand(new BeanMetaDataResultSetHandler(
                 beanMetaData, new RelationRowCreatorImpl()), query);
     }
@@ -909,20 +924,20 @@ public class DaoMetaDataImpl implements DaoMetaData {
     /**
      * @see org.seasar.dao.DaoMetaData#createFindObjectCommand(java.lang.String)
      */
-    public SqlCommand createFindObjectCommand(String query) {
+    public SqlCommand createFindObjectCommand(final String query) {
         return createSelectDynamicCommand(new ObjectResultSetHandler(), query);
     }
 
-    public Class getDaoInterface(Class clazz) {
+    public Class getDaoInterface(final Class clazz) {
         if (clazz.isInterface()) {
             return clazz;
         }
         final String[] daoSuffixes = getDaoNamingConvention().getDaoSuffixes();
         for (Class target = clazz; target != AbstractDao.class; target = target
                 .getSuperclass()) {
-            Class[] interfaces = target.getInterfaces();
+            final Class[] interfaces = target.getInterfaces();
             for (int i = 0; i < interfaces.length; ++i) {
-                Class intf = interfaces[i];
+                final Class intf = interfaces[i];
                 for (int j = 0; j < daoSuffixes.length; j++) {
                     if (intf.getName().endsWith(daoSuffixes[j])) {
                         return intf;
@@ -933,15 +948,15 @@ public class DaoMetaDataImpl implements DaoMetaData {
         throw new DaoNotFoundRuntimeException(clazz);
     }
 
-    public void setDbms(Dbms dbms) {
+    public void setDbms(final Dbms dbms) {
         this.dbms = dbms;
     }
 
-    public void setResultSetFactory(ResultSetFactory resultSetFactory) {
+    public void setResultSetFactory(final ResultSetFactory resultSetFactory) {
         this.resultSetFactory = resultSetFactory;
     }
 
-    public void setStatementFactory(StatementFactory statementFactory) {
+    public void setStatementFactory(final StatementFactory statementFactory) {
         this.statementFactory = statementFactory;
     }
 
@@ -949,7 +964,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return sqlFileEncoding;
     }
 
-    public void setSqlFileEncoding(String sencoding) {
+    public void setSqlFileEncoding(final String sencoding) {
         this.sqlFileEncoding = sencoding;
     }
 
@@ -957,11 +972,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return valueTypeFactory;
     }
 
-    public void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {
+    public void setValueTypeFactory(final ValueTypeFactory valueTypeFactory) {
         this.valueTypeFactory = valueTypeFactory;
     }
 
-    public void setDataSource(DataSource dataSource) {
+    public void setDataSource(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -969,11 +984,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return daoClass;
     }
 
-    public void setDaoClass(Class daoClass) {
+    public void setDaoClass(final Class daoClass) {
         this.daoClass = daoClass;
     }
 
-    public void setBeanMetaDataFactory(BeanMetaDataFactory beanMetaDataFactory) {
+    public void setBeanMetaDataFactory(
+            final BeanMetaDataFactory beanMetaDataFactory) {
         this.beanMetaDataFactory = beanMetaDataFactory;
     }
 
@@ -987,7 +1003,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
     /**
      * @param dtoMetaDataFactory The dtoMetaDataFactory to set.
      */
-    public void setDtoMetaDataFactory(DtoMetaDataFactory dtoMetaDataFactory) {
+    public void setDtoMetaDataFactory(
+            final DtoMetaDataFactory dtoMetaDataFactory) {
         this.dtoMetaDataFactory = dtoMetaDataFactory;
     }
 
@@ -1004,12 +1021,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return useDaoClassForLog;
     }
 
-    public void setUseDaoClassForLog(boolean setUserDaoClassForLog) {
+    public void setUseDaoClassForLog(final boolean setUserDaoClassForLog) {
         this.useDaoClassForLog = setUserDaoClassForLog;
     }
 
     public void setResultSetHandlerFactory(
-            ResultSetHandlerFactory resultSetHandlerFactory) {
+            final ResultSetHandlerFactory resultSetHandlerFactory) {
         this.resultSetHandlerFactory = resultSetHandlerFactory;
     }
 

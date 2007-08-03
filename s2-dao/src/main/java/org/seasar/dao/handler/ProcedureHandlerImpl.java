@@ -23,7 +23,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.seasar.dao.DaoMetaData;
+import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.framework.exception.SQLRuntimeException;
@@ -38,7 +39,9 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
 
     private Method daoMethod;
 
-    private DaoMetaData daoMetaData;
+    private BeanMetaData beanMetaData;
+
+    private DaoAnnotationReader daoAnnotationReader;
 
     private ResultSetHandlerFactory resultSetHandlerFactory;
 
@@ -48,7 +51,7 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
         outParameterNumbers = initTypes();
     }
 
-    protected Object execute(Connection connection, Object[] args) {
+    protected Object execute(final Connection connection, final Object[] args) {
         CallableStatement cs = null;
         try {
             cs = prepareCallableStatement(connection);
@@ -58,14 +61,15 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
             } else {
                 return handleNoResultSet(cs);
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new SQLRuntimeException(e);
         } finally {
             StatementUtil.close(cs);
         }
     }
 
-    protected Object handleResultSet(CallableStatement cs) throws SQLException {
+    protected Object handleResultSet(final CallableStatement cs)
+            throws SQLException {
         ResultSet rs = null;
         try {
             rs = cs.getResultSet();
@@ -73,18 +77,19 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
                 throw new IllegalStateException("JDBC Driver's BUG");
             }
             final ResultSetHandler resultSetHandler = resultSetHandlerFactory
-                    .getResultSetHandler(daoMetaData, daoMethod);
+                    .getResultSetHandler(daoAnnotationReader, beanMetaData,
+                            daoMethod);
             return resultSetHandler.handle(rs);
         } finally {
             ResultSetUtil.close(rs);
         }
     }
 
-    protected Object handleNoResultSet(CallableStatement cs)
+    protected Object handleNoResultSet(final CallableStatement cs)
             throws SQLException {
         final Class returnType = daoMethod.getReturnType();
         if (Map.class.isAssignableFrom(returnType)) {
-            Map result = new HashMap();
+            final Map result = new HashMap();
             for (int i = 0; i < columnInOutTypes.length; i++) {
                 if (isOutputColum(columnInOutTypes[i].intValue())) {
                     result.put(columnNames[i], cs.getObject(i + 1));
@@ -104,17 +109,22 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
         }
     }
 
-    public void setDaoMethod(Method method) {
+    public void setDaoMethod(final Method method) {
         this.daoMethod = method;
     }
 
     public void setResultSetHandlerFactory(
-            ResultSetHandlerFactory resultSetHandlerFactory) {
+            final ResultSetHandlerFactory resultSetHandlerFactory) {
         this.resultSetHandlerFactory = resultSetHandlerFactory;
     }
 
-    public void setDaoMetaData(final DaoMetaData daoMetaData) {
-        this.daoMetaData = daoMetaData;
+    public void setBeanMetaData(final BeanMetaData beanMetaData) {
+        this.beanMetaData = beanMetaData;
+    }
+
+    public void setDaoAnnotationReader(
+            final DaoAnnotationReader daoAnnotationReader) {
+        this.daoAnnotationReader = daoAnnotationReader;
     }
 
 }
