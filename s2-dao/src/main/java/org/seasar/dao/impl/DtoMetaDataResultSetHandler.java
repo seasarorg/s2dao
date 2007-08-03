@@ -20,9 +20,13 @@ import java.sql.SQLException;
 import java.util.Set;
 
 import org.seasar.dao.DtoMetaData;
+import org.seasar.framework.log.Logger;
 
 public class DtoMetaDataResultSetHandler extends
         AbstractDtoMetaDataResultSetHandler {
+
+    private static final Logger logger = Logger
+            .getLogger(DtoMetaDataResultSetHandler.class);
 
     public DtoMetaDataResultSetHandler(DtoMetaData dtoMetaData) {
         super(dtoMetaData);
@@ -32,6 +36,9 @@ public class DtoMetaDataResultSetHandler extends
         if (resultSet.next()) {
             Set columnNames = createColumnNames(resultSet.getMetaData());
             Object row = createRow(resultSet, columnNames);
+            if (resultSet.next()) {
+                logger.log("WDAO0003", null);
+            }
             return row;
         } else {
             return null;

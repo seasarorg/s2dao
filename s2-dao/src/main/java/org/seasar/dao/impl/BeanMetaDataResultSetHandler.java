@@ -23,9 +23,13 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.framework.beans.PropertyDesc;
+import org.seasar.framework.log.Logger;
 
 public class BeanMetaDataResultSetHandler extends
         AbstractBeanMetaDataResultSetHandler {
+
+    private static final Logger logger = Logger
+            .getLogger(BeanMetaDataResultSetHandler.class);
 
     public BeanMetaDataResultSetHandler(BeanMetaData beanMetaData,
             RelationRowCreator relationRowCreator) {
@@ -54,6 +58,9 @@ public class BeanMetaDataResultSetHandler extends
                 }
             }
             postCreateRow(row);
+            if (resultSet.next()) {
+                logger.log("WDAO0003", null);
+            }
             return row;
         } else {
             return null;

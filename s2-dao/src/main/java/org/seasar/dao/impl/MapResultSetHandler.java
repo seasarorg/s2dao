@@ -19,8 +19,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.seasar.extension.jdbc.PropertyType;
+import org.seasar.framework.log.Logger;
 
 public class MapResultSetHandler extends AbstractMapResultSetHandler {
+
+    private static final Logger logger = Logger
+            .getLogger(MapResultSetHandler.class);
 
     public MapResultSetHandler() {
     }
@@ -32,7 +36,11 @@ public class MapResultSetHandler extends AbstractMapResultSetHandler {
         if (resultSet.next()) {
             PropertyType[] propertyTypes = createPropertyTypes(resultSet
                     .getMetaData());
-            return createRow(resultSet, propertyTypes);
+            Object row = createRow(resultSet, propertyTypes);
+            if (resultSet.next()) {
+                logger.log("WDAO0003", null);
+            }
+            return row;
         }
         return null;
     }
