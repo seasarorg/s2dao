@@ -21,6 +21,6 @@ package org.seasar.dao;
  */
 public class NullBean {
 
-    private NullBean() {
+    public NullBean() {
     }
 }

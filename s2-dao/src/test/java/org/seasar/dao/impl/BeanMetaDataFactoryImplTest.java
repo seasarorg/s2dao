@@ -17,6 +17,7 @@ package org.seasar.dao.impl;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
+import org.seasar.dao.NullBean;
 import org.seasar.dao.unit.S2DaoTestCase;
 
 /**
@@ -153,4 +154,13 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
         }
     }
 
+    public void testCreateBeanMetaData_byNullBean() throws Exception {
+        BeanMetaDataFactoryImpl factory = new BeanMetaDataFactoryImpl();
+        BeanMetaData metaData = factory.createBeanMetaData(HogeDao.class,
+                NullBean.class);
+        assertEquals(NullBeanMetaData.class, metaData.getClass());
+    }
+
+    public static class HogeDao {
+    }
 }

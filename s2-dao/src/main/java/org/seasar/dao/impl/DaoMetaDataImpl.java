@@ -142,7 +142,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
         } finally {
             ConnectionUtil.close(con);
         }
-        this.beanMetaData = beanMetaDataFactory.createBeanMetaData(beanClass);
+        this.beanMetaData = beanMetaDataFactory.createBeanMetaData(
+                daoInterface, beanClass);
         setupSqlCommand();
     }
 
