@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.seasar.dao.DaoAnnotationReader;
+import org.seasar.dao.NullBean;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.util.FieldUtil;
 import org.seasar.framework.util.StringUtil;
@@ -91,8 +92,11 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
     }
 
     public Class getBeanClass() {
-        Field beanField = daoBeanDesc.getField(BEAN);
-        return (Class) FieldUtil.get(beanField, null);
+        if (daoBeanDesc.hasField(BEAN)) {
+            Field beanField = daoBeanDesc.getField(BEAN);
+            return (Class) FieldUtil.get(beanField, null);
+        }
+        return NullBean.class;
     }
 
     public Class getBeanClass(Method method) {

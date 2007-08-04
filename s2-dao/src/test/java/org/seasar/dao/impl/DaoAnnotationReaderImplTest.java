@@ -20,10 +20,10 @@ import java.lang.reflect.Method;
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaDataFactory;
+import org.seasar.dao.NullBean;
 import org.seasar.extension.unit.S2TestCase;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
-import org.seasar.framework.exception.SRuntimeException;
 
 /**
  * @author higa
@@ -63,17 +63,15 @@ public class DaoAnnotationReaderImplTest extends S2TestCase {
                 .getBeanDesc(getDaoClass("AnnotationTestDaoImpl"));
         DaoAnnotationReader reader1 = readerFactory
                 .createDaoAnnotationReader(beanDesc1);
-        assertEquals("1", Employee.class, reader1.getBeanClass());
-        BeanDesc beanDesc2 = BeanDescFactory
+        assertEquals(Employee.class, reader1.getBeanClass());
+    }
+
+    public void testGetNullBean() {
+        BeanDesc beanDesc = BeanDescFactory
                 .getBeanDesc(getDaoClass("DummyDao"));
-        DaoAnnotationReader reader2 = readerFactory
-                .createDaoAnnotationReader(beanDesc2);
-        try {
-            reader2.getBeanClass();
-        } catch (SRuntimeException e) {
-            return;
-        }
-        fail();
+        DaoAnnotationReader reader = readerFactory
+                .createDaoAnnotationReader(beanDesc);
+        assertEquals(NullBean.class, reader.getBeanClass());
     }
 
     public void testGetArgNames() throws Exception {

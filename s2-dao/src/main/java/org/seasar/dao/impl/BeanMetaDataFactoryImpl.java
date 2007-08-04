@@ -27,6 +27,7 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
+import org.seasar.dao.NullBean;
 import org.seasar.dao.TableNaming;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
@@ -62,6 +63,14 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
     public static final String tableNaming_BINDING = "bindingType=may";
 
     protected TableNaming tableNaming = new DefaultTableNaming();
+
+    public BeanMetaData createBeanMetaData(final Class daoInterface,
+            final Class beanClass) {
+        if (NullBean.class == beanClass) {
+            return new NullBeanMetaData(daoInterface);
+        }
+        return createBeanMetaData(beanClass);
+    }
 
     public BeanMetaData createBeanMetaData(final Class beanClass) {
         return createBeanMetaData(beanClass, 0);

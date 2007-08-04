@@ -15,20 +15,24 @@
  */
 package org.seasar.dao;
 
-import java.sql.DatabaseMetaData;
+import org.seasar.framework.exception.SRuntimeException;
 
 /**
- * @author jflute
- * @author manhole
+ * 
+ * @author taedium
  */
-public interface BeanMetaDataFactory {
+public class BeanNotFoundRuntimeException extends SRuntimeException {
 
-    BeanMetaData createBeanMetaData(Class daoInterface, Class beanClass);
+    private static final long serialVersionUID = -759005466237575567L;
 
-    BeanMetaData createBeanMetaData(Class beanClass);
+    private Class daoClass;
 
-    BeanMetaData createBeanMetaData(Class beanClass, int relationNestLevel);
+    public BeanNotFoundRuntimeException(Class daoClass) {
+        super("EDAO0027", new Object[] { daoClass.getName() });
+        this.daoClass = daoClass;
+    }
 
-    BeanMetaData createBeanMetaData(DatabaseMetaData dbMetaData,
-            Class beanClass, int relationNestLevel);
+    public Class getDaoClass() {
+        return daoClass;
+    }
 }

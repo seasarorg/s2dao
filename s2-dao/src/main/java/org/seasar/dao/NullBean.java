@@ -15,20 +15,12 @@
  */
 package org.seasar.dao;
 
-import java.sql.DatabaseMetaData;
-
 /**
- * @author jflute
- * @author manhole
+ * @author taedium
+ *
  */
-public interface BeanMetaDataFactory {
+public class NullBean {
 
-    BeanMetaData createBeanMetaData(Class daoInterface, Class beanClass);
-
-    BeanMetaData createBeanMetaData(Class beanClass);
-
-    BeanMetaData createBeanMetaData(Class beanClass, int relationNestLevel);
-
-    BeanMetaData createBeanMetaData(DatabaseMetaData dbMetaData,
-            Class beanClass, int relationNestLevel);
+    private NullBean() {
+    }
 }
