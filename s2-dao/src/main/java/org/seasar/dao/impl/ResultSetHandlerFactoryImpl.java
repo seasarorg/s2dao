@@ -27,8 +27,6 @@ import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
-import org.seasar.extension.jdbc.impl.MapListResultSetHandler;
-import org.seasar.extension.jdbc.impl.MapResultSetHandler;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 
 /**

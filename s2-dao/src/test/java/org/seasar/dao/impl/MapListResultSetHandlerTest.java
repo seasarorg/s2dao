@@ -18,23 +18,24 @@ package org.seasar.dao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.Map;
 
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.ResultSetHandler;
 
-public class MapArrayResultSetHandlerTest extends S2DaoTestCase {
+public class MapListResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle() throws Exception {
-        ResultSetHandler handler = new MapArrayResultSetHandler();
+        ResultSetHandler handler = new MapListResultSetHandler();
         String sql = "select employee_id, employee_name from emp4 where employee_id = 7369";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
-        Map[] ret = null;
+        List ret = null;
         try {
             ResultSet rs = ps.executeQuery();
             try {
-                ret = (Map[]) handler.handle(rs);
+                ret = (List) handler.handle(rs);
             } finally {
                 rs.close();
             }
@@ -42,8 +43,8 @@ public class MapArrayResultSetHandlerTest extends S2DaoTestCase {
             ps.close();
         }
         assertNotNull(ret);
-        assertEquals(1, ret.length);
-        Map m = ret[0];
+        assertEquals(1, ret.size());
+        Map m = (Map) ret.get(0);
         assertEquals(new Integer(7369), m.get("employeeId"));
         assertEquals("SMITH", m.get("employeeName"));
     }
