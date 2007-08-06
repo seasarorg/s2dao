@@ -44,8 +44,8 @@ public class MapArrayResultSetHandlerTest extends S2DaoTestCase {
         assertNotNull(ret);
         assertEquals(1, ret.length);
         Map m = ret[0];
-        assertEquals(new Integer(7369), m.get("employeeId"));
-        assertEquals("SMITH", m.get("employeeName"));
+        assertEquals(new Integer(7369), m.get("employee_id"));
+        assertEquals("SMITH", m.get("employee_name"));
     }
 
     public void setUp() {
