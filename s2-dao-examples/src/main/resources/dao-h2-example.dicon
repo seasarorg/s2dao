@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
+	"http://www.seasar.org/dtd/components21.dtd">
+<components namespace="dao">
+	<include path="j2ee-h2-example.dicon"/>
+	<component
+		class="org.seasar.dao.impl.AnnotationReaderFactoryImpl"/>
+	<component
+		class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
+	</component>
+	<component
+		name="interceptor"
+		class="org.seasar.dao.pager.PagerS2DaoInterceptorWrapper">
+		<arg>
+			<component class="org.seasar.dao.interceptors.S2DaoInterceptor"/>
+		</arg>
+	</component>
+	<component
+		class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
+	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
+
+	<component class="org.seasar.dao.impl.DaoNamingConventionImpl">
+	</component>
+
+	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
+	<component class="org.seasar.dao.impl.DecamelizeTableNaming" />	
+</components>
