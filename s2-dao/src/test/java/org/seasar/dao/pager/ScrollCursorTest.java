@@ -15,31 +15,49 @@
  */
 package org.seasar.dao.pager;
 
+import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.unit.S2TestCase;
+import org.seasar.framework.util.ResultSetUtil;
+import org.seasar.framework.util.StatementUtil;
 
 /**
  * @author manhole
  */
 public class ScrollCursorTest extends S2TestCase {
 
-    private EmployeeDao employeeDao;
+    private ResultSetFactory resultSetFactory;
 
     private PagerResultSetFactoryWrapper pagerResultSetFactoryWrapper;
 
+    private PagerStatementFactory pagerStatementFactory = new PagerStatementFactory();
+
     protected void setUp() throws Exception {
         super.setUp();
-        include("ScrollCursorTest.dicon");
+        include("j2ee.dicon");
+        PagerContext.start();
     }
 
     protected void setUpAfterBindFields() throws Throwable {
         super.setUpAfterBindFields();
+        pagerResultSetFactoryWrapper = new PagerResultSetFactoryWrapper(
+                resultSetFactory);
         pagerResultSetFactoryWrapper.setUseScrollCursor(isScrollCursor());
     }
 
     protected boolean isScrollCursor() {
         return true;
+    }
+
+    protected void tearDown() throws Exception {
+        PagerContext.end();
+        super.tearDown();
     }
 
     public void testPageLimitTx() throws Exception {
@@ -48,15 +66,16 @@ public class ScrollCursorTest extends S2TestCase {
         condition.setLimit(2);
         assertEquals(0, condition.getOffset());
         assertEquals(0, condition.getCount());
+        PagerContext.getContext().pushArgs(new Object[] { condition });
 
         // ## Act ##
-        List employees = employeeDao.getEmployees(condition);
+        List employees = getEmployees();
 
         // ## Assert ##
         assertEquals(14, condition.getCount());
         assertEquals(2, employees.size());
-        assertEquals(7369L, getEmployee(employees, 0).getEmpno());
-        assertEquals(7499L, getEmployee(employees, 1).getEmpno());
+        assertEquals(new BigDecimal("7369"), (BigDecimal) employees.get(0));
+        assertEquals(new BigDecimal("7499"), (BigDecimal) employees.get(1));
     }
 
     public void testOffsetTx() throws Exception {
@@ -64,15 +83,16 @@ public class ScrollCursorTest extends S2TestCase {
         DefaultPagerCondition condition = new DefaultPagerCondition();
         condition.setLimit(2);
         condition.setOffset(1);
+        PagerContext.getContext().pushArgs(new Object[] { condition });
 
         // ## Act ##
-        List employees = employeeDao.getEmployees(condition);
+        List employees = getEmployees();
 
         // ## Assert ##
         assertEquals(14, condition.getCount());
         assertEquals(2, employees.size());
-        assertEquals(7499L, getEmployee(employees, 0).getEmpno());
-        assertEquals(7521L, getEmployee(employees, 1).getEmpno());
+        assertEquals(new BigDecimal("7499"), (BigDecimal) employees.get(0));
+        assertEquals(new BigDecimal("7521"), (BigDecimal) employees.get(1));
     }
 
     public void testLastPageTx() throws Exception {
@@ -80,21 +100,37 @@ public class ScrollCursorTest extends S2TestCase {
         DefaultPagerCondition condition = new DefaultPagerCondition();
         condition.setLimit(5);
         condition.setOffset(10);
+        PagerContext.getContext().pushArgs(new Object[] { condition });
 
         // ## Act ##
-        List employees = employeeDao.getEmployees(condition);
+        List employees = getEmployees();
 
         // ## Assert ##
         assertEquals(14, condition.getCount());
         assertEquals(4, employees.size());
-        assertEquals(7876L, getEmployee(employees, 0).getEmpno());
-        assertEquals(7900L, getEmployee(employees, 1).getEmpno());
-        assertEquals(7902L, getEmployee(employees, 2).getEmpno());
-        assertEquals(7934L, getEmployee(employees, 3).getEmpno());
+        assertEquals(new BigDecimal("7876"), (BigDecimal) employees.get(0));
+        assertEquals(new BigDecimal("7900"), (BigDecimal) employees.get(1));
+        assertEquals(new BigDecimal("7902"), (BigDecimal) employees.get(2));
+        assertEquals(new BigDecimal("7934"), (BigDecimal) employees.get(3));
     }
 
-    private Employee getEmployee(List employees, int i) {
-        return (Employee) employees.get(i);
+    private List getEmployees() throws SQLException {
+        List result = new ArrayList();
+        PreparedStatement ps = pagerStatementFactory.createPreparedStatement(
+                getConnection(), "SELECT EMPNO FROM EMP ORDER BY EMPNO");
+        try {
+            ResultSet rs = pagerResultSetFactoryWrapper.createResultSet(ps);
+            try {
+                while (rs.next()) {
+                    result.add(rs.getObject(1));
+                }
+            } finally {
+                ResultSetUtil.close(rs);
+            }
+        } finally {
+            StatementUtil.close(ps);
+        }
+        return result;
     }
 
 }
