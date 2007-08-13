@@ -27,9 +27,6 @@ import java.util.regex.Pattern;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.RelationPropertyType;
-import org.seasar.extension.jdbc.SqlLog;
-import org.seasar.extension.jdbc.SqlLogRegistry;
-import org.seasar.extension.jdbc.SqlLogRegistryLocator;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
 import org.seasar.framework.util.Disposable;
@@ -122,9 +119,7 @@ public class Standard implements Dbms, Disposable {
     }
 
     public String getBaseSql(Statement st) {
-        SqlLogRegistry sqlLogRegistry = SqlLogRegistryLocator.getInstance();
-        SqlLog sqlLog = sqlLogRegistry.getLast();
-        String sql = sqlLog.getRawSql();
+        String sql = st.toString();
         Matcher matcher = baseSqlPattern.matcher(sql);
         if (matcher.find()) {
             return matcher.replaceFirst(matcher.group(1));

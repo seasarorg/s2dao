@@ -1,8 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="Shift_JIS"?>
 <!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
 	"http://www.seasar.org/dtd/components21.dtd">
-<components namespace="jdbc">
-	<include path="jta.dicon"/>
+<components namespace="j2ee">
+	<component name="transactionManager"
+		class="org.seasar.extension.jta.TransactionManagerImpl"/>
+	<component name="requiredTx"
+		class="org.seasar.extension.tx.RequiredInterceptor"/>
+	<component name="requiresNewTx"
+		class="org.seasar.extension.tx.RequiresNewInterceptor"/>
+	<component name="mandatoryTx"
+		class="org.seasar.extension.tx.MandatoryInterceptor"/>
+	<component name="notSupportedTx"
+		class="org.seasar.extension.tx.NotSupportedInterceptor"/>
+
+	<!--
 	<component 
 		name="resultSetFactory"
 		class="org.seasar.dao.pager.PagerResultSetFactoryWrapper">
@@ -11,7 +22,6 @@
 		</arg>
 		<property name="useScrollCursor">true</property>
 	</component>
-	<!--
 	<component 
 		name="resultSetFactory"
 		class="org.seasar.dao.pager.PagerResultSetFactoryLimitOffsetWrapper">
@@ -22,6 +32,7 @@
 	</component>
 	-->
 
+	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
 	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
 		<arg>
 			<component class="org.seasar.dao.pager.PagerStatementFactory"/>
@@ -62,7 +73,6 @@
 		</property>
 		<property name="user">"sa"</property>
 		<property name="password">""</property>
-		<!--<initMethod>#out.println(@org.seasar.framework.util.EclipseUtil@getProjectRoot("s2dao").getAbsolutePath())</initMethod>-->
 	</component>
 
 	<!-- for H2 -->
@@ -130,31 +140,31 @@
     -->
 
 	<!-- MySQL
-	- MySQL4.0ä»¥ä¸‹ã§ãƒžãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—ã‚’æ‰±ã†å ´åˆã«ã¯ï¼ŒURLæŒ‡å®šã®å¾Œã«ï¼Œ
-		ä»¥ä¸‹ã®æŽ¥ç¶šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¿½åŠ ã§æŒ‡å®šã—ã¦ãã ã•ã„ï¼Ž
+	- MySQL4.0ˆÈ‰º‚Åƒ}ƒ‹ƒ`ƒoƒCƒg•¶Žš‚ðˆµ‚¤ê‡‚É‚ÍCURLŽw’è‚ÌŒã‚ÉC
+		ˆÈ‰º‚ÌÚ‘±ƒpƒ‰ƒ[ƒ^‚ð’Ç‰Á‚ÅŽw’è‚µ‚Ä‚­‚¾‚³‚¢D
 		useUnicode=true
-		characterEncoding=[MySQLã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã«å¯¾å¿œã—ãŸ
-		Javaã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°å]
-		ä¾‹ï¼š"jdbc:mysql://localhost:3306/test?useUnicode=true" +
+		characterEncoding=[MySQL‚ÌƒGƒ“ƒR[ƒfƒBƒ“ƒO‚É‘Î‰ž‚µ‚½
+		Java‚ÌƒGƒ“ƒR[ƒfƒBƒ“ƒO–¼]
+		—áF"jdbc:mysql://localhost:3306/test?useUnicode=true" +
 		"&amp;characterEncoding=Windows-31J"
 		
-	- MySQL5.0ä»¥é™ã§ï¼Œã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ãŒeucjpmsã®åˆ—ã‚’æ‰±ã†å ´åˆã«ã¯ï¼Œ
-		URLæŒ‡å®šã®å¾Œã«ï¼Œä»¥ä¸‹ã®æŽ¥ç¶šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¿½åŠ ã§æŒ‡å®šã—ã¦ãã ã•ã„ï¼Ž
-		characterEncoding=UTF-8ã¾ãŸã¯Windows-31J
-		characterSetResults=UTF-8ã¾ãŸã¯Windows-31J
-		ä¾‹ï¼š"jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8" +
+	- MySQL5.0ˆÈ~‚ÅCƒGƒ“ƒR[ƒfƒBƒ“ƒO‚ªeucjpms‚Ì—ñ‚ðˆµ‚¤ê‡‚É‚ÍC
+		URLŽw’è‚ÌŒã‚ÉCˆÈ‰º‚ÌÚ‘±ƒpƒ‰ƒ[ƒ^‚ð’Ç‰Á‚ÅŽw’è‚µ‚Ä‚­‚¾‚³‚¢D
+		characterEncoding=UTF-8‚Ü‚½‚ÍWindows-31J
+		characterSetResults=UTF-8‚Ü‚½‚ÍWindows-31J
+		—áF"jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8" +
 		"&amp;characterSetResults=UTF-8"
-		ã“ã®æŒ‡å®šã‚’ã—ãªã„å ´åˆï¼ŒJavaå´ã§UCS-2â‡”EUC_JP_Solarisã®å¤‰æ›ãŒ
-		è¡Œãªã‚ã‚Œã‚‹ãŸã‚ï¼Œãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©å¤–å­—ãªã©ã®ä¸€éƒ¨ã®æ–‡å­—ãŒåŒ–ã‘ã¾ã™ï¼Ž
-		ã“ã®æŒ‡å®šã‚’ã™ã‚‹ã“ã¨ã§ï¼ŒMySQLå´ã§eucjpmsâ‡”ucs2â‡”utf8(cp932)ã®
-		å¤‰æ›ãŒè¡Œãªã‚ã‚Œï¼ŒJavaå´ã§UCS-2â‡”UTF-8(Windows-31J)ã®å¤‰æ›ãŒ
-		è¡Œãªã‚ã‚Œã‚‹ã‚ˆã†ã«ãªã‚Šã¾ã™ï¼Žã“ã®çµæžœï¼Œæ–‡å­—åŒ–ã‘ã‚’é˜²ã’ã¾ã™ï¼Ž
-		ãªãŠJIS X 0212(è£œåŠ©æ¼¢å­—)ã‚’ä½¿ç”¨ã™ã‚‹å ´åˆã¯ï¼ŒWindows-31Jã§ã¯ãªã
-		UTF-8ã‚’æŒ‡å®šã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ï¼Ž
+		‚±‚ÌŽw’è‚ð‚µ‚È‚¢ê‡CJava‘¤‚ÅUCS-2ÌEUC_JP_Solaris‚Ì•ÏŠ·‚ª
+		s‚È‚í‚ê‚é‚½‚ßCƒ†[ƒU[’è‹`ŠOŽš‚È‚Ç‚Ìˆê•”‚Ì•¶Žš‚ª‰»‚¯‚Ü‚·D
+		‚±‚ÌŽw’è‚ð‚·‚é‚±‚Æ‚ÅCMySQL‘¤‚ÅeucjpmsÌucs2Ìutf8(cp932)‚Ì
+		•ÏŠ·‚ªs‚È‚í‚êCJava‘¤‚ÅUCS-2ÌUTF-8(Windows-31J)‚Ì•ÏŠ·‚ª
+		s‚È‚í‚ê‚é‚æ‚¤‚É‚È‚è‚Ü‚·D‚±‚ÌŒ‹‰ÊC•¶Žš‰»‚¯‚ð–h‚°‚Ü‚·D
+		‚È‚¨JIS X 0212(•â•Š¿Žš)‚ðŽg—p‚·‚éê‡‚ÍCWindows-31J‚Å‚Í‚È‚­
+		UTF-8‚ðŽw’è‚·‚é•K—v‚ª‚ ‚è‚Ü‚·D
 		
-	- ä¸Šè¨˜ä»¥å¤–ã®å ´åˆã¯ï¼Œmy.cnfã§default-character-setã®è¨­å®šã‚’é©åˆ‡ã«
-		(cp932ã‚„utf8ãªã©ï¼Žãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®latin1ã¯ä¸å¯)è¡Œãªã£ã¦ã„ã‚Œã°ï¼Œ
-		æ–‡å­—åŒ–ã‘ã¯é˜²ã’ã¾ã™ï¼Ž
+	- ã‹LˆÈŠO‚Ìê‡‚ÍCmy.cnf‚Ådefault-character-set‚ÌÝ’è‚ð“KØ‚É
+		(cp932‚âutf8‚È‚ÇDƒfƒtƒHƒ‹ƒg‚Ìlatin1‚Í•s‰Â)s‚È‚Á‚Ä‚¢‚ê‚ÎC
+		•¶Žš‰»‚¯‚Í–h‚°‚Ü‚·D
 	-->
 	<!--
 	<component name="xaDataSource"
@@ -189,13 +199,10 @@
 		class="org.seasar.extension.dbcp.impl.ConnectionPoolImpl">
 		<property name="timeout">600</property>
 		<property name="maxPoolSize">10</property>
-		<!-- JTAãƒˆãƒ©ãƒ³ã‚¶ã‚¯ã‚·ãƒ§ãƒ³ãŒé–‹å§‹ã•ã‚Œã¦ã„ãªã„å ´åˆã«ã‚³ãƒã‚¯ã‚·ãƒ§ãƒ³ã‚’
-		     å–å¾—ã§ããªã„ã‚ˆã†ã«ã™ã‚‹ã«ã¯æ¬¡ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’falseã«ã—ã¦ãã ã•ã„ï¼Ž-->
 		<property name="allowLocalTx">true</property>
 		<destroyMethod name="close"/>
 	</component>
 	<component name="dataSource"
 		class="org.seasar.extension.dbcp.impl.DataSourceImpl"/>
 
-	
 </components>

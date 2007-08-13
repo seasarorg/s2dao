@@ -29,6 +29,7 @@ import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.ValueTypeFactory;
+import org.seasar.dao.pager.PagingSQLRewriter;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.framework.beans.BeanDesc;
@@ -65,6 +66,8 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     public static final String dtoMetaDataFactory_BINDING = "bindingType=may";
 
+    public static final String pagingSQLRewriter_BINDING = "bindingType=may";
+
     protected Map daoMetaDataCache = new HashMap();
 
     protected DataSource dataSource;
@@ -90,6 +93,8 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
     protected ResultSetHandlerFactory resultSetHandlerFactory;
 
     protected DtoMetaDataFactory dtoMetaDataFactory;
+
+    protected PagingSQLRewriter pagingSQLRewriter;
 
     public DaoMetaDataFactoryImpl() {
     }
@@ -168,6 +173,9 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         if (sqlFileEncoding != null) {
             daoMetaData.setSqlFileEncoding(sqlFileEncoding);
         }
+        if (pagingSQLRewriter != null) {
+            daoMetaData.setPagingSQLRewriter(pagingSQLRewriter);
+        }
         daoMetaData.initialize();
         return daoMetaData;
     }
@@ -232,6 +240,10 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
     public void setDtoMetaDataFactory(
             final DtoMetaDataFactory dtoMetaDataFactory) {
         this.dtoMetaDataFactory = dtoMetaDataFactory;
+    }
+
+    public void setPagingSQLRewriter(PagingSQLRewriter pagingSQLRewriter) {
+        this.pagingSQLRewriter = pagingSQLRewriter;
     }
 
 }

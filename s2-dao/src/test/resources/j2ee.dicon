@@ -31,16 +31,6 @@
 		<arg>dataSource</arg>
 	</component>
 	-->
-	<!--
-	<component 
-		name="resultSetFactory"
-		class="org.seasar.dao.pager.PagerResultSetFactoryRownumWrapper">
-		<arg>
-			<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
-		</arg>
-		<arg>dataSource</arg>
-	</component>
-	-->
 
 	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
 		<arg>

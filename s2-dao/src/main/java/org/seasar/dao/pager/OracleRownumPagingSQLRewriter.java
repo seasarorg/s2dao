@@ -15,44 +15,34 @@
  */
 package org.seasar.dao.pager;
 
-import javax.sql.DataSource;
-
-import org.seasar.extension.jdbc.ResultSetFactory;
-
 /**
  * @author jundu
  *
  */
-public class PagerResultSetFactoryRownumWrapper extends
-        AbstractPagerResultSetFactory {
+public class OracleRownumPagingSQLRewriter extends AbstractPagingSQLRewriter {
 
-    /**
-     * コンストラクタ(test only)
-     * 
-     * @param resultSetFactory
-     *            オリジナルのResultSetFactory
-     * @param productName RDBMSを表す文字列
+    /* (non-Javadoc)
+     * @see org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeCountSql(java.lang.String)
      */
-    PagerResultSetFactoryRownumWrapper(ResultSetFactory resultSetFactory,
-            String productName) {
-        super(resultSetFactory, productName);
+    String makeCountSql(String baseSQL) {
+        StringBuffer sqlBuf = new StringBuffer("SELECT count(*) FROM (");
+        if (isChopOrderBy()) {
+            sqlBuf.append(chopOrderBy(baseSQL));
+        } else {
+            sqlBuf.append(baseSQL);
+        }
+        sqlBuf.append(")");
+        return sqlBuf.toString();
     }
 
-    /**
-     * コンストラクタ
-     * 
-     * @param resultSetFactory
-     *            オリジナルのResultSetFactory
-     * @param dataSource 接続対象のデータソース
+    /* (non-Javadoc)
+     * @see org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeLimitOffsetSql(java.lang.String, int, int)
      */
-    public PagerResultSetFactoryRownumWrapper(
-            ResultSetFactory resultSetFactory, DataSource dataSource) {
-        super(resultSetFactory, dataSource);
-    }
-
     String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
         if (offset < 0) {
-            throw new IllegalArgumentException("offset is must ");
+            throw new IllegalArgumentException(
+                    "The offset must be greater than or equal to zero.("
+                            + offset + ")");
         }
         StringBuffer sqlBuf = new StringBuffer(baseSQL);
         sqlBuf
@@ -65,17 +55,6 @@ public class PagerResultSetFactoryRownumWrapper extends
         sqlBuf.append(" AND ROWNUM <= ");
         sqlBuf.append(limit);
         sqlBuf.append(" ORDER BY S2DAO_ROWNUMBER");
-        return sqlBuf.toString();
-    }
-
-    String makeCountSql(String baseSQL) {
-        StringBuffer sqlBuf = new StringBuffer("SELECT count(*) FROM (");
-        if (isChopOrderBy()) {
-            sqlBuf.append(chopOrderBy(baseSQL));
-        } else {
-            sqlBuf.append(baseSQL);
-        }
-        sqlBuf.append(")");
         return sqlBuf.toString();
     }
 
