@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.seasar.extension.jdbc.ResultSetFactory;
+import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
 import org.seasar.extension.unit.S2TestCase;
 import org.seasar.framework.util.ResultSetUtil;
 import org.seasar.framework.util.StatementUtil;
@@ -31,8 +31,6 @@ import org.seasar.framework.util.StatementUtil;
  * @author manhole
  */
 public class ScrollCursorTest extends S2TestCase {
-
-    private ResultSetFactory resultSetFactory;
 
     private PagerResultSetFactoryWrapper pagerResultSetFactoryWrapper;
 
@@ -47,7 +45,7 @@ public class ScrollCursorTest extends S2TestCase {
     protected void setUpAfterBindFields() throws Throwable {
         super.setUpAfterBindFields();
         pagerResultSetFactoryWrapper = new PagerResultSetFactoryWrapper(
-                resultSetFactory);
+                BasicResultSetFactory.INSTANCE);
         pagerResultSetFactoryWrapper.setUseScrollCursor(isScrollCursor());
     }
 

@@ -13,16 +13,60 @@
 	<component name="notSupportedTx"
 		class="org.seasar.extension.tx.NotSupportedInterceptor"/>
 
-	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+	<!-- 全DBMS対応のページング処理用設定 -->
+	<component 
+		name="resultSetFactory"
+		class="org.seasar.dao.pager.PagerResultSetFactoryWrapper">
+		<arg>
+			<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+		</arg>
+		<property name="useScrollCursor">true</property>
+	</component>
 	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
 		<arg>
-			<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
+			<component class="org.seasar.dao.pager.PagerStatementFactory"/>
 		</arg>
 		<property name="fetchSize">100</property>
 		<!--
 		<property name="maxRows">100</property>
 		-->
 	</component>
+
+	<!-- LIMIT OFFSET句を使ったSQL書き換えによるページング処理用設定 -->
+	<!--
+	<component name="pagingSQLRewriter" class="org.seasar.dao.pager.LimitOffsetPagingSQLRewriter"/>
+
+	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
+		<arg>
+			<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
+		</arg>
+		<property name="fetchSize">100</property>
+		<!- -
+		<property name="maxRows">100</property>
+		- ->
+	</component>
+	-->
+	<!--
+	<component class="org.seasar.extension.jdbc.impl.OracleResultSetFactory"/>
+	<component class="org.seasar.extension.jdbc.impl.BooleanToIntStatementFactory"/>
+	-->
+
+	<!-- ORACLE ROWNUM句を使ったSQL書き換えによるページング処理用設定 -->
+	<!--
+	<component name="pagingSQLRewriter" class="org.seasar.dao.pager.OracleRownumPagingSQLRewriter"/>
+
+	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
+	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
+		<arg>
+			<component class="org.seasar.extension.jdbc.impl.BasicStatementFactory"/>
+		</arg>
+		<property name="fetchSize">100</property>
+		<!- -
+		<property name="maxRows">100</property>
+		- ->
+	</component>
+	-->
 	<!--
 	<component class="org.seasar.extension.jdbc.impl.OracleResultSetFactory"/>
 	<component class="org.seasar.extension.jdbc.impl.BooleanToIntStatementFactory"/>

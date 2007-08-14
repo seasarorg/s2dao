@@ -121,6 +121,7 @@ public class LimitOffsetPagingSQLRewriterTest extends S2DaoTestCase {
         Customer[] actual = dao.getPagedRow2(condition);
         assertNotNull(actual);
         assertEquals(expected, actual);
+        assertEquals(81, condition.getCount());
     }
 
 }

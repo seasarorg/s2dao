@@ -2,13 +2,9 @@
 <!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
 	"http://www.seasar.org/dtd/components21.dtd">
 <components namespace="dao">
-	<include path="j2ee.dicon"/>
+	<include path="org/seasar/dao/pager/jdbc-limit-offset.dicon"/>
 	<component class="org.seasar.dao.impl.AnnotationReaderFactoryImpl"/>
-	<component class="org.seasar.dao.impl.DaoMetaDataFactoryImpl">
-		<property name="pagingSQLRewriter">
-			<component class="org.seasar.dao.pager.LimitOffsetPagingSQLRewriter"/>
-		</property>
-	</component>
+	<component class="org.seasar.dao.impl.DaoMetaDataFactoryImpl"/>
 	<component
 		name="interceptor"
 		class="org.seasar.dao.pager.PagerS2DaoInterceptorWrapper">
