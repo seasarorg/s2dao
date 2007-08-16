@@ -19,7 +19,7 @@ package org.seasar.dao.pager;
  * @author jundu
  *
  */
-public class NullPagingSQLRewriter implements PagingSQLRewriter {
+public class NullPagingSqlRewriterX implements PagingSqlRewriterX {
 
     public String rewrite(String sql, Object[] args, Class[] argTypes) {
         return sql;

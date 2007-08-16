@@ -36,7 +36,7 @@ import org.seasar.framework.util.IntegerConversionUtil;
  * @author jundu
  *
  */
-public abstract class AbstractPagingSQLRewriter implements PagingSQLRewriter {
+public abstract class AbstractPagingSqlRewriterX implements PagingSqlRewriterX {
 
     private static final Pattern patternOrderBy = Pattern
             .compile(

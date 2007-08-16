@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.SqlCommand;
-import org.seasar.dao.pager.NullPagingSQLRewriter;
+import org.seasar.dao.pager.NullPagingSqlRewriterX;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.impl.BasicResultSetFactory;
 import org.seasar.extension.jdbc.impl.BasicStatementFactory;
@@ -37,7 +37,7 @@ public class SelectDynamicCommandTest extends S2DaoTestCase {
                 new BeanMetaDataResultSetHandler(
                         createBeanMetaData(Employee.class),
                         new RelationRowCreatorImpl()),
-                BasicResultSetFactory.INSTANCE, new NullPagingSQLRewriter());
+                BasicResultSetFactory.INSTANCE, new NullPagingSqlRewriterX());
         cmd.setSql("SELECT * FROM emp WHERE empno = /*empno*/1234");
         Employee emp = (Employee) cmd
                 .execute(new Object[] { new Integer(7788) });

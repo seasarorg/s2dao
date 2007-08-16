@@ -19,7 +19,7 @@ package org.seasar.dao.pager;
  * @author jundu
  *
  */
-public class OracleRownumPagingSQLRewriter extends AbstractPagingSQLRewriter {
+public class OracleRownumPagingSqlRewriterX extends AbstractPagingSqlRewriterX {
 
     /* (non-Javadoc)
      * @see org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeCountSql(java.lang.String)

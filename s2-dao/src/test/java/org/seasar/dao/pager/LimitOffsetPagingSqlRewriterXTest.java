@@ -5,19 +5,19 @@ import java.text.SimpleDateFormat;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.dataset.DataSet;
 
-public class LimitOffsetPagingSQLRewriterTest extends S2DaoTestCase {
+public class LimitOffsetPagingSqlRewriterXTest extends S2DaoTestCase {
     private static final int TEST_OFFSET = 18;
 
     private static final int TEST_LIMIT = 12;
 
     CustomerDao dao;
 
-    LimitOffsetPagingSQLRewriter rewriter;
+    LimitOffsetPagingSqlRewriterX rewriter;
 
     protected void setUp() throws Exception {
         super.setUp();
         include("LimitOffsetTest.dicon");
-        rewriter = new LimitOffsetPagingSQLRewriter();
+        rewriter = new LimitOffsetPagingSqlRewriterX();
     }
 
     public void testMakeCountSql() {

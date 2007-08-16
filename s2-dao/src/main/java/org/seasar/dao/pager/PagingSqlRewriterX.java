@@ -15,20 +15,22 @@
  */
 package org.seasar.dao.pager;
 
-import junit.framework.TestCase;
-
 /**
+ * S2Pager用にSELECT文を実行直前に書き換えるためのインターフェースです。
+ * 
  * @author jundu
  *
  */
-public class NullPagingSQLRewriterTest extends TestCase {
+public interface PagingSqlRewriterX {
 
-    NullPagingSQLRewriter rewriter = new NullPagingSQLRewriter();
-
-    public void testRewrite() {
-        String sql = "SELECT * FROM EMP WHERE ENAME = 'SCOTT'";
-        String actual = rewriter.rewrite(sql, null, null);
-        assertEquals(sql, actual);
-    }
+    /**
+     * 指定されたSQL文を書き換え、 ページング処理が含まれたSQLを返します。
+     * 
+     * @param sql 書き換え対象のSQL
+     * @param args 対象のSQLにバインドされる予定の値
+     * @param argTypes 対象のSQLにバインドされる予定の値の型
+     * @return 書き換え済みのSQL
+     */
+    public String rewrite(String sql, Object[] args, Class[] argTypes);
 
 }

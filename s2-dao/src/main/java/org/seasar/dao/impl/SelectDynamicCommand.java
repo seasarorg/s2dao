@@ -18,7 +18,7 @@ package org.seasar.dao.impl;
 import javax.sql.DataSource;
 
 import org.seasar.dao.CommandContext;
-import org.seasar.dao.pager.PagingSQLRewriter;
+import org.seasar.dao.pager.PagingSqlRewriterX;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
@@ -34,18 +34,18 @@ public class SelectDynamicCommand extends AbstractDynamicCommand {
 
     private ResultSetFactory resultSetFactory;
 
-    private PagingSQLRewriter pagingSQLRewriter;
+    private PagingSqlRewriterX pagingSqlRewriterX;
 
     public SelectDynamicCommand(DataSource dataSource,
             StatementFactory statementFactory,
             ResultSetHandler resultSetHandler,
             ResultSetFactory resultSetFactory,
-            PagingSQLRewriter pagingSQLRewriter) {
+            PagingSqlRewriterX pagingSqlRewriterX) {
 
         super(dataSource, statementFactory);
         this.resultSetHandler = resultSetHandler;
         this.resultSetFactory = resultSetFactory;
-        this.pagingSQLRewriter = pagingSQLRewriter;
+        this.pagingSqlRewriterX = pagingSqlRewriterX;
     }
 
     public ResultSetHandler getResultSetHandler() {
@@ -54,7 +54,7 @@ public class SelectDynamicCommand extends AbstractDynamicCommand {
 
     public Object execute(Object[] args) {
         CommandContext ctx = apply(args);
-        String executingSql = pagingSQLRewriter.rewrite(ctx.getSql(), ctx
+        String executingSql = pagingSqlRewriterX.rewrite(ctx.getSql(), ctx
                 .getBindVariables(), ctx.getBindVariableTypes());
         BasicSelectHandler selectHandler = new BasicSelectHandler(
                 getDataSource(), executingSql, resultSetHandler,
