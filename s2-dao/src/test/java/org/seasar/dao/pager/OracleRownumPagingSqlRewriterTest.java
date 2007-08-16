@@ -21,13 +21,13 @@ import junit.framework.TestCase;
  * @author jundu
  *
  */
-public class OracleRownumPagingSqlRewriterXTest extends TestCase {
+public class OracleRownumPagingSqlRewriterTest extends TestCase {
 
-    OracleRownumPagingSqlRewriterX rewriter;
+    OracleRownumPagingSqlRewriter rewriter;
 
     protected void setUp() throws Exception {
         super.setUp();
-        rewriter = new OracleRownumPagingSqlRewriterX();
+        rewriter = new OracleRownumPagingSqlRewriter();
     }
 
     public void testMakeCountSql() {

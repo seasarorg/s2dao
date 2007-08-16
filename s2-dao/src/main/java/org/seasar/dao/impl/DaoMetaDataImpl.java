@@ -49,8 +49,8 @@ import org.seasar.dao.SqlFileNotFoundRuntimeException;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.dao.handler.ProcedureHandlerImpl;
-import org.seasar.dao.pager.NullPagingSqlRewriterX;
-import org.seasar.dao.pager.PagingSqlRewriterX;
+import org.seasar.dao.pager.NullPagingSqlRewriter;
+import org.seasar.dao.pager.PagingSqlRewriter;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
@@ -130,7 +130,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected boolean useDaoClassForLog = false;
 
-    protected PagingSqlRewriterX pagingSqlRewriterX = new NullPagingSqlRewriterX();
+    protected PagingSqlRewriter pagingSqlRewriter = new NullPagingSqlRewriter();
 
     public DaoMetaDataImpl() {
     }
@@ -344,7 +344,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected SelectDynamicCommand createSelectDynamicCommand(
             final ResultSetHandler rsh) {
         return new SelectDynamicCommand(dataSource, statementFactory, rsh,
-                resultSetFactory, pagingSqlRewriterX);
+                resultSetFactory, pagingSqlRewriter);
     }
 
     protected SelectDynamicCommand createSelectDynamicCommand(
@@ -1044,8 +1044,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
         this.daoAnnotationReader = daoAnnotationReader;
     }
 
-    public void setPagingSQLRewriter(PagingSqlRewriterX pagingSqlRewriterX) {
-        this.pagingSqlRewriterX = pagingSqlRewriterX;
+    public void setPagingSQLRewriter(PagingSqlRewriter pagingSqlRewriter) {
+        this.pagingSqlRewriter = pagingSqlRewriter;
     }
 
 }

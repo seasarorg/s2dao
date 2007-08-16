@@ -21,9 +21,9 @@ import junit.framework.TestCase;
  * @author jundu
  *
  */
-public class NullPagingSqlRewriterXTest extends TestCase {
+public class NullPagingSqlRewriterTest extends TestCase {
 
-    NullPagingSqlRewriterX rewriter = new NullPagingSqlRewriterX();
+    NullPagingSqlRewriter rewriter = new NullPagingSqlRewriter();
 
     public void testRewrite() {
         String sql = "SELECT * FROM EMP WHERE ENAME = 'SCOTT'";

@@ -21,7 +21,7 @@ package org.seasar.dao.pager;
  * @author jundu
  *
  */
-public interface PagingSqlRewriterX {
+public interface PagingSqlRewriter {
 
     /**
      * 指定されたSQL文を書き換え、 ページング処理が含まれたSQLを返します。

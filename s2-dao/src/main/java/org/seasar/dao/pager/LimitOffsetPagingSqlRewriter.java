@@ -19,7 +19,7 @@ package org.seasar.dao.pager;
  * @author jundu
  *
  */
-public class OracleRownumPagingSqlRewriterX extends AbstractPagingSqlRewriterX {
+public class LimitOffsetPagingSqlRewriter extends AbstractPagingSqlRewriter {
 
     /* (non-Javadoc)
      * @see org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeCountSql(java.lang.String)
@@ -31,7 +31,7 @@ public class OracleRownumPagingSqlRewriterX extends AbstractPagingSqlRewriterX {
         } else {
             sqlBuf.append(baseSQL);
         }
-        sqlBuf.append(")");
+        sqlBuf.append(") AS total");
         return sqlBuf.toString();
     }
 
@@ -39,22 +39,11 @@ public class OracleRownumPagingSqlRewriterX extends AbstractPagingSqlRewriterX {
      * @see org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeLimitOffsetSql(java.lang.String, int, int)
      */
     String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
-        if (offset < 0) {
-            throw new IllegalArgumentException(
-                    "The offset must be greater than or equal to zero.("
-                            + offset + ")");
-        }
         StringBuffer sqlBuf = new StringBuffer(baseSQL);
-        sqlBuf
-                .insert(0,
-                        "SELECT * FROM (SELECT ROWNUM AS S2DAO_ROWNUMBER, S2DAO_ORIGINAL_DATA.* FROM (");
-        sqlBuf.append(") S2DAO_ORIGINAL_DATA) WHERE S2DAO_ROWNUMBER BETWEEN ");
-        sqlBuf.append(offset + 1);
-        sqlBuf.append(" AND ");
-        sqlBuf.append(offset + limit);
-        sqlBuf.append(" AND ROWNUM <= ");
+        sqlBuf.append(" LIMIT ");
         sqlBuf.append(limit);
-        sqlBuf.append(" ORDER BY S2DAO_ROWNUMBER");
+        sqlBuf.append(" OFFSET ");
+        sqlBuf.append(offset);
         return sqlBuf.toString();
     }
 

@@ -25,7 +25,7 @@
 
 	<!-- LIMIT OFFSET句を使ったSQL書き換えによるページング処理用設定 -->
 	<!--
-	<component name="pagingSQLRewriter" class="org.seasar.dao.pager.LimitOffsetPagingSqlRewriterX"/>
+	<component name="pagingSqlRewriter" class="org.seasar.dao.pager.LimitOffsetPagingSqlRewriter"/>
 	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
 	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
 		<arg>
@@ -40,7 +40,7 @@
 
 	<!-- ORACLE ROWNUM句を使ったSQL書き換えによるページング処理用設定 -->
 	<!--
-	<component name="pagingSQLRewriter" class="org.seasar.dao.pager.OracleRownumPagingSqlRewriterX"/>
+	<component name="pagingSqlRewriter" class="org.seasar.dao.pager.OracleRownumPagingSqlRewriter"/>
 	<component class="org.seasar.extension.jdbc.impl.BasicResultSetFactory"/>
 	<component class="org.seasar.extension.jdbc.impl.ConfigurableStatementFactory">
 		<arg>
