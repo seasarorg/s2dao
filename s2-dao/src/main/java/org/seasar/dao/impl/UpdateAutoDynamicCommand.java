@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
 import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
-import org.seasar.dao.SqlCommand;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
 
@@ -31,8 +30,7 @@ import org.seasar.extension.jdbc.StatementFactory;
  * @author taichi
  * 
  */
-public class UpdateAutoDynamicCommand extends AbstractSqlCommand implements
-        SqlCommand {
+public class UpdateAutoDynamicCommand extends AbstractSqlCommand {
 
     private BeanMetaData beanMetaData;
 
