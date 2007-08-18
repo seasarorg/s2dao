@@ -98,13 +98,13 @@ public class InsertAutoDynamicCommand implements SqlCommand {
         List types = new ArrayList();
         final String timestampPropertyName = bmd.getTimestampPropertyName();
         final String versionNoPropertyName = bmd.getVersionNoPropertyName();
-        final IdentifierGenerator identifierGenerator = bmd
-                .getIdentifierGenerator();
 
         for (int i = 0; i < propertyNames.length; ++i) {
             PropertyType pt = bmd.getPropertyType(propertyNames[i]);
             if (pt.isPrimaryKey()) {
-                if (!identifierGenerator.isSelfGenerate()) {
+                final IdentifierGenerator generator = bmd
+                        .getIdentifierGenerator(pt.getPropertyName());
+                if (!generator.isSelfGenerate()) {
                     continue;
                 }
             } else {

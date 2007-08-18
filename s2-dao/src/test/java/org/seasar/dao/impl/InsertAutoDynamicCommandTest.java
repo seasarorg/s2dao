@@ -159,6 +159,17 @@ public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
         assertEquals("1", new Integer(1), count);
     }
 
+    public void testInsertCompositePk() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(CompositePkDao.class);
+        SqlCommand cmd = dmd.getSqlCommand("insert");
+        CompositePk compositePk = new CompositePk();
+        compositePk.setPk2(10);
+        compositePk.setAaa("hoge");
+        cmd.execute(new Object[] { compositePk });
+        assertNotNull(compositePk.getPk1());
+        assertEquals(10, compositePk.getPk2());
+    }
+
     public void setUp() {
         include("j2ee.dicon");
     }
@@ -229,6 +240,52 @@ public class InsertAutoDynamicCommandTest extends S2DaoTestCase {
 
         public void setName(String name) {
             this.name = name;
+        }
+    }
+
+    public static interface CompositePkDao {
+
+        public Class BEAN = CompositePk.class;
+
+        public void insert(CompositePk compositePk);
+    }
+
+    public static class CompositePk {
+
+        public static final String TABLE = "COMPOSITE_PK_TABLE";
+
+        public static final String pk1_ID = "sequence, sequenceName=myseq";
+
+        public static final String pk2_ID = "assigned";
+
+        private Integer pk1;
+
+        private int pk2;
+
+        private String aaa;
+
+        public String getAaa() {
+            return aaa;
+        }
+
+        public void setAaa(String aaa) {
+            this.aaa = aaa;
+        }
+
+        public Integer getPk1() {
+            return pk1;
+        }
+
+        public void setPk1(Integer pk1) {
+            this.pk1 = pk1;
+        }
+
+        public int getPk2() {
+            return pk2;
+        }
+
+        public void setPk2(int pk2) {
+            this.pk2 = pk2;
         }
     }
 

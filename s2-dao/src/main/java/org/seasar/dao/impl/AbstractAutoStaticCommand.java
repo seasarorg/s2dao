@@ -73,15 +73,22 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
         for (int i = 0; i < propertyNames.length; ++i) {
             PropertyType pt = getBeanMetaData().getPropertyType(
                     propertyNames[i]);
-            if (pt.isPrimaryKey()
-                    && !getBeanMetaData().getIdentifierGenerator()
-                            .isSelfGenerate()) {
-                continue;
+            if (isInsertTarget(pt)) {
+                types.add(pt);
             }
-            types.add(pt);
         }
         propertyTypes = (PropertyType[]) types.toArray(new PropertyType[types
                 .size()]);
+    }
+
+    protected boolean isInsertTarget(PropertyType propertyType) {
+        if (propertyType.isPrimaryKey()) {
+            String name = propertyType.getPropertyName();
+            IdentifierGenerator generator = getBeanMetaData()
+                    .getIdentifierGenerator(name);
+            return generator.isSelfGenerate();
+        }
+        return true;
     }
 
     protected void setupUpdatePropertyTypes(String[] propertyNames) {
@@ -112,24 +119,20 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
         buf.append("INSERT INTO ");
         buf.append(bmd.getTableName());
         buf.append(" (");
-        final IdentifierGenerator identifierGenerator = bmd
-                .getIdentifierGenerator();
         for (int i = 0; i < propertyTypes.length; ++i) {
             PropertyType pt = propertyTypes[i];
-            if (pt.isPrimaryKey() && !identifierGenerator.isSelfGenerate()) {
-                continue;
+            if (isInsertTarget(pt)) {
+                buf.append(pt.getColumnName());
+                buf.append(", ");
             }
-            buf.append(pt.getColumnName());
-            buf.append(", ");
         }
         buf.setLength(buf.length() - 2);
         buf.append(") VALUES (");
         for (int i = 0; i < propertyTypes.length; ++i) {
             PropertyType pt = propertyTypes[i];
-            if (pt.isPrimaryKey() && !identifierGenerator.isSelfGenerate()) {
-                continue;
+            if (isInsertTarget(pt)) {
+                buf.append("?, ");
             }
-            buf.append("?, ");
         }
         buf.setLength(buf.length() - 2);
         buf.append(")");

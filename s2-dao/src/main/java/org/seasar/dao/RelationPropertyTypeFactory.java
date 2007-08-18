@@ -15,17 +15,17 @@
  */
 package org.seasar.dao;
 
-import javax.sql.DataSource;
-
 /**
- * @author higa
+ * {@link RelationPropertyType}のファクトリのインタフェースです。
  * 
+ * @author taedium
  */
-public interface IdentifierGenerator {
+public interface RelationPropertyTypeFactory {
 
-    public boolean isSelfGenerate();
-
-    public void setIdentifier(Object bean, DataSource ds);
-
-    public String getPropertyName();
+    /**
+     * {@link RelationPropertyType}の配列を生成します。
+     * 
+     * @return {@link RelationPropertyType}の配列
+     */
+    RelationPropertyType[] createRelationPropertyTypes();
 }

@@ -15,17 +15,28 @@
  */
 package org.seasar.dao;
 
-import javax.sql.DataSource;
+import org.seasar.extension.jdbc.PropertyType;
 
 /**
- * @author higa
+ * {@link PropertyType}のファクトリのインタフェースです。
  * 
+ * @author taedium
  */
-public interface IdentifierGenerator {
+public interface PropertyTypeFactory {
 
-    public boolean isSelfGenerate();
+    /**
+     * {@link PropertyType}の配列を生成します。
+     * 
+     * @return {@link PropertyType}の配列
+     */
+    PropertyType[] createPropertyTypes();
 
-    public void setIdentifier(Object bean, DataSource ds);
+    /**
+     * {@link PropertyType}の配列を生成します。
+     * 
+     * @param tableName テーブル名
+     * @return {@link PropertyType}の配列
+     */
+    PropertyType[] createPropertyTypes(String tableName);
 
-    public String getPropertyName();
 }

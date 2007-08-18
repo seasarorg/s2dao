@@ -45,7 +45,7 @@ public abstract class BeanMetaDataImplTest extends S2DaoTestCase {
         assertEquals("6", 1, rpt.getKeySize());
         assertEquals("7", "ddd", rpt.getMyKey(0));
         assertEquals("8", "id", rpt.getYourKey(0));
-        assertNotNull("9", bmd.getIdentifierGenerator());
+        assertNotNull("9", bmd.getIdentifierGenerator(0));
         assertEquals("10", 1, bmd.getPrimaryKeySize());
         assertEquals("11", "aaa", bmd.getPrimaryKey(0));
     }
@@ -140,10 +140,16 @@ public abstract class BeanMetaDataImplTest extends S2DaoTestCase {
 
     public void testConvertClassName() throws Exception {
         BeanMetaDataFactoryImpl factory = (BeanMetaDataFactoryImpl) getBeanMetaDataFactory();
-        factory
-                .setTableNaming(new DecamelizeTableNaming());
+        factory.setTableNaming(new DecamelizeTableNaming());
         BeanMetaData metaData = factory.createBeanMetaData(NoPkTable.class);
         assertEquals("NO_PK_TABLE", metaData.getTableName());
+    }
+
+    public void testMultiIdentities() throws Exception {
+        BeanMetaData bmd = createBeanMetaData(getBeanClass("Ggg"));
+        assertEquals(2, bmd.getIdentifierGeneratorSize());
+        assertNotNull(bmd.getIdentifierGenerator("id"));
+        assertNotNull(bmd.getIdentifierGenerator("id2"));
     }
 
     private void runTestEmployee(BeanMetaData bmd) {

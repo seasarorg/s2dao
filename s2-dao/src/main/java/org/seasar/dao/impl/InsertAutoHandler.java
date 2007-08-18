@@ -40,18 +40,22 @@ public class InsertAutoHandler extends AbstractAutoHandler {
     }
 
     protected void preUpdateBean(Object bean) {
-        IdentifierGenerator generator = getBeanMetaData()
-                .getIdentifierGenerator();
-        if (generator.isSelfGenerate()) {
-            generator.setIdentifier(bean, getDataSource());
+        BeanMetaData bmd = getBeanMetaData();
+        for (int i = 0; i < bmd.getIdentifierGeneratorSize(); i++) {
+            IdentifierGenerator generator = bmd.getIdentifierGenerator(i);
+            if (generator.isSelfGenerate()) {
+                generator.setIdentifier(bean, getDataSource());
+            }
         }
     }
 
     protected void postUpdateBean(Object bean) {
-        IdentifierGenerator generator = getBeanMetaData()
-                .getIdentifierGenerator();
-        if (!generator.isSelfGenerate()) {
-            generator.setIdentifier(bean, getDataSource());
+        BeanMetaData bmd = getBeanMetaData();
+        for (int i = 0; i < bmd.getIdentifierGeneratorSize(); i++) {
+            IdentifierGenerator generator = bmd.getIdentifierGenerator(i);
+            if (!generator.isSelfGenerate()) {
+                generator.setIdentifier(bean, getDataSource());
+            }
         }
         updateVersionNoIfNeed(bean);
         updateTimestampIfNeed(bean);

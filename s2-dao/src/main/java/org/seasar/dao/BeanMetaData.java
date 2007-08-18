@@ -67,11 +67,13 @@ public interface BeanMetaData extends DtoMetaData {
 
     public String getPrimaryKey(int index);
 
-    public IdentifierGenerator getIdentifierGenerator();
+    public int getIdentifierGeneratorSize();
+
+    public IdentifierGenerator getIdentifierGenerator(int index);
+
+    public IdentifierGenerator getIdentifierGenerator(String propertyName);
 
     public String getAutoSelectList();
-
-    public boolean isStopRelationCreation();
 
     public Set getModifiedPropertyNames(Object bean);
 

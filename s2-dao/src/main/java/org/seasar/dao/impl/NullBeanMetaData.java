@@ -48,11 +48,6 @@ public class NullBeanMetaData implements BeanMetaData {
         return null;
     }
 
-    public IdentifierGenerator getIdentifierGenerator() {
-        throwException();
-        return null;
-    }
-
     public Set getModifiedPropertyNames(Object bean) {
         throwException();
         return null;
@@ -143,11 +138,6 @@ public class NullBeanMetaData implements BeanMetaData {
         return false;
     }
 
-    public boolean isStopRelationCreation() {
-        throwException();
-        return false;
-    }
-
     public Class getBeanClass() {
         return NullBean.class;
     }
@@ -164,6 +154,21 @@ public class NullBeanMetaData implements BeanMetaData {
     }
 
     public int getPropertyTypeSize() {
+        throwException();
+        return 0;
+    }
+
+    public IdentifierGenerator getIdentifierGenerator(int index) {
+        throwException();
+        return null;
+    }
+
+    public IdentifierGenerator getIdentifierGenerator(String propertyName) {
+        throwException();
+        return null;
+    }
+
+    public int getIdentifierGeneratorSize() {
         throwException();
         return 0;
     }

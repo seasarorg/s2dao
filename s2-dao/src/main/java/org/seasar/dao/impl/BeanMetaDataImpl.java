@@ -15,34 +15,28 @@
  */
 package org.seasar.dao.impl;
 
-import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.seasar.dao.BeanMetaData;
-import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.IdentifierGenerator;
 import org.seasar.dao.NoPersistentPropertyTypeRuntimeException;
 import org.seasar.dao.RelationPropertyType;
+import org.seasar.dao.RelationPropertyTypeFactory;
 import org.seasar.dao.TableNaming;
 import org.seasar.dao.id.IdentifierGeneratorFactory;
 import org.seasar.extension.jdbc.ColumnNotFoundRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
-import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.PropertyNotFoundRuntimeException;
 import org.seasar.framework.beans.factory.BeanDescFactory;
-import org.seasar.framework.beans.impl.PropertyDescImpl;
-import org.seasar.framework.log.Logger;
 import org.seasar.framework.util.CaseInsensitiveMap;
 import org.seasar.framework.util.ClassUtil;
-import org.seasar.framework.util.StringUtil;
 
 /**
  * @author higa
@@ -52,21 +46,19 @@ import org.seasar.framework.util.StringUtil;
  */
 public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
-    private static Logger logger = Logger.getLogger(BeanMetaDataImpl.class);
-
     private String tableName;
 
     private Map propertyTypesByColumnName = new CaseInsensitiveMap();
 
     private List relationPropertyTypes = new ArrayList();
 
-    private PropertyType[] primaryKeys = new PropertyType[0];
+    private PropertyType[] primaryKeys;
 
     private String autoSelectList;
 
-    private boolean isStopRelationCreation;
+    private IdentifierGenerator[] identifierGenerators;
 
-    private IdentifierGenerator identifierGenerator;
+    private Map identifierGeneratorsByPropertyName = new HashMap();
 
     private String versionNoPropertyName;
 
@@ -74,15 +66,11 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     private Dbms dbms;
 
-    private DatabaseMetaData databaseMetaData;
-
-    private BeanMetaDataFactory beanMetaDataFactory;
-
-    private int relationNestLevel;
-
     private ModifiedPropertySupport modifiedPropertySupport;
 
     private TableNaming tableNaming;
+
+    private RelationPropertyTypeFactory relationPropertyTypeFactory;
 
     public BeanMetaDataImpl() {
     }
@@ -90,9 +78,10 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     public void initialize() {
         BeanDesc beanDesc = BeanDescFactory.getBeanDesc(getBeanClass());
         setupTableName(beanDesc);
-        setupProperty(beanDesc, databaseMetaData, dbms);
-        setupDatabaseMetaData(beanDesc, databaseMetaData, dbms);
+        setupProperty();
+        setupPrimaryKey();
         setupPropertiesByColumnName();
+        setupIdentityGeneratorsByPropertyName();
     }
 
     public void setDbms(Dbms dbms) {
@@ -291,98 +280,41 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         }
     }
 
-    protected void setupProperty(BeanDesc beanDesc,
-            DatabaseMetaData dbMetaData, Dbms dbms) {
+    protected void setupProperty() {
+        PropertyType[] propertyTypes = propertyTypeFactory
+                .createPropertyTypes(tableName);
+        for (int i = 0; i < propertyTypes.length; i++) {
+            PropertyType pt = propertyTypes[i];
+            addPropertyType(pt);
+        }
 
-        for (int i = 0; i < beanDesc.getPropertyDescSize(); ++i) {
-            PropertyDesc pd = beanDesc.getPropertyDesc(i);
-            PropertyType pt = null;
-            if (beanAnnotationReader.hasRelationNo(pd)) {
-                if (!isStopRelationCreation) {
-                    RelationPropertyType rpt = createRelationPropertyType(
-                            beanDesc, pd, dbMetaData, dbms);
-                    addRelationPropertyType(rpt);
-                }
-            } else {
-                pt = createPropertyType(beanDesc, pd);
-                addPropertyType(pt);
-            }
-            if (identifierGenerator == null) {
-                String idAnnotation = beanAnnotationReader.getId(pd, dbms);
-                if (idAnnotation != null) {
-                    identifierGenerator = IdentifierGeneratorFactory
-                            .createIdentifierGenerator(pd.getPropertyName(),
-                                    dbms, idAnnotation);
-                    primaryKeys = new PropertyType[] { pt };
-                    pt.setPrimaryKey(true);
-                }
-            }
+        RelationPropertyType[] relationPropertyTypes = relationPropertyTypeFactory
+                .createRelationPropertyTypes();
+        for (int i = 0; i < relationPropertyTypes.length; i++) {
+            RelationPropertyType rpt = relationPropertyTypes[i];
+            addRelationPropertyType(rpt);
         }
     }
 
-    protected void setupDatabaseMetaData(BeanDesc beanDesc,
-            DatabaseMetaData dbMetaData, Dbms dbms) {
-        setupPropertyPersistentAndColumnName(beanDesc, dbMetaData);
-        setupPrimaryKey(dbMetaData, dbms);
-    }
-
-    protected void setupPrimaryKey(DatabaseMetaData dbMetaData, Dbms dbms) {
-        if (identifierGenerator == null) {
-            List pkeyList = new ArrayList();
-            Set primaryKeySet = DatabaseMetaDataUtil.getPrimaryKeySet(
-                    dbMetaData, tableName);
-            for (int i = 0; i < getPropertyTypeSize(); ++i) {
-                PropertyType pt = getPropertyType(i);
-                if (primaryKeySet.contains(pt.getColumnName())) {
-                    pt.setPrimaryKey(true);
-                    pkeyList.add(pt);
-                } else {
-                    pt.setPrimaryKey(false);
-                }
-            }
-            primaryKeys = (PropertyType[]) pkeyList
-                    .toArray(new PropertyType[pkeyList.size()]);
-            identifierGenerator = IdentifierGeneratorFactory
-                    .createIdentifierGenerator(null, dbms);
-        }
-    }
-
-    protected void setupPropertyPersistentAndColumnName(BeanDesc beanDesc,
-            DatabaseMetaData dbMetaData) {
-
-        Set columnSet = DatabaseMetaDataUtil
-                .getColumnMap(dbMetaData, tableName).keySet();
-        if (columnSet.isEmpty()) {
-            logger.log("WDAO0002", new Object[] { tableName });
-        }
-        for (Iterator i = columnSet.iterator(); i.hasNext();) {
-
-            String columnName = (String) i.next();
-            String columnName2 = StringUtil.replace(columnName, "_", "");
-            for (int j = 0; j < getPropertyTypeSize(); ++j) {
-                PropertyType pt = getPropertyType(j);
-                if (pt.getColumnName().equalsIgnoreCase(columnName2)) {
-                    final PropertyDesc pd = pt.getPropertyDesc();
-                    if (beanAnnotationReader.getColumnAnnotation(pd) == null) {
-                        pt.setColumnName(columnName);
-                    }
-                    break;
-                }
-            }
-        }
-        String[] props = beanAnnotationReader.getNoPersisteneProps();
-        if (props != null) {
-            for (int i = 0; i < props.length; ++i) {
-                PropertyType pt = getPropertyType(props[i].trim());
-                pt.setPersistent(false);
-            }
-        }
+    protected void setupPrimaryKey() {
+        List keys = new ArrayList();
+        List generators = new ArrayList();
         for (int i = 0; i < getPropertyTypeSize(); ++i) {
             PropertyType pt = getPropertyType(i);
-            if (!columnSet.contains(pt.getColumnName())) {
-                pt.setPersistent(false);
+            if (pt.isPrimaryKey()) {
+                keys.add(pt);
+                PropertyDesc pd = pt.getPropertyDesc();
+                String idType = beanAnnotationReader.getId(pd, dbms);
+                IdentifierGenerator generator = IdentifierGeneratorFactory
+                        .createIdentifierGenerator(pd.getPropertyName(), dbms,
+                                idType);
+                generators.add(generator);
             }
         }
+        primaryKeys = (PropertyType[]) keys.toArray(new PropertyType[keys
+                .size()]);
+        identifierGenerators = (IdentifierGenerator[]) generators
+                .toArray(new IdentifierGenerator[generators.size()]);
     }
 
     protected void setupPropertiesByColumnName() {
@@ -392,47 +324,12 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         }
     }
 
-    protected RelationPropertyType createRelationPropertyType(
-            BeanDesc beanDesc, PropertyDesc propertyDesc,
-            DatabaseMetaData dbMetaData, Dbms dbms) {
-
-        String[] myKeys = new String[0];
-        String[] yourKeys = new String[0];
-        int relno = beanAnnotationReader.getRelationNo(propertyDesc);
-        String relkeys = beanAnnotationReader.getRelationKey(propertyDesc);
-        if (relkeys != null) {
-            StringTokenizer st = new StringTokenizer(relkeys, " \t\n\r\f,");
-            List myKeyList = new ArrayList();
-            List yourKeyList = new ArrayList();
-            while (st.hasMoreTokens()) {
-                String token = st.nextToken();
-                int index = token.indexOf(':');
-                if (index > 0) {
-                    myKeyList.add(token.substring(0, index));
-                    yourKeyList.add(token.substring(index + 1));
-                } else {
-                    myKeyList.add(token);
-                    yourKeyList.add(token);
-                }
-            }
-            myKeys = (String[]) myKeyList.toArray(new String[myKeyList.size()]);
-            yourKeys = (String[]) yourKeyList.toArray(new String[yourKeyList
-                    .size()]);
+    protected void setupIdentityGeneratorsByPropertyName() {
+        for (int i = 0; i < getIdentifierGeneratorSize(); ++i) {
+            IdentifierGenerator generator = getIdentifierGenerator(i);
+            identifierGeneratorsByPropertyName.put(generator.getPropertyName(),
+                    generator);
         }
-        final BeanMetaData beanMetaData = createRelationBeanMetaData(propertyDesc
-                .getPropertyType());
-        final PropertyDescImpl enhancedPd = new PropertyDescImpl(propertyDesc
-                .getPropertyName(), beanMetaData.getBeanClass(), propertyDesc
-                .getReadMethod(), propertyDesc.getWriteMethod(), beanDesc);
-        final RelationPropertyType rpt = new RelationPropertyTypeImpl(
-                enhancedPd, relno, myKeys, yourKeys, beanMetaData);
-        return rpt;
-    }
-
-    protected BeanMetaData createRelationBeanMetaData(
-            final Class relationBeanClass) {
-        return beanMetaDataFactory.createBeanMetaData(databaseMetaData,
-                relationBeanClass, relationNestLevel + 1);
     }
 
     protected void addRelationPropertyType(RelationPropertyType rpt) {
@@ -456,8 +353,17 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         return primaryKeys[index].getColumnName();
     }
 
-    public IdentifierGenerator getIdentifierGenerator() {
-        return identifierGenerator;
+    public int getIdentifierGeneratorSize() {
+        return identifierGenerators.length;
+    }
+
+    public IdentifierGenerator getIdentifierGenerator(int index) {
+        return identifierGenerators[index];
+    }
+
+    public IdentifierGenerator getIdentifierGenerator(String propertyName) {
+        return (IdentifierGenerator) identifierGeneratorsByPropertyName
+                .get(propertyName);
     }
 
     /**
@@ -515,29 +421,6 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         autoSelectList = buf.toString();
     }
 
-    /**
-     * @see org.seasar.dao.BeanMetaData#isStopRelationCreation()
-     */
-    public boolean isStopRelationCreation() {
-        return isStopRelationCreation;
-    }
-
-    public void setStopRelationCreation(boolean isStopRelationCreation) {
-        this.isStopRelationCreation = isStopRelationCreation;
-    }
-
-    public void setDatabaseMetaData(DatabaseMetaData databaseMetaData) {
-        this.databaseMetaData = databaseMetaData;
-    }
-
-    public void setBeanMetaDataFactory(BeanMetaDataFactory beanMetaDataFactory) {
-        this.beanMetaDataFactory = beanMetaDataFactory;
-    }
-
-    public void setRelationNestLevel(int relationNestLevel) {
-        this.relationNestLevel = relationNestLevel;
-    }
-
     public ModifiedPropertySupport getModifiedPropertySupport() {
         return modifiedPropertySupport;
     }
@@ -551,18 +434,23 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         return getModifiedPropertySupport().getModifiedPropertyNames(bean);
     }
 
-    public static interface ModifiedPropertySupport {
-
-        Set getModifiedPropertyNames(Object bean);
-
-    }
-
     public TableNaming getTableNaming() {
         return tableNaming;
     }
 
     public void setTableNaming(TableNaming tableNaming) {
         this.tableNaming = tableNaming;
+    }
+
+    public void setRelationPropertyTypeFactory(
+            RelationPropertyTypeFactory relationPropertyTypeFactory) {
+        this.relationPropertyTypeFactory = relationPropertyTypeFactory;
+    }
+
+    public static interface ModifiedPropertySupport {
+
+        Set getModifiedPropertyNames(Object bean);
+
     }
 
 }

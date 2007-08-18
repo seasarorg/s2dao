@@ -19,6 +19,7 @@ import java.sql.DatabaseMetaData;
 import java.util.List;
 
 import org.seasar.dao.AnnotationReaderFactory;
+import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
@@ -26,6 +27,7 @@ import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.DtoMetaDataFactory;
+import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
@@ -36,6 +38,7 @@ import org.seasar.dao.impl.DaoNamingConventionImpl;
 import org.seasar.dao.impl.DtoMetaDataFactoryImpl;
 import org.seasar.dao.impl.DtoMetaDataImpl;
 import org.seasar.dao.impl.FieldAnnotationReaderFactory;
+import org.seasar.dao.impl.PropertyTypeFactoryImpl;
 import org.seasar.dao.impl.ResultSetHandlerFactoryImpl;
 import org.seasar.dao.impl.ValueTypeFactoryImpl;
 import org.seasar.dao.pager.PagerContext;
@@ -108,10 +111,14 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     protected DtoMetaDataImpl createDtoMetaData(final Class dtoClass) {
         final DtoMetaDataImpl dmd = new DtoMetaDataImpl();
+        final BeanAnnotationReader reader = getAnnotationReaderFactory()
+                .createBeanAnnotationReader(dtoClass);
+        PropertyTypeFactory propertyTypeFactory = new PropertyTypeFactoryImpl(
+                dtoClass, reader, getValueTypeFactory());
         dmd.setBeanClass(dtoClass);
         dmd.setBeanAnnotationReader(getAnnotationReaderFactory()
                 .createBeanAnnotationReader(dtoClass));
-        dmd.setValueTypeFactory(getValueTypeFactory());
+        dmd.setPropertyTypeFactory(propertyTypeFactory);
         dmd.initialize();
         return dmd;
     }

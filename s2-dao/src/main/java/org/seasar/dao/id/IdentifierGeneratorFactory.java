@@ -24,6 +24,7 @@ import org.seasar.dao.IdentifierGenerator;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
+import org.seasar.framework.exception.EmptyRuntimeException;
 import org.seasar.framework.util.ClassUtil;
 import org.seasar.framework.util.ConstructorUtil;
 import org.seasar.framework.util.StringUtil;
@@ -60,7 +61,12 @@ public class IdentifierGeneratorFactory {
 
     public static IdentifierGenerator createIdentifierGenerator(
             String propertyName, Dbms dbms, String annotation) {
-
+        if (propertyName == null) {
+            throw new EmptyRuntimeException("propertyName");
+        }
+        if (dbms == null) {
+            throw new EmptyRuntimeException("dbms");
+        }
         if (annotation == null) {
             return new AssignedIdentifierGenerator(propertyName, dbms);
         }

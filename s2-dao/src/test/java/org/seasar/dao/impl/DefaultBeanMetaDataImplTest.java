@@ -42,6 +42,8 @@ public class DefaultBeanMetaDataImplTest extends BeanMetaDataImplTest {
             return Eee.class;
         } else if (className.equals("Fff")) {
             return Fff.class;
+        } else if (className.equals("Ggg")) {
+            return Ggg.class;
         } else if (className.equals("IdentityTable")) {
             return IdentityTable.class;
         }
@@ -176,5 +178,32 @@ public class DefaultBeanMetaDataImplTest extends BeanMetaDataImplTest {
         public void setUpdated(Timestamp updated) {
             this.updated = updated;
         }
+    }
+
+    public static class Ggg {
+        public static final String id_ID = "assigned";
+
+        public static final String id2_ID = "sequence";
+
+        private Integer id;
+
+        private Integer id2;
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        public Integer getId2() {
+            return id2;
+        }
+
+        public void setId2(Integer id2) {
+            this.id2 = id2;
+        }
+
     }
 }

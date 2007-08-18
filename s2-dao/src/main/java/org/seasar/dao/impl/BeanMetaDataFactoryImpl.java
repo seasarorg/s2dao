@@ -28,6 +28,10 @@ import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.NullBean;
+import org.seasar.dao.PropertyTypeFactory;
+import org.seasar.dao.PropertyTypeFactoryBuilder;
+import org.seasar.dao.RelationPropertyTypeFactory;
+import org.seasar.dao.RelationPropertyTypeFactoryBuilder;
 import org.seasar.dao.TableNaming;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
@@ -64,6 +68,14 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     protected TableNaming tableNaming = new DefaultTableNaming();
 
+    public static final String propertyTypeFactoryBuilder_BINDING = "bindingType=may";
+
+    protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder = new PropertyTypeFactoryBuilderImpl();
+
+    public static final String relationPropertyTypeFactoryBuilder_BINDING = "bindingType=may";
+
+    protected RelationPropertyTypeFactoryBuilder relationPropertyTypeFactoryBuilder = new RelationPropertyTypeFactoryBuilderImpl();
+
     public BeanMetaData createBeanMetaData(final Class daoInterface,
             final Class beanClass) {
         if (NullBean.class == beanClass) {
@@ -95,46 +107,70 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         if (beanClass == null) {
             throw new NullPointerException("beanClass");
         }
-        final BeanMetaDataImpl bmd = createBeanMetaDataImpl();
         final BeanEnhancer enhancer = getBeanEnhancer();
         final Class originalBeanClass = enhancer.getOriginalClass(beanClass);
-        bmd.setDatabaseMetaData(dbMetaData);
         final Dbms dbms = getDbms(dbMetaData);
-        bmd.setDbms(dbms);
+        final boolean stopRelationCreation = isLimitRelationNestLevel(relationNestLevel);
         final BeanAnnotationReader bar = annotationReaderFactory
                 .createBeanAnnotationReader(originalBeanClass);
+        final String versionNoPropertyName = getVersionNoPropertyName(bar);
+        final String timestampPropertyName = getTimestampPropertyName(bar);
+        final PropertyTypeFactory ptf = createPropertyTypeFactory(
+                originalBeanClass, bar, dbMetaData, dbms);
+        final RelationPropertyTypeFactory rptf = createRelationPropertyTypeFactory(
+                originalBeanClass, bar, this, dbMetaData, relationNestLevel,
+                stopRelationCreation);
+        final BeanMetaDataImpl bmd = createBeanMetaDataImpl();
+
+        bmd.setDbms(dbms);
         bmd.setBeanAnnotationReader(bar);
-        bmd.setValueTypeFactory(valueTypeFactory);
-        bmd
-                .setStopRelationCreation(isLimitRelationNestLevel(relationNestLevel));
-        bmd.setBeanMetaDataFactory(this);
-        bmd.setRelationNestLevel(relationNestLevel);
-        final DaoNamingConvention namingConvention = getDaoNamingConvention();
-
-        final String versionNoPropertyName = bar.getVersionNoPropertyName();
-        if (versionNoPropertyName != null) {
-            bmd.setVersionNoPropertyName(versionNoPropertyName);
-        } else {
-            bmd.setVersionNoPropertyName(namingConvention
-                    .getVersionNoPropertyName());
-        }
-        final String timestampPropertyName = bar.getTimestampPropertyName();
-        if (timestampPropertyName != null) {
-            bmd.setTimestampPropertyName(timestampPropertyName);
-        } else {
-            bmd.setTimestampPropertyName(namingConvention
-                    .getTimestampPropertyName());
-        }
-
+        bmd.setVersionNoPropertyName(versionNoPropertyName);
+        bmd.setTimestampPropertyName(timestampPropertyName);
         bmd.setBeanClass(originalBeanClass);
         bmd.setTableNaming(tableNaming);
+        bmd.setPropertyTypeFactory(ptf);
+        bmd.setRelationPropertyTypeFactory(rptf);
         bmd.initialize();
+
         final Class enhancedBeanClass = enhancer.enhanceBeanClass(beanClass,
                 versionNoPropertyName, timestampPropertyName);
         bmd.setModifiedPropertySupport(enhancer.getSupporter());
         bmd.setBeanClass(enhancedBeanClass);
 
         return bmd;
+    }
+
+    protected String getVersionNoPropertyName(
+            BeanAnnotationReader beanAnnotationReader) {
+        final String defaultName = getDaoNamingConvention()
+                .getVersionNoPropertyName();
+        final String name = beanAnnotationReader.getVersionNoPropertyName();
+        return name != null ? name : defaultName;
+    }
+
+    protected String getTimestampPropertyName(
+            BeanAnnotationReader beanAnnotationReader) {
+        final String defaultName = getDaoNamingConvention()
+                .getTimestampPropertyName();
+        final String name = beanAnnotationReader.getTimestampPropertyName();
+        return name != null ? name : defaultName;
+    }
+
+    protected PropertyTypeFactory createPropertyTypeFactory(
+            Class originalBeanClass, BeanAnnotationReader beanAnnotationReader,
+            DatabaseMetaData databaseMetaData, Dbms dbms) {
+        return propertyTypeFactoryBuilder.build(originalBeanClass,
+                beanAnnotationReader, valueTypeFactory, databaseMetaData, dbms);
+    }
+
+    protected RelationPropertyTypeFactory createRelationPropertyTypeFactory(
+            Class originalBeanClass, BeanAnnotationReader beanAnnotationReader,
+            BeanMetaDataFactory beanMetaDataFactory,
+            DatabaseMetaData databaseMetaData, int relationNestLevel,
+            boolean isStopRelationCreation) {
+        return relationPropertyTypeFactoryBuilder.build(originalBeanClass,
+                beanAnnotationReader, beanMetaDataFactory, databaseMetaData,
+                relationNestLevel, isStopRelationCreation);
     }
 
     protected Dbms getDbms() {
@@ -194,6 +230,16 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     public void setTableNaming(TableNaming tableNameConverter) {
         this.tableNaming = tableNameConverter;
+    }
+
+    public void setPropertyTypeFactoryBuilder(
+            PropertyTypeFactoryBuilder propertyTypeFactoryBuilder) {
+        this.propertyTypeFactoryBuilder = propertyTypeFactoryBuilder;
+    }
+
+    public void setRelationPropertyTypeFactoryBuilder(
+            RelationPropertyTypeFactoryBuilder relationPropertyTypeFactoryBuilder) {
+        this.relationPropertyTypeFactoryBuilder = relationPropertyTypeFactoryBuilder;
     }
 
 }
