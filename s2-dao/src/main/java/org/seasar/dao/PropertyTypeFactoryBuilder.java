@@ -44,12 +44,12 @@ public interface PropertyTypeFactoryBuilder {
      * @param beanClass Beanのクラス
      * @param beanAnnotationReader Beanのアノテーションリーダ
      * @param valueTypeFactory {@link ValueType}のファクトリ
-     * @param databaseMetaData データベースのメタデータ
      * @param dbms DBMS
+     * @param databaseMetaData データベースのメタデータ
      * @return {@link PropertyTypeFactory}
      */
     PropertyTypeFactory build(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory,
-            DatabaseMetaData databaseMetaData, Dbms dbms);
+            ValueTypeFactory valueTypeFactory, Dbms dbms,
+            DatabaseMetaData databaseMetaData);
 }

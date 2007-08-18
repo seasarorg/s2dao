@@ -17,7 +17,7 @@ package org.seasar.dao.impl;
 
 import java.io.Serializable;
 
-public class Employee20 implements Serializable {
+public class Employee21 implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,7 +29,7 @@ public class Employee20 implements Serializable {
 
     public static final String manager_COLUMN = "mgr";
 
-    public static final String insert_NO_PERSISTENT_PROPS = "dummy";
+    public static final String NO_PERSISTENT_PROPS = "dummy";
 
     private Long empno;
 
@@ -41,10 +41,10 @@ public class Employee20 implements Serializable {
 
     private String dummy;
 
-    public Employee20() {
+    public Employee21() {
     }
 
-    public Employee20(Long empno) {
+    public Employee21(Long empno) {
         this.empno = empno;
     }
 

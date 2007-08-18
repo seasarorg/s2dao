@@ -27,11 +27,9 @@ import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ValueType;
-import org.seasar.extension.jdbc.impl.PropertyTypeImpl;
 import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
-import org.seasar.framework.beans.factory.BeanDescFactory;
 import org.seasar.framework.log.Logger;
 import org.seasar.framework.util.StringUtil;
 
@@ -43,47 +41,31 @@ import org.seasar.framework.util.StringUtil;
  * 
  * @author taedium
  */
-public class PropertyTypeFactoryImpl implements PropertyTypeFactory {
+public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
 
     private static Logger logger = Logger
             .getLogger(PropertyTypeFactoryImpl.class);
 
-    protected Class beanClass;
-
-    protected BeanAnnotationReader beanAnnotationReader;
-
-    protected ValueTypeFactory valueTypeFactory;
+    protected Dbms dbms;
 
     protected DatabaseMetaData databaseMetaData;
 
-    protected Dbms dbms;
-
-    public PropertyTypeFactoryImpl(Class beanClass,
-            BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory) {
-        this.beanClass = beanClass;
-        this.beanAnnotationReader = beanAnnotationReader;
-        this.valueTypeFactory = valueTypeFactory;
-    }
-
+    /**
+     * インスタンスを構築します。
+     * 
+     * @param beanClass Beanのクラス
+     * @param beanAnnotationReader Beanのアノテーションリーダ
+     * @param valueTypeFactory {@link ValueType}のファクトリ
+     * @param databaseMetaData データベースのメタ情報
+     * @param dbms DBMS
+     */
     public PropertyTypeFactoryImpl(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
             ValueTypeFactory valueTypeFactory,
             DatabaseMetaData databaseMetaData, Dbms dbms) {
-        this(beanClass, beanAnnotationReader, valueTypeFactory);
-        this.databaseMetaData = databaseMetaData;
+        super(beanClass, beanAnnotationReader, valueTypeFactory);
         this.dbms = dbms;
-    }
-
-    public PropertyType[] createPropertyTypes() {
-        List list = new ArrayList();
-        BeanDesc beanDesc = getBeanDesc();
-        for (int i = 0; i < beanDesc.getPropertyDescSize(); ++i) {
-            PropertyDesc pd = beanDesc.getPropertyDesc(i);
-            PropertyType pt = createPropertyType(pd);
-            list.add(pt);
-        }
-        return (PropertyType[]) list.toArray(new PropertyType[list.size()]);
+        this.databaseMetaData = databaseMetaData;
     }
 
     public PropertyType[] createPropertyTypes(String tableName) {
@@ -92,60 +74,50 @@ public class PropertyTypeFactoryImpl implements PropertyTypeFactory {
         boolean found = false;
         for (int i = 0; i < beanDesc.getPropertyDescSize(); ++i) {
             PropertyDesc pd = beanDesc.getPropertyDesc(i);
-            if (isRelationProperty(pd)) {
+            if (isRelation(pd)) {
                 continue;
             }
             PropertyType pt = createPropertyType(pd);
-            if (isPrimaryKey(pd)) {
+            if (isPrimaryKey(pd, dbms)) {
                 pt.setPrimaryKey(true);
                 found = true;
             }
             list.add(pt);
         }
-        PropertyType[] types = (PropertyType[]) list
+        PropertyType[] propertyTypes = (PropertyType[]) list
                 .toArray(new PropertyType[list.size()]);
-        setupPropertyPersistentAndColumnName(tableName, types);
+        Set columns = getColumns(tableName);
+        setupColumnName(propertyTypes, columns);
+        setupPersistent(propertyTypes, columns);
         if (!found) {
-            setupPrimaryKey(tableName, types);
+            setupPrimaryKey(propertyTypes, tableName);
         }
-        return types;
+        return propertyTypes;
     }
 
-    protected PropertyType createPropertyType(PropertyDesc propertyDesc) {
-        final String columnName = getColumnName(propertyDesc);
-        final ValueType valueType = getValueType(propertyDesc);
-        return new PropertyTypeImpl(propertyDesc, valueType, columnName);
-    }
-
-    protected String getColumnName(PropertyDesc propertyDesc) {
-        String name = beanAnnotationReader.getColumnAnnotation(propertyDesc);
-        return name != null ? name : propertyDesc.getPropertyName();
-    }
-
-    protected ValueType getValueType(PropertyDesc propertyDesc) {
-        final String valueTypeName = beanAnnotationReader
-                .getValueType(propertyDesc);
-        if (valueTypeName != null) {
-            return valueTypeFactory.getValueTypeByName(valueTypeName);
-        } else {
-            return valueTypeFactory.getValueTypeByClass(propertyDesc
-                    .getPropertyType());
-        }
-    }
-
-    protected boolean isPrimaryKey(PropertyDesc propertyDesc) {
-        return beanAnnotationReader.getId(propertyDesc, dbms) != null;
-    }
-
-    protected void setupPropertyPersistentAndColumnName(String tableName,
-            PropertyType[] propertyTypes) {
+    /**
+     * カラム名のセットを返します。
+     * 
+     * @param tableName
+     * @return カラム名のセット
+     */
+    protected Set getColumns(String tableName) {
         Set columnSet = DatabaseMetaDataUtil.getColumnMap(databaseMetaData,
                 tableName).keySet();
         if (columnSet.isEmpty()) {
             logger.log("WDAO0002", new Object[] { tableName });
         }
+        return columnSet;
+    }
 
-        for (Iterator i = columnSet.iterator(); i.hasNext();) {
+    /**
+     * <code>propertyTypes</code>の各要素にカラム名を設定します。
+     * 
+     * @param propertyTypes {@link PropertyType}の配列
+     * @param columns カラム名のセット
+     */
+    protected void setupColumnName(PropertyType[] propertyTypes, Set columns) {
+        for (Iterator i = columns.iterator(); i.hasNext();) {
             String columnName = (String) i.next();
             String columnName2 = StringUtil.replace(columnName, "_", "");
             for (int j = 0; j < propertyTypes.length; ++j) {
@@ -159,29 +131,32 @@ public class PropertyTypeFactoryImpl implements PropertyTypeFactory {
                 }
             }
         }
+    }
 
-        String[] props = beanAnnotationReader.getNoPersisteneProps();
-        if (props != null) {
-            for (int i = 0; i < props.length; ++i) {
-                for (int j = 0; j < propertyTypes.length; j++) {
-                    PropertyType pt = propertyTypes[j];
-                    if (pt.getPropertyName().equals(props[i])) {
-                        pt.setPersistent(false);
-                    }
-                }
-            }
-        }
-
-        for (int i = 0; i < propertyTypes.length; ++i) {
-            PropertyType pt = propertyTypes[i];
-            if (!columnSet.contains(pt.getColumnName())) {
+    /**
+     * <code>propertyTypes</code>の各要素に永続化されるかどうかを設定します。
+     * 
+     * @param propertyTypes {@link PropertyType}の配列
+     * @param columns カラム名のセット
+     */
+    protected void setupPersistent(PropertyType[] propertyTypes, Set columns) {
+        for (int j = 0; j < propertyTypes.length; j++) {
+            PropertyType pt = propertyTypes[j];
+            pt.setPersistent(!isTransient(pt));
+            if (!columns.contains(pt.getColumnName())) {
                 pt.setPersistent(false);
             }
         }
     }
 
-    protected void setupPrimaryKey(String tableName,
-            PropertyType[] propertyTypes) {
+    /**
+     * <code>propertyTypes</code>の各要素に主キーであるかどうかを設定します。
+     * 
+     * @param propertyTypes {@link PropertyType}の配列
+     * @param tableName テーブル名
+     */
+    protected void setupPrimaryKey(PropertyType[] propertyTypes,
+            String tableName) {
         Set primaryKeySet = DatabaseMetaDataUtil.getPrimaryKeySet(
                 databaseMetaData, tableName);
         for (int i = 0; i < propertyTypes.length; ++i) {
@@ -190,14 +165,6 @@ public class PropertyTypeFactoryImpl implements PropertyTypeFactory {
                 pt.setPrimaryKey(true);
             }
         }
-    }
-
-    protected boolean isRelationProperty(PropertyDesc propertyDesc) {
-        return beanAnnotationReader.hasRelationNo(propertyDesc);
-    }
-
-    protected BeanDesc getBeanDesc() {
-        return BeanDescFactory.getBeanDesc(beanClass);
     }
 
 }

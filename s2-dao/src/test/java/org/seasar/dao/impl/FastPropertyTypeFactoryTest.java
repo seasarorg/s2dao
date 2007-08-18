@@ -30,11 +30,11 @@ import org.seasar.extension.unit.S2TestCase;
  * @author taedium
  *
  */
-public class PropertyTypeFactoryImplTest extends S2TestCase {
+public class FastPropertyTypeFactoryTest extends S2TestCase {
 
-    private Class beanClass = Employee20.class;
+    private Class beanClass = Employee21.class;
 
-    private PropertyTypeFactoryBuilder builder = new PropertyTypeFactoryBuilderImpl();
+    private PropertyTypeFactoryBuilder builder = new FastPropertyTypeFactoryBuilder();
 
     private boolean empnoInvoked;
 
@@ -127,7 +127,7 @@ public class PropertyTypeFactoryImplTest extends S2TestCase {
         ValueTypeFactoryImpl valueTypeFactory = new ValueTypeFactoryImpl();
         valueTypeFactory.setContainer(getContainer());
         DatabaseMetaData databaseMetaData = getDatabaseMetaData();
-        Dbms dbms = DbmsManager.getDbms(databaseMetaData);
+        Dbms dbms = DbmsManager.getDbms(getDatabaseMetaData());
         return builder.build(beanClass, beanAnnotationReader, valueTypeFactory,
                 dbms, databaseMetaData);
     }

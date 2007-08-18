@@ -24,11 +24,11 @@ import org.seasar.dao.PropertyTypeFactoryBuilder;
 import org.seasar.dao.ValueTypeFactory;
 
 /**
- * {@link PropertyTypeFactoryImpl}を組み立てる{@link PropertyTypeFactoryBuilder}の実装クラスです。
+ * {@link FastPropertyTypeFactory}を組み立てる{@link PropertyTypeFactoryBuilder}の実装クラスです。
  * 
  * @author taedium
  */
-public class PropertyTypeFactoryBuilderImpl implements
+public class FastPropertyTypeFactoryBuilder implements
         PropertyTypeFactoryBuilder {
 
     public PropertyTypeFactory build(Class beanClass,
@@ -44,8 +44,8 @@ public class PropertyTypeFactoryBuilderImpl implements
             ValueTypeFactory valueTypeFactory, Dbms dbms,
             DatabaseMetaData databaseMetaData) {
 
-        return new PropertyTypeFactoryImpl(beanClass, beanAnnotationReader,
-                valueTypeFactory, databaseMetaData, dbms);
+        return new FastPropertyTypeFactory(beanClass, beanAnnotationReader,
+                valueTypeFactory, dbms);
     }
 
 }
