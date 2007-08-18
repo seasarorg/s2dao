@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.ValueTypeFactory;
@@ -45,12 +46,14 @@ public class FastPropertyTypeFactory extends AbstractPropertyTypeFactory {
      * @param beanClass Beanのクラス
      * @param beanAnnotationReader Beanのアノテーションリーダ
      * @param valueTypeFactory {@link ValueType}のファクトリ
+     * @param columnNaming カラムのネーミング
      * @param dbms DBMS
      */
     public FastPropertyTypeFactory(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory, Dbms dbms) {
-        super(beanClass, beanAnnotationReader, valueTypeFactory);
+            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
+            Dbms dbms) {
+        super(beanClass, beanAnnotationReader, valueTypeFactory, columnNaming);
         this.dbms = dbms;
     }
 

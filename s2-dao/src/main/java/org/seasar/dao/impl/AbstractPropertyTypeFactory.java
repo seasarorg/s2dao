@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.ValueTypeFactory;
@@ -44,21 +45,24 @@ public abstract class AbstractPropertyTypeFactory implements
 
     protected ValueTypeFactory valueTypeFactory;
 
+    protected ColumnNaming columnNaming;
+
     /**
      * インスタンスを構築します。
      * 
      * @param beanClass Beanのクラス
      * @param beanAnnotationReader Beanのアノテーションリーダ
      * @param valueTypeFactory {@link ValueType}のファクトリ
-     * @param dbms DBMS
+     * @param columnNaming カラムのネーミング
      */
     public AbstractPropertyTypeFactory(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory) {
+            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming) {
         super();
         this.beanClass = beanClass;
         this.beanAnnotationReader = beanAnnotationReader;
         this.valueTypeFactory = valueTypeFactory;
+        this.columnNaming = columnNaming;
     }
 
     public PropertyType[] createPropertyTypes() {
@@ -143,8 +147,20 @@ public abstract class AbstractPropertyTypeFactory implements
      * @return カラム名
      */
     protected String getColumnName(PropertyDesc propertyDesc) {
+        String propertyName = propertyDesc.getPropertyName();
+        String defaultName = fromPropertyNameToColumnName(propertyName);
         String name = beanAnnotationReader.getColumnAnnotation(propertyDesc);
-        return name != null ? name : propertyDesc.getPropertyName();
+        return name != null ? name : defaultName;
+    }
+
+    /**
+     * プロパティ名をカラム名に変換します。
+     * 
+     * @param propertyName プロパティ名
+     * @return カラム名
+     */
+    protected String fromPropertyNameToColumnName(String propertyName) {
+        return columnNaming.fromPropertyNameToColumnName(propertyName);
     }
 
     /**

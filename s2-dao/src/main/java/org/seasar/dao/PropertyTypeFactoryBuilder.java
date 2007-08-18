@@ -32,11 +32,12 @@ public interface PropertyTypeFactoryBuilder {
      * @param beanClass Beanのクラス
      * @param beanAnnotationReader Beanのアノテーションリーダ
      * @param valueTypeFactory {@link ValueType}のファクトリ
+     * @param columnNaming カラムのネーミング
      * @return {@link PropertyTypeFactory}
      */
     PropertyTypeFactory build(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory);
+            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming);
 
     /**
      * {@link PropertyTypeFactory}を組み立てます。
@@ -44,12 +45,13 @@ public interface PropertyTypeFactoryBuilder {
      * @param beanClass Beanのクラス
      * @param beanAnnotationReader Beanのアノテーションリーダ
      * @param valueTypeFactory {@link ValueType}のファクトリ
+     * @param columnNaming カラムのネーミング 
      * @param dbms DBMS
      * @param databaseMetaData データベースのメタデータ
      * @return {@link PropertyTypeFactory}
      */
     PropertyTypeFactory build(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory, Dbms dbms,
-            DatabaseMetaData databaseMetaData);
+            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
+            Dbms dbms, DatabaseMetaData databaseMetaData);
 }

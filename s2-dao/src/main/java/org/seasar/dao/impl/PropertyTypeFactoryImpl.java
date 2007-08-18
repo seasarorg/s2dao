@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.ValueTypeFactory;
@@ -56,14 +57,15 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
      * @param beanClass Beanのクラス
      * @param beanAnnotationReader Beanのアノテーションリーダ
      * @param valueTypeFactory {@link ValueType}のファクトリ
+     * @param columnNaming カラムのネーミング
      * @param databaseMetaData データベースのメタ情報
      * @param dbms DBMS
      */
     public PropertyTypeFactoryImpl(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory,
+            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
             DatabaseMetaData databaseMetaData, Dbms dbms) {
-        super(beanClass, beanAnnotationReader, valueTypeFactory);
+        super(beanClass, beanAnnotationReader, valueTypeFactory, columnNaming);
         this.dbms = dbms;
         this.databaseMetaData = databaseMetaData;
     }

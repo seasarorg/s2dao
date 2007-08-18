@@ -23,6 +23,7 @@ import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
+import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
@@ -36,6 +37,7 @@ import org.seasar.dao.impl.BeanEnhancerImpl;
 import org.seasar.dao.impl.BeanMetaDataFactoryImpl;
 import org.seasar.dao.impl.DaoMetaDataImpl;
 import org.seasar.dao.impl.DaoNamingConventionImpl;
+import org.seasar.dao.impl.DefaultColumnNaming;
 import org.seasar.dao.impl.DtoMetaDataFactoryImpl;
 import org.seasar.dao.impl.DtoMetaDataImpl;
 import org.seasar.dao.impl.FieldAnnotationReaderFactory;
@@ -72,6 +74,8 @@ public abstract class S2DaoTestCase extends S2TestCase {
     private ResultSetHandlerFactory resultSetHandlerFactory;
 
     private DtoMetaDataFactory dtoMetaDataFactory;
+
+    private ColumnNaming columnNaming;
 
     public S2DaoTestCase() {
     }
@@ -116,7 +120,7 @@ public abstract class S2DaoTestCase extends S2TestCase {
                 .createBeanAnnotationReader(dtoClass);
         final PropertyTypeFactoryBuilder builder = new PropertyTypeFactoryBuilderImpl();
         PropertyTypeFactory propertyTypeFactory = builder.build(dtoClass,
-                reader, getValueTypeFactory());
+                reader, getValueTypeFactory(), getColumnNaming());
         dmd.setBeanClass(dtoClass);
         dmd.setBeanAnnotationReader(getAnnotationReaderFactory()
                 .createBeanAnnotationReader(dtoClass));
@@ -252,6 +256,17 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     protected void setDtoMetaDataFactory(DtoMetaDataFactory dtoMetaDataFactory) {
         this.dtoMetaDataFactory = dtoMetaDataFactory;
+    }
+
+    public ColumnNaming getColumnNaming() {
+        if (columnNaming == null) {
+            columnNaming = new DefaultColumnNaming();
+        }
+        return columnNaming;
+    }
+
+    public void setColumnNaming(ColumnNaming columnNaming) {
+        this.columnNaming = columnNaming;
     }
 
 }

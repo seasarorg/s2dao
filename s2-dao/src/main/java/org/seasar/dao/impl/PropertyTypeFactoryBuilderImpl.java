@@ -18,6 +18,7 @@ package org.seasar.dao.impl;
 import java.sql.DatabaseMetaData;
 
 import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.PropertyTypeFactoryBuilder;
@@ -33,19 +34,19 @@ public class PropertyTypeFactoryBuilderImpl implements
 
     public PropertyTypeFactory build(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory) {
+            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming) {
 
-        return build(beanClass, beanAnnotationReader, valueTypeFactory, null,
-                null);
+        return build(beanClass, beanAnnotationReader, valueTypeFactory,
+                columnNaming, null, null);
     }
 
     public PropertyTypeFactory build(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory, Dbms dbms,
-            DatabaseMetaData databaseMetaData) {
+            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
+            Dbms dbms, DatabaseMetaData databaseMetaData) {
 
         return new PropertyTypeFactoryImpl(beanClass, beanAnnotationReader,
-                valueTypeFactory, databaseMetaData, dbms);
+                valueTypeFactory, columnNaming, databaseMetaData, dbms);
     }
 
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.PropertyTypeFactory;
@@ -45,6 +46,10 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
     public static final String propertyTypeFactoryBuilder_BINDING = "bindingType=may";
 
     protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder = new PropertyTypeFactoryBuilderImpl();
+
+    public static final String columnNaming_BINDING = "bindingType=may";
+
+    protected ColumnNaming columnNaming = new DefaultColumnNaming();
 
     public AnnotationReaderFactory getAnnotationReaderFactory() {
         return annotationReaderFactory;
@@ -72,6 +77,10 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
     public void setPropertyTypeFactoryBuilder(
             PropertyTypeFactoryBuilder propertyTypeFactoryBuilder) {
         this.propertyTypeFactoryBuilder = propertyTypeFactoryBuilder;
+    }
+
+    public void setColumnNaming(ColumnNaming columnNaming) {
+        this.columnNaming = columnNaming;
     }
 
     public synchronized DtoMetaData getDtoMetaData(Class dtoClass) {
@@ -105,6 +114,6 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
     protected PropertyTypeFactory createPropertyTypeFactory(Class dtoClass,
             BeanAnnotationReader beanAnnotationReader) {
         return propertyTypeFactoryBuilder.build(dtoClass, beanAnnotationReader,
-                valueTypeFactory);
+                valueTypeFactory, columnNaming);
     }
 }

@@ -25,6 +25,7 @@ import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
+import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.NullBean;
@@ -75,6 +76,10 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
     public static final String relationPropertyTypeFactoryBuilder_BINDING = "bindingType=may";
 
     protected RelationPropertyTypeFactoryBuilder relationPropertyTypeFactoryBuilder = new RelationPropertyTypeFactoryBuilderImpl();
+
+    public static final String columnNaming_BINDING = "bindingType=may";
+
+    protected ColumnNaming columnNaming = new DefaultColumnNaming();
 
     public BeanMetaData createBeanMetaData(final Class daoInterface,
             final Class beanClass) {
@@ -160,7 +165,8 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
             Class originalBeanClass, BeanAnnotationReader beanAnnotationReader,
             DatabaseMetaData databaseMetaData, Dbms dbms) {
         return propertyTypeFactoryBuilder.build(originalBeanClass,
-                beanAnnotationReader, valueTypeFactory, dbms, databaseMetaData);
+                beanAnnotationReader, valueTypeFactory, columnNaming, dbms,
+                databaseMetaData);
     }
 
     protected RelationPropertyTypeFactory createRelationPropertyTypeFactory(
