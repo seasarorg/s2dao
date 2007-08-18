@@ -52,14 +52,14 @@ public class FastPropertyTypeFactoryTest extends S2TestCase {
 
     public void testDto() throws Exception {
         PropertyTypeFactory factory = createDtoPropertyTypeFactory();
-        PropertyType[] propertyTypes = factory.createPropertyTypes();
+        PropertyType[] propertyTypes = factory.createDtoPropertyTypes();
         assertNotNull(propertyTypes);
         assertEquals(5, propertyTypes.length);
     }
 
     public void testBean() throws Exception {
         PropertyTypeFactory factory = createBeanPropertyTypeFactory();
-        PropertyType[] propertyTypes = factory.createPropertyTypes("EMP");
+        PropertyType[] propertyTypes = factory.createBeanPropertyTypes("EMP");
         assertNotNull(propertyTypes);
         assertEquals(4, propertyTypes.length);
         for (int i = 0; i < propertyTypes.length; i++) {

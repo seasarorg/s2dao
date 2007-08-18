@@ -57,7 +57,7 @@ public class FastPropertyTypeFactory extends AbstractPropertyTypeFactory {
         this.dbms = dbms;
     }
 
-    public PropertyType[] createPropertyTypes(String tableName) {
+    public PropertyType[] createBeanPropertyTypes(String tableName) {
         List list = new ArrayList();
         BeanDesc beanDesc = getBeanDesc();
         for (int i = 0; i < beanDesc.getPropertyDescSize(); ++i) {
@@ -67,7 +67,7 @@ public class FastPropertyTypeFactory extends AbstractPropertyTypeFactory {
             }
             PropertyType pt = createPropertyType(pd);
             pt.setPrimaryKey(isPrimaryKey(pd, dbms));
-            pt.setPersistent(!isTransient(pt));
+            pt.setPersistent(isPersistent(pt));
             list.add(pt);
         }
         return (PropertyType[]) list.toArray(new PropertyType[list.size()]);

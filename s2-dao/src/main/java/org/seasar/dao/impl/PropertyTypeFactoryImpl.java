@@ -70,7 +70,7 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
         this.databaseMetaData = databaseMetaData;
     }
 
-    public PropertyType[] createPropertyTypes(String tableName) {
+    public PropertyType[] createBeanPropertyTypes(String tableName) {
         List list = new ArrayList();
         BeanDesc beanDesc = getBeanDesc();
         boolean found = false;
@@ -144,7 +144,7 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
     protected void setupPersistent(PropertyType[] propertyTypes, Set columns) {
         for (int j = 0; j < propertyTypes.length; j++) {
             PropertyType pt = propertyTypes[j];
-            pt.setPersistent(!isTransient(pt));
+            pt.setPersistent(isPersistent(pt));
             if (!columns.contains(pt.getColumnName())) {
                 pt.setPersistent(false);
             }

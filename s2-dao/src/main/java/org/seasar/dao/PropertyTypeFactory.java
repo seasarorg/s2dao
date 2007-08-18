@@ -29,7 +29,7 @@ public interface PropertyTypeFactory {
      * 
      * @return {@link PropertyType}の配列
      */
-    PropertyType[] createPropertyTypes();
+    PropertyType[] createDtoPropertyTypes();
 
     /**
      * {@link PropertyType}の配列を生成します。
@@ -37,6 +37,6 @@ public interface PropertyTypeFactory {
      * @param tableName テーブル名
      * @return {@link PropertyType}の配列
      */
-    PropertyType[] createPropertyTypes(String tableName);
+    PropertyType[] createBeanPropertyTypes(String tableName);
 
 }

@@ -65,7 +65,7 @@ public abstract class AbstractPropertyTypeFactory implements
         this.columnNaming = columnNaming;
     }
 
-    public PropertyType[] createPropertyTypes() {
+    public PropertyType[] createDtoPropertyTypes() {
         List list = new ArrayList();
         BeanDesc beanDesc = getBeanDesc();
         for (int i = 0; i < beanDesc.getPropertyDescSize(); ++i) {
@@ -110,22 +110,22 @@ public abstract class AbstractPropertyTypeFactory implements
     }
 
     /**
-     * 永続化されないプロパティである場合<code>true</code>を返します。
+     * 永続化されるプロパティである場合<code>true</code>を返します。
      * 
      * @param propertyType {@link PropertyType}
-     * @return 永続化されないプロパティである場合<code>true</code>、永続化されるプロパティである場合<code>false</code>
+     * @return 永続化されるプロパティである場合<code>true</code>、そうでない場合<code>false</code>
      */
-    protected boolean isTransient(PropertyType propertyType) {
+    protected boolean isPersistent(PropertyType propertyType) {
         String[] props = beanAnnotationReader.getNoPersisteneProps();
         if (props != null) {
             String propertyName = propertyType.getPropertyName();
             for (int i = 0; i < props.length; ++i) {
                 if (props[i].equals(propertyName)) {
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /**

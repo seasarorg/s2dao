@@ -91,7 +91,7 @@ public class DtoMetaDataImpl implements DtoMetaData {
 
     protected void setupPropertyType() {
         PropertyType[] propertyTypes = propertyTypeFactory
-                .createPropertyTypes();
+                .createDtoPropertyTypes();
         for (int i = 0; i < propertyTypes.length; ++i) {
             PropertyType pt = propertyTypes[i];
             addPropertyType(pt);

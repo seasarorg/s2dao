@@ -56,7 +56,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     private String autoSelectList;
 
-    private IdentifierGenerator[] identifierGenerators;
+    private List identifierGenerators = new ArrayList();
 
     private Map identifierGeneratorsByPropertyName = new HashMap();
 
@@ -80,8 +80,6 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         setupTableName(beanDesc);
         setupProperty();
         setupPrimaryKey();
-        setupPropertiesByColumnName();
-        setupIdentityGeneratorsByPropertyName();
     }
 
     public void setDbms(Dbms dbms) {
@@ -282,10 +280,11 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     protected void setupProperty() {
         PropertyType[] propertyTypes = propertyTypeFactory
-                .createPropertyTypes(tableName);
+                .createBeanPropertyTypes(tableName);
         for (int i = 0; i < propertyTypes.length; i++) {
             PropertyType pt = propertyTypes[i];
             addPropertyType(pt);
+            propertyTypesByColumnName.put(pt.getColumnName(), pt);
         }
 
         RelationPropertyType[] relationPropertyTypes = relationPropertyTypeFactory
@@ -298,38 +297,25 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
 
     protected void setupPrimaryKey() {
         List keys = new ArrayList();
-        List generators = new ArrayList();
         for (int i = 0; i < getPropertyTypeSize(); ++i) {
             PropertyType pt = getPropertyType(i);
             if (pt.isPrimaryKey()) {
                 keys.add(pt);
-                PropertyDesc pd = pt.getPropertyDesc();
-                String idType = beanAnnotationReader.getId(pd, dbms);
-                IdentifierGenerator generator = IdentifierGeneratorFactory
-                        .createIdentifierGenerator(pd.getPropertyName(), dbms,
-                                idType);
-                generators.add(generator);
+                setupIdentifierGenerator(pt);
             }
         }
         primaryKeys = (PropertyType[]) keys.toArray(new PropertyType[keys
                 .size()]);
-        identifierGenerators = (IdentifierGenerator[]) generators
-                .toArray(new IdentifierGenerator[generators.size()]);
     }
 
-    protected void setupPropertiesByColumnName() {
-        for (int i = 0; i < getPropertyTypeSize(); ++i) {
-            PropertyType pt = getPropertyType(i);
-            propertyTypesByColumnName.put(pt.getColumnName(), pt);
-        }
-    }
-
-    protected void setupIdentityGeneratorsByPropertyName() {
-        for (int i = 0; i < getIdentifierGeneratorSize(); ++i) {
-            IdentifierGenerator generator = getIdentifierGenerator(i);
-            identifierGeneratorsByPropertyName.put(generator.getPropertyName(),
-                    generator);
-        }
+    protected void setupIdentifierGenerator(PropertyType propertyType) {
+        PropertyDesc pd = propertyType.getPropertyDesc();
+        String propertyName = propertyType.getPropertyName();
+        String idType = beanAnnotationReader.getId(pd, dbms);
+        IdentifierGenerator generator = IdentifierGeneratorFactory
+                .createIdentifierGenerator(propertyName, dbms, idType);
+        identifierGenerators.add(generator);
+        identifierGeneratorsByPropertyName.put(propertyName, generator);
     }
 
     protected void addRelationPropertyType(RelationPropertyType rpt) {
@@ -354,11 +340,11 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
     }
 
     public int getIdentifierGeneratorSize() {
-        return identifierGenerators.length;
+        return identifierGenerators.size();
     }
 
     public IdentifierGenerator getIdentifierGenerator(int index) {
-        return identifierGenerators[index];
+        return (IdentifierGenerator) identifierGenerators.get(index);
     }
 
     public IdentifierGenerator getIdentifierGenerator(String propertyName) {
