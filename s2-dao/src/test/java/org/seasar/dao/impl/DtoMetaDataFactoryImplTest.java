@@ -33,6 +33,9 @@ public class DtoMetaDataFactoryImplTest extends TestCase {
         factory = new DtoMetaDataFactoryImpl();
         factory.setAnnotationReaderFactory(new FieldAnnotationReaderFactory());
         factory.setValueTypeFactory(new ValueTypeFactoryImpl());
+        factory
+                .setPropertyTypeFactoryBuilder(new PropertyTypeFactoryBuilderImpl());
+        factory.setColumnNaming(new DefaultColumnNaming());
     }
 
     protected void tearDown() throws Exception {

@@ -43,13 +43,9 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
 
     protected ValueTypeFactory valueTypeFactory;
 
-    public static final String propertyTypeFactoryBuilder_BINDING = "bindingType=may";
+    protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder;
 
-    protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder = new PropertyTypeFactoryBuilderImpl();
-
-    public static final String columnNaming_BINDING = "bindingType=may";
-
-    protected ColumnNaming columnNaming = new DefaultColumnNaming();
+    protected ColumnNaming columnNaming;
 
     public AnnotationReaderFactory getAnnotationReaderFactory() {
         return annotationReaderFactory;

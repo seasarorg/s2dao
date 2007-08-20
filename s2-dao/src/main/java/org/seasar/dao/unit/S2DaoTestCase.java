@@ -75,6 +75,8 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     private DtoMetaDataFactory dtoMetaDataFactory;
 
+    private PropertyTypeFactoryBuilder propertyTypeFactoryBuilder;
+
     private ColumnNaming columnNaming;
 
     public S2DaoTestCase() {
@@ -118,7 +120,7 @@ public abstract class S2DaoTestCase extends S2TestCase {
         final DtoMetaDataImpl dmd = new DtoMetaDataImpl();
         final BeanAnnotationReader reader = getAnnotationReaderFactory()
                 .createBeanAnnotationReader(dtoClass);
-        final PropertyTypeFactoryBuilder builder = new PropertyTypeFactoryBuilderImpl();
+        final PropertyTypeFactoryBuilder builder = getPropertyTypeFactoryBuilder();
         PropertyTypeFactory propertyTypeFactory = builder.build(dtoClass,
                 reader, getValueTypeFactory(), getColumnNaming());
         dmd.setBeanClass(dtoClass);
@@ -247,8 +249,11 @@ public abstract class S2DaoTestCase extends S2TestCase {
     protected DtoMetaDataFactory getDtoMetaDataFactory() {
         if (dtoMetaDataFactory == null) {
             final DtoMetaDataFactoryImpl factory = new DtoMetaDataFactoryImpl();
-            factory.setAnnotationReaderFactory(annotationReaderFactory);
-            factory.setValueTypeFactory(valueTypeFactory);
+            factory.setAnnotationReaderFactory(getAnnotationReaderFactory());
+            factory.setValueTypeFactory(getValueTypeFactory());
+            factory
+                    .setPropertyTypeFactoryBuilder(getPropertyTypeFactoryBuilder());
+            factory.setColumnNaming(getColumnNaming());
             dtoMetaDataFactory = factory;
         }
         return dtoMetaDataFactory;
@@ -267,6 +272,18 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     public void setColumnNaming(ColumnNaming columnNaming) {
         this.columnNaming = columnNaming;
+    }
+
+    public PropertyTypeFactoryBuilder getPropertyTypeFactoryBuilder() {
+        if (propertyTypeFactoryBuilder == null) {
+            propertyTypeFactoryBuilder = new PropertyTypeFactoryBuilderImpl();
+        }
+        return propertyTypeFactoryBuilder;
+    }
+
+    public void setPropertyTypeFactoryBuilder(
+            PropertyTypeFactoryBuilder propertyTypeFactoryBuilder) {
+        this.propertyTypeFactoryBuilder = propertyTypeFactoryBuilder;
     }
 
 }

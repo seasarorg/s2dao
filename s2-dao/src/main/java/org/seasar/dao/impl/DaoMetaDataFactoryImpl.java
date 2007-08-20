@@ -22,11 +22,13 @@ import javax.sql.DataSource;
 
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanMetaDataFactory;
+import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoMetaDataFactory;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.DtoMetaDataFactory;
+import org.seasar.dao.PropertyTypeFactoryBuilder;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.pager.PagingSqlRewriter;
@@ -68,6 +70,10 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     public static final String pagingSQLRewriter_BINDING = "bindingType=may";
 
+    public static final String propertyTypeFactoryBuilder_BINDING = "bindingType=may";
+
+    public static final String columnNaming_BINDING = "bindingType=may";
+
     protected Map daoMetaDataCache = new HashMap();
 
     protected DataSource dataSource;
@@ -96,6 +102,10 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected PagingSqlRewriter pagingSqlRewriter;
 
+    protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder = new PropertyTypeFactoryBuilderImpl();
+
+    protected ColumnNaming columnNaming = new DefaultColumnNaming();
+
     public DaoMetaDataFactoryImpl() {
     }
 
@@ -104,6 +114,8 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
             final DtoMetaDataFactoryImpl factory = new DtoMetaDataFactoryImpl();
             factory.setAnnotationReaderFactory(annotationReaderFactory);
             factory.setValueTypeFactory(valueTypeFactory);
+            factory.setPropertyTypeFactoryBuilder(propertyTypeFactoryBuilder);
+            factory.setColumnNaming(columnNaming);
             dtoMetaDataFactory = factory;
         }
         if (resultSetHandlerFactory == null) {
@@ -244,6 +256,15 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     public void setPagingSQLRewriter(PagingSqlRewriter pagingSqlRewriter) {
         this.pagingSqlRewriter = pagingSqlRewriter;
+    }
+
+    public void setColumnNaming(ColumnNaming columnNaming) {
+        this.columnNaming = columnNaming;
+    }
+
+    public void setPropertyTypeFactoryBuilder(
+            PropertyTypeFactoryBuilder propertyTypeFactoryBuilder) {
+        this.propertyTypeFactoryBuilder = propertyTypeFactoryBuilder;
     }
 
 }
