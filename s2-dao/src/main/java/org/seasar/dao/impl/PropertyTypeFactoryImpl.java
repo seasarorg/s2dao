@@ -73,6 +73,7 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
     public PropertyType[] createBeanPropertyTypes(String tableName) {
         List list = new ArrayList();
         BeanDesc beanDesc = getBeanDesc();
+        Set columns = getColumns(tableName);
         boolean found = false;
         for (int i = 0; i < beanDesc.getPropertyDescSize(); ++i) {
             PropertyDesc pd = beanDesc.getPropertyDesc(i);
@@ -84,13 +85,12 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
                 pt.setPrimaryKey(true);
                 found = true;
             }
+            setupColumnName(pt, columns);
+            setupPersistent(pt, columns);
             list.add(pt);
         }
         PropertyType[] propertyTypes = (PropertyType[]) list
                 .toArray(new PropertyType[list.size()]);
-        Set columns = getColumns(tableName);
-        setupColumnName(propertyTypes, columns);
-        setupPersistent(propertyTypes, columns);
         if (!found) {
             setupPrimaryKey(propertyTypes, tableName);
         }
@@ -113,41 +113,36 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
     }
 
     /**
-     * <code>propertyTypes</code>の各要素にカラム名を設定します。
+     * <code>propertyType</code>にカラム名を設定します。
      * 
-     * @param propertyTypes {@link PropertyType}の配列
+     * @param propertyType {@link PropertyType}
      * @param columns カラム名のセット
      */
-    protected void setupColumnName(PropertyType[] propertyTypes, Set columns) {
+    protected void setupColumnName(PropertyType propertyType, Set columns) {
+        final PropertyDesc pd = propertyType.getPropertyDesc();
+        if (beanAnnotationReader.getColumnAnnotation(pd) != null) {
+            return;
+        }
         for (Iterator i = columns.iterator(); i.hasNext();) {
             String columnName = (String) i.next();
             String columnName2 = StringUtil.replace(columnName, "_", "");
-            for (int j = 0; j < propertyTypes.length; ++j) {
-                PropertyType pt = propertyTypes[j];
-                if (pt.getColumnName().equalsIgnoreCase(columnName2)) {
-                    final PropertyDesc pd = pt.getPropertyDesc();
-                    if (beanAnnotationReader.getColumnAnnotation(pd) == null) {
-                        pt.setColumnName(columnName);
-                    }
-                    break;
-                }
+            if (propertyType.getColumnName().equalsIgnoreCase(columnName2)) {
+                propertyType.setColumnName(columnName);
+                break;
             }
         }
     }
 
     /**
-     * <code>propertyTypes</code>の各要素に永続化されるかどうかを設定します。
+     * <code>propertyType</code>が永続化されるかどうかを設定します。
      * 
-     * @param propertyTypes {@link PropertyType}の配列
+     * @param propertyType {@link PropertyType}
      * @param columns カラム名のセット
      */
-    protected void setupPersistent(PropertyType[] propertyTypes, Set columns) {
-        for (int j = 0; j < propertyTypes.length; j++) {
-            PropertyType pt = propertyTypes[j];
-            pt.setPersistent(isPersistent(pt));
-            if (!columns.contains(pt.getColumnName())) {
-                pt.setPersistent(false);
-            }
+    protected void setupPersistent(PropertyType propertyType, Set columns) {
+        propertyType.setPersistent(isPersistent(propertyType));
+        if (!columns.contains(propertyType.getColumnName())) {
+            propertyType.setPersistent(false);
         }
     }
 
