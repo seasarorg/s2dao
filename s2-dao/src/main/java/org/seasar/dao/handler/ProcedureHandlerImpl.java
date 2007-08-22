@@ -23,9 +23,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.seasar.dao.BeanMetaData;
-import org.seasar.dao.DaoAnnotationReader;
-import org.seasar.dao.ResultSetHandlerFactory;
+import org.seasar.dao.ProcedureParameterType;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
@@ -39,17 +37,7 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
 
     private Method daoMethod;
 
-    private BeanMetaData beanMetaData;
-
-    private DaoAnnotationReader daoAnnotationReader;
-
-    private ResultSetHandlerFactory resultSetHandlerFactory;
-
-    private int outParameterNumbers;
-
-    public void initialize() {
-        outParameterNumbers = initTypes();
-    }
+    private ResultSetHandler resultSetHandler;
 
     protected Object execute(final Connection connection, final Object[] args) {
         CallableStatement cs = null;
@@ -73,12 +61,6 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
         ResultSet rs = null;
         try {
             rs = cs.getResultSet();
-            if (rs == null) {
-                throw new IllegalStateException("JDBC Driver's BUG");
-            }
-            final ResultSetHandler resultSetHandler = resultSetHandlerFactory
-                    .getResultSetHandler(daoAnnotationReader, beanMetaData,
-                            daoMethod);
             return resultSetHandler.handle(rs);
         } finally {
             ResultSetUtil.close(rs);
@@ -90,41 +72,36 @@ public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
         final Class returnType = daoMethod.getReturnType();
         if (Map.class.isAssignableFrom(returnType)) {
             final Map result = new HashMap();
-            for (int i = 0; i < columnInOutTypes.length; i++) {
-                if (isOutputColum(columnInOutTypes[i].intValue())) {
-                    result.put(columnNames[i], cs.getObject(i + 1));
+            for (int i = 0; i < procedureMetaData.getParameterTypeSize(); i++) {
+                ProcedureParameterType ppt = procedureMetaData
+                        .getParameterType(i);
+                if (ppt.isRegisterable()) {
+                    result.put(ppt.getParameterName(), cs.getObject(i + 1));
                 }
             }
             return result;
         } else {
-            if (outParameterNumbers > 1) {
-                throw new SRuntimeException("EDAO0010");
-            }
-            for (int i = 0; i < columnInOutTypes.length; i++) {
-                if (isOutputColum(columnInOutTypes[i].intValue())) {
-                    return cs.getObject(i + 1);
+            Object result = null;
+            for (int i = 0; i < procedureMetaData.getParameterTypeSize(); i++) {
+                ProcedureParameterType ppt = procedureMetaData
+                        .getParameterType(i);
+                if (ppt.isRegisterable()) {
+                    if (result != null) {
+                        throw new SRuntimeException("EDAO0010");
+                    }
+                    result = cs.getObject(i + 1);
                 }
             }
-            return null;
+            return result;
         }
     }
 
-    public void setDaoMethod(final Method method) {
-        this.daoMethod = method;
+    public void setDaoMethod(Method daoMethod) {
+        this.daoMethod = daoMethod;
     }
 
-    public void setResultSetHandlerFactory(
-            final ResultSetHandlerFactory resultSetHandlerFactory) {
-        this.resultSetHandlerFactory = resultSetHandlerFactory;
-    }
-
-    public void setBeanMetaData(final BeanMetaData beanMetaData) {
-        this.beanMetaData = beanMetaData;
-    }
-
-    public void setDaoAnnotationReader(
-            final DaoAnnotationReader daoAnnotationReader) {
-        this.daoAnnotationReader = daoAnnotationReader;
+    public void setResultSetHandler(ResultSetHandler resultSetHandler) {
+        this.resultSetHandler = resultSetHandler;
     }
 
 }

@@ -15,19 +15,72 @@
  */
 package org.seasar.dao.impl;
 
+import java.lang.reflect.Method;
+
+import javax.sql.DataSource;
+
+import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.SqlCommand;
-import org.seasar.dao.handler.ProcedureHandler;
+import org.seasar.dao.handler.ProcedureHandlerImpl;
+import org.seasar.extension.jdbc.ResultSetHandler;
+import org.seasar.extension.jdbc.StatementFactory;
 
 public class StaticStoredProcedureCommand implements SqlCommand {
 
-    private ProcedureHandler handler;
+    private ProcedureMetaData procedureMetaData;
 
-    public StaticStoredProcedureCommand(ProcedureHandler handler) {
-        this.handler = handler;
+    private DataSource dataSource;
+
+    private StatementFactory statementFactory;
+
+    private ResultSetHandler resultSetHandler;
+
+    private Method daoMethod;
+
+    private String sql;
+
+    public StaticStoredProcedureCommand(DataSource dataSource,
+            StatementFactory statementFactory,
+            ResultSetHandler resultSetHandler,
+            ProcedureMetaData procedureMetaData, Method daoMethod) {
+        this.dataSource = dataSource;
+        this.statementFactory = statementFactory;
+        this.resultSetHandler = resultSetHandler;
+        this.procedureMetaData = procedureMetaData;
+        this.daoMethod = daoMethod;
+        this.sql = createSql();
     }
 
     public Object execute(Object[] args) {
+        ProcedureHandlerImpl handler = new ProcedureHandlerImpl();
+        handler.setDataSource(dataSource);
+        handler.setStatementFactory(statementFactory);
+        handler.setProcedureMetaData(procedureMetaData);
+        handler.setDaoMethod(daoMethod);
+        handler.setSql(sql);
+        handler.setResultSetHandler(resultSetHandler);
         return handler.execute(args);
+    }
+
+    public String createSql() {
+        StringBuffer buf = new StringBuffer();
+        buf.append("{ ");
+        int size = procedureMetaData.getParameterTypeSize();
+        if (procedureMetaData.hasReturnParameterType()) {
+            buf.append("? = ");
+            size--;
+        }
+        buf.append("call ");
+        buf.append(procedureMetaData.getProcedureName());
+        buf.append(" (");
+        for (int i = 0; i < size; i++) {
+            buf.append("?, ");
+        }
+        if (size > 0) {
+            buf.setLength(buf.length() - 2);
+        }
+        buf.append(")}");
+        return buf.toString();
     }
 
 }
