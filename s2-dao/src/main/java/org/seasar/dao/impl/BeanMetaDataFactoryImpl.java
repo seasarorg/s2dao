@@ -165,8 +165,8 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
             Class originalBeanClass, BeanAnnotationReader beanAnnotationReader,
             DatabaseMetaData databaseMetaData, Dbms dbms) {
         return propertyTypeFactoryBuilder.build(originalBeanClass,
-                beanAnnotationReader, valueTypeFactory, columnNaming, dbms,
-                databaseMetaData);
+                beanAnnotationReader, valueTypeFactory, columnNaming,
+                daoNamingConvention, dbms, databaseMetaData);
     }
 
     protected RelationPropertyTypeFactory createRelationPropertyTypeFactory(

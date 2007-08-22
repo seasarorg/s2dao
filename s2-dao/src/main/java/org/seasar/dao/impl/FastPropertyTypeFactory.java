@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.ColumnNaming;
+import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.ValueTypeFactory;
@@ -27,6 +28,7 @@ import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
+import org.seasar.framework.exception.EmptyRuntimeException;
 
 /**
  * クラスのメタ情報のみを使用し高速に{@link PropertyType}を生成する{@link PropertyTypeFactory}の実装クラスです。
@@ -38,7 +40,7 @@ import org.seasar.framework.beans.PropertyDesc;
  */
 public class FastPropertyTypeFactory extends AbstractPropertyTypeFactory {
 
-    protected Dbms dbms;
+    private DaoNamingConvention daoNamingConvention;
 
     /**
      * インスタンスを構築します。
@@ -47,14 +49,30 @@ public class FastPropertyTypeFactory extends AbstractPropertyTypeFactory {
      * @param beanAnnotationReader Beanのアノテーションリーダ
      * @param valueTypeFactory {@link ValueType}のファクトリ
      * @param columnNaming カラムのネーミング
+     */
+    public FastPropertyTypeFactory(Class beanClass,
+            BeanAnnotationReader beanAnnotationReader,
+            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming) {
+        super(beanClass, beanAnnotationReader, valueTypeFactory, columnNaming);
+    }
+
+    /**
+     * インスタンスを構築します。
+     * 
+     * @param beanClass Beanのクラス
+     * @param beanAnnotationReader Beanのアノテーションリーダ
+     * @param valueTypeFactory {@link ValueType}のファクトリ
+     * @param columnNaming カラムのネーミング
+     * @param daoNamingConvention Daoのネーミング規約
      * @param dbms DBMS
      */
     public FastPropertyTypeFactory(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
             ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
-            Dbms dbms) {
-        super(beanClass, beanAnnotationReader, valueTypeFactory, columnNaming);
-        this.dbms = dbms;
+            DaoNamingConvention daoNamingConvention, Dbms dbms) {
+        super(beanClass, beanAnnotationReader, valueTypeFactory, columnNaming,
+                dbms);
+        this.daoNamingConvention = daoNamingConvention;
     }
 
     public PropertyType[] createBeanPropertyTypes(String tableName) {
@@ -66,11 +84,33 @@ public class FastPropertyTypeFactory extends AbstractPropertyTypeFactory {
                 continue;
             }
             PropertyType pt = createPropertyType(pd);
-            pt.setPrimaryKey(isPrimaryKey(pd, dbms));
+            pt.setPrimaryKey(isPrimaryKey(pd));
             pt.setPersistent(isPersistent(pt));
             list.add(pt);
         }
         return (PropertyType[]) list.toArray(new PropertyType[list.size()]);
+    }
+
+    protected boolean isPersistent(PropertyType propertyType) {
+        DaoNamingConvention convention = getDaoNamingConvention();
+        String propertyName = propertyType.getPropertyName();
+        if (propertyName.equals(convention
+                .getModifiedPropertyNamesPropertyName())) {
+            return false;
+        }
+        return super.isPersistent(propertyType);
+    }
+
+    /**
+     * Daoのネーミング規約を返します。
+     * 
+     * @return Daoのネーミング規約
+     */
+    public DaoNamingConvention getDaoNamingConvention() {
+        if (daoNamingConvention == null) {
+            throw new EmptyRuntimeException("daoNamingConvention");
+        }
+        return daoNamingConvention;
     }
 
 }

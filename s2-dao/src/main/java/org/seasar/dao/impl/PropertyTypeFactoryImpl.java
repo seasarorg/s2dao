@@ -31,6 +31,7 @@ import org.seasar.extension.jdbc.ValueType;
 import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
+import org.seasar.framework.exception.EmptyRuntimeException;
 import org.seasar.framework.log.Logger;
 import org.seasar.framework.util.StringUtil;
 
@@ -47,9 +48,7 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
     private static Logger logger = Logger
             .getLogger(PropertyTypeFactoryImpl.class);
 
-    protected Dbms dbms;
-
-    protected DatabaseMetaData databaseMetaData;
+    private DatabaseMetaData databaseMetaData;
 
     /**
      * インスタンスを構築します。
@@ -58,15 +57,29 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
      * @param beanAnnotationReader Beanのアノテーションリーダ
      * @param valueTypeFactory {@link ValueType}のファクトリ
      * @param columnNaming カラムのネーミング
-     * @param databaseMetaData データベースのメタ情報
+     */
+    public PropertyTypeFactoryImpl(Class beanClass,
+            BeanAnnotationReader beanAnnotationReader,
+            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming) {
+        super(beanClass, beanAnnotationReader, valueTypeFactory, columnNaming);
+    }
+
+    /**
+     * インスタンスを構築します。
+     * 
+     * @param beanClass Beanのクラス
+     * @param beanAnnotationReader Beanのアノテーションリーダ
+     * @param valueTypeFactory {@link ValueType}のファクトリ
+     * @param columnNaming カラムのネーミング
      * @param dbms DBMS
+     * @param databaseMetaData データベースのメタ情報
      */
     public PropertyTypeFactoryImpl(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
             ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
-            DatabaseMetaData databaseMetaData, Dbms dbms) {
-        super(beanClass, beanAnnotationReader, valueTypeFactory, columnNaming);
-        this.dbms = dbms;
+            Dbms dbms, DatabaseMetaData databaseMetaData) {
+        super(beanClass, beanAnnotationReader, valueTypeFactory, columnNaming,
+                dbms);
         this.databaseMetaData = databaseMetaData;
     }
 
@@ -81,7 +94,7 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
                 continue;
             }
             PropertyType pt = createPropertyType(pd);
-            if (isPrimaryKey(pd, dbms)) {
+            if (isPrimaryKey(pd)) {
                 pt.setPrimaryKey(true);
                 found = true;
             }
@@ -104,8 +117,8 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
      * @return カラム名のセット
      */
     protected Set getColumns(String tableName) {
-        Set columnSet = DatabaseMetaDataUtil.getColumnMap(databaseMetaData,
-                tableName).keySet();
+        Set columnSet = DatabaseMetaDataUtil.getColumnMap(
+                getDatabaseMetaData(), tableName).keySet();
         if (columnSet.isEmpty()) {
             logger.log("WDAO0002", new Object[] { tableName });
         }
@@ -155,7 +168,7 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
     protected void setupPrimaryKey(PropertyType[] propertyTypes,
             String tableName) {
         Set primaryKeySet = DatabaseMetaDataUtil.getPrimaryKeySet(
-                databaseMetaData, tableName);
+                getDatabaseMetaData(), tableName);
         for (int i = 0; i < propertyTypes.length; ++i) {
             PropertyType pt = propertyTypes[i];
             if (primaryKeySet.contains(pt.getColumnName())) {
@@ -164,4 +177,15 @@ public class PropertyTypeFactoryImpl extends AbstractPropertyTypeFactory {
         }
     }
 
+    /**
+     * データベースのメタ情報を返します。
+     * 
+     * @return データベースのメタ情報
+     */
+    protected DatabaseMetaData getDatabaseMetaData() {
+        if (databaseMetaData == null) {
+            throw new EmptyRuntimeException("databaseMetaData");
+        }
+        return databaseMetaData;
+    }
 }

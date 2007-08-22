@@ -16,6 +16,7 @@
 package org.seasar.dao.impl;
 
 import java.io.Serializable;
+import java.util.Set;
 
 public class Employee21 implements Serializable {
 
@@ -40,6 +41,8 @@ public class Employee21 implements Serializable {
     private Department department;
 
     private String dummy;
+
+    private Set modifiedPropertyNames;
 
     public Employee21() {
     }
@@ -86,6 +89,14 @@ public class Employee21 implements Serializable {
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public Set getModifiedPropertyNames() {
+        return modifiedPropertyNames;
+    }
+
+    public void setModifiedPropertyNames(Set modifiedPropertyNames) {
+        this.modifiedPropertyNames = modifiedPropertyNames;
     }
 
 }

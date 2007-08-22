@@ -46,6 +46,7 @@ public interface PropertyTypeFactoryBuilder {
      * @param beanAnnotationReader Beanのアノテーションリーダ
      * @param valueTypeFactory {@link ValueType}のファクトリ
      * @param columnNaming カラムのネーミング 
+     * @param daoNamingConvention Daoのネーミング規約
      * @param dbms DBMS
      * @param databaseMetaData データベースのメタデータ
      * @return {@link PropertyTypeFactory}
@@ -53,5 +54,6 @@ public interface PropertyTypeFactoryBuilder {
     PropertyTypeFactory build(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
             ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
-            Dbms dbms, DatabaseMetaData databaseMetaData);
+            DaoNamingConvention daoNamingConvention, Dbms dbms,
+            DatabaseMetaData databaseMetaData);
 }

@@ -47,6 +47,8 @@ public abstract class AbstractPropertyTypeFactory implements
 
     protected ColumnNaming columnNaming;
 
+    private Dbms dbms;
+
     /**
      * インスタンスを構築します。
      * 
@@ -58,11 +60,27 @@ public abstract class AbstractPropertyTypeFactory implements
     public AbstractPropertyTypeFactory(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
             ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming) {
-        super();
         this.beanClass = beanClass;
         this.beanAnnotationReader = beanAnnotationReader;
         this.valueTypeFactory = valueTypeFactory;
         this.columnNaming = columnNaming;
+    }
+
+    /**
+     * インスタンスを構築します。
+     * 
+     * @param beanClass Beanのクラス
+     * @param beanAnnotationReader Beanのアノテーションリーダ
+     * @param valueTypeFactory {@link ValueType}のファクトリ
+     * @param columnNaming カラムのネーミング
+     * @param dbms DBMS
+     */
+    public AbstractPropertyTypeFactory(Class beanClass,
+            BeanAnnotationReader beanAnnotationReader,
+            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
+            Dbms dbms) {
+        this(beanClass, beanAnnotationReader, valueTypeFactory, columnNaming);
+        this.dbms = dbms;
     }
 
     public PropertyType[] createDtoPropertyTypes() {
@@ -99,13 +117,10 @@ public abstract class AbstractPropertyTypeFactory implements
      * 主キーを表すプロパティである場合<code>true</code>を返します。
      * 
      * @param propertyDesc {@link PropertyDesc}
-     * @param dbms DBMS
      * @return　主キーを表すプロパティである場合<code>true</code>、そうでない場合<code>false</code>
      */
-    protected boolean isPrimaryKey(PropertyDesc propertyDesc, Dbms dbms) {
-        if (dbms == null) {
-            throw new EmptyRuntimeException("dbms");
-        }
+    protected boolean isPrimaryKey(PropertyDesc propertyDesc) {
+        Dbms dbms = getDbms();
         return beanAnnotationReader.getId(propertyDesc, dbms) != null;
     }
 
@@ -165,6 +180,7 @@ public abstract class AbstractPropertyTypeFactory implements
 
     /**
      * {@link ValueType}を返します。
+     * 
      * @param propertyDesc {@link PropertyDesc}
      * @return　{@link ValueType}
      */
@@ -176,4 +192,17 @@ public abstract class AbstractPropertyTypeFactory implements
         Class type = propertyDesc.getPropertyType();
         return valueTypeFactory.getValueTypeByClass(type);
     }
+
+    /**
+     * DBMSを返します。
+     * 
+     * @return DBMS
+     */
+    public Dbms getDbms() {
+        if (dbms == null) {
+            throw new EmptyRuntimeException("dbms");
+        }
+        return dbms;
+    }
+
 }

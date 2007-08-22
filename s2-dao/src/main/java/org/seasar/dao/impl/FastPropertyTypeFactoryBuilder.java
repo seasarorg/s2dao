@@ -19,6 +19,7 @@ import java.sql.DatabaseMetaData;
 
 import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.ColumnNaming;
+import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.PropertyTypeFactoryBuilder;
@@ -36,17 +37,18 @@ public class FastPropertyTypeFactoryBuilder implements
             BeanAnnotationReader beanAnnotationReader,
             ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming) {
 
-        return build(beanClass, beanAnnotationReader, valueTypeFactory,
-                columnNaming, null, null);
+        return new FastPropertyTypeFactory(beanClass, beanAnnotationReader,
+                valueTypeFactory, columnNaming);
     }
 
     public PropertyTypeFactory build(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
             ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
-            Dbms dbms, DatabaseMetaData databaseMetaData) {
+            DaoNamingConvention daoNamingConvention, Dbms dbms,
+            DatabaseMetaData databaseMetaData) {
 
         return new FastPropertyTypeFactory(beanClass, beanAnnotationReader,
-                valueTypeFactory, columnNaming, dbms);
+                valueTypeFactory, columnNaming, daoNamingConvention, dbms);
     }
 
 }

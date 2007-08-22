@@ -19,6 +19,7 @@ import java.sql.DatabaseMetaData;
 
 import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.ColumnNaming;
+import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.PropertyTypeFactoryBuilder;
@@ -130,9 +131,10 @@ public class PropertyTypeFactoryImplTest extends S2TestCase {
         ValueTypeFactoryImpl valueTypeFactory = new ValueTypeFactoryImpl();
         valueTypeFactory.setContainer(getContainer());
         ColumnNaming columnNaming = new DefaultColumnNaming();
+        DaoNamingConvention daoNamingConvention = new DaoNamingConventionImpl();
         DatabaseMetaData databaseMetaData = getDatabaseMetaData();
         Dbms dbms = DbmsManager.getDbms(databaseMetaData);
         return builder.build(beanClass, beanAnnotationReader, valueTypeFactory,
-                columnNaming, dbms, databaseMetaData);
+                columnNaming, daoNamingConvention, dbms, databaseMetaData);
     }
 }

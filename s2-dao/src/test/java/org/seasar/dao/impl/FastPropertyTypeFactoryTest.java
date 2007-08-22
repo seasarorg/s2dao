@@ -19,6 +19,7 @@ import java.sql.DatabaseMetaData;
 
 import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.ColumnNaming;
+import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.PropertyTypeFactoryBuilder;
@@ -45,6 +46,8 @@ public class FastPropertyTypeFactoryTest extends S2TestCase {
 
     private boolean dummyInvoked;
 
+    private boolean modifiedPropertyNamesInvoked;
+
     protected void setUp() throws Exception {
         super.setUp();
         include("j2ee.dicon");
@@ -54,14 +57,14 @@ public class FastPropertyTypeFactoryTest extends S2TestCase {
         PropertyTypeFactory factory = createDtoPropertyTypeFactory();
         PropertyType[] propertyTypes = factory.createDtoPropertyTypes();
         assertNotNull(propertyTypes);
-        assertEquals(5, propertyTypes.length);
+        assertEquals(6, propertyTypes.length);
     }
 
     public void testBean() throws Exception {
         PropertyTypeFactory factory = createBeanPropertyTypeFactory();
         PropertyType[] propertyTypes = factory.createBeanPropertyTypes("EMP");
         assertNotNull(propertyTypes);
-        assertEquals(4, propertyTypes.length);
+        assertEquals(5, propertyTypes.length);
         for (int i = 0; i < propertyTypes.length; i++) {
             PropertyType pt = propertyTypes[i];
             if (pt.getPropertyName().equals("empno")) {
@@ -72,6 +75,8 @@ public class FastPropertyTypeFactoryTest extends S2TestCase {
                 deptno(pt);
             } else if (pt.getPropertyName().equals("dummy")) {
                 dummy(pt);
+            } else if (pt.getPropertyName().equals("modifiedPropertyNames")) {
+                modifiedPropertyNames(pt);
             } else {
                 fail();
             }
@@ -80,6 +85,7 @@ public class FastPropertyTypeFactoryTest extends S2TestCase {
         assertTrue(managerInvoked);
         assertTrue(deptnoInvoked);
         assertTrue(dummyInvoked);
+        assertTrue(modifiedPropertyNamesInvoked);
     }
 
     private void empno(PropertyType pt) throws Exception {
@@ -114,6 +120,14 @@ public class FastPropertyTypeFactoryTest extends S2TestCase {
         dummyInvoked = true;
     }
 
+    private void modifiedPropertyNames(PropertyType pt) throws Exception {
+        assertEquals("modifiedPropertyNames", pt.getColumnName());
+        assertFalse(pt.isPrimaryKey());
+        assertFalse(pt.isPersistent());
+        assertEquals(ValueTypes.OBJECT, pt.getValueType());
+        modifiedPropertyNamesInvoked = true;
+    }
+
     private PropertyTypeFactory createDtoPropertyTypeFactory() {
         BeanAnnotationReader beanAnnotationReader = new FieldBeanAnnotationReader(
                 beanClass);
@@ -130,9 +144,10 @@ public class FastPropertyTypeFactoryTest extends S2TestCase {
         ValueTypeFactoryImpl valueTypeFactory = new ValueTypeFactoryImpl();
         valueTypeFactory.setContainer(getContainer());
         ColumnNaming columnNaming = new DefaultColumnNaming();
+        DaoNamingConvention daoNamingConvention = new DaoNamingConventionImpl();
         DatabaseMetaData databaseMetaData = getDatabaseMetaData();
         Dbms dbms = DbmsManager.getDbms(getDatabaseMetaData());
         return builder.build(beanClass, beanAnnotationReader, valueTypeFactory,
-                columnNaming, dbms, databaseMetaData);
+                columnNaming, daoNamingConvention, dbms, databaseMetaData);
     }
 }
