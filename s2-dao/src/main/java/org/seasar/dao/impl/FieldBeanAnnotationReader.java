@@ -45,7 +45,7 @@ public class FieldBeanAnnotationReader implements BeanAnnotationReader {
 
     public String VALUE_TYPE_SUFFIX = "_VALUE_TYPE";
 
-    private BeanDesc beanDesc;
+    protected BeanDesc beanDesc;
 
     public FieldBeanAnnotationReader(Class beanClass) {
         this.beanDesc = BeanDescFactory.getBeanDesc(beanClass);
