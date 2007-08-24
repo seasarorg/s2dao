@@ -22,8 +22,9 @@ import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.ProcedureParameterType;
 
 /**
+ * {@link ProcedureMetaData}の実装クラスです。
+ * 
  * @author taedium
- *
  */
 public class ProcedureMetaDataImpl implements ProcedureMetaData {
 
@@ -31,13 +32,7 @@ public class ProcedureMetaDataImpl implements ProcedureMetaData {
 
     private List parameterTypes = new ArrayList();
 
-    private List inParameterTypes = new ArrayList();
-
-    private List inOutParameterTypes = new ArrayList();
-
-    private List outParameterTypes = new ArrayList();
-
-    private ProcedureParameterType returnParameterType;
+    private boolean returnType;
 
     public ProcedureMetaDataImpl(String procedureName) {
         this.procedureName = procedureName;
@@ -47,65 +42,27 @@ public class ProcedureMetaDataImpl implements ProcedureMetaData {
         return procedureName;
     }
 
-    public int getParameterTypeSize() {
-        return parameterTypes.size();
-    }
-
     public ProcedureParameterType getParameterType(int index) {
         return (ProcedureParameterType) parameterTypes.get(index);
     }
 
-    public ProcedureParameterType getInOutParameterType(int index) {
-        return (ProcedureParameterType) inOutParameterTypes.get(index);
-    }
-
-    public int getInOutParameterTypeSize() {
-        return inOutParameterTypes.size();
-    }
-
-    public ProcedureParameterType getInParameterType(int index) {
-        return (ProcedureParameterType) inParameterTypes.get(index);
-    }
-
-    public int getInParameterTypeSize() {
-        return inParameterTypes.size();
-    }
-
-    public ProcedureParameterType getOutParameterType(int index) {
-        return (ProcedureParameterType) outParameterTypes.get(index);
-    }
-
-    public int getOutParameterTypeSize() {
-        return outParameterTypes.size();
+    public int getParameterTypeSize() {
+        return parameterTypes.size();
     }
 
     public boolean hasReturnParameterType() {
-        return returnParameterType != null;
+        return returnType;
     }
 
-    public ProcedureParameterType getReturnParameterType() {
-        return returnParameterType;
+    /**
+     * パラメータのタイプを追加します。
+     * 
+     * @param parameterType パラメータのタイプ
+     */
+    public void addParameterType(ProcedureParameterType parameterType) {
+        parameterTypes.add(parameterType);
+        if (parameterType.isReturnType()) {
+            returnType = true;
+        }
     }
-
-    public void addInParameterType(ProcedureParameterType inParameterType) {
-        parameterTypes.add(inParameterType);
-        inParameterTypes.add(inParameterType);
-    }
-
-    public void addInOutParameterType(ProcedureParameterType inOutParameterType) {
-        parameterTypes.add(inOutParameterType);
-        inOutParameterTypes.add(inOutParameterType);
-    }
-
-    public void addOutParameterType(ProcedureParameterType outParameterType) {
-        parameterTypes.add(outParameterType);
-        outParameterTypes.add(outParameterType);
-    }
-
-    public void setReturnParameterType(
-            ProcedureParameterType returnParameterType) {
-        parameterTypes.add(returnParameterType);
-        this.returnParameterType = returnParameterType;
-    }
-
 }

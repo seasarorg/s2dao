@@ -32,12 +32,7 @@ import org.seasar.extension.unit.S2TestCase;
  */
 public class ProcedureTest extends S2TestCase {
 
-    public static class DummyBean {
-    }
-
     public static interface ProcedureDao {
-
-        public static Class BEAN = DummyBean.class;
 
         public String aaa1_PROCEDURE = "PROCEDURE_TEST_AAA1";
 

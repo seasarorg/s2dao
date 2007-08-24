@@ -18,19 +18,52 @@ package org.seasar.dao;
 import org.seasar.extension.jdbc.ValueType;
 
 /**
+ * プロシージャのパラメータのタイプです。
+ * 
  * @author taedium
- *
  */
 public interface ProcedureParameterType {
 
+    /**
+     * パラメータ名を返します。
+     * 
+     * @return パラメータ名
+     */
     String getParameterName();
 
+    /**
+     * {@link ValueType}を返します。
+     * 
+     * @return {@link ValueType}
+     */
     ValueType getValueType();
 
-    int getSqlType();
+    /**
+     * {@link ValueType}を設定します。
+     * 
+     * @param valueType　{@link ValueType}
+     */
+    void setValueType(ValueType valueType);
 
-    boolean isBindable();
+    /**
+     * <code>IN</code>パラメータもしくは<code>INOUT</code>パラメータである場合に<code>true</code>を返します。
+     * 
+     * @return　<code>IN</code>パラメータもしくは<code>INOUT</code>パラメータである場合<code>true</code>、そうでない場合<code>false</code>
+     */
+    boolean isInType();
 
-    boolean isRegisterable();
+    /**
+     * <code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合に<code>true</code>を返します。
+     * 
+     * @return　<code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合<code>true</code>、そうでない場合<code>false</code>
+     */
+    boolean isOutType();
+
+    /**
+     * <code>RETURN</code>パラメータである場合に<code>true</code>を返します。
+     * 
+     * @return　<code>RETURN</code>パラメータである場合<code>true</code>、そうでない場合<code>false</code>
+     */
+    boolean isReturnType();
 
 }

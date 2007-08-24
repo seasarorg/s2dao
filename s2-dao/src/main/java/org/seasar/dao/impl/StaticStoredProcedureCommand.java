@@ -21,48 +21,35 @@ import javax.sql.DataSource;
 
 import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.SqlCommand;
+import org.seasar.dao.handler.ProcedureHandler;
 import org.seasar.dao.handler.ProcedureHandlerImpl;
+import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
 
 public class StaticStoredProcedureCommand implements SqlCommand {
 
-    private ProcedureMetaData procedureMetaData;
-
-    private DataSource dataSource;
-
-    private StatementFactory statementFactory;
-
-    private ResultSetHandler resultSetHandler;
-
-    private Method daoMethod;
-
-    private String sql;
+    protected ProcedureHandler handler;
 
     public StaticStoredProcedureCommand(DataSource dataSource,
-            StatementFactory statementFactory,
             ResultSetHandler resultSetHandler,
+            StatementFactory statementFactory,
+            ResultSetFactory resultSetFactory,
             ProcedureMetaData procedureMetaData, Method daoMethod) {
-        this.dataSource = dataSource;
-        this.statementFactory = statementFactory;
-        this.resultSetHandler = resultSetHandler;
-        this.procedureMetaData = procedureMetaData;
-        this.daoMethod = daoMethod;
-        this.sql = createSql();
+
+        ProcedureHandlerImpl handler = new ProcedureHandlerImpl(dataSource,
+                createSql(procedureMetaData), resultSetHandler,
+                statementFactory, resultSetFactory, procedureMetaData,
+                daoMethod);
+        handler.setFetchSize(-1);
+        this.handler = handler;
     }
 
     public Object execute(Object[] args) {
-        ProcedureHandlerImpl handler = new ProcedureHandlerImpl();
-        handler.setDataSource(dataSource);
-        handler.setStatementFactory(statementFactory);
-        handler.setProcedureMetaData(procedureMetaData);
-        handler.setDaoMethod(daoMethod);
-        handler.setSql(sql);
-        handler.setResultSetHandler(resultSetHandler);
         return handler.execute(args);
     }
 
-    public String createSql() {
+    public String createSql(ProcedureMetaData procedureMetaData) {
         StringBuffer buf = new StringBuffer();
         buf.append("{ ");
         int size = procedureMetaData.getParameterTypeSize();

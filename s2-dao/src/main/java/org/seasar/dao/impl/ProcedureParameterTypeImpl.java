@@ -19,8 +19,9 @@ import org.seasar.dao.ProcedureParameterType;
 import org.seasar.extension.jdbc.ValueType;
 
 /**
+ * {@link ProcedureParameterType}の実装クラスです。
+ * 
  * @author taedium
- *
  */
 public class ProcedureParameterTypeImpl implements ProcedureParameterType {
 
@@ -28,13 +29,19 @@ public class ProcedureParameterTypeImpl implements ProcedureParameterType {
 
     private ValueType valueType;
 
-    private int sqlType;
+    private boolean inType;
 
-    private boolean bindable;
+    private boolean outType;
 
-    private boolean registerable;
+    private boolean returnType;
 
-    public ProcedureParameterTypeImpl() {
+    /**
+     * インスタンスを構築します。
+     * 
+     * @param parameterName パラメータ名
+     */
+    public ProcedureParameterTypeImpl(String parameterName) {
+        this.parameterName = parameterName;
     }
 
     public String getParameterName() {
@@ -45,36 +52,47 @@ public class ProcedureParameterTypeImpl implements ProcedureParameterType {
         return valueType;
     }
 
-    public int getSqlType() {
-        return sqlType;
+    public boolean isInType() {
+        return inType;
     }
 
-    public boolean isRegisterable() {
-        return registerable;
+    public boolean isOutType() {
+        return outType;
     }
 
-    public boolean isBindable() {
-        return bindable;
-    }
-
-    public void setBindable(boolean bindable) {
-        this.bindable = bindable;
-    }
-
-    public void setParameterName(String parameterName) {
-        this.parameterName = parameterName;
-    }
-
-    public void setRegisterable(boolean registerable) {
-        this.registerable = registerable;
-    }
-
-    public void setSqlType(int sqlType) {
-        this.sqlType = sqlType;
+    public boolean isReturnType() {
+        return returnType;
     }
 
     public void setValueType(ValueType valueType) {
         this.valueType = valueType;
+    }
+
+    /**
+     * <code>IN</code>パラメータもしくは<code>INOUT</code>パラメータである場合に<code>true</code>を設定します。
+     * 
+     * @param inType　<code>IN</code>パラメータもしくは<code>INOUT</code>パラメータである場合<code>true</code>
+     */
+    public void setInType(boolean inType) {
+        this.inType = inType;
+    }
+
+    /**
+     * <code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合に<code>true</code>を設定します。
+     * 
+     * @param outType　<code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合<code>true</code>
+     */
+    public void setOutType(boolean outType) {
+        this.outType = outType;
+    }
+
+    /**
+     * code>RETURN</code>パラメータである場合に<code>true</code>を設定します。
+     * 
+     * @param returnType <code>RETURN</code>パラメータである場合<code>true</code>
+     */
+    public void setReturnType(boolean returnType) {
+        this.returnType = returnType;
     }
 
 }

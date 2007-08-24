@@ -16,31 +16,39 @@
 package org.seasar.dao;
 
 /**
+ * プロシージャのメタデータです。
+ * 
  * @author taedium
- *
  */
 public interface ProcedureMetaData {
 
+    /**
+     * プロシージャ名を返します。
+     * 
+     * @return プロシージャ名
+     */
     String getProcedureName();
 
-    int getParameterTypeSize();
-
+    /**
+     * プロシージャのパラメータのタイプを返します。
+     * 
+     * @param index 位置
+     * @return プロシージャのパラメータの種別
+     */
     ProcedureParameterType getParameterType(int index);
 
-    int getInParameterTypeSize();
+    /**
+     * プロシージャのパラメータのサイズを返します。
+     * 
+     * @return　プロシージャのパラメータのサイズ
+     */
+    int getParameterTypeSize();
 
-    ProcedureParameterType getInParameterType(int index);
-
-    int getInOutParameterTypeSize();
-
-    ProcedureParameterType getInOutParameterType(int index);
-
-    int getOutParameterTypeSize();
-
-    ProcedureParameterType getOutParameterType(int index);
-
+    /**
+     * <code>RETURN</code>パラメータを持っている場合に<code>true</code>を返します。
+     * 
+     * @return <code>RETURN</code>パラメータを持っている場合に<code>true</code>、そうでない場合<code>false</code>
+     */
     boolean hasReturnParameterType();
-
-    ProcedureParameterType getReturnParameterType();
 
 }

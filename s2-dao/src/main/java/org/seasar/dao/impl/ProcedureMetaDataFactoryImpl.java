@@ -35,58 +35,55 @@ import org.seasar.framework.exception.SRuntimeException;
 import org.seasar.framework.util.ResultSetUtil;
 
 /**
+ * {@link ProcedureMetaDataFactory}の実装クラスです。
+ * 
  * @author taedium
- *
  */
 public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
 
-    public static final String dataSource_BINDING = "bindingType=must";
+    /** データソース */
+    protected DataSource dataSource;
 
-    private DataSource dataSource;
-
-    public void setDataSource(DataSource dataSource) {
+    /**
+     * インスタンスを構築します。
+     */
+    public ProcedureMetaDataFactoryImpl(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     public ProcedureMetaData createProcedureMetaData(
             final String procedureName, final Dbms dbms, final Method method) {
-
-        final ProcedureMetaDataImpl result = new ProcedureMetaDataImpl(
-                procedureName);
         final Connection con = DataSourceUtil.getConnection(dataSource);
         final DatabaseMetaData dmd = ConnectionUtil.getMetaData(con);
         ResultSet rs = null;
         try {
-            final ProcedureInfo info = getProcedureInfo(dbms, dmd,
-                    procedureName);
-            rs = dmd.getProcedureColumns(info.catalog, info.schema, info.name,
-                    null);
+            final ProcedureNamePattern pattern = getProcedureNamePattern(dbms,
+                    dmd, procedureName);
+            rs = dmd.getProcedureColumns(pattern.catalog, pattern.schema,
+                    pattern.name, null);
             try {
+                final ProcedureMetaDataImpl meta = new ProcedureMetaDataImpl(
+                        procedureName);
                 while (rs.next()) {
                     final String columnName = rs.getString(4);
                     final int columnType = rs.getInt(5);
                     final int dataType = rs.getInt(6);
-                    final ProcedureParameterTypeImpl ppt = new ProcedureParameterTypeImpl();
-                    ppt.setParameterName(columnName);
-                    ppt.setSqlType(dataType);
+                    final ProcedureParameterTypeImpl ppt = new ProcedureParameterTypeImpl(
+                            columnName);
                     ppt.setValueType(ValueTypes.getValueType(dataType));
                     switch (columnType) {
                     case DatabaseMetaData.procedureColumnIn:
-                        ppt.setBindable(true);
-                        result.addInParameterType(ppt);
+                        ppt.setInType(true);
                         break;
                     case DatabaseMetaData.procedureColumnInOut:
-                        ppt.setBindable(true);
-                        ppt.setRegisterable(true);
-                        result.addInOutParameterType(ppt);
+                        ppt.setInType(true);
+                        ppt.setOutType(true);
                         break;
                     case DatabaseMetaData.procedureColumnOut:
-                        ppt.setRegisterable(true);
-                        result.addOutParameterType(ppt);
+                        ppt.setOutType(true);
                         break;
                     case DatabaseMetaData.procedureColumnReturn:
-                        ppt.setRegisterable(true);
-                        result.setReturnParameterType(ppt);
+                        ppt.setReturnType(true);
                         break;
                     case DatabaseMetaData.procedureColumnResult:
                         continue; // ignore
@@ -94,8 +91,9 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
                         throw new SRuntimeException("EDAO0010",
                                 new Object[] { procedureName });
                     }
+                    meta.addParameterType(ppt);
                 }
-                return result;
+                return meta;
             } finally {
                 ResultSetUtil.close(rs);
             }
@@ -106,22 +104,40 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
         }
     }
 
-    protected ProcedureInfo getProcedureInfo(final Dbms dbms,
+    /**
+     * プロシージャの名前のパターンを返します。
+     * 
+     * @param dbms DBMS
+     * @param databaseMetaData データベースのメタデータ
+     * @param procedureName プロシージャ名
+     * @return プロシージャの名前のパターン
+     */
+    protected ProcedureNamePattern getProcedureNamePattern(final Dbms dbms,
             final DatabaseMetaData databaseMetaData, final String procedureName) {
         final String name = DatabaseMetaDataUtil.convertIdentifier(
                 databaseMetaData, procedureName);
-        ProcedureInfo info = createProcedureInfo(dbms, databaseMetaData, name);
-        if (info == null) {
-            info = createProcedureInfo(dbms, databaseMetaData, procedureName);
-            if (info == null) {
+        ProcedureNamePattern pattern = createProcedureNamePattern(dbms,
+                databaseMetaData, name);
+        if (pattern == null) {
+            pattern = createProcedureNamePattern(dbms, databaseMetaData,
+                    procedureName);
+            if (pattern == null) {
                 throw new SRuntimeException("EDAO0012",
                         new Object[] { procedureName });
             }
         }
-        return info;
+        return pattern;
     }
 
-    protected ProcedureInfo createProcedureInfo(final Dbms dbms,
+    /**
+     * プロシージャの名前のパターンを作成します。
+     * 
+     * @param dbms DBMS
+     * @param databaseMetaData データベースのメタデータ
+     * @param procedureName プロシージャ名
+     * @return プロシージャの名前のパターン
+     */
+    protected ProcedureNamePattern createProcedureNamePattern(final Dbms dbms,
             final DatabaseMetaData databaseMetaData, final String procedureName) {
         final ResultSet rs = dbms
                 .getProcedures(databaseMetaData, procedureName);
@@ -129,17 +145,18 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
             return null;
         }
         try {
-            final ProcedureInfo info = new ProcedureInfo();
             if (rs.next()) {
-                info.catalog = rs.getString(1);
-                info.schema = rs.getString(2);
-                info.name = rs.getString(3);
+                final ProcedureNamePattern pattern = new ProcedureNamePattern();
+                pattern.catalog = rs.getString(1);
+                pattern.schema = rs.getString(2);
+                pattern.name = rs.getString(3);
                 if (rs.next()) {
                     throw new SRuntimeException("EDAO0013",
                             new Object[] { procedureName });
                 }
+                return pattern;
             }
-            return info;
+            return null;
         } catch (final SQLException e) {
             throw new SQLRuntimeException(e);
         } finally {
@@ -147,7 +164,12 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
         }
     }
 
-    protected static class ProcedureInfo {
+    /**
+     * プロシージャの名前のパターンです。
+     * 
+     * @author taedium
+     */
+    protected static class ProcedureNamePattern {
         protected String catalog;
 
         protected String schema;

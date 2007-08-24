@@ -17,6 +17,7 @@ package org.seasar.dao.impl;
 
 import org.seasar.dao.Dbms;
 import org.seasar.dao.ProcedureMetaData;
+import org.seasar.dao.ProcedureMetaDataFactory;
 import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.extension.unit.S2TestCase;
 
@@ -32,13 +33,13 @@ public class ProcedureMetaDataFactoryImplTest extends S2TestCase {
     }
 
     public void test() throws Exception {
-        ProcedureMetaDataFactoryImpl factory = new ProcedureMetaDataFactoryImpl();
-        factory.setDataSource(getDataSource());
+        ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
+                getDataSource());
         Dbms dbms = DbmsManager.getDbms(getDatabaseMetaData());
         ProcedureMetaData metaData = factory.createProcedureMetaData(
                 "PROCEDURE_TEST_CCC2", dbms, null);
         assertNotNull(metaData);
-        assertEquals(1, metaData.getInParameterTypeSize());
-        assertEquals(2, metaData.getOutParameterTypeSize());
+        assertEquals(3, metaData.getParameterTypeSize());
     }
+
 }

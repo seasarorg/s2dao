@@ -44,6 +44,7 @@ import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.InjectDaoClassSupport;
 import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.ProcedureMetaData;
+import org.seasar.dao.ProcedureMetaDataFactory;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.SqlFileNotFoundRuntimeException;
@@ -222,14 +223,14 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected void setupProcedureMethod(final Method method,
             final String procedureName) {
 
-        final ProcedureMetaDataFactoryImpl factory = new ProcedureMetaDataFactoryImpl();
-        factory.setDataSource(dataSource);
+        final ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
+                dataSource);
         final ProcedureMetaData metaData = factory.createProcedureMetaData(
                 procedureName, dbms, method);
-
+        final ResultSetHandler resultSetHandler = createResultSetHandler(method);
         final StaticStoredProcedureCommand command = new StaticStoredProcedureCommand(
-                dataSource, statementFactory, createResultSetHandler(method),
-                metaData, method);
+                dataSource, resultSetHandler, statementFactory,
+                resultSetFactory, metaData, method);
         sqlCommands.put(method.getName(), command);
     }
 

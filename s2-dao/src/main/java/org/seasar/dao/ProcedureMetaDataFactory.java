@@ -19,11 +19,20 @@ import java.lang.reflect.Method;
  */
 
 /**
+ * {@link ProcedureMetaData}のファクトリを表すインタフェースです。
+ * 
  * @author taedium
- *
  */
 public interface ProcedureMetaDataFactory {
 
+    /**
+     * プロシージャのメタデータを作成します。
+     * 
+     * @param procedureName プロシージャ名
+     * @param dbms DBMS
+     * @param method メソッド
+     * @return プロシージャのメタデータ
+     */
     ProcedureMetaData createProcedureMetaData(String procedureName, Dbms dbms,
             Method method);
 }
