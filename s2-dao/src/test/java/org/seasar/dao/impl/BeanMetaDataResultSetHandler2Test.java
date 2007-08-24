@@ -20,6 +20,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.RelationRowCreator;
+import org.seasar.dao.RowCreator;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.ResultSetHandler;
 
@@ -29,7 +31,7 @@ public class BeanMetaDataResultSetHandler2Test extends S2DaoTestCase {
 
     public void testHandle() throws Exception {
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
-                beanMetaData, new RelationRowCreatorImpl());
+                beanMetaData, createRowCreator(), createRelationRowCreator());
         String sql = "select empno, dept.dname as d_name from emp, dept where empno = 7788 and emp.deptno = dept.deptno";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -47,6 +49,14 @@ public class BeanMetaDataResultSetHandler2Test extends S2DaoTestCase {
         assertNotNull("1", ret);
         System.out.println(ret.getEmpno());
         assertEquals("2", "RESEARCH", ret.getDname());
+    }
+
+    protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)
+        return new RowCreatorImpl();
+    }
+
+    protected RelationRowCreator createRelationRowCreator() {
+        return new RelationRowCreatorImpl();
     }
 
     public void setUp() {

@@ -17,30 +17,31 @@ package org.seasar.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.RelationRowCreator;
-import org.seasar.extension.jdbc.PropertyType;
-import org.seasar.extension.jdbc.ValueType;
-import org.seasar.framework.beans.PropertyDesc;
-import org.seasar.framework.util.ClassUtil;
-import org.seasar.framework.util.StringUtil;
+import org.seasar.dao.RowCreator;
 
+/**
+ * @author jflute
+ */
 public abstract class AbstractBeanMetaDataResultSetHandler extends
         AbstractDtoMetaDataResultSetHandler {
 
     private BeanMetaData beanMetaData;
 
+    private RowCreator rowCreator;// [DAO-118] (2007/08/25)
+
     private RelationRowCreator relationRowCreator;
 
     public AbstractBeanMetaDataResultSetHandler(BeanMetaData beanMetaData,
-            RelationRowCreator relationRowCreator) {
+            RowCreator rowCreator, RelationRowCreator relationRowCreator) {
         super(beanMetaData);
         this.beanMetaData = beanMetaData;
+        this.rowCreator = rowCreator;
         this.relationRowCreator = relationRowCreator;
     }
 
@@ -48,44 +49,33 @@ public abstract class AbstractBeanMetaDataResultSetHandler extends
         return beanMetaData;
     }
 
-    protected Object createRow(ResultSet rs, Set columnNames)
+    /**
+     * @param rs Result set. (NotNull)
+     * @param columnNames The set of column name. (NotNull)
+     * @param propertyCache The set of property cache. The element type of set is PropertyType. (NotNull)
+     * @return Created row. (NotNull)
+     * @throws SQLException
+     */
+    protected Object createRow(ResultSet rs, Set columnNames, Set propertyCache)
             throws SQLException {
-
-        Object row = ClassUtil.newInstance(beanMetaData.getBeanClass());
-        for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
-            PropertyType pt = beanMetaData.getPropertyType(i);
-            if (columnNames.contains(pt.getColumnName())) {
-                ValueType valueType = pt.getValueType();
-                Object value = valueType.getValue(rs, pt.getColumnName());
-                PropertyDesc pd = pt.getPropertyDesc();
-                pd.setValue(row, value);
-            } else if (columnNames.contains(pt.getPropertyName())) {
-                ValueType valueType = pt.getValueType();
-                Object value = valueType.getValue(rs, pt.getPropertyName());
-                PropertyDesc pd = pt.getPropertyDesc();
-                pd.setValue(row, value);
-            } else if (!pt.isPersistent()) {
-                for (Iterator iter = columnNames.iterator(); iter.hasNext();) {
-                    String columnName = (String) iter.next();
-                    String columnName2 = StringUtil
-                            .replace(columnName, "_", "");
-                    if (columnName2.equalsIgnoreCase(pt.getColumnName())) {
-                        ValueType valueType = pt.getValueType();
-                        Object value = valueType.getValue(rs, columnName);
-                        PropertyDesc pd = pt.getPropertyDesc();
-                        pd.setValue(row, value);
-                        break;
-                    }
-                }
-            }
-        }
-        return row;
+        return rowCreator.createRow(rs, columnNames, beanMetaData,
+                propertyCache);
     }
 
+    /**
+     * @param rs Result set. (NotNull)
+     * @param rpt The type of relation property. (NotNull)
+     * @param columnNames The set of column name. (NotNull)
+     * @param relKeyValues The map of rel key values. (Nullable)
+     * @param relationPropertyCache The map of relation property cache. The key is String(relationNoSuffix) and the value is Set(PropertyType). (NotNull)
+     * @return Created relation row. (Nullable)
+     * @throws SQLException
+     */
     protected Object createRelationRow(ResultSet rs, RelationPropertyType rpt,
-            Set columnNames, Map relKeyValues) throws SQLException {
+            Set columnNames, Map relKeyValues, Map relationPropertyCache)
+            throws SQLException {
         return relationRowCreator.createRelationRow(rs, rpt, columnNames,
-                relKeyValues);
+                relKeyValues, relationPropertyCache);
     }
 
     protected void postCreateRow(final Object row) {

@@ -45,7 +45,9 @@ import org.seasar.dao.InjectDaoClassSupport;
 import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.ProcedureMetaDataFactory;
+import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
+import org.seasar.dao.RowCreator;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.SqlFileNotFoundRuntimeException;
 import org.seasar.dao.ValueTypeFactory;
@@ -905,13 +907,14 @@ public class DaoMetaDataImpl implements DaoMetaData {
      */
     public SqlCommand createFindCommand(final String query) {
         return createSelectDynamicCommand(new BeanListMetaDataResultSetHandler(
-                beanMetaData, new RelationRowCreatorImpl()), query);
+                beanMetaData, createRowCreator(), createRelationRowCreator()),
+                query);
     }
 
     public SqlCommand createFindArrayCommand(final String query) {
         return createSelectDynamicCommand(
                 new BeanArrayMetaDataResultSetHandler(beanMetaData,
-                        new RelationRowCreatorImpl()), query);
+                        createRowCreator(), createRelationRowCreator()), query);
     }
 
     /**
@@ -919,7 +922,16 @@ public class DaoMetaDataImpl implements DaoMetaData {
      */
     public SqlCommand createFindBeanCommand(final String query) {
         return createSelectDynamicCommand(new BeanMetaDataResultSetHandler(
-                beanMetaData, new RelationRowCreatorImpl()), query);
+                beanMetaData, createRowCreator(), createRelationRowCreator()),
+                query);
+    }
+
+    protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)
+        return new RowCreatorImpl();
+    }
+
+    protected RelationRowCreator createRelationRowCreator() {
+        return new RelationRowCreatorImpl();
     }
 
     /**

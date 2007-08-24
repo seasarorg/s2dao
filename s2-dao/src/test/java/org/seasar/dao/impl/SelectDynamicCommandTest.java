@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.seasar.dao.DaoMetaData;
+import org.seasar.dao.RelationRowCreator;
+import org.seasar.dao.RowCreator;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.pager.NullPagingSqlRewriter;
 import org.seasar.dao.unit.S2DaoTestCase;
@@ -35,14 +37,22 @@ public class SelectDynamicCommandTest extends S2DaoTestCase {
         SelectDynamicCommand cmd = new SelectDynamicCommand(getDataSource(),
                 BasicStatementFactory.INSTANCE,
                 new BeanMetaDataResultSetHandler(
-                        createBeanMetaData(Employee.class),
-                        new RelationRowCreatorImpl()),
+                        createBeanMetaData(Employee.class), createRowCreator(),
+                        createRelationRowCreator()),
                 BasicResultSetFactory.INSTANCE, new NullPagingSqlRewriter());
         cmd.setSql("SELECT * FROM emp WHERE empno = /*empno*/1234");
         Employee emp = (Employee) cmd
                 .execute(new Object[] { new Integer(7788) });
         System.out.println(emp);
         assertNotNull("1", emp);
+    }
+
+    protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)
+        return new RowCreatorImpl();
+    }
+
+    protected RelationRowCreator createRelationRowCreator() {
+        return new RelationRowCreatorImpl();
     }
 
     public void testSelectDynamic() throws Exception {

@@ -26,6 +26,7 @@ import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
+import org.seasar.dao.RowCreator;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 
@@ -106,23 +107,27 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
     protected ResultSetHandler createBeanListMetaDataResultSetHandler(
             final BeanMetaData beanMetaData) {
         return new BeanListMetaDataResultSetHandler(beanMetaData,
-                createRelationRowCreator());
+                createRowCreator(), createRelationRowCreator());
     }
 
     protected ResultSetHandler createBeanMetaDataResultSetHandler(
             final BeanMetaData beanMetaData) {
         return new BeanMetaDataResultSetHandler(beanMetaData,
-                createRelationRowCreator());
+                createRowCreator(), createRelationRowCreator());
     }
 
     protected ResultSetHandler createBeanArrayMetaDataResultSetHandler(
             final BeanMetaData beanMetaData) {
         return new BeanArrayMetaDataResultSetHandler(beanMetaData,
-                createRelationRowCreator());
+                createRowCreator(), createRelationRowCreator());
     }
 
     protected ResultSetHandler createObjectResultSetHandler() {
         return new ObjectResultSetHandler();
+    }
+
+    protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)
+        return new RowCreatorImpl();
     }
 
     protected RelationRowCreator createRelationRowCreator() {

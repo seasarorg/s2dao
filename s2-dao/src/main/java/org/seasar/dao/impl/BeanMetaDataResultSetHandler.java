@@ -17,14 +17,21 @@ package org.seasar.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.RelationRowCreator;
+import org.seasar.dao.RowCreator;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.log.Logger;
 
+/**
+ * @author jflute
+ */
 public class BeanMetaDataResultSetHandler extends
         AbstractBeanMetaDataResultSetHandler {
 
@@ -32,17 +39,23 @@ public class BeanMetaDataResultSetHandler extends
             .getLogger(BeanMetaDataResultSetHandler.class);
 
     public BeanMetaDataResultSetHandler(BeanMetaData beanMetaData,
-            RelationRowCreator relationRowCreator) {
-        super(beanMetaData, relationRowCreator);
+            RowCreator rowCreator, RelationRowCreator relationRowCreator) {
+        super(beanMetaData, rowCreator, relationRowCreator);
     }
 
     /**
      * @see org.seasar.extension.jdbc.ResultSetHandler#handle(java.sql.ResultSet)
      */
     public Object handle(ResultSet resultSet) throws SQLException {
+        // Set<PropertyType>
+        final Set propertyCache = new HashSet();// [DAO-118] (2007/08/25)
+
+        // Map<String(relationNoSuffix), Set<PropertyType>>
+        final Map relationPropertyCache = new HashMap();// [DAO-118] (2007/08/25)
+        
         if (resultSet.next()) {
             Set columnNames = createColumnNames(resultSet.getMetaData());
-            Object row = createRow(resultSet, columnNames);
+            Object row = createRow(resultSet, columnNames, propertyCache);
             for (int i = 0; i < getBeanMetaData().getRelationPropertyTypeSize(); ++i) {
                 RelationPropertyType rpt = getBeanMetaData()
                         .getRelationPropertyType(i);
@@ -50,7 +63,7 @@ public class BeanMetaDataResultSetHandler extends
                     continue;
                 }
                 Object relationRow = createRelationRow(resultSet, rpt,
-                        columnNames, null);
+                        columnNames, null, relationPropertyCache);
                 if (relationRow != null) {
                     PropertyDesc pd = rpt.getPropertyDesc();
                     pd.setValue(row, relationRow);

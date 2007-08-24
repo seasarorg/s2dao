@@ -22,13 +22,19 @@ import java.util.List;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationRowCreator;
+import org.seasar.dao.RowCreator;
 
+/**
+ * @author jflute
+ */
 public class BeanArrayMetaDataResultSetHandler extends
         BeanListMetaDataResultSetHandler {
 
     public BeanArrayMetaDataResultSetHandler(BeanMetaData beanMetaData,
-            RelationRowCreator relationRowCreator) {
-        super(beanMetaData, relationRowCreator);
+            RowCreator rowCreator, RelationRowCreator relationRowCreator) {
+        super(beanMetaData, rowCreator, relationRowCreator);
+
+        // The rowCreator is from [DAO-118] (2007/08/25)
     }
 
     /**

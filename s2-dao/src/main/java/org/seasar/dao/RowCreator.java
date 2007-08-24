@@ -17,24 +17,21 @@ package org.seasar.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * @author jflute
  */
-public interface RelationRowCreator {
+public interface RowCreator {
 
     /**
      * @param rs Result set. (NotNull)
-     * @param rpt The type of relation property. (NotNull)
      * @param columnNames The set of column name. (NotNull)
-     * @param relKeyValues The map of rel key values. (Nullable)
-     * @param relationPropertyCache The map of relation property cache. The key is String(relationNoSuffix) and the value is Set(PropertyType). (NotNull)
-     * @return Created relation row. (Nullable)
+     * @param beanMetaData Bean meta data. (NotNull)
+     * @param propertyCache The set of property cache. The element type of set is PropertyType. (NotNull)
+     * @return Created row. (NotNull)
      * @throws SQLException
      */
-    Object createRelationRow(ResultSet rs, RelationPropertyType rpt,
-            Set columnNames, Map relKeyValues, Map relationPropertyCache)
-            throws SQLException;
+    Object createRow(ResultSet rs, Set columnNames, BeanMetaData beanMetaData,
+            Set propertyCache) throws SQLException;
 }

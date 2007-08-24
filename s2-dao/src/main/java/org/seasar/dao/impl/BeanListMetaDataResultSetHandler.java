@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,16 +27,20 @@ import java.util.Set;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.RelationRowCreator;
+import org.seasar.dao.RowCreator;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.framework.beans.PropertyDesc;
 
+/**
+ * @author jflute
+ */
 public class BeanListMetaDataResultSetHandler extends
         AbstractBeanMetaDataResultSetHandler {
 
     public BeanListMetaDataResultSetHandler(BeanMetaData beanMetaData,
-            RelationRowCreator relationRowCreator) {
-        super(beanMetaData, relationRowCreator);
+            RowCreator rowCreator, RelationRowCreator relationRowCreator) {
+        super(beanMetaData, rowCreator, relationRowCreator);
     }
 
     /**
@@ -46,8 +51,15 @@ public class BeanListMetaDataResultSetHandler extends
         List list = new ArrayList();
         int relSize = getBeanMetaData().getRelationPropertyTypeSize();
         RelationRowCache relRowCache = new RelationRowCache(relSize);
+
+        // Set<PropertyType>
+        final Set propertyCache = new HashSet();// [DAO-118] (2007/08/25)
+
+        // Map<String(relationNoSuffix), Set<PropertyType>>
+        final Map relationPropertyCache = new HashMap();// [DAO-118] (2007/08/25)
+
         while (rs.next()) {
-            Object row = createRow(rs, columnNames);
+            Object row = createRow(rs, columnNames, propertyCache);
             for (int i = 0; i < relSize; ++i) {
                 RelationPropertyType rpt = getBeanMetaData()
                         .getRelationPropertyType(i);
@@ -63,7 +75,7 @@ public class BeanListMetaDataResultSetHandler extends
                     relationRow = relRowCache.getRelationRow(i, relKey);
                     if (relationRow == null) {
                         relationRow = createRelationRow(rs, rpt, columnNames,
-                                relKeyValues);
+                                relKeyValues, relationPropertyCache);
                         relRowCache.addRelationRow(i, relKey, relationRow);
                     }
                 }

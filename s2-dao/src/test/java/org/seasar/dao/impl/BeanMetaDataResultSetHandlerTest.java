@@ -20,6 +20,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.RelationRowCreator;
+import org.seasar.dao.RowCreator;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.ResultSetHandler;
 
@@ -29,7 +31,7 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle() throws Exception {
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
-                beanMetaData, new RelationRowCreatorImpl());
+                beanMetaData, createRowCreator(), createRelationRowCreator());
         String sql = "select emp.*, dept.deptno as deptno_0, dept.dname as dname_0 from emp, dept where empno = 7788 and emp.deptno = dept.deptno";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -54,7 +56,7 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle2() throws Exception {
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
-                beanMetaData, new RelationRowCreatorImpl());
+                beanMetaData, createRowCreator(), createRelationRowCreator());
         String sql = "select ename, job from emp where empno = 7788";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -77,7 +79,7 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle3() throws Exception {
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
-                beanMetaData, new RelationRowCreatorImpl());
+                beanMetaData, createRowCreator(), createRelationRowCreator());
         String sql = "select ename, dept.dname as dname_0 from emp, dept where empno = 7788 and emp.deptno = dept.deptno";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -99,6 +101,14 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
         assertEquals("3", "RESEARCH", dept.getDname());
     }
 
+    protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)
+        return new RowCreatorImpl();
+    }
+
+    protected RelationRowCreator createRelationRowCreator() {
+        return new RelationRowCreatorImpl();
+    }
+    
     public void setUp() {
         include("j2ee.dicon");
     }
