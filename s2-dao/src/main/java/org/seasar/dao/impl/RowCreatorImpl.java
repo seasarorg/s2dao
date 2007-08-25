@@ -17,7 +17,9 @@ package org.seasar.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.BeanMetaData;
@@ -35,80 +37,86 @@ public class RowCreatorImpl implements RowCreator {
 
     /**
      * @param rs Result set. (NotNull)
-     * @param columnNames The set of column name. (NotNull)
-     * @param beanMetaData Bean meta data. (NotNull)
-     * @param propertyCache The set of property cache. The element type of set is PropertyType. (NotNull)
+     * @param rowPropertyCache The map of row property cache. The key is String(columnName) and the value is PropertyType. (NotNull)
+     * @param beanClass Bean class. (NotNull)
      * @return Created row. (NotNull)
      * @throws SQLException
      */
-    public Object createRow(ResultSet rs, Set columnNames,
-            BeanMetaData beanMetaData, Set propertyCache) throws SQLException {
-        final Object row = ClassUtil.newInstance(beanMetaData.getBeanClass());
-        if (!propertyCache.isEmpty()) {
-            createRowUsingCache(rs, columnNames, propertyCache, row);
-        } else {
-            createRowUsingBeanMetaData(rs, columnNames, beanMetaData,
-                    propertyCache, row);
+    public Object createRow(ResultSet rs, Map rowPropertyCache, Class beanClass)
+            throws SQLException {
+        final Object row = createBeanInstance(beanClass);
+        final Set columnNameSet = rowPropertyCache.keySet();
+        for (final Iterator ite = columnNameSet.iterator(); ite.hasNext();) {
+            final String columnName = (String) ite.next();
+            final PropertyType pt = (PropertyType) rowPropertyCache
+                    .get(columnName);
+            registerValue(rs, row, pt, columnName);
         }
         return row;
     }
 
-    protected void createRowUsingBeanMetaData(ResultSet rs, Set columnNames,
-            BeanMetaData beanMetaData, Set propertyCache, final Object row)
+    protected Object createBeanInstance(Class beanClass) {
+        return ClassUtil.newInstance(beanClass);
+    }
+
+    protected void registerValue(ResultSet rs, Object row, PropertyType pt,
+            String name) throws SQLException {
+        final ValueType valueType = pt.getValueType();
+        final Object value = valueType.getValue(rs, name);
+        final PropertyDesc pd = pt.getPropertyDesc();
+        pd.setValue(row, value);
+    }
+
+    // - - - - - - - -
+    // Cache Creation
+    // - - - - - - - -
+    /**
+     * @param columnNames The set of column name. (NotNull)
+     * @param beanMetaData Bean meta data. (NotNull)
+     * @return The map of row property cache. The key is String(columnName) and the value is PropertyType. (NotNull)
+     * @throws SQLException
+     */
+    public Map createRowPropertyCache(Set columnNames, BeanMetaData beanMetaData)
             throws SQLException {
+        final Map columnPropertyTypeMap = new HashMap();
+        setupRowPropertyCache(columnPropertyTypeMap, columnNames, beanMetaData);
+        return columnPropertyTypeMap;
+    }
+
+    protected void setupRowPropertyCache(Map columnPropertyTypeMap,
+            Set columnNames, BeanMetaData beanMetaData) throws SQLException {
         for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
             PropertyType pt = beanMetaData.getPropertyType(i);
-            setupProperty(rs, columnNames, row, pt, propertyCache);
+            setupRowPropertyCacheElement(columnPropertyTypeMap, columnNames, pt);
         }
     }
 
-    protected void createRowUsingCache(ResultSet rs, Set columnNames,
-            Set propertyCache, Object row) throws SQLException {
-        for (final Iterator ite = propertyCache.iterator(); ite.hasNext();) {
-            final PropertyType pt = (PropertyType) ite.next();
-            setupProperty(rs, columnNames, row, pt, propertyCache);
-        }
-    }
-
-    protected void setupProperty(ResultSet rs, Set columnNames, Object row,
-            PropertyType pt, Set propertyCache) throws SQLException {
+    protected void setupRowPropertyCacheElement(Map columnPropertyTypeMap,
+            Set columnNames, PropertyType pt) throws SQLException {
         // If the property is not writable, the property is out of target!
         if (!pt.getPropertyDesc().hasWriteMethod()) {
             return;
         }
         if (columnNames.contains(pt.getColumnName())) {
-            registerValue(rs, row, pt, pt.getColumnName(), propertyCache);
+            columnPropertyTypeMap.put(pt.getColumnName(), pt);
         } else if (columnNames.contains(pt.getPropertyName())) {
-            registerValue(rs, row, pt, pt.getPropertyName(), propertyCache);
+            columnPropertyTypeMap.put(pt.getPropertyName(), pt);
         } else if (!pt.isPersistent()) {
-            setupNotPersistentProperty(rs, columnNames, row, pt, propertyCache);
+            setupRowPropertyCacheNotPersistentElement(columnPropertyTypeMap,
+                    columnNames, pt);
         }
     }
 
-    protected void setupNotPersistentProperty(ResultSet rs, Set columnNames,
-            Object row, PropertyType pt, Set propertyCache) throws SQLException {
+    protected void setupRowPropertyCacheNotPersistentElement(
+            Map columnPropertyTypeMap, Set columnNames, PropertyType pt)
+            throws SQLException {
         for (Iterator iter = columnNames.iterator(); iter.hasNext();) {
             String columnName = (String) iter.next();
             String columnName2 = StringUtil.replace(columnName, "_", "");
             if (columnName2.equalsIgnoreCase(pt.getColumnName())) {
-                registerValue(rs, row, pt, columnName, propertyCache);
+                columnPropertyTypeMap.put(columnName, pt);
                 break;
             }
         }
-    }
-
-    protected void registerValue(ResultSet rs, Object row, PropertyType pt,
-            String name, Set propertyCache) throws SQLException {
-        ValueType valueType = pt.getValueType();
-        Object value = valueType.getValue(rs, name);
-        PropertyDesc pd = pt.getPropertyDesc();
-        pd.setValue(row, value);
-
-        // Add property type to cache as target.
-        addPropertyCache(propertyCache, pt);
-    }
-
-    protected void addPropertyCache(Set propertyCache, PropertyType pt) {
-        propertyCache.add(pt);
     }
 }

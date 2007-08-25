@@ -49,17 +49,28 @@ public abstract class AbstractBeanMetaDataResultSetHandler extends
         return beanMetaData;
     }
 
+    protected Class getBeanClass() {
+        return beanMetaData.getBeanClass();
+    }
+
+    /**
+     * @param columnNames The set of column name. (NotNull)
+     * @return The map of row property cache. The key is String(columnName) and the value is PropertyType. (NotNull)
+     * @throws SQLException
+     */
+    protected Map createRowPropertyCache(Set columnNames) throws SQLException {
+        return rowCreator.createRowPropertyCache(columnNames, beanMetaData);
+    }
+
     /**
      * @param rs Result set. (NotNull)
-     * @param columnNames The set of column name. (NotNull)
-     * @param propertyCache The set of property cache. The element type of set is PropertyType. (NotNull)
+     * @param rowPropertyCache The map of row property cache. The key is String(columnName) and the value is PropertyType. (NotNull)
      * @return Created row. (NotNull)
      * @throws SQLException
      */
-    protected Object createRow(ResultSet rs, Set columnNames, Set propertyCache)
+    protected Object createRow(ResultSet rs, Map rowPropertyCache)
             throws SQLException {
-        return rowCreator.createRow(rs, columnNames, beanMetaData,
-                propertyCache);
+        return rowCreator.createRow(rs, rowPropertyCache, getBeanClass());
     }
 
     /**
@@ -83,5 +94,4 @@ public abstract class AbstractBeanMetaDataResultSetHandler extends
         final Set names = bmd.getModifiedPropertyNames(row);
         names.clear();
     }
-
 }

@@ -18,7 +18,6 @@ package org.seasar.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,15 +46,17 @@ public class BeanMetaDataResultSetHandler extends
      * @see org.seasar.extension.jdbc.ResultSetHandler#handle(java.sql.ResultSet)
      */
     public Object handle(ResultSet resultSet) throws SQLException {
-        // Set<PropertyType>
-        final Set propertyCache = new HashSet();// [DAO-118] (2007/08/25)
-
-        // Map<String(relationNoSuffix), Set<PropertyType>>
-        final Map relationPropertyCache = new HashMap();// [DAO-118] (2007/08/25)
-        
         if (resultSet.next()) {
-            Set columnNames = createColumnNames(resultSet.getMetaData());
-            Object row = createRow(resultSet, columnNames, propertyCache);
+            // Set<String(columnName)>
+            final Set columnNames = createColumnNames(resultSet.getMetaData());// [DAO-118] (2007/08/26)
+
+            // Map<String(columnName), PropertyType>
+            Map rowPropertyCache = createRowPropertyCache(columnNames);// [DAO-118] (2007/08/25)
+
+            // Map<String(relationNoSuffix), Set<PropertyType>>
+            final Map relationPropertyCache = new HashMap();// [DAO-118] (2007/08/25)
+
+            final Object row = createRow(resultSet, rowPropertyCache);
             for (int i = 0; i < getBeanMetaData().getRelationPropertyTypeSize(); ++i) {
                 RelationPropertyType rpt = getBeanMetaData()
                         .getRelationPropertyType(i);

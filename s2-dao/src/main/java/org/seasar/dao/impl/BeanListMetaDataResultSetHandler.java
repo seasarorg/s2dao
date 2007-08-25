@@ -19,7 +19,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,19 +46,28 @@ public class BeanListMetaDataResultSetHandler extends
      * @see org.seasar.extension.jdbc.ResultSetHandler#handle(java.sql.ResultSet)
      */
     public Object handle(ResultSet rs) throws SQLException {
-        Set columnNames = createColumnNames(rs.getMetaData());
-        List list = new ArrayList();
-        int relSize = getBeanMetaData().getRelationPropertyTypeSize();
-        RelationRowCache relRowCache = new RelationRowCache(relSize);
+        // Set<String(columnName)>
+        final Set columnNames = createColumnNames(rs.getMetaData());
 
-        // Set<PropertyType>
-        final Set propertyCache = new HashSet();// [DAO-118] (2007/08/25)
+        // Map<String(columnName), PropertyType>
+        Map rowPropertyCache = null;// [DAO-118] (2007/08/26)
 
         // Map<String(relationNoSuffix), Set<PropertyType>>
         final Map relationPropertyCache = new HashMap();// [DAO-118] (2007/08/25)
 
+        final List list = new ArrayList();
+        final int relSize = getBeanMetaData().getRelationPropertyTypeSize();
+        final RelationRowCache relRowCache = new RelationRowCache(relSize);
+
         while (rs.next()) {
-            Object row = createRow(rs, columnNames, propertyCache);
+            // Lazy initialization because if the result is zero, the cache is unused.
+            if (rowPropertyCache == null) {
+                rowPropertyCache = createRowPropertyCache(columnNames);
+            }
+
+            // Create row instance of base table by row property cache.
+            Object row = createRow(rs, rowPropertyCache);
+
             for (int i = 0; i < relSize; ++i) {
                 RelationPropertyType rpt = getBeanMetaData()
                         .getRelationPropertyType(i);
