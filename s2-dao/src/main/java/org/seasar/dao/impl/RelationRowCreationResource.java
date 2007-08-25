@@ -16,7 +16,7 @@
 package org.seasar.dao.impl;
 
 import java.sql.ResultSet;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,67 +29,100 @@ import org.seasar.extension.jdbc.PropertyType;
  */
 public class RelationRowCreationResource {
 
-    // - - - - -
-    // Attribute
-    // - - - - -
-    /** Result set. Initialized at first. */
+    // ===================================================================================
+    //                                                                           Attribute
+    //                                                                           =========
+    /** Result set. */
     private ResultSet resultSet;
 
     /** Relation row. Initialized at first or initialied after. */
     private Object row;
 
-    /** Relation property type. Initialized at first. */
+    /** Relation property type. */
     private RelationPropertyType relationPropertyType;
 
-    /** The set of column name. Initialized at first. */
+    /** The set of column name. */
     private Set columnNames;
 
-    /** The map of rel key values. Initialized at first. */
+    /** The map of rel key values. */
     private Map relKeyValues;
 
-    /** The map of relation property cache. Initialized at first. */
-    private Map relationPropertyCache;// Map<String(relationNoSuffix), Set<PropertyType>>
+    /** The map of relation property cache. */
+    private Map relationPropertyCache;// Map<String(relationNoSuffix), Map<String(columnName), PropertyType>>
 
-    /** The suffix of relation no. Initialized at first. */
+    /** The suffix of base object. */
+    private String baseSuffix;
+
+    /** The suffix of relation no. */
     private String relationNoSuffix;
+
+    /** The limit of relation nest leve. */
+    private int limitRelationNestLevel;
+
+    /** The current relation nest level. Default is one. */
+    private int currentRelationNestLevel;
 
     /** Current property type. This variable is temporary. */
     private PropertyType currentPropertyType;
 
-    /** The count of exist column. This variable is counter. */
-    private int existColumn;
+    /** The temporary variable for relation property type. */
+    private RelationPropertyType tmpRelationPropertyType;
 
-    // - - - - -
-    // About row
-    // - - - - -
+    /** The temporary variable for base suffix. */
+    private String tmpBaseSuffix;
+
+    /** The temporary variable for relation no suffix. */
+    private String tmpRelationNoSuffix;
+
+    /** The count of valid value. */
+    private int validValueCount;
+
+    /** Does it create dead link? */
+    private boolean createDeadLink;
+
+    // ===================================================================================
+    //                                                                            Behavior
+    //                                                                            ========
+    // -----------------------------------------------------
+    //                                                   row
+    //                                                   ---
     public boolean hasRowInstance() {
         return row != null;
     }
 
-    public Object getRowIfExistsColumn() {
-        if (!existsColumn()) {
-            return null;
-        }
-        return row;
+    public void clearRowInstance() {
+        row = null;
     }
 
-    // - - - - - - - - - - - - - -
-    // About relationPropertyType
-    // - - - - - - - - - - - - - -
+    // -----------------------------------------------------
+    //                                  relationPropertyType
+    //                                  --------------------
     public BeanMetaData getRelationBeanMetaData() {
         return relationPropertyType.getBeanMetaData();
     }
 
-    // - - - - - - - - -
-    // About columnNames
-    // - - - - - - - - -
+    public boolean hasNextRelationProperty() {
+        return getRelationBeanMetaData().getRelationPropertyTypeSize() > 0;
+    }
+
+    public void backupRelationPropertyType() {
+        tmpRelationPropertyType = relationPropertyType;
+    }
+
+    public void restoreRelationPropertyType() {
+        relationPropertyType = tmpRelationPropertyType;
+    }
+
+    // -----------------------------------------------------
+    //                                           columnNames
+    //                                           -----------
     public boolean containsColumnName(String columnName) {
         return columnNames.contains(columnName);
     }
 
-    // - - - - - - - - - -
-    // About relKeyValues
-    // - - - - - - - - - -
+    // -----------------------------------------------------
+    //                                          relKeyValues
+    //                                          ------------
     public boolean existsRelKeyValues() {
         return relKeyValues != null;
     }
@@ -98,67 +131,116 @@ public class RelationRowCreationResource {
         return relKeyValues.containsKey(key);
     }
 
+    public boolean containsRelKeyValueIfExists(String key) {
+        return existsRelKeyValues() && relKeyValues.containsKey(key);
+    }
+
     public Object extractRelKeyValue(String key) {
         return relKeyValues.get(key);
     }
 
-    // - - - - - - - - - - - - - -
-    // About relationPropertyCache
-    // - - - - - - - - - - - - - -
-    // The type of relationPropertyCache is Map<String(relationNoSuffix), Set<PropertyType>>.
-    public boolean hasRelationPropertyCache() {
-        return relationPropertyCache.containsKey(relationNoSuffix);
+    // -----------------------------------------------------
+    //                                 relationPropertyCache
+    //                                 ---------------------
+    // The type of relationPropertyCache is Map<String(relationNoSuffix), Map<String(columnName), PropertyType>>.
+    public void initializePropertyCacheElement() {
+        relationPropertyCache.put(relationNoSuffix, new HashMap());
     }
 
-    public Set extractRelationTargetPropertyListFromCache() {
-        return (Set) relationPropertyCache.get(relationNoSuffix);
+    public boolean hasPropertyCacheElement() {
+        final Map propertyCacheElement = extractPropertyCacheElement();
+        return propertyCacheElement != null && !propertyCacheElement.isEmpty();
     }
 
-    public void initializeRelationPropertyCache() {
-        if (!hasRelationPropertyCache()) {
-            relationPropertyCache.put(relationNoSuffix, new HashSet());
+    public Map extractPropertyCacheElement() {
+        return (Map) relationPropertyCache.get(relationNoSuffix);
+    }
+
+    public void savePropertyCacheElement() {
+        if (!hasPropertyCacheElement()) {
+            initializePropertyCacheElement();
         }
-    }
-
-    public void clearRelationPropertyCache() {
-        if (hasRelationPropertyCache()) {
-            relationPropertyCache.remove(relationNoSuffix);
-        }
-    }
-
-    public void saveRelationPropertyCache() {
-        if (!hasRelationPropertyCache()) {
-            initializeRelationPropertyCache();
-        }
-        final Set propertyCache = (Set) relationPropertyCache
-                .get(relationNoSuffix);
-        if (propertyCache.contains(currentPropertyType)) {
+        final Map propertyCacheElement = extractPropertyCacheElement();
+        final String columnName = buildRelationColumnName();
+        if (propertyCacheElement.containsKey(columnName)) {
             return;
         }
-        propertyCache.add(currentPropertyType);
+        propertyCacheElement.put(columnName, currentPropertyType);
     }
 
-    // - - - - - - - - - - - -
-    // About relationNoSuffix
-    // - - - - - - - - - - - -
+    // -----------------------------------------------------
+    //                                                suffix
+    //                                                ------
     public String buildRelationColumnName() {
         return currentPropertyType.getColumnName() + relationNoSuffix;
     }
 
-    // - - - - - - - - -
-    // About existColumn
-    // - - - - - - - - -
-    public void incrementExistColumn() {
-        ++existColumn;
+    public void addRelationNoSuffix(String additionalRelationNoSuffix) {
+        relationNoSuffix = relationNoSuffix + additionalRelationNoSuffix;
     }
 
-    public boolean existsColumn() {
-        return existColumn > 0;
+    public void backupSuffixAndPrepare(String baseSuffix,
+            String additionalRelationNoSuffix) {
+        backupBaseSuffix();
+        backupRelationNoSuffix();
+        this.baseSuffix = baseSuffix;
+        addRelationNoSuffix(additionalRelationNoSuffix);
     }
 
-    // - - - - -
-    // Accessor
-    // - - - - -
+    protected void restoreSuffix() {
+        restoreBaseSuffix();
+        restoreRelationNoSuffix();
+    }
+
+    private void backupBaseSuffix() {
+        tmpBaseSuffix = baseSuffix;
+    }
+
+    private void restoreBaseSuffix() {
+        baseSuffix = tmpBaseSuffix;
+    }
+
+    private void backupRelationNoSuffix() {
+        tmpRelationNoSuffix = relationNoSuffix;
+    }
+
+    private void restoreRelationNoSuffix() {
+        relationNoSuffix = tmpRelationNoSuffix;
+    }
+
+    // -----------------------------------------------------
+    //                                     relationNestLevel
+    //                                     -----------------
+    public boolean hasNextRelationLevel() {
+        return currentRelationNestLevel < limitRelationNestLevel;
+    }
+
+    public void incrementCurrentRelationNestLevel() {
+        ++currentRelationNestLevel;
+    }
+
+    public void decrementCurrentRelationNestLevel() {
+        --currentRelationNestLevel;
+    }
+
+    // -----------------------------------------------------
+    //                                       validValueCount
+    //                                       ---------------
+    public void incrementValidValueCount() {
+        ++validValueCount;
+    }
+
+    public void clearValidValueCount() {
+        validValueCount = 0;
+    }
+
+    public boolean hasValidValueCount() {
+        return validValueCount > 0;
+    }
+
+    // ===================================================================================
+    //                                                                            Accessor
+    //                                                                            ========
     public ResultSet getResultSet() {
         return resultSet;
     }
@@ -173,6 +255,10 @@ public class RelationRowCreationResource {
 
     public void setColumnNames(Set columnNames) {
         this.columnNames = columnNames;
+    }
+
+    public Map getRelKeyValues() {
+        return this.relKeyValues;
     }
 
     public void setRelKeyValues(Map relKeyValues) {
@@ -195,12 +281,44 @@ public class RelationRowCreationResource {
         this.relationPropertyType = rpt;
     }
 
+    public Map getRelationPropertyCache() {
+        return relationPropertyCache;
+    }
+
+    public void setRelationPropertyCache(Map relationPropertyCache) {
+        this.relationPropertyCache = relationPropertyCache;
+    }
+
+    public String getBaseSuffix() {
+        return baseSuffix;
+    }
+
+    public void setBaseSuffix(String baseSuffix) {
+        this.baseSuffix = baseSuffix;
+    }
+
     public String getRelationNoSuffix() {
         return relationNoSuffix;
     }
 
     public void setRelationNoSuffix(String relationNoSuffix) {
         this.relationNoSuffix = relationNoSuffix;
+    }
+
+    public int getLimitRelationNestLevel() {
+        return limitRelationNestLevel;
+    }
+
+    public void setLimitRelationNestLevel(int limitRelationNestLevel) {
+        this.limitRelationNestLevel = limitRelationNestLevel;
+    }
+
+    public int getCurrentRelationNestLevel() {
+        return currentRelationNestLevel;
+    }
+
+    public void setCurrentRelationNestLevel(int currentRelationNestLevel) {
+        this.currentRelationNestLevel = currentRelationNestLevel;
     }
 
     public PropertyType getCurrentPropertyType() {
@@ -211,11 +329,11 @@ public class RelationRowCreationResource {
         this.currentPropertyType = propertyType;
     }
 
-    public Map getRelationPropertyCache() {
-        return relationPropertyCache;
+    public boolean isCreateDeadLink() {
+        return createDeadLink;
     }
 
-    public void setRelationPropertyCache(Map relationPropertyCache) {
-        this.relationPropertyCache = relationPropertyCache;
+    public void setCreateDeadLink(boolean createDeadLink) {
+        this.createDeadLink = createDeadLink;
     }
 }

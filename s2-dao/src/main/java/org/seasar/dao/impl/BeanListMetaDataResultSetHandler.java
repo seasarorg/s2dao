@@ -52,8 +52,8 @@ public class BeanListMetaDataResultSetHandler extends
         // Map<String(columnName), PropertyType>
         Map rowPropertyCache = null;// [DAO-118] (2007/08/26)
 
-        // Map<String(relationNoSuffix), Set<PropertyType>>
-        final Map relationPropertyCache = new HashMap();// [DAO-118] (2007/08/25)
+        // Map<String(relationNoSuffix), Map<String(columnName), PropertyType>>
+        Map relationPropertyCache = null;// [DAO-118] (2007/08/25)
 
         final List list = new ArrayList();
         final int relSize = getBeanMetaData().getRelationPropertyTypeSize();
@@ -62,7 +62,10 @@ public class BeanListMetaDataResultSetHandler extends
         while (rs.next()) {
             // Lazy initialization because if the result is zero, the cache is unused.
             if (rowPropertyCache == null) {
-                rowPropertyCache = createRowPropertyCache(columnNames);
+                rowPropertyCache = createPropertyCache(columnNames);
+            }
+            if (relationPropertyCache == null) {
+                relationPropertyCache = createRelationPropertyCache(columnNames);
             }
 
             // Create row instance of base table by row property cache.

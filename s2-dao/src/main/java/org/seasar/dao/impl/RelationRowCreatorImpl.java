@@ -17,6 +17,7 @@ package org.seasar.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -34,136 +35,115 @@ import org.seasar.framework.util.ClassUtil;
  */
 public class RelationRowCreatorImpl implements RelationRowCreator {
 
+    // ===================================================================================
+    //                                                                        Row Creation
+    //                                                                        ============
     /**
      * @param rs Result set. (NotNull)
      * @param rpt The type of relation property. (NotNull)
      * @param columnNames The set of column name. (NotNull)
      * @param relKeyValues The map of rel key values. (Nullable)
-     * @param relationPropertyCache The map of relation property cache. The key is String(relationNoSuffix) and the value is Set(PropertyType). (NotNull)
+     * @param relationPropertyCache The map of relation property cache. Map{String(relationNoSuffix), Map{String(columnName), PropertyType}} (NotNull)
      * @return Created relation row. (Nullable)
      * @throws SQLException
      */
     public Object createRelationRow(ResultSet rs, RelationPropertyType rpt,
             Set columnNames, Map relKeyValues, Map relationPropertyCache)
             throws SQLException {
-        final Object row = setupRelationKeyValue(rpt, columnNames, relKeyValues);
-        return setupRelationAllValue(row, rs, rpt, columnNames, relKeyValues,
-                relationPropertyCache);
+        // - - - - - - - 
+        // Entry Point!
+        // - - - - - - -
+        final RelationRowCreationResource res = createResourceForRow(rs, rpt,
+                columnNames, relKeyValues, relationPropertyCache);
+        return createRelationRow(res);
     }
 
-    protected Object setupRelationKeyValue(RelationPropertyType rpt,
-            Set columnNames, Map relKeyValues) {
-        Object row = null;
-        final BeanMetaData bmd = rpt.getBeanMetaData();
-        for (int i = 0; i < rpt.getKeySize(); ++i) {
-            String columnName = rpt.getMyKey(i);
-            if (columnNames.contains(columnName)) {
-                if (row == null) {
-                    row = createRelationRow(rpt);
-                }
-                if (relKeyValues != null
-                        && relKeyValues.containsKey(columnName)) {
-                    Object value = relKeyValues.get(columnName);
-                    PropertyType pt = bmd.getPropertyTypeByColumnName(rpt
-                            .getYourKey(i));
-                    PropertyDesc pd = pt.getPropertyDesc();
-                    if (value != null) {
-                        pd.setValue(row, value);
-                    }
-                }
-            }
-            continue;
-        }
-        return row;
-    }
-
-    protected Object setupRelationAllValue(Object row, ResultSet rs,
+    protected RelationRowCreationResource createResourceForRow(ResultSet rs,
             RelationPropertyType rpt, Set columnNames, Map relKeyValues,
             Map relationPropertyCache) throws SQLException {
-        final String relationNoSuffix = buildRelationNoSuffix(rpt);
-        final RelationRowCreationResource resource = createRelationRowCreationResource(
-                row, rs, rpt, columnNames, relKeyValues, relationPropertyCache,
-                relationNoSuffix);
-        return setupRelationAllValue(resource);
+        final RelationRowCreationResource res = new RelationRowCreationResource();
+        res.setResultSet(rs);
+        res.setRelationPropertyType(rpt);
+        res.setColumnNames(columnNames);
+        res.setRelKeyValues(relKeyValues);
+        res.setRelationPropertyCache(relationPropertyCache);
+        res.setBaseSuffix("");// as Default
+        res.setRelationNoSuffix(buildRelationNoSuffix(rpt));
+        res.setLimitRelationNestLevel(getLimitRelationNestLevel());
+        res.setCurrentRelationNestLevel(1);// as Default
+        res.setCreateDeadLink(isCreateDeadLink());
+        return res;
     }
 
-    protected String buildRelationNoSuffix(RelationPropertyType rpt) {
-        return "_" + rpt.getRelationNo();
-    }
-
-    protected RelationRowCreationResource createRelationRowCreationResource(
-            Object row, ResultSet rs, RelationPropertyType rpt,
-            Set columnNames, Map relKeyValues, Map relationPropertyCache,
-            String relationNoSuffix) throws SQLException {
-        final RelationRowCreationResource resource = new RelationRowCreationResource();
-        resource.setResultSet(rs);
-        resource.setRow(row);
-        resource.setRelationPropertyType(rpt);
-        resource.setColumnNames(columnNames);
-        resource.setRelKeyValues(relKeyValues);
-        resource.setRelationPropertyCache(relationPropertyCache);
-        resource.setRelationNoSuffix(relationNoSuffix);
-        return resource;
-    }
-
-    protected Object setupRelationAllValue(RelationRowCreationResource resource)
+    /**
+     * @param res The resource of relation row creation. (NotNull)
+     * @return Created relation row. (Nullable)
+     * @throws SQLException
+     */
+    protected Object createRelationRow(RelationRowCreationResource res)
             throws SQLException {
-        if (resource.hasRelationPropertyCache()) {
-            // - - - - - - - - - - - - - -
-            // Using relationPropertyCache
-            // - - - - - - - - - - - - - -
-            final Set propertyCache = resource
-                    .extractRelationTargetPropertyListFromCache();
-            for (final Iterator ite = propertyCache.iterator(); ite.hasNext();) {
-                final PropertyType pt = (PropertyType) ite.next();
-                resource.setCurrentPropertyType(pt);
-                if (!isTargetProperty(resource)) {
-                    continue;
-                }
-                if (!isValidRelation(resource)) {
-                    return null;
-                }
-
-                // 既にCacheを利用しているので、Cacheの保存はしないでSetupする。
-                final boolean saveCache = false;
-                setupRelationProperty(resource, saveCache);
-            }
-        } else {
-            // - - - - - - - - - - - - - -
-            // Using relationBeanMetaData
-            // - - - - - - - - - - - - - -
-            final BeanMetaData bmd = resource.getRelationBeanMetaData();
-
-            // Cacheの初期化をする。この時点では空っぽである。
-            // Cacheするべきものが一つも無い場合でも、
-            // 「一つも無い」という状態がCacheされることになる。。
-            resource.initializeRelationPropertyCache();
-
-            for (int i = 0; i < bmd.getPropertyTypeSize(); ++i) {
-                final PropertyType pt = bmd.getPropertyType(i);
-                resource.setCurrentPropertyType(pt);
-                if (!isTargetProperty(resource)) {
-                    continue;
-                }
-                if (!isValidRelation(resource)) {
-                    // Cacheするのに有効なRecordではない(全てのPropertyを処理しない)ため、
-                    // 作りかけのCacheはClearして、次回Request時に再度Cacheを作る。
-                    resource.clearRelationPropertyCache();
-                    return null;
-                }
-
-                // Cacheの保存はしながらSetupする。
-                final boolean saveCache = true;
-                setupRelationProperty(resource, saveCache);
-            }
+        // - - - - - - - - - - - 
+        // Recursive Call Point!
+        // - - - - - - - - - - -
+        if (!res.hasPropertyCacheElement()) {
+            return null;
         }
-        return getRowIfExistsColumn(resource);
+        setupRelationKeyValue(res);
+        setupRelationAllValue(res);
+        return res.getRow();
     }
 
-    protected boolean isTargetProperty(RelationRowCreationResource resource)
+    protected void setupRelationKeyValue(RelationRowCreationResource res) {
+        final RelationPropertyType rpt = res.getRelationPropertyType();
+        final BeanMetaData bmd = rpt.getBeanMetaData();
+        for (int i = 0; i < rpt.getKeySize(); ++i) {
+            final String columnName = rpt.getMyKey(i) + res.getBaseSuffix();
+
+            if (!res.containsColumnName(columnName)) {
+                continue;
+            }
+            if (!res.hasRowInstance()) {
+                res.setRow(newRelationRowInstance(rpt));
+            }
+            if (!res.containsRelKeyValueIfExists(columnName)) {
+                continue;
+            }
+            final Object value = res.extractRelKeyValue(columnName);
+            if (value == null) {
+                continue;
+            }
+
+            final String yourKey = rpt.getYourKey(i);
+            final PropertyType pt = bmd.getPropertyTypeByColumnName(yourKey);
+            final PropertyDesc pd = pt.getPropertyDesc();
+            pd.setValue(res.getRow(), value);
+            continue;
+        }
+    }
+
+    protected void setupRelationAllValue(RelationRowCreationResource res)
             throws SQLException {
-        final PropertyType pt = resource.getCurrentPropertyType();
-        return pt.getPropertyDesc().hasWriteMethod();
+        final Map propertyCacheElement = res.extractPropertyCacheElement();
+        final Set columnNameSet = propertyCacheElement.keySet();
+        for (final Iterator ite = columnNameSet.iterator(); ite.hasNext();) {
+            final String columnName = (String) ite.next();
+            final PropertyType pt = (PropertyType) propertyCacheElement
+                    .get(columnName);
+            res.setCurrentPropertyType(pt);
+            if (!isValidRelation(res)) {
+                res.setRow(null);
+                return;
+            }
+            setupRelationProperty(res);
+        }
+        if (!res.isCreateDeadLink() && !res.hasValidValueCount()) {
+            res.clearRowInstance();
+            return;
+        }
+        res.clearValidValueCount();
+        if (res.hasNextRelationProperty() && res.hasNextRelationLevel()) {
+            setupNextRelationRow(res);
+        }
     }
 
     protected boolean isValidRelation(RelationRowCreationResource resource)
@@ -171,50 +151,228 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
         return true;// Always true as default. This method is for extension(for override).
     }
 
-    protected Object getRowIfExistsColumn(RelationRowCreationResource resource)
+    protected void setupRelationProperty(RelationRowCreationResource resource)
             throws SQLException {
-        return resource.getRowIfExistsColumn();
-    }
-
-    protected void setupRelationProperty(RelationRowCreationResource resource,
-            boolean saveCache) throws SQLException {
         final String columnName = resource.buildRelationColumnName();
-        if (!resource.containsColumnName(columnName)) {
-            return;
-        }
-        resource.incrementExistColumn();
-        if (saveCache) {
-            resource.saveRelationPropertyCache();
-        }
         if (!resource.hasRowInstance()) {
-            resource.setRow(createRelationRow(resource));
+            resource.setRow(newRelationRowInstance(resource));
         }
         registerRelationValue(resource, columnName);
     }
 
-    protected void registerRelationValue(RelationRowCreationResource resource,
+    protected void registerRelationValue(RelationRowCreationResource res,
             String columnName) throws SQLException {
-        final PropertyType pt = resource.getCurrentPropertyType();
+        final PropertyType pt = res.getCurrentPropertyType();
         Object value = null;
-        if (resource.existsRelKeyValues()
-                && resource.containsRelKeyValue(columnName)) {
-            value = resource.extractRelKeyValue(columnName);
+        if (res.containsRelKeyValueIfExists(columnName)) {
+            value = res.extractRelKeyValue(columnName);
         } else {
             final ValueType valueType = pt.getValueType();
-            value = valueType.getValue(resource.getResultSet(), columnName);
+            value = valueType.getValue(res.getResultSet(), columnName);
         }
         if (value != null) {
+            res.incrementValidValueCount();
             final PropertyDesc pd = pt.getPropertyDesc();
-            pd.setValue(resource.getRow(), value);
+            pd.setValue(res.getRow(), value);
         }
     }
 
-    protected Object createRelationRow(RelationRowCreationResource resource) {
-        final RelationPropertyType rpt = resource.getRelationPropertyType();
+    // -----------------------------------------------------
+    //                                         Next Relation
+    //                                         -------------
+    protected void setupNextRelationRow(RelationRowCreationResource res)
+            throws SQLException {
+        final BeanMetaData nextBmd = res.getRelationBeanMetaData();
+        final Object row = res.getRow();
+        res.backupRelationPropertyType();
+        res.incrementCurrentRelationNestLevel();
+        try {
+            for (int i = 0; i < nextBmd.getRelationPropertyTypeSize(); ++i) {
+                final RelationPropertyType nextRpt = nextBmd
+                        .getRelationPropertyType(i);
+                setupNextRelationRowElement(res, row, nextRpt);
+            }
+        } finally {
+            res.setRow(row);
+            res.restoreRelationPropertyType();
+            res.decrementCurrentRelationNestLevel();
+        }
+    }
+
+    protected void setupNextRelationRowElement(RelationRowCreationResource res,
+            Object row, RelationPropertyType nextRpt) throws SQLException {
+        if (nextRpt == null) {
+            return;
+        }
+        res.clearRowInstance();
+        res.setRelationPropertyType(nextRpt);
+
+        final String baseSuffix = res.getRelationNoSuffix();
+        final String additionalRelationNoSuffix = buildRelationNoSuffix(nextRpt);
+        res.backupSuffixAndPrepare(baseSuffix, additionalRelationNoSuffix);
+        try {
+            final Object relationRow = createRelationRow(res);
+            if (relationRow != null) {
+                nextRpt.getPropertyDesc().setValue(row, relationRow);
+            }
+        } finally {
+            res.restoreSuffix();
+        }
+    }
+
+    // ===================================================================================
+    //                                                             Property Cache Creation
+    //                                                             =======================
+    /**
+     * @param columnNames The set of column name. (NotNull)
+     * @param bmd Bean meta data of base object. (NotNull)
+     * @return The map of relation property cache. Map{String(relationNoSuffix), Map{String(columnName), PropertyType}} (NotNull)
+     * @throws SQLException
+     */
+    public Map createPropertyCache(Set columnNames, BeanMetaData bmd)
+            throws SQLException {
+        // - - - - - - - 
+        // Entry Point!
+        // - - - - - - -
+        final Map relationPropertyCache = new HashMap();
+        for (int i = 0; i < bmd.getRelationPropertyTypeSize(); ++i) {
+            final RelationPropertyType rpt = bmd.getRelationPropertyType(i);
+            final String baseSuffix = "";
+            final String relationNoSuffix = buildRelationNoSuffix(rpt);
+            final RelationRowCreationResource res = createResourceForPropertyCache(
+                    rpt, columnNames, relationPropertyCache, baseSuffix,
+                    relationNoSuffix, getLimitRelationNestLevel());
+            if (rpt == null) {
+                continue;
+            }
+            setupPropertyCache(res);
+        }
+        return relationPropertyCache;
+    }
+
+    protected RelationRowCreationResource createResourceForPropertyCache(
+            RelationPropertyType rpt, Set columnNames,
+            Map relationPropertyCache, String baseSuffix,
+            String relationNoSuffix, int limitRelationNestLevel)
+            throws SQLException {
+        final RelationRowCreationResource res = new RelationRowCreationResource();
+        res.setRelationPropertyType(rpt);
+        res.setColumnNames(columnNames);
+        res.setRelationPropertyCache(relationPropertyCache);
+        res.setBaseSuffix(baseSuffix);
+        res.setRelationNoSuffix(relationNoSuffix);
+        res.setLimitRelationNestLevel(limitRelationNestLevel);
+        res.setCurrentRelationNestLevel(1);// as Default
+        return res;
+    }
+
+    protected void setupPropertyCache(RelationRowCreationResource res)
+            throws SQLException {
+        // - - - - - - - - - - - 
+        // Recursive Call Point!
+        // - - - - - - - - - - -
+        // Cacheの初期化をする。この時点では空っぽである。
+        // Cacheするべきものが一つも無い場合でも、
+        // 「一つも無い」という状態がCacheされることになる。。
+        res.initializePropertyCacheElement();
+
+        final BeanMetaData nextBmd = res.getRelationBeanMetaData();
+        for (int i = 0; i < nextBmd.getPropertyTypeSize(); ++i) {
+            final PropertyType pt = nextBmd.getPropertyType(i);
+            res.setCurrentPropertyType(pt);
+            if (!isTargetProperty(res)) {
+                continue;
+            }
+            setupPropertyCacheElement(res);
+            if (res.hasNextRelationProperty() && res.hasNextRelationLevel()) {
+                res.backupRelationPropertyType();
+                res.incrementCurrentRelationNestLevel();
+                try {
+                    setupNextPropertyCache(res, nextBmd);
+                } finally {
+                    res.restoreRelationPropertyType();
+                    res.decrementCurrentRelationNestLevel();
+                }
+            }
+        }
+    }
+
+    protected void setupPropertyCacheElement(RelationRowCreationResource res)
+            throws SQLException {
+        final String columnName = res.buildRelationColumnName();
+        if (!res.containsColumnName(columnName)) {
+            return;
+        }
+        res.savePropertyCacheElement();
+    }
+
+    // -----------------------------------------------------
+    //                                         Next Relation
+    //                                         -------------
+    protected void setupNextPropertyCache(RelationRowCreationResource res,
+            BeanMetaData nextBmd) throws SQLException {
+        for (int i = 0; i < nextBmd.getRelationPropertyTypeSize(); ++i) {
+            final RelationPropertyType nextNextRpt = nextBmd
+                    .getRelationPropertyType(i);
+            res.setRelationPropertyType(nextNextRpt);
+            setupNextPropertyCacheElement(res, nextNextRpt);
+        }
+    }
+
+    protected void setupNextPropertyCacheElement(
+            RelationRowCreationResource res, RelationPropertyType nextNextRpt)
+            throws SQLException {
+        final String baseSuffix = res.getRelationNoSuffix();
+        final String additionalRelationNoSuffix = buildRelationNoSuffix(nextNextRpt);
+        res.backupSuffixAndPrepare(baseSuffix, additionalRelationNoSuffix);
+        try {
+            setupPropertyCache(res);// Recursive call!
+        } finally {
+            res.restoreSuffix();
+        }
+    }
+
+    // ===================================================================================
+    //                                                                        Common Logic
+    //                                                                        ============
+    protected String buildRelationNoSuffix(RelationPropertyType rpt) {
+        return "_" + rpt.getRelationNo();
+    }
+
+    protected Object newRelationRowInstance(RelationRowCreationResource res) {
+        return newRelationRowInstance(res.getRelationPropertyType());
+    }
+
+    protected Object newRelationRowInstance(RelationPropertyType rpt) {
         return ClassUtil.newInstance(rpt.getPropertyDesc().getPropertyType());
     }
 
-    protected Object createRelationRow(RelationPropertyType rpt) {
-        return ClassUtil.newInstance(rpt.getPropertyDesc().getPropertyType());
+    // ===================================================================================
+    //                                                                     Extension Point
+    //                                                                     ===============
+    protected boolean isTargetProperty(RelationRowCreationResource res)
+            throws SQLException {
+        // - - - - - - - - - - - - - - - - - - - - - - - -
+        // Extension Point!
+        //  --> 該当のPropertyを処理対象とするか否か。
+        // - - - - - - - - - - - - - - - - - - - - - - - -
+        final PropertyType pt = res.getCurrentPropertyType();
+        return pt.getPropertyDesc().hasWriteMethod();
+    }
+
+    protected boolean isCreateDeadLink() {
+        // - - - - - - - - - - - - - - - - - - - - - - - -
+        // Extension Point!
+        //  --> 参照切れの場合にInstanceを作成するか否か。
+        // - - - - - - - - - - - - - - - - - - - - - - - -
+        return true;// 以前の仕様のまま(空Entityを作成する)とする。
+    }
+
+    protected int getLimitRelationNestLevel() {
+        // - - - - - - - - - - - - - - - - - - - - - - - - -
+        // Extension Point!
+        //  --> RelationのNestを何レベルまで許可するか否か。
+        // - - - - - - - - - - - - - - - - - - - - - - - - -
+        return 1;// 以前の仕様のまま(1階層まで)とする。
     }
 }

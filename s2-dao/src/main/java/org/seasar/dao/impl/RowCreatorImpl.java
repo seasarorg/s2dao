@@ -35,27 +35,33 @@ import org.seasar.framework.util.StringUtil;
  */
 public class RowCreatorImpl implements RowCreator {
 
+    // ===================================================================================
+    //                                                                        Row Creation
+    //                                                                        ============
     /**
      * @param rs Result set. (NotNull)
-     * @param rowPropertyCache The map of row property cache. The key is String(columnName) and the value is PropertyType. (NotNull)
+     * @param propertyCache The map of property cache. Map{String(columnName), PropertyType} (NotNull)
      * @param beanClass Bean class. (NotNull)
      * @return Created row. (NotNull)
      * @throws SQLException
      */
-    public Object createRow(ResultSet rs, Map rowPropertyCache, Class beanClass)
+    public Object createRow(ResultSet rs, Map propertyCache, Class beanClass)
             throws SQLException {
-        final Object row = createBeanInstance(beanClass);
-        final Set columnNameSet = rowPropertyCache.keySet();
+        // - - - - - - - 
+        // Entry Point!
+        // - - - - - - -
+        final Object row = newBeanInstance(beanClass);
+        final Set columnNameSet = propertyCache.keySet();
         for (final Iterator ite = columnNameSet.iterator(); ite.hasNext();) {
             final String columnName = (String) ite.next();
-            final PropertyType pt = (PropertyType) rowPropertyCache
+            final PropertyType pt = (PropertyType) propertyCache
                     .get(columnName);
             registerValue(rs, row, pt, columnName);
         }
         return row;
     }
 
-    protected Object createBeanInstance(Class beanClass) {
+    protected Object newBeanInstance(Class beanClass) {
         return ClassUtil.newInstance(beanClass);
     }
 
@@ -67,34 +73,36 @@ public class RowCreatorImpl implements RowCreator {
         pd.setValue(row, value);
     }
 
-    // - - - - - - - -
-    // Cache Creation
-    // - - - - - - - -
+    // ===================================================================================
+    //                                                             Property Cache Creation
+    //                                                             =======================
     /**
      * @param columnNames The set of column name. (NotNull)
      * @param beanMetaData Bean meta data. (NotNull)
-     * @return The map of row property cache. The key is String(columnName) and the value is PropertyType. (NotNull)
+     * @return The map of property cache. Map{String(columnName), PropertyType} (NotNull)
      * @throws SQLException
      */
-    public Map createRowPropertyCache(Set columnNames, BeanMetaData beanMetaData)
+    public Map createPropertyCache(Set columnNames, BeanMetaData beanMetaData)
             throws SQLException {
+        // - - - - - - - 
+        // Entry Point!
+        // - - - - - - -
         final Map columnPropertyTypeMap = new HashMap();
-        setupRowPropertyCache(columnPropertyTypeMap, columnNames, beanMetaData);
+        setupPropertyCache(columnPropertyTypeMap, columnNames, beanMetaData);
         return columnPropertyTypeMap;
     }
 
-    protected void setupRowPropertyCache(Map columnPropertyTypeMap,
+    protected void setupPropertyCache(Map columnPropertyTypeMap,
             Set columnNames, BeanMetaData beanMetaData) throws SQLException {
         for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
             PropertyType pt = beanMetaData.getPropertyType(i);
-            setupRowPropertyCacheElement(columnPropertyTypeMap, columnNames, pt);
+            setupPropertyCacheElement(columnPropertyTypeMap, columnNames, pt);
         }
     }
 
-    protected void setupRowPropertyCacheElement(Map columnPropertyTypeMap,
+    protected void setupPropertyCacheElement(Map columnPropertyTypeMap,
             Set columnNames, PropertyType pt) throws SQLException {
-        // If the property is not writable, the property is out of target!
-        if (!pt.getPropertyDesc().hasWriteMethod()) {
+        if (!isTargetProperty(pt)) {
             return;
         }
         if (columnNames.contains(pt.getColumnName())) {
@@ -102,12 +110,12 @@ public class RowCreatorImpl implements RowCreator {
         } else if (columnNames.contains(pt.getPropertyName())) {
             columnPropertyTypeMap.put(pt.getPropertyName(), pt);
         } else if (!pt.isPersistent()) {
-            setupRowPropertyCacheNotPersistentElement(columnPropertyTypeMap,
+            setupPropertyCacheNotPersistentElement(columnPropertyTypeMap,
                     columnNames, pt);
         }
     }
 
-    protected void setupRowPropertyCacheNotPersistentElement(
+    protected void setupPropertyCacheNotPersistentElement(
             Map columnPropertyTypeMap, Set columnNames, PropertyType pt)
             throws SQLException {
         for (Iterator iter = columnNames.iterator(); iter.hasNext();) {
@@ -118,5 +126,17 @@ public class RowCreatorImpl implements RowCreator {
                 break;
             }
         }
+    }
+
+    // ===================================================================================
+    //                                                                     Extension Point
+    //                                                                     ===============
+    protected boolean isTargetProperty(PropertyType pt) throws SQLException {
+        // - - - - - - - - - - - - - - - - - - - - - - - -
+        // Extension Point!
+        //  --> 該当のPropertyを処理対象とするか否か。
+        // - - - - - - - - - - - - - - - - - - - - - - - -
+        // If the property is not writable, the property is out of target!
+        return pt.getPropertyDesc().hasWriteMethod();
     }
 }

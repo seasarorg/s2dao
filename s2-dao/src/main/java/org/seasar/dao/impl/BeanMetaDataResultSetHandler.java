@@ -17,7 +17,6 @@ package org.seasar.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,10 +50,10 @@ public class BeanMetaDataResultSetHandler extends
             final Set columnNames = createColumnNames(resultSet.getMetaData());// [DAO-118] (2007/08/26)
 
             // Map<String(columnName), PropertyType>
-            Map rowPropertyCache = createRowPropertyCache(columnNames);// [DAO-118] (2007/08/25)
+            Map rowPropertyCache = createPropertyCache(columnNames);// [DAO-118] (2007/08/25)
 
             // Map<String(relationNoSuffix), Set<PropertyType>>
-            final Map relationPropertyCache = new HashMap();// [DAO-118] (2007/08/25)
+            final Map relationPropertyCache = createRelationPropertyCache(columnNames);// [DAO-118] (2007/08/26)
 
             final Object row = createRow(resultSet, rowPropertyCache);
             for (int i = 0; i < getBeanMetaData().getRelationPropertyTypeSize(); ++i) {

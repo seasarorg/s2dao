@@ -55,22 +55,33 @@ public abstract class AbstractBeanMetaDataResultSetHandler extends
 
     /**
      * @param columnNames The set of column name. (NotNull)
-     * @return The map of row property cache. The key is String(columnName) and the value is PropertyType. (NotNull)
+     * @return The map of row property cache. Map{String(columnName), PropertyType} (NotNull)
      * @throws SQLException
      */
-    protected Map createRowPropertyCache(Set columnNames) throws SQLException {
-        return rowCreator.createRowPropertyCache(columnNames, beanMetaData);
+    protected Map createPropertyCache(Set columnNames) throws SQLException {
+        return rowCreator.createPropertyCache(columnNames, beanMetaData);
     }
 
     /**
      * @param rs Result set. (NotNull)
-     * @param rowPropertyCache The map of row property cache. The key is String(columnName) and the value is PropertyType. (NotNull)
+     * @param propertyCache The map of property cache. Map{String(columnName), PropertyType} (NotNull)
      * @return Created row. (NotNull)
      * @throws SQLException
      */
-    protected Object createRow(ResultSet rs, Map rowPropertyCache)
+    protected Object createRow(ResultSet rs, Map propertyCache)
             throws SQLException {
-        return rowCreator.createRow(rs, rowPropertyCache, getBeanClass());
+        return rowCreator.createRow(rs, propertyCache, getBeanClass());
+    }
+
+    /**
+     * @param columnNames The set of column name. (NotNull)
+     * @return The map of relation property cache. Map{String(relationNoSuffix), Map{String(columnName), PropertyType}} (NotNull)
+     * @throws SQLException
+     */
+    protected Map createRelationPropertyCache(Set columnNames)
+            throws SQLException {
+        return relationRowCreator
+                .createPropertyCache(columnNames, beanMetaData);
     }
 
     /**
@@ -78,7 +89,7 @@ public abstract class AbstractBeanMetaDataResultSetHandler extends
      * @param rpt The type of relation property. (NotNull)
      * @param columnNames The set of column name. (NotNull)
      * @param relKeyValues The map of rel key values. (Nullable)
-     * @param relationPropertyCache The map of relation property cache. The key is String(relationNoSuffix) and the value is Set(PropertyType). (NotNull)
+     * @param relationPropertyCache The map of relation property cache. Map{String(relationNoSuffix), Map{String(columnName), PropertyType}} (NotNull)
      * @return Created relation row. (Nullable)
      * @throws SQLException
      */

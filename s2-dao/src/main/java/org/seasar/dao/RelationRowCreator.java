@@ -30,11 +30,21 @@ public interface RelationRowCreator {
      * @param rpt The type of relation property. (NotNull)
      * @param columnNames The set of column name. (NotNull)
      * @param relKeyValues The map of rel key values. (Nullable)
-     * @param relationPropertyCache The map of relation property cache. The key is String(relationNoSuffix) and the value is Set(PropertyType). (NotNull)
+     * @param relationPropertyCache The map of relation property cache. Map{String(relationNoSuffix), Map{String(columnName), PropertyType}} (NotNull)
      * @return Created relation row. (Nullable)
      * @throws SQLException
      */
     Object createRelationRow(ResultSet rs, RelationPropertyType rpt,
             Set columnNames, Map relKeyValues, Map relationPropertyCache)
             throws SQLException;
+
+    /**
+     * @param columnNames The set of column name. (NotNull)
+     * @param bmd Bean meta data of base object. (NotNull)
+     * @return The map of relation property cache. Map{String(relationNoSuffix), Map{String(columnName), PropertyType}} (NotNull)
+     * @throws SQLException
+     */
+    Map createPropertyCache(Set columnNames, BeanMetaData bmd)
+            throws SQLException;
+
 }

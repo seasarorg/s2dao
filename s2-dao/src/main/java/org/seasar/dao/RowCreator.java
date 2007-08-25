@@ -41,6 +41,6 @@ public interface RowCreator {
      * @return The map of row property cache. The key is String(columnName) and the value is PropertyType. (NotNull)
      * @throws SQLException
      */
-    Map createRowPropertyCache(Set columnNames, BeanMetaData beanMetaData)
+    Map createPropertyCache(Set columnNames, BeanMetaData beanMetaData)
             throws SQLException;
 }
