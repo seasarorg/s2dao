@@ -52,7 +52,7 @@ public class RowCreatorImpl implements RowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
-        final Object row = newBeanInstance(beanClass);
+        final Object row = newBean(beanClass);
         final Set columnNameSet = propertyCache.keySet();
         for (final Iterator ite = columnNameSet.iterator(); ite.hasNext();) {
             final String columnName = (String) ite.next();
@@ -63,7 +63,7 @@ public class RowCreatorImpl implements RowCreator {
         return row;
     }
 
-    protected Object newBeanInstance(Class beanClass) {
+    protected Object newBean(Class beanClass) {
         return ClassUtil.newInstance(beanClass);
     }
 
@@ -92,7 +92,7 @@ public class RowCreatorImpl implements RowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
-        final Map columnPropertyTypeMap = newColumnPropertyTypeMapInstance();
+        final Map columnPropertyTypeMap = newColumnPropertyTypeMap();
         setupPropertyCache(columnPropertyTypeMap, columnNames, beanMetaData);
         return columnPropertyTypeMap;
     }
@@ -147,7 +147,7 @@ public class RowCreatorImpl implements RowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
-        final Map columnPropertyTypeMap = newColumnPropertyTypeMapInstance();
+        final Map columnPropertyTypeMap = newColumnPropertyTypeMap();
         setupPropertyCache(columnPropertyTypeMap, columnNames, dtoMetaData);
         return columnPropertyTypeMap;
     }
@@ -176,7 +176,7 @@ public class RowCreatorImpl implements RowCreator {
     // -----------------------------------------------------
     //                                                Common
     //                                                ------
-    protected Map newColumnPropertyTypeMapInstance() {
+    protected Map newColumnPropertyTypeMap() {
         return new HashMap();
     }
 
