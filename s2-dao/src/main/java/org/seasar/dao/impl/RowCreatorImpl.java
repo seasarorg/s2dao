@@ -92,7 +92,7 @@ public class RowCreatorImpl implements RowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
-        final Map columnPropertyTypeMap = newColumnPropertyTypeMap();
+        final Map columnPropertyTypeMap = newColumnPropertyTypeMapInstance();
         setupPropertyCache(columnPropertyTypeMap, columnNames, beanMetaData);
         return columnPropertyTypeMap;
     }
@@ -147,7 +147,7 @@ public class RowCreatorImpl implements RowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
-        final Map columnPropertyTypeMap = newColumnPropertyTypeMap();
+        final Map columnPropertyTypeMap = newColumnPropertyTypeMapInstance();
         setupPropertyCache(columnPropertyTypeMap, columnNames, dtoMetaData);
         return columnPropertyTypeMap;
     }
@@ -176,7 +176,7 @@ public class RowCreatorImpl implements RowCreator {
     // -----------------------------------------------------
     //                                                Common
     //                                                ------
-    protected Map newColumnPropertyTypeMap() {
+    protected Map newColumnPropertyTypeMapInstance() {
         return new HashMap();
     }
 
