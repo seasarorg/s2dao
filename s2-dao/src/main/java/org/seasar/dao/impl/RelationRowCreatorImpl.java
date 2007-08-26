@@ -103,7 +103,7 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
                 continue;
             }
             if (!res.hasRowInstance()) {
-                res.setRow(newRelationRowInstance(rpt));
+                res.setRow(newRelationRow(rpt));
             }
             if (!res.containsRelKeyValueIfExists(columnName)) {
                 continue;
@@ -155,7 +155,7 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
             throws SQLException {
         final String columnName = resource.buildRelationColumnName();
         if (!resource.hasRowInstance()) {
-            resource.setRow(newRelationRowInstance(resource));
+            resource.setRow(newRelationRow(resource));
         }
         registerRelationValue(resource, columnName);
     }
@@ -234,7 +234,7 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
-        final Map relationPropertyCache = new HashMap();
+        final Map relationPropertyCache = newRelationPropertyCache();
         for (int i = 0; i < bmd.getRelationPropertyTypeSize(); ++i) {
             final RelationPropertyType rpt = bmd.getRelationPropertyType(i);
             final String baseSuffix = "";
@@ -332,6 +332,13 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
         }
     }
 
+    // -----------------------------------------------------
+    //                                                Common
+    //                                                ------
+    protected Map newRelationPropertyCache() {
+        return new HashMap();
+    }
+    
     // ===================================================================================
     //                                                                        Common Logic
     //                                                                        ============
@@ -339,11 +346,11 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
         return "_" + rpt.getRelationNo();
     }
 
-    protected Object newRelationRowInstance(RelationRowCreationResource res) {
-        return newRelationRowInstance(res.getRelationPropertyType());
+    protected Object newRelationRow(RelationRowCreationResource res) {
+        return newRelationRow(res.getRelationPropertyType());
     }
 
-    protected Object newRelationRowInstance(RelationPropertyType rpt) {
+    protected Object newRelationRow(RelationPropertyType rpt) {
         return ClassUtil.newInstance(rpt.getPropertyDesc().getPropertyType());
     }
 

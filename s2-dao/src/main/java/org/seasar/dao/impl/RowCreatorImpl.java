@@ -92,42 +92,41 @@ public class RowCreatorImpl implements RowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
-        final Map columnPropertyTypeMap = newColumnPropertyTypeMap();
-        setupPropertyCache(columnPropertyTypeMap, columnNames, beanMetaData);
-        return columnPropertyTypeMap;
+        final Map proprertyCache = newPropertyCache();
+        setupPropertyCache(proprertyCache, columnNames, beanMetaData);
+        return proprertyCache;
     }
 
-    protected void setupPropertyCache(Map columnPropertyTypeMap,
-            Set columnNames, BeanMetaData beanMetaData) throws SQLException {
+    protected void setupPropertyCache(Map proprertyCache, Set columnNames,
+            BeanMetaData beanMetaData) throws SQLException {
         for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
             PropertyType pt = beanMetaData.getPropertyType(i);
-            setupPropertyCacheElement(columnPropertyTypeMap, columnNames, pt);
+            setupPropertyCacheElement(proprertyCache, columnNames, pt);
         }
     }
 
-    protected void setupPropertyCacheElement(Map columnPropertyTypeMap,
+    protected void setupPropertyCacheElement(Map proprertyCache,
             Set columnNames, PropertyType pt) throws SQLException {
         if (!isTargetProperty(pt)) {
             return;
         }
         if (columnNames.contains(pt.getColumnName())) {
-            columnPropertyTypeMap.put(pt.getColumnName(), pt);
+            proprertyCache.put(pt.getColumnName(), pt);
         } else if (columnNames.contains(pt.getPropertyName())) {
-            columnPropertyTypeMap.put(pt.getPropertyName(), pt);
+            proprertyCache.put(pt.getPropertyName(), pt);
         } else if (!pt.isPersistent()) {
-            setupPropertyCacheNotPersistentElement(columnPropertyTypeMap,
-                    columnNames, pt);
+            setupPropertyCacheNotPersistentElement(proprertyCache, columnNames,
+                    pt);
         }
     }
 
-    protected void setupPropertyCacheNotPersistentElement(
-            Map columnPropertyTypeMap, Set columnNames, PropertyType pt)
-            throws SQLException {
+    protected void setupPropertyCacheNotPersistentElement(Map proprertyCache,
+            Set columnNames, PropertyType pt) throws SQLException {
         for (Iterator iter = columnNames.iterator(); iter.hasNext();) {
             String columnName = (String) iter.next();
             String columnName2 = StringUtil.replace(columnName, "_", "");
             if (columnName2.equalsIgnoreCase(pt.getColumnName())) {
-                columnPropertyTypeMap.put(columnName, pt);
+                proprertyCache.put(columnName, pt);
                 break;
             }
         }
@@ -147,27 +146,27 @@ public class RowCreatorImpl implements RowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
-        final Map columnPropertyTypeMap = newColumnPropertyTypeMap();
-        setupPropertyCache(columnPropertyTypeMap, columnNames, dtoMetaData);
-        return columnPropertyTypeMap;
+        final Map proprertyCache = newPropertyCache();
+        setupPropertyCache(proprertyCache, columnNames, dtoMetaData);
+        return proprertyCache;
     }
 
-    protected void setupPropertyCache(Map columnPropertyTypeMap,
-            Set columnNames, DtoMetaData dtoMetaData) throws SQLException {
+    protected void setupPropertyCache(Map proprertyCache, Set columnNames,
+            DtoMetaData dtoMetaData) throws SQLException {
         for (int i = 0; i < dtoMetaData.getPropertyTypeSize(); ++i) {
             PropertyType pt = dtoMetaData.getPropertyType(i);
             if (!isTargetProperty(pt)) {
                 return;
             }
             if (columnNames.contains(pt.getColumnName())) {
-                columnPropertyTypeMap.put(pt.getColumnName(), pt);
+                proprertyCache.put(pt.getColumnName(), pt);
             } else if (columnNames.contains(pt.getPropertyName())) {
-                columnPropertyTypeMap.put(pt.getPropertyName(), pt);
+                proprertyCache.put(pt.getPropertyName(), pt);
             } else {
                 String possibleName = DaoNamingConventionUtil
                         .fromPropertyNameToColumnName(pt.getPropertyName());
                 if (columnNames.contains(possibleName)) {
-                    columnPropertyTypeMap.put(possibleName, pt);
+                    proprertyCache.put(possibleName, pt);
                 }
             }
         }
@@ -176,7 +175,7 @@ public class RowCreatorImpl implements RowCreator {
     // -----------------------------------------------------
     //                                                Common
     //                                                ------
-    protected Map newColumnPropertyTypeMap() {
+    protected Map newPropertyCache() {
         return new HashMap();
     }
 
