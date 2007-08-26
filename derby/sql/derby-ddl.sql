@@ -36,7 +36,7 @@ CREATE PROCEDURE PROCEDURE_TEST_AAA1 (
     )
     PARAMETER STYLE JAVA NO SQL 
     LANGUAGE JAVA 
-    EXTERNAL NAME 'org.seasar.dao.impl.ProcedureTest.procedureAaa1'
+    EXTERNAL NAME 'org.seasar.dao.impl.Procedures.procedureAaa1'
 ;
 
 DROP PROCEDURE PROCEDURE_TEST_AAA2;
@@ -46,13 +46,13 @@ CREATE PROCEDURE PROCEDURE_TEST_AAA2 (
     )
     PARAMETER STYLE JAVA NO SQL 
     LANGUAGE JAVA 
-    EXTERNAL NAME 'org.seasar.dao.impl.ProcedureTest.procedureAaa2'
+    EXTERNAL NAME 'org.seasar.dao.impl.Procedures.procedureAaa2'
 ;
 DROP PROCEDURE PROCEDURE_TEST_AAA3;
 CREATE PROCEDURE PROCEDURE_TEST_AAA3 ()
     PARAMETER STYLE JAVA NO SQL 
     LANGUAGE JAVA 
-    EXTERNAL NAME 'org.seasar.dao.impl.ProcedureTest.procedureAaa3'
+    EXTERNAL NAME 'org.seasar.dao.impl.Procedures.procedureAaa3'
 ;
 
 DROP PROCEDURE PROCEDURE_TEST_BBB1;
@@ -61,7 +61,7 @@ CREATE PROCEDURE PROCEDURE_TEST_BBB1 (
     )
     PARAMETER STYLE JAVA NO SQL 
     LANGUAGE JAVA 
-    EXTERNAL NAME 'org.seasar.dao.impl.ProcedureTest.procedureBbb1'
+    EXTERNAL NAME 'org.seasar.dao.impl.Procedures.procedureBbb1'
 ;
 
 DROP PROCEDURE PROCEDURE_TEST_BBB2;
@@ -72,7 +72,7 @@ CREATE PROCEDURE PROCEDURE_TEST_BBB2 (
     )
     PARAMETER STYLE JAVA NO SQL 
     LANGUAGE JAVA 
-    EXTERNAL NAME 'org.seasar.dao.impl.ProcedureTest.procedureBbb2'
+    EXTERNAL NAME 'org.seasar.dao.impl.Procedures.procedureBbb2'
 ;
 
 DROP PROCEDURE PROCEDURE_TEST_CCC1;
@@ -83,7 +83,7 @@ CREATE PROCEDURE PROCEDURE_TEST_CCC1 (
     )
     PARAMETER STYLE JAVA NO SQL 
     LANGUAGE JAVA 
-    EXTERNAL NAME 'org.seasar.dao.impl.ProcedureTest.procedureCcc1'
+    EXTERNAL NAME 'org.seasar.dao.impl.Procedures.procedureCcc1'
 ;
 
 DROP PROCEDURE PROCEDURE_TEST_CCC2;
@@ -94,7 +94,7 @@ CREATE PROCEDURE PROCEDURE_TEST_CCC2 (
     )
     PARAMETER STYLE JAVA NO SQL
     LANGUAGE JAVA
-    EXTERNAL NAME 'org.seasar.dao.impl.ProcedureTest.procedureCcc2'
+    EXTERNAL NAME 'org.seasar.dao.impl.Procedures.procedureCcc2'
 ;
 
 DROP PROCEDURE PROCEDURE_TEST_DDD1;
@@ -103,7 +103,7 @@ CREATE PROCEDURE PROCEDURE_TEST_DDD1 (
     )
     PARAMETER STYLE JAVA NO SQL
     LANGUAGE JAVA 
-    EXTERNAL NAME 'org.seasar.dao.impl.ProcedureTest.procedureDdd1'
+    EXTERNAL NAME 'org.seasar.dao.impl.Procedures.procedureDdd1'
 ;
 
 DROP FUNCTION FUNCTION_TEST_MAX;

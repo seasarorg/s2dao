@@ -17,6 +17,7 @@ package org.seasar.dao.pager;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 import org.seasar.extension.jdbc.ResultSetFactory;
 
@@ -54,6 +55,11 @@ public class PagerResultSetFactoryWrapper implements ResultSetFactory {
         this.useScrollCursor = useScrollCursor;
     }
 
+    public ResultSet getResultSet(Statement statement) {
+        ResultSet resultSet = resultSetFactory.getResultSet(statement);
+        return wrapResultSet(resultSet);
+    }
+
     /**
      * ResultSetを生成します。
      * <p>
@@ -65,6 +71,10 @@ public class PagerResultSetFactoryWrapper implements ResultSetFactory {
      */
     public ResultSet createResultSet(PreparedStatement ps) {
         ResultSet resultSet = resultSetFactory.createResultSet(ps);
+        return wrapResultSet(resultSet);
+    }
+
+    protected ResultSet wrapResultSet(ResultSet resultSet) {
         Object[] args = PagerContext.getContext().peekArgs();
         if (PagerContext.isPagerCondition(args)) {
             PagerCondition condition = PagerContext.getPagerCondition(args);

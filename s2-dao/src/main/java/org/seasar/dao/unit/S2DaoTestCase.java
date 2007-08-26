@@ -19,6 +19,7 @@ import java.sql.DatabaseMetaData;
 import java.util.List;
 
 import org.seasar.dao.AnnotationReaderFactory;
+import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaData;
@@ -136,6 +137,8 @@ public abstract class S2DaoTestCase extends S2TestCase {
         final BeanDesc daoBeanDesc = BeanDescFactory.getBeanDesc(daoClass);
         final DaoAnnotationReader daoAnnotationReader = getAnnotationReaderFactory()
                 .createDaoAnnotationReader(daoBeanDesc);
+        final ArgumentDtoAnnotationReader dtoAnnotationReader = getAnnotationReaderFactory()
+                .createArgumentDtoAnnotationReader();
         final BeanMetaDataFactory bmdf = getBeanMetaDataFactory();
         final DtoMetaDataFactory dmdf = getDtoMetaDataFactory();
 
@@ -147,6 +150,7 @@ public abstract class S2DaoTestCase extends S2TestCase {
         dmd.setBeanMetaDataFactory(bmdf);
         dmd.setDaoNamingConvention(getDaoNamingConvention());
         dmd.setDaoAnnotationReader(daoAnnotationReader);
+        dmd.setArgumentDtoAnnotationReader(dtoAnnotationReader);
         dmd.setDtoMetaDataFactory(dmdf);
         dmd.setResultSetHandlerFactory(getResultSetHandlerFactory());
         dmd.initialize();

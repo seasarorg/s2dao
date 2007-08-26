@@ -18,6 +18,7 @@ package org.seasar.dao.pager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,6 +94,10 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
      */
     public void setChopOrderBy(boolean chopOrderBy) {
         this.chopOrderBy = chopOrderBy;
+    }
+
+    public ResultSet getResultSet(Statement statement) {
+        return resultSetFactory.getResultSet(statement);
     }
 
     /**

@@ -15,11 +15,8 @@
  */
 package org.seasar.dao.handler;
 
-import java.lang.reflect.Method;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -28,82 +25,66 @@ import org.seasar.dao.ProcedureParameterType;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
-import org.seasar.framework.exception.SRuntimeException;
+import org.seasar.framework.beans.PropertyDesc;
+import org.seasar.framework.exception.SQLRuntimeException;
 
 /**
- * @author manhole
  * @author taedium
+ *
  */
-public class ProcedureHandlerImpl extends AbstractProcedureHandler {
+public class DtoProcedureHandler extends AbstractProcedureHandler {
 
-    private Method daoMethod;
-
-    public Method getDaoMethod() {
-        return daoMethod;
-    }
-
-    public void setDaoMethod(final Method daoMethod) {
-        this.daoMethod = daoMethod;
-    }
-
-    public ProcedureHandlerImpl(final DataSource dataSource, final String sql,
+    public DtoProcedureHandler(final DataSource dataSource, final String sql,
             final ResultSetHandler resultSetHandler,
             final StatementFactory statementFactory,
             final ResultSetFactory resultSetFactory,
-            final ProcedureMetaData procedureMetaData, final Method daoMethod) {
+            final ProcedureMetaData procedureMetaData) {
 
         super(dataSource, sql, resultSetHandler, statementFactory,
                 resultSetFactory, procedureMetaData);
-        setDaoMethod(daoMethod);
+    }
+
+    public Object execute(final Object[] args) throws SQLRuntimeException {
+        if (args.length != 1) {
+            throw new IllegalArgumentException("args"); // TODO
+        }
+        return super.execute(args);
+    }
+
+    protected String getCompleteSql(final Object[] args) {
+        return getSql();
     }
 
     protected void bindArgs(final CallableStatement cs, final Object[] args)
             throws SQLException {
-        if (args == null) {
-            return;
-        }
         final ProcedureMetaData procedureMetaData = getProcedureMetaData();
         final int size = procedureMetaData.getParameterTypeSize();
-        for (int i = 0, argIndex = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             final ProcedureParameterType ppt = procedureMetaData.getParameterType(i);
+            final PropertyDesc pd = ppt.getPropertyDesc();
             if (isReturnOrOutType(ppt)) {
                 registerOutParameter(cs, ppt);
             }
             if (ppt.isInType()) {
-                bindValue(cs, ppt, args[argIndex]);
-                argIndex++;
+                final Object value = pd.getValue(args[0]);
+                bindValue(cs, ppt, value);
             }
         }
     }
 
     protected Object handleNoResultSet(final CallableStatement cs,
             final Object[] args) throws SQLException {
-        final Class returnType = getDaoMethod().getReturnType();
         final ProcedureMetaData procedureMetaData = getProcedureMetaData();
-        if (Map.class.isAssignableFrom(returnType)) {
-            final Map result = new HashMap();
-            for (int i = 0; i < procedureMetaData.getParameterTypeSize(); i++) {
-                final ProcedureParameterType ppt = procedureMetaData
-                        .getParameterType(i);
-                if (isReturnOrOutType(ppt)) {
-                    result.put(ppt.getParameterName(), getValue(cs, ppt));
-                }
+        final int size = procedureMetaData.getParameterTypeSize();
+        for (int i = 0; i < size; i++) {
+            final ProcedureParameterType ppt = procedureMetaData.getParameterType(i);
+            final PropertyDesc pd = ppt.getPropertyDesc();
+            if (isReturnOrOutType(ppt)) {
+                final Object value = getValue(cs, ppt);
+                pd.setValue(args[0], value);
             }
-            return result;
-        } else {
-            Object result = null;
-            for (int i = 0; i < procedureMetaData.getParameterTypeSize(); i++) {
-                if (result != null) {
-                    throw new SRuntimeException("EDAO0010");
-                }
-                final ProcedureParameterType ppt = procedureMetaData
-                        .getParameterType(i);
-                if (isReturnOrOutType(ppt)) {
-                    result = getValue(cs, ppt);
-                }
-            }
-            return result;
         }
+        return args[0];
     }
 
 }

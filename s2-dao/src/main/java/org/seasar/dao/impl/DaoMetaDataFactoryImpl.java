@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.seasar.dao.AnnotationReaderFactory;
+import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.DaoAnnotationReader;
@@ -169,6 +170,8 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         final BeanDesc daoBeanDesc = BeanDescFactory.getBeanDesc(daoClass);
         final DaoAnnotationReader daoAnnotationReader = annotationReaderFactory
                 .createDaoAnnotationReader(daoBeanDesc);
+        final ArgumentDtoAnnotationReader dtoAnnotationReader = annotationReaderFactory
+                .createArgumentDtoAnnotationReader();
 
         final DaoMetaDataImpl daoMetaData = createDaoMetaDataImpl();
         daoMetaData.setDaoClass(daoClass);
@@ -180,6 +183,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         daoMetaData.setDaoNamingConvention(getDaoNamingConvention());
         daoMetaData.setUseDaoClassForLog(useDaoClassForLog);
         daoMetaData.setDaoAnnotationReader(daoAnnotationReader);
+        daoMetaData.setArgumentDtoAnnotationReader(dtoAnnotationReader);
         daoMetaData.setDtoMetaDataFactory(dtoMetaDataFactory);
         daoMetaData.setResultSetHandlerFactory(resultSetHandlerFactory);
         if (sqlFileEncoding != null) {
@@ -254,16 +258,16 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         this.dtoMetaDataFactory = dtoMetaDataFactory;
     }
 
-    public void setPagingSQLRewriter(PagingSqlRewriter pagingSqlRewriter) {
+    public void setPagingSQLRewriter(final PagingSqlRewriter pagingSqlRewriter) {
         this.pagingSqlRewriter = pagingSqlRewriter;
     }
 
-    public void setColumnNaming(ColumnNaming columnNaming) {
+    public void setColumnNaming(final ColumnNaming columnNaming) {
         this.columnNaming = columnNaming;
     }
 
     public void setPropertyTypeFactoryBuilder(
-            PropertyTypeFactoryBuilder propertyTypeFactoryBuilder) {
+            final PropertyTypeFactoryBuilder propertyTypeFactoryBuilder) {
         this.propertyTypeFactoryBuilder = propertyTypeFactoryBuilder;
     }
 

@@ -15,7 +15,6 @@
  */
 package org.seasar.dao.impl;
 
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -41,18 +40,30 @@ import org.seasar.framework.util.ResultSetUtil;
  */
 public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
 
+    /** プロシージャ名 */
+    protected String procedureName;
+
     /** データソース */
     protected DataSource dataSource;
 
+    /** DBMS */
+    protected Dbms dbms;
+
     /**
      * インスタンスを構築します。
+     * 
+     * @param procedureName プロシージャ名
+     * @param dataSource データソース
+     * @param dbms　DBMS
      */
-    public ProcedureMetaDataFactoryImpl(final DataSource dataSource) {
+    public ProcedureMetaDataFactoryImpl(final String procedureName,
+            final DataSource dataSource, final Dbms dbms) {
+        this.procedureName = procedureName;
         this.dataSource = dataSource;
+        this.dbms = dbms;
     }
 
-    public ProcedureMetaData createProcedureMetaData(
-            final String procedureName, final Dbms dbms, final Method method) {
+    public ProcedureMetaData createProcedureMetaData() {
         final Connection con = DataSourceUtil.getConnection(dataSource);
         final DatabaseMetaData dmd = ConnectionUtil.getMetaData(con);
         ResultSet rs = null;
@@ -64,13 +75,15 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
             try {
                 final ProcedureMetaDataImpl meta = new ProcedureMetaDataImpl(
                         procedureName);
+                int index = 1;
                 while (rs.next()) {
                     final String columnName = rs.getString(4);
                     final int columnType = rs.getInt(5);
                     final int dataType = rs.getInt(6);
-                    final ProcedureParameterTypeImpl ppt = new ProcedureParameterTypeImpl(
-                            columnName);
+                    final ProcedureParameterTypeImpl ppt = new ProcedureParameterTypeImpl();
+                    ppt.setParameterName(columnName);
                     ppt.setValueType(ValueTypes.getValueType(dataType));
+                    ppt.setIndex(new Integer(index));
                     switch (columnType) {
                     case DatabaseMetaData.procedureColumnIn:
                         ppt.setInType(true);
@@ -92,6 +105,7 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
                                 new Object[] { procedureName });
                     }
                     meta.addParameterType(ppt);
+                    index++;
                 }
                 return meta;
             } finally {

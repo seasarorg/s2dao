@@ -15,11 +15,9 @@
  */
 package org.seasar.dao.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.ProcedureParameterType;
+import org.seasar.framework.util.CaseInsensitiveMap;
 
 /**
  * {@link ProcedureMetaData}の実装クラスです。
@@ -30,11 +28,11 @@ public class ProcedureMetaDataImpl implements ProcedureMetaData {
 
     private String procedureName;
 
-    private List parameterTypes = new ArrayList();
+    private CaseInsensitiveMap parameterTypes = new CaseInsensitiveMap();
 
     private boolean returnType;
 
-    public ProcedureMetaDataImpl(String procedureName) {
+    public ProcedureMetaDataImpl(final String procedureName) {
         this.procedureName = procedureName;
     }
 
@@ -42,8 +40,12 @@ public class ProcedureMetaDataImpl implements ProcedureMetaData {
         return procedureName;
     }
 
-    public ProcedureParameterType getParameterType(int index) {
+    public ProcedureParameterType getParameterType(final int index) {
         return (ProcedureParameterType) parameterTypes.get(index);
+    }
+
+    public ProcedureParameterType getParameterType(final String parameterName) {
+        return (ProcedureParameterType) parameterTypes.get(parameterName);
     }
 
     public int getParameterTypeSize() {
@@ -59,10 +61,12 @@ public class ProcedureMetaDataImpl implements ProcedureMetaData {
      * 
      * @param parameterType パラメータのタイプ
      */
-    public void addParameterType(ProcedureParameterType parameterType) {
-        parameterTypes.add(parameterType);
+    public void addParameterType(final ProcedureParameterType parameterType) {
+        final String name = parameterType.getParameterName();
+        parameterTypes.put(name, parameterType);
         if (parameterType.isReturnType()) {
             returnType = true;
         }
     }
+
 }

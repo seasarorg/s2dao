@@ -18,6 +18,7 @@ package org.seasar.dao.impl;
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.DaoAnnotationReader;
+import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.exception.ClassNotFoundRuntimeException;
 import org.seasar.framework.util.ClassUtil;
@@ -54,6 +55,10 @@ public class AnnotationReaderFactoryImpl implements AnnotationReaderFactory {
 
     public DaoAnnotationReader createDaoAnnotationReader(BeanDesc daoBeanDesc) {
         return annotationReaderFactory.createDaoAnnotationReader(daoBeanDesc);
+    }
+
+    public ArgumentDtoAnnotationReader createArgumentDtoAnnotationReader() {
+        return annotationReaderFactory.createArgumentDtoAnnotationReader();
     }
 
 }

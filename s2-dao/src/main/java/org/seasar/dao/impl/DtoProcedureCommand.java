@@ -15,36 +15,33 @@
  */
 package org.seasar.dao.impl;
 
-import java.lang.reflect.Method;
-
 import javax.sql.DataSource;
 
 import org.seasar.dao.ProcedureMetaData;
+import org.seasar.dao.handler.DtoProcedureHandler;
 import org.seasar.dao.handler.ProcedureHandler;
-import org.seasar.dao.handler.ProcedureHandlerImpl;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
 
 /**
- * データベースのメタデータを利用してプロシージャを実行するコマンドです。
+ * 引数のDTOのメタデータを利用してプロシージャを実行するコマンドです。
  * 
  * @author taedium
  */
-public class StaticStoredProcedureCommand extends AbstractProcedureCommand {
+public class DtoProcedureCommand extends AbstractProcedureCommand {
 
     protected ProcedureHandler handler;
 
-    public StaticStoredProcedureCommand(final DataSource dataSource,
+    public DtoProcedureCommand(final DataSource dataSource,
             final ResultSetHandler resultSetHandler,
             final StatementFactory statementFactory,
             final ResultSetFactory resultSetFactory,
-            final ProcedureMetaData procedureMetaData, final Method daoMethod) {
+            final ProcedureMetaData procedureMetaData) {
 
-        final ProcedureHandlerImpl handler = new ProcedureHandlerImpl(dataSource,
+        final DtoProcedureHandler handler = new DtoProcedureHandler(dataSource,
                 createSql(procedureMetaData), resultSetHandler,
-                statementFactory, resultSetFactory, procedureMetaData,
-                daoMethod);
+                statementFactory, resultSetFactory, procedureMetaData);
         handler.setFetchSize(-1);
         this.handler = handler;
     }

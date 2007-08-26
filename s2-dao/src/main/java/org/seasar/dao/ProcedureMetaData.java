@@ -33,9 +33,17 @@ public interface ProcedureMetaData {
      * プロシージャのパラメータのタイプを返します。
      * 
      * @param index 位置
-     * @return プロシージャのパラメータの種別
+     * @return プロシージャのパラメータのタイプ
      */
     ProcedureParameterType getParameterType(int index);
+
+    /**
+     * プロシージャのパラメータのタイプを返します。
+     * 
+     * @param parameterName パラメータ名
+     * @return プロシージャのパラメータのタイプ
+     */
+    ProcedureParameterType getParameterType(String parameterName);
 
     /**
      * プロシージャのパラメータのサイズを返します。

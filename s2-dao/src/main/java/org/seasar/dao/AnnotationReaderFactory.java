@@ -23,4 +23,6 @@ public interface AnnotationReaderFactory {
 
     public BeanAnnotationReader createBeanAnnotationReader(Class beanClass);
 
+    public ArgumentDtoAnnotationReader createArgumentDtoAnnotationReader();
+
 }

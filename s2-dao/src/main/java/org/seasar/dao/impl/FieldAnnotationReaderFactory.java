@@ -16,6 +16,7 @@
 package org.seasar.dao.impl;
 
 import org.seasar.dao.AnnotationReaderFactory;
+import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.framework.beans.BeanDesc;
@@ -28,6 +29,10 @@ public class FieldAnnotationReaderFactory implements AnnotationReaderFactory {
 
     public BeanAnnotationReader createBeanAnnotationReader(Class beanClass) {
         return new FieldBeanAnnotationReader(beanClass);
+    }
+
+    public ArgumentDtoAnnotationReader createArgumentDtoAnnotationReader() {
+        return new FieldArgumentDtoAnnotationReader();
     }
 
 }

@@ -1,7 +1,5 @@
 package org.seasar.dao;
 
-import java.lang.reflect.Method;
-
 /*
  * Copyright 2004-2007 the Seasar Foundation and the Others.
  *
@@ -28,11 +26,6 @@ public interface ProcedureMetaDataFactory {
     /**
      * プロシージャのメタデータを作成します。
      * 
-     * @param procedureName プロシージャ名
-     * @param dbms DBMS
-     * @param method メソッド
-     * @return プロシージャのメタデータ
      */
-    ProcedureMetaData createProcedureMetaData(String procedureName, Dbms dbms,
-            Method method);
+    ProcedureMetaData createProcedureMetaData();
 }

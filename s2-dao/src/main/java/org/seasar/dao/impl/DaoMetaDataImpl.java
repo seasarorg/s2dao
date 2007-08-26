@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoAnnotationReader;
@@ -135,6 +136,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected PagingSqlRewriter pagingSqlRewriter = new NullPagingSqlRewriter();
 
+    protected ArgumentDtoAnnotationReader argumentDtoAnnotationReader;
+
     public DaoMetaDataImpl() {
     }
 
@@ -225,14 +228,28 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected void setupProcedureMethod(final Method method,
             final String procedureName) {
 
-        final ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
-                dataSource);
-        final ProcedureMetaData metaData = factory.createProcedureMetaData(
-                procedureName, dbms, method);
+        SqlCommand command;
         final ResultSetHandler resultSetHandler = createResultSetHandler(method);
-        final StaticStoredProcedureCommand command = new StaticStoredProcedureCommand(
-                dataSource, resultSetHandler, statementFactory,
-                resultSetFactory, metaData, method);
+        final Class[] paramTypes = method.getParameterTypes();
+        if (paramTypes.length == 1
+                && argumentDtoAnnotationReader
+                        .isProcedureParameters(paramTypes[0])) {
+            final ProcedureMetaDataFactory factory = new DtoProcedureMetaDataFactory(
+                    procedureName, paramTypes[0], valueTypeFactory,
+                    argumentDtoAnnotationReader);
+            final ProcedureMetaData metaData = factory
+                    .createProcedureMetaData();
+            command = new DtoProcedureCommand(dataSource, resultSetHandler,
+                    statementFactory, resultSetFactory, metaData);
+        } else {
+            final ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
+                    procedureName, dataSource, dbms);
+            final ProcedureMetaData metaData = factory
+                    .createProcedureMetaData();
+            command = new StaticStoredProcedureCommand(dataSource,
+                    resultSetHandler, statementFactory, resultSetFactory,
+                    metaData, method);
+        }
         sqlCommands.put(method.getName(), command);
     }
 
@@ -1052,8 +1069,13 @@ public class DaoMetaDataImpl implements DaoMetaData {
         this.daoAnnotationReader = daoAnnotationReader;
     }
 
-    public void setPagingSQLRewriter(PagingSqlRewriter pagingSqlRewriter) {
+    public void setPagingSQLRewriter(final PagingSqlRewriter pagingSqlRewriter) {
         this.pagingSqlRewriter = pagingSqlRewriter;
+    }
+
+    public void setArgumentDtoAnnotationReader(
+            final ArgumentDtoAnnotationReader argumentDtoAnnotationReader) {
+        this.argumentDtoAnnotationReader = argumentDtoAnnotationReader;
     }
 
 }

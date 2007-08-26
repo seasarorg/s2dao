@@ -68,59 +68,17 @@ public class ProcedureTest extends S2TestCase {
 
     }
 
-    private static boolean isAaa3Invoked;
-
-    private static Map procedureParam;
-
-    public static void procedureAaa1(String[] s) {
-        s[0] = "aaaaa";
-    }
-
-    public static void procedureAaa2(String[] s, Timestamp[] t) {
-        s[0] = "aaaaa2";
-        t[0] = new Timestamp(System.currentTimeMillis());
-    }
-
-    public static void procedureAaa3() {
-        isAaa3Invoked = true;
-    }
-
-    public static void procedureBbb1(String ccc) {
-        procedureParam.put("ccc", ccc);
-    }
-
-    public static void procedureBbb2(String ccc, BigDecimal ddd, Timestamp eee) {
-        procedureParam.put("ccc", ccc);
-        procedureParam.put("ddd", ddd);
-        procedureParam.put("eee", eee);
-    }
-
-    public static void procedureCcc1(String ccc, BigDecimal ddd, String[] eee) {
-        procedureParam.put("ccc", ccc);
-        procedureParam.put("ddd", ddd);
-        procedureParam.put("eee", eee);
-        eee[0] = ccc + ddd;
-    }
-
-    public static void procedureCcc2(String[] ccc, BigDecimal ddd, String[] eee) {
-        procedureParam.put("ccc", ccc);
-        procedureParam.put("ddd", ddd);
-        procedureParam.put("eee", eee);
-        ccc[0] = ddd.toString();
-        eee[0] = ddd.multiply(ddd).toString();
-    }
-
-    public static void procedureDdd1(String[] ccc) {
-        procedureParam.put("ccc", ccc);
-        ccc[0] = ccc[0] + "cd";
-    }
-
     private ProcedureDao procedureDao;
 
     protected void setUp() throws Exception {
         super.setUp();
         include("ProcedureTest.dicon");
-        procedureParam = new HashMap();
+        Procedures.params = new HashMap();
+    }
+
+    protected void tearDown() throws Exception {
+        Procedures.params = null;
+        super.tearDown();
     }
 
     public void testAaa1Tx() throws Exception {
@@ -129,7 +87,7 @@ public class ProcedureTest extends S2TestCase {
         assertEquals("aaaaa", aaa);
     }
 
-    public void testAaa2() throws Exception {
+    public void testAaa2Tx() throws Exception {
         assertNotNull(procedureDao);
         final long t1 = System.currentTimeMillis();
         Map aaa = procedureDao.aaa2();
@@ -142,56 +100,59 @@ public class ProcedureTest extends S2TestCase {
         assertEquals(true, timestamp.getTime() <= t2);
     }
 
-    public void testAaa3() throws Exception {
+    public void testAaa3Tx() throws Exception {
         assertNotNull(procedureDao);
         procedureDao.aaa3();
-        assertTrue(isAaa3Invoked);
+        assertTrue(Procedures.isAaa3Invoked);
     }
 
-    public void testBbb1() throws Exception {
+    public void testBbb1Tx() throws Exception {
         assertNotNull(procedureDao);
         procedureDao.bbb1("abcde");
-        assertEquals("abcde", procedureParam.get("ccc"));
+        assertEquals("abcde", Procedures.params.get("ccc"));
     }
 
-    public void testBbb2() throws Exception {
+    public void testBbb2Tx() throws Exception {
         assertNotNull(procedureDao);
         final long current = System.currentTimeMillis();
         procedureDao.bbb2("abcde", new Integer(111), new Timestamp(current));
-        assertEquals("abcde", procedureParam.get("ccc"));
-        assertEquals(111, ((BigDecimal) procedureParam.get("ddd")).intValue());
-        assertEquals(current, ((Timestamp) procedureParam.get("eee")).getTime());
+        assertEquals("abcde", Procedures.params.get("ccc"));
+        assertEquals(111, ((BigDecimal) Procedures.params.get("ddd"))
+                .intValue());
+        assertEquals(current, ((Timestamp) Procedures.params.get("eee"))
+                .getTime());
     }
 
-    public void testCcc1() throws Exception {
+    public void testCcc1Tx() throws Exception {
         assertNotNull(procedureDao);
         final String ret = procedureDao.ccc1("foo", new Integer(112));
         assertEquals("foo112", ret);
-        assertEquals("foo", procedureParam.get("ccc"));
-        assertEquals(112, ((BigDecimal) procedureParam.get("ddd")).intValue());
-        String[] eee = (String[]) procedureParam.get("eee");
+        assertEquals("foo", Procedures.params.get("ccc"));
+        assertEquals(112, ((BigDecimal) Procedures.params.get("ddd"))
+                .intValue());
+        String[] eee = (String[]) Procedures.params.get("eee");
         assertEquals(1, eee.length);
     }
 
-    public void testCcc2() throws Exception {
+    public void testCcc2Tx() throws Exception {
         assertNotNull(procedureDao);
         final Map ret = procedureDao.ccc2(new Integer(25));
         System.out.println(ret);
         assertEquals("25", ret.get("CCC"));
         assertEquals("625", ret.get("EEE"));
 
-        String[] ccc = (String[]) procedureParam.get("ccc");
+        String[] ccc = (String[]) Procedures.params.get("ccc");
         assertEquals(1, ccc.length);
-        assertEquals(25, ((BigDecimal) procedureParam.get("ddd")).intValue());
-        String[] eee = (String[]) procedureParam.get("eee");
+        assertEquals(25, ((BigDecimal) Procedures.params.get("ddd")).intValue());
+        String[] eee = (String[]) Procedures.params.get("eee");
         assertEquals(1, eee.length);
     }
 
-    public void testDdd1() throws Exception {
+    public void testDdd1Tx() throws Exception {
         assertNotNull(procedureDao);
         final String ret = procedureDao.ddd1("ab");
         assertEquals("abcd", ret);
-        String[] ccc = (String[]) procedureParam.get("ccc");
+        String[] ccc = (String[]) Procedures.params.get("ccc");
         assertEquals(1, ccc.length);
     }
 

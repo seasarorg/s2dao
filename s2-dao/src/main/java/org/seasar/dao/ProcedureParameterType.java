@@ -16,6 +16,7 @@
 package org.seasar.dao;
 
 import org.seasar.extension.jdbc.ValueType;
+import org.seasar.framework.beans.PropertyDesc;
 
 /**
  * プロシージャのパラメータのタイプです。
@@ -30,6 +31,18 @@ public interface ProcedureParameterType {
      * @return パラメータ名
      */
     String getParameterName();
+
+    /**
+     * パラメータ名を設定します。
+     */
+    void setParameterName(String parameterName);
+
+    /**
+     * プロパティ記述を返します。
+     * 
+     * @return プロパティ記述
+     */
+    PropertyDesc getPropertyDesc();
 
     /**
      * {@link ValueType}を返します。
@@ -53,6 +66,13 @@ public interface ProcedureParameterType {
     boolean isInType();
 
     /**
+     * <code>IN</code>パラメータもしくは<code>INOUT</code>パラメータである場合に<code>true</code>を設定します。
+     * 
+     * @param inType　<code>IN</code>パラメータもしくは<code>INOUT</code>パラメータである場合<code>true</code>
+     */
+    void setInType(boolean inType);
+
+    /**
      * <code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合に<code>true</code>を返します。
      * 
      * @return　<code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合<code>true</code>、そうでない場合<code>false</code>
@@ -60,10 +80,45 @@ public interface ProcedureParameterType {
     boolean isOutType();
 
     /**
+     * <code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合に<code>true</code>を設定します。
+     * 
+     * @param outType　<code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合<code>true</code>
+     */
+    void setOutType(boolean outType);
+
+    /**
      * <code>RETURN</code>パラメータである場合に<code>true</code>を返します。
      * 
      * @return　<code>RETURN</code>パラメータである場合<code>true</code>、そうでない場合<code>false</code>
      */
     boolean isReturnType();
+
+    /**
+     * <code>RETURN</code>パラメータである場合に<code>true</code>を設定します。
+     * 
+     * @param returnType <code>RETURN</code>パラメータである場合<code>true</code>
+     */
+    void setReturnType(boolean returnType);
+
+    /**
+     * 位置を持っている場合<code>true</code>を返します。
+     * 
+     * @return　位置を持っている場合<code>true</code>、そうでない場合<code>false</code>
+     */
+    boolean hasIndex();
+
+    /**
+     * 位置を返します。
+     * 
+     * @return　位置
+     */
+    Integer getIndex();
+
+    /**
+     * 位置を設定します。
+     * 
+     * @param index 位置
+     */
+    void setIndex(Integer index);
 
 }
