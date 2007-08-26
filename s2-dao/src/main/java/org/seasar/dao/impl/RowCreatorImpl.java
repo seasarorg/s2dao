@@ -101,15 +101,15 @@ public class RowCreatorImpl implements RowCreator {
             BeanMetaData beanMetaData) throws SQLException {
         for (int i = 0; i < beanMetaData.getPropertyTypeSize(); ++i) {
             PropertyType pt = beanMetaData.getPropertyType(i);
+            if (!isTargetProperty(pt)) {
+                continue;
+            }
             setupPropertyCacheElement(proprertyCache, columnNames, pt);
         }
     }
 
     protected void setupPropertyCacheElement(Map proprertyCache,
             Set columnNames, PropertyType pt) throws SQLException {
-        if (!isTargetProperty(pt)) {
-            return;
-        }
         if (columnNames.contains(pt.getColumnName())) {
             proprertyCache.put(pt.getColumnName(), pt);
         } else if (columnNames.contains(pt.getPropertyName())) {
@@ -146,6 +146,7 @@ public class RowCreatorImpl implements RowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
+        new Exception().printStackTrace();
         final Map proprertyCache = newPropertyCache();
         setupPropertyCache(proprertyCache, columnNames, dtoMetaData);
         return proprertyCache;
@@ -153,10 +154,11 @@ public class RowCreatorImpl implements RowCreator {
 
     protected void setupPropertyCache(Map proprertyCache, Set columnNames,
             DtoMetaData dtoMetaData) throws SQLException {
+
         for (int i = 0; i < dtoMetaData.getPropertyTypeSize(); ++i) {
             PropertyType pt = dtoMetaData.getPropertyType(i);
             if (!isTargetProperty(pt)) {
-                return;
+                continue;
             }
             if (columnNames.contains(pt.getColumnName())) {
                 proprertyCache.put(pt.getColumnName(), pt);
