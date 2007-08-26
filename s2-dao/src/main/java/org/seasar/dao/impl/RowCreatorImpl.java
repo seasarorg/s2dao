@@ -146,7 +146,6 @@ public class RowCreatorImpl implements RowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
-        new Exception().printStackTrace();
         final Map proprertyCache = newPropertyCache();
         setupPropertyCache(proprertyCache, columnNames, dtoMetaData);
         return proprertyCache;
