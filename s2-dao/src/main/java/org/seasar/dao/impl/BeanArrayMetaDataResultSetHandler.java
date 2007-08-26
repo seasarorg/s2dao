@@ -30,11 +30,14 @@ import org.seasar.dao.RowCreator;
 public class BeanArrayMetaDataResultSetHandler extends
         BeanListMetaDataResultSetHandler {
 
+    /**
+     * @param dtoMetaData Dto meta data. (NotNull)
+     * @param rowCreator Row creator. (NotNull)
+     * @param relationRowCreator Relation row creator. (NotNul)
+     */
     public BeanArrayMetaDataResultSetHandler(BeanMetaData beanMetaData,
             RowCreator rowCreator, RelationRowCreator relationRowCreator) {
         super(beanMetaData, rowCreator, relationRowCreator);
-
-        // The rowCreator is from [DAO-118] (2007/08/25)
     }
 
     /**

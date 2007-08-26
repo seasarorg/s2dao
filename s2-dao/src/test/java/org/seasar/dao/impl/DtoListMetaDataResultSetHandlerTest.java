@@ -20,14 +20,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
+import org.seasar.dao.RowCreator;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.ResultSetHandler;
 
+/**
+ * @author jflute
+ */
 public class DtoListMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle() throws Exception {
         ResultSetHandler handler = new DtoListMetaDataResultSetHandler(
-                createDtoMetaData(EmployeeDto.class));
+                createDtoMetaData(EmployeeDto.class), createRowCreator());
         String sql = "select empno, ename, dname from emp, dept where empno = 7788 and emp.deptno = dept.deptno";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -52,7 +56,7 @@ public class DtoListMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle2() throws Exception {
         ResultSetHandler handler = new DtoListMetaDataResultSetHandler(
-                createDtoMetaData(EmployeeDto3.class));
+                createDtoMetaData(EmployeeDto3.class), createRowCreator());
         String sql = "select employee_id, employee_name from emp4 where employee_id = 7369";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -74,6 +78,10 @@ public class DtoListMetaDataResultSetHandlerTest extends S2DaoTestCase {
         assertEquals("SMITH", dto.getEmployeeName());
     }
 
+    protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)
+        return new RowCreatorImpl();
+    }
+    
     public void setUp() {
         include("j2ee.dicon");
     }

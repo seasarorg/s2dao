@@ -36,6 +36,11 @@ public class BeanMetaDataResultSetHandler extends
     private static final Logger logger = Logger
             .getLogger(BeanMetaDataResultSetHandler.class);
 
+    /**
+     * @param dtoMetaData Dto meta data. (NotNull)
+     * @param rowCreator Row creator. (NotNull)
+     * @param relationRowCreator Relation row creator. (NotNul)
+     */
     public BeanMetaDataResultSetHandler(BeanMetaData beanMetaData,
             RowCreator rowCreator, RelationRowCreator relationRowCreator) {
         super(beanMetaData, rowCreator, relationRowCreator);
@@ -50,12 +55,12 @@ public class BeanMetaDataResultSetHandler extends
             final Set columnNames = createColumnNames(resultSet.getMetaData());// [DAO-118] (2007/08/26)
 
             // Map<String(columnName), PropertyType>
-            Map rowPropertyCache = createPropertyCache(columnNames);// [DAO-118] (2007/08/25)
+            Map propertyCache = createPropertyCache(columnNames);// [DAO-118] (2007/08/25)
 
             // Map<String(relationNoSuffix), Set<PropertyType>>
             final Map relationPropertyCache = createRelationPropertyCache(columnNames);// [DAO-118] (2007/08/26)
 
-            final Object row = createRow(resultSet, rowPropertyCache);
+            final Object row = createRow(resultSet, propertyCache);
             for (int i = 0; i < getBeanMetaData().getRelationPropertyTypeSize(); ++i) {
                 RelationPropertyType rpt = getBeanMetaData()
                         .getRelationPropertyType(i);

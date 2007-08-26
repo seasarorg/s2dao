@@ -23,7 +23,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.RowCreator;
+import org.seasar.dao.util.DaoNamingConventionUtil;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.framework.beans.PropertyDesc;
@@ -76,6 +78,9 @@ public class RowCreatorImpl implements RowCreator {
     // ===================================================================================
     //                                                             Property Cache Creation
     //                                                             =======================
+    // -----------------------------------------------------
+    //                                                  Bean
+    //                                                  ----
     /**
      * @param columnNames The set of column name. (NotNull)
      * @param beanMetaData Bean meta data. (NotNull)
@@ -87,7 +92,7 @@ public class RowCreatorImpl implements RowCreator {
         // - - - - - - - 
         // Entry Point!
         // - - - - - - -
-        final Map columnPropertyTypeMap = new HashMap();
+        final Map columnPropertyTypeMap = newColumnPropertyTypeMap();
         setupPropertyCache(columnPropertyTypeMap, columnNames, beanMetaData);
         return columnPropertyTypeMap;
     }
@@ -126,6 +131,53 @@ public class RowCreatorImpl implements RowCreator {
                 break;
             }
         }
+    }
+
+    // -----------------------------------------------------
+    //                                                   Dto
+    //                                                   ---
+    /**
+     * @param columnNames The set of column name. (NotNull)
+     * @param dtoMetaData Dto meta data. (NotNull)
+     * @return The map of property cache. Map{String(columnName), PropertyType} (NotNull)
+     * @throws SQLException
+     */
+    public Map createPropertyCache(Set columnNames, DtoMetaData dtoMetaData)
+            throws SQLException {
+        // - - - - - - - 
+        // Entry Point!
+        // - - - - - - -
+        final Map columnPropertyTypeMap = newColumnPropertyTypeMap();
+        setupPropertyCache(columnPropertyTypeMap, columnNames, dtoMetaData);
+        return columnPropertyTypeMap;
+    }
+
+    protected void setupPropertyCache(Map columnPropertyTypeMap,
+            Set columnNames, DtoMetaData dtoMetaData) throws SQLException {
+        for (int i = 0; i < dtoMetaData.getPropertyTypeSize(); ++i) {
+            PropertyType pt = dtoMetaData.getPropertyType(i);
+            if (!isTargetProperty(pt)) {
+                return;
+            }
+            if (columnNames.contains(pt.getColumnName())) {
+                columnPropertyTypeMap.put(pt.getColumnName(), pt);
+            } else if (columnNames.contains(pt.getPropertyName())) {
+                columnPropertyTypeMap.put(pt.getPropertyName(), pt);
+            } else {
+                String possibleName = DaoNamingConventionUtil
+                        .fromPropertyNameToColumnName(pt.getPropertyName());
+                if (columnNames.contains(possibleName)) {
+                    columnPropertyTypeMap.put(possibleName, pt);
+                }
+            }
+        }
+    }
+
+    // -----------------------------------------------------
+    //                                                Common
+    //                                                ------
+    protected Map newColumnPropertyTypeMap() {
+        return new HashMap();
     }
 
     // ===================================================================================

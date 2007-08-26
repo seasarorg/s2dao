@@ -32,8 +32,8 @@ public interface RowCreator {
      * @return Created row. (NotNull)
      * @throws SQLException
      */
-    Object createRow(ResultSet rs, Map columnPropertyTypeMap,
-            Class beanClass) throws SQLException;
+    Object createRow(ResultSet rs, Map columnPropertyTypeMap, Class beanClass)
+            throws SQLException;
 
     /**
      * @param columnNames The set of column name. (NotNull)
@@ -42,5 +42,14 @@ public interface RowCreator {
      * @throws SQLException
      */
     Map createPropertyCache(Set columnNames, BeanMetaData beanMetaData)
+            throws SQLException;
+
+    /**
+     * @param columnNames The set of column name. (NotNull)
+     * @param dtoMetaData Dto meta data. (NotNull)
+     * @return The map of property cache. Map{String(columnName), PropertyType} (NotNull)
+     * @throws SQLException
+     */
+    Map createPropertyCache(Set columnNames, DtoMetaData dtoMetaData)
             throws SQLException;
 }

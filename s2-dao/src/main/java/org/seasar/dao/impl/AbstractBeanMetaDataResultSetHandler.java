@@ -33,24 +33,18 @@ public abstract class AbstractBeanMetaDataResultSetHandler extends
 
     private BeanMetaData beanMetaData;
 
-    private RowCreator rowCreator;// [DAO-118] (2007/08/25)
+    protected RelationRowCreator relationRowCreator;
 
-    private RelationRowCreator relationRowCreator;
-
+    /**
+     * @param dtoMetaData Dto meta data. (NotNull)
+     * @param rowCreator Row creator. (NotNull)
+     * @param relationRowCreator Relation row creator. (NotNul)
+     */
     public AbstractBeanMetaDataResultSetHandler(BeanMetaData beanMetaData,
             RowCreator rowCreator, RelationRowCreator relationRowCreator) {
-        super(beanMetaData);
+        super(beanMetaData, rowCreator);
         this.beanMetaData = beanMetaData;
-        this.rowCreator = rowCreator;
         this.relationRowCreator = relationRowCreator;
-    }
-
-    public BeanMetaData getBeanMetaData() {
-        return beanMetaData;
-    }
-
-    protected Class getBeanClass() {
-        return beanMetaData.getBeanClass();
     }
 
     /**
@@ -59,6 +53,9 @@ public abstract class AbstractBeanMetaDataResultSetHandler extends
      * @throws SQLException
      */
     protected Map createPropertyCache(Set columnNames) throws SQLException {
+        // - - - - - - - - -
+        // Override for Bean
+        // - - - - - - - - -
         return rowCreator.createPropertyCache(columnNames, beanMetaData);
     }
 
@@ -70,7 +67,11 @@ public abstract class AbstractBeanMetaDataResultSetHandler extends
      */
     protected Object createRow(ResultSet rs, Map propertyCache)
             throws SQLException {
-        return rowCreator.createRow(rs, propertyCache, getBeanClass());
+        // - - - - - - - - -
+        // Override for Bean
+        // - - - - - - - - -
+        final Class beanClass = beanMetaData.getBeanClass();
+        return rowCreator.createRow(rs, propertyCache, beanClass);
     }
 
     /**
@@ -104,5 +105,9 @@ public abstract class AbstractBeanMetaDataResultSetHandler extends
         final BeanMetaData bmd = getBeanMetaData();
         final Set names = bmd.getModifiedPropertyNames(row);
         names.clear();
+    }
+
+    public BeanMetaData getBeanMetaData() {
+        return beanMetaData;
     }
 }

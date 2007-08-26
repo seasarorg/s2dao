@@ -17,25 +17,44 @@ package org.seasar.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.DtoMetaData;
+import org.seasar.dao.RowCreator;
 import org.seasar.framework.log.Logger;
 
+/**
+ * @author jflute
+ */
 public class DtoMetaDataResultSetHandler extends
         AbstractDtoMetaDataResultSetHandler {
 
     private static final Logger logger = Logger
             .getLogger(DtoMetaDataResultSetHandler.class);
 
-    public DtoMetaDataResultSetHandler(DtoMetaData dtoMetaData) {
-        super(dtoMetaData);
+    /**
+     * @param dtoMetaData Dto meta data. (NotNull)
+     * @param rowCreator Row creator. (NotNull)
+     */
+    public DtoMetaDataResultSetHandler(DtoMetaData dtoMetaData,
+            RowCreator rowCreator) {
+        super(dtoMetaData, rowCreator);
     }
 
     public Object handle(ResultSet resultSet) throws SQLException {
+        // Map<String(columnName), PropertyType>
+        Map propertyCache = null;// [DAO-118] (2007/08/26)
+
         if (resultSet.next()) {
-            Set columnNames = createColumnNames(resultSet.getMetaData());
-            Object row = createRow(resultSet, columnNames);
+            final Set columnNames = createColumnNames(resultSet.getMetaData());
+
+            // Lazy initialization because if the result is zero, the cache is unused.
+            if (propertyCache == null) {
+                propertyCache = createPropertyCache(columnNames);
+            }
+
+            final Object row = createRow(resultSet, propertyCache);
             if (resultSet.next()) {
                 logger.log("WDAO0003", null);
             }

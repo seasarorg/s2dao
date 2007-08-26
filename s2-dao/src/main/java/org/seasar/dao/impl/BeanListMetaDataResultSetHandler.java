@@ -37,6 +37,11 @@ import org.seasar.framework.beans.PropertyDesc;
 public class BeanListMetaDataResultSetHandler extends
         AbstractBeanMetaDataResultSetHandler {
 
+    /**
+     * @param dtoMetaData Dto meta data. (NotNull)
+     * @param rowCreator Row creator. (NotNull)
+     * @param relationRowCreator Relation row creator. (NotNul)
+     */
     public BeanListMetaDataResultSetHandler(BeanMetaData beanMetaData,
             RowCreator rowCreator, RelationRowCreator relationRowCreator) {
         super(beanMetaData, rowCreator, relationRowCreator);
@@ -50,7 +55,7 @@ public class BeanListMetaDataResultSetHandler extends
         final Set columnNames = createColumnNames(rs.getMetaData());
 
         // Map<String(columnName), PropertyType>
-        Map rowPropertyCache = null;// [DAO-118] (2007/08/26)
+        Map propertyCache = null;// [DAO-118] (2007/08/26)
 
         // Map<String(relationNoSuffix), Map<String(columnName), PropertyType>>
         Map relationPropertyCache = null;// [DAO-118] (2007/08/25)
@@ -61,15 +66,15 @@ public class BeanListMetaDataResultSetHandler extends
 
         while (rs.next()) {
             // Lazy initialization because if the result is zero, the cache is unused.
-            if (rowPropertyCache == null) {
-                rowPropertyCache = createPropertyCache(columnNames);
+            if (propertyCache == null) {
+                propertyCache = createPropertyCache(columnNames);
             }
             if (relationPropertyCache == null) {
                 relationPropertyCache = createRelationPropertyCache(columnNames);
             }
 
             // Create row instance of base table by row property cache.
-            Object row = createRow(rs, rowPropertyCache);
+            final Object row = createRow(rs, propertyCache);
 
             for (int i = 0; i < relSize; ++i) {
                 RelationPropertyType rpt = getBeanMetaData()

@@ -18,58 +18,53 @@ package org.seasar.dao.impl;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.DtoMetaData;
-import org.seasar.dao.util.DaoNamingConventionUtil;
-import org.seasar.extension.jdbc.PropertyType;
+import org.seasar.dao.RowCreator;
 import org.seasar.extension.jdbc.ResultSetHandler;
-import org.seasar.extension.jdbc.ValueType;
-import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.util.CaseInsensitiveSet;
-import org.seasar.framework.util.ClassUtil;
 
+/**
+ * @author jflute
+ */
 public abstract class AbstractDtoMetaDataResultSetHandler implements
         ResultSetHandler {
 
     private DtoMetaData dtoMetaData;
 
-    public AbstractDtoMetaDataResultSetHandler(DtoMetaData dtoMetaData) {
+    protected RowCreator rowCreator;// [DAO-118] (2007/08/25)
+
+    /**
+     * @param dtoMetaData Dto meta data. (NotNull)
+     * @param rowCreator Row creator. (NotNull)
+     */
+    public AbstractDtoMetaDataResultSetHandler(DtoMetaData dtoMetaData,
+            RowCreator rowCreator) {
         this.dtoMetaData = dtoMetaData;
+        this.rowCreator = rowCreator;
     }
 
-    public DtoMetaData getDtoMetaData() {
-        return dtoMetaData;
+    /**
+     * @param columnNames The set of column name. (NotNull)
+     * @return The map of row property cache. Map{String(columnName), PropertyType} (NotNull)
+     * @throws SQLException
+     */
+    protected Map createPropertyCache(Set columnNames) throws SQLException {
+        return rowCreator.createPropertyCache(columnNames, dtoMetaData);
     }
 
-    protected Object createRow(ResultSet rs, Set columnNames)
+    /**
+     * @param rs Result set. (NotNull)
+     * @param propertyCache The map of property cache. Map{String(columnName), PropertyType} (NotNull)
+     * @return Created row. (NotNull)
+     * @throws SQLException
+     */
+    protected Object createRow(ResultSet rs, Map propertyCache)
             throws SQLException {
-
-        Object row = ClassUtil.newInstance(dtoMetaData.getBeanClass());
-        for (int i = 0; i < dtoMetaData.getPropertyTypeSize(); ++i) {
-            PropertyType pt = dtoMetaData.getPropertyType(i);
-            if (columnNames.contains(pt.getColumnName())) {
-                ValueType valueType = pt.getValueType();
-                Object value = valueType.getValue(rs, pt.getColumnName());
-                PropertyDesc pd = pt.getPropertyDesc();
-                pd.setValue(row, value);
-            } else if (columnNames.contains(pt.getPropertyName())) {
-                ValueType valueType = pt.getValueType();
-                Object value = valueType.getValue(rs, pt.getPropertyName());
-                PropertyDesc pd = pt.getPropertyDesc();
-                pd.setValue(row, value);
-            } else {
-                String possibleName = DaoNamingConventionUtil
-                        .fromPropertyNameToColumnName(pt.getPropertyName());
-                if (columnNames.contains(possibleName)) {
-                    ValueType valueType = pt.getValueType();
-                    Object value = valueType.getValue(rs, possibleName);
-                    PropertyDesc pd = pt.getPropertyDesc();
-                    pd.setValue(row, value);
-                }
-            }
-        }
-        return row;
+        final Class beanClass = dtoMetaData.getBeanClass();
+        return rowCreator.createRow(rs, propertyCache, beanClass);
     }
 
     /*
@@ -90,5 +85,9 @@ public abstract class AbstractDtoMetaDataResultSetHandler implements
             }
         }
         return columnNames;
+    }
+
+    public DtoMetaData getDtoMetaData() {
+        return dtoMetaData;
     }
 }

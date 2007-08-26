@@ -32,6 +32,7 @@ import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 
 /**
  * @author manhole
+ * @author jflute
  */
 public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
 
@@ -79,17 +80,19 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
 
     protected ResultSetHandler createDtoListMetaDataResultSetHandler(
             final DtoMetaData dtoMetaData) {
-        return new DtoListMetaDataResultSetHandler(dtoMetaData);
+        return new DtoListMetaDataResultSetHandler(dtoMetaData,
+                createRowCreator());
     }
 
     protected ResultSetHandler createDtoMetaDataResultSetHandler(
             final DtoMetaData dtoMetaData) {
-        return new DtoMetaDataResultSetHandler(dtoMetaData);
+        return new DtoMetaDataResultSetHandler(dtoMetaData, createRowCreator());
     }
 
     protected ResultSetHandler createDtoArrayMetaDataResultSetHandler(
             final DtoMetaData dtoMetaData) {
-        return new DtoArrayMetaDataResultSetHandler(dtoMetaData);
+        return new DtoArrayMetaDataResultSetHandler(dtoMetaData,
+                createRowCreator());
     }
 
     protected ResultSetHandler createMapListResultSetHandler() {

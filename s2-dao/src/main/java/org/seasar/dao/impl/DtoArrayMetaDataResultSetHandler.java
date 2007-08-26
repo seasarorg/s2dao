@@ -21,12 +21,21 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.seasar.dao.DtoMetaData;
+import org.seasar.dao.RowCreator;
 
+/**
+ * @author jflute
+ */
 public class DtoArrayMetaDataResultSetHandler extends
         DtoListMetaDataResultSetHandler {
 
-    public DtoArrayMetaDataResultSetHandler(DtoMetaData dtoMetaData) {
-        super(dtoMetaData);
+    /**
+     * @param dtoMetaData Dto meta data. (NotNull)
+     * @param rowCreator Row creator. (NotNull)
+     */
+    public DtoArrayMetaDataResultSetHandler(DtoMetaData dtoMetaData,
+            RowCreator rowCreator) {
+        super(dtoMetaData, rowCreator);
     }
 
     /**

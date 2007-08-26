@@ -19,22 +19,39 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.DtoMetaData;
+import org.seasar.dao.RowCreator;
 
+/**
+ * @author jflute
+ */
 public class DtoListMetaDataResultSetHandler extends
         AbstractDtoMetaDataResultSetHandler {
 
-    public DtoListMetaDataResultSetHandler(DtoMetaData dtoMetaData) {
-        super(dtoMetaData);
+    /**
+     * @param dtoMetaData Dto meta data. (NotNull)
+     * @param rowCreator Row creator. (NotNull)
+     */
+    public DtoListMetaDataResultSetHandler(DtoMetaData dtoMetaData,
+            RowCreator rowCreator) {
+        super(dtoMetaData, rowCreator);
     }
 
     public Object handle(ResultSet rs) throws SQLException {
-        Set columnNames = createColumnNames(rs.getMetaData());
-        List list = new ArrayList();
+        // Map<String(columnName), PropertyType>
+        Map propertyCache = null;// [DAO-118] (2007/08/26)
+
+        final Set columnNames = createColumnNames(rs.getMetaData());
+        final List list = new ArrayList();
         while (rs.next()) {
-            Object row = createRow(rs, columnNames);
+            // Lazy initialization because if the result is zero, the cache is unused.
+            if (propertyCache == null) {
+                propertyCache = createPropertyCache(columnNames);
+            }
+            final Object row = createRow(rs, propertyCache);
             list.add(row);
         }
         return list;
