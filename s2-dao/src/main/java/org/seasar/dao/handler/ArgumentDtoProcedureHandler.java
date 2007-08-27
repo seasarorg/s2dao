@@ -31,6 +31,7 @@ import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.extension.jdbc.impl.BasicSelectHandler;
 import org.seasar.framework.exception.EmptyRuntimeException;
+import org.seasar.framework.exception.SIllegalArgumentException;
 import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.util.ResultSetUtil;
 import org.seasar.framework.util.StatementUtil;
@@ -86,11 +87,11 @@ public class ArgumentDtoProcedureHandler extends BasicSelectHandler implements
 
     public Object execute(final Connection connection, final Object[] args,
             final Class[] argTypes) {
+        final Object dto = getArgumentDto(args);
         logSql(args, argTypes);
         CallableStatement cs = null;
         try {
             cs = prepareCallableStatement(connection);
-            final Object dto = getArgumentDto(args);
             bindArgs(cs, dto);
             if (cs.execute()) {
                 return handleResultSet(cs);
@@ -237,7 +238,10 @@ public class ArgumentDtoProcedureHandler extends BasicSelectHandler implements
      */
     protected Object getArgumentDto(Object[] args) {
         if (args.length != 1) {
-            throw new IllegalArgumentException("args"); // TODO
+            throw new IllegalArgumentException("args");
+        }
+        if (args[0] == null) {
+            throw new SIllegalArgumentException("EDAO0029", new Object[] {});
         }
         return args[0];
     }

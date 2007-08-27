@@ -35,6 +35,7 @@ import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 import org.seasar.extension.unit.S2TestCase;
+import org.seasar.framework.exception.SIllegalArgumentException;
 
 /**
  * @author taedium
@@ -87,10 +88,14 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
     }
 
     public void testAaa3_nullTx() throws Exception {
-        Aaa3 dto = null;
         SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA3", Aaa3.class);
-        command.execute(new Object[] { dto });
-        assertTrue(Procedures.isAaa3Invoked);
+        try {
+            command.execute(new Object[] { null });
+            fail();
+        } catch (SIllegalArgumentException e) {
+            assertEquals("EDAO0029", e.getMessageCode());
+            System.out.println(e.getMessage());
+        }
     }
 
     public void testBbb1Tx() throws Exception {
@@ -131,6 +136,17 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
         assertEquals(new BigDecimal("10"), (BigDecimal) Procedures.params
                 .get("ddd"));
         assertNotNull(dto.getEee());
+    }
+
+    public void testCcc1_nullTx() throws Exception {
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_CCC1", Ccc1.class);
+        try {
+            command.execute(new Object[] { null });
+            fail();
+        } catch (SIllegalArgumentException e) {
+            assertEquals("EDAO0029", e.getMessageCode());
+            System.out.println(e.getMessage());
+        }
     }
 
     public void testCcc2Tx() throws Exception {

@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import org.seasar.dao.ArgumentDtoAnnotationReader;
+import org.seasar.dao.IllegalParameterTypeRuntimeException;
 import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.ProcedureMetaDataFactory;
 import org.seasar.dao.ProcedureParameterType;
@@ -118,7 +119,7 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
             ppt.setOutType(true);
             ppt.setReturnType(true);
         } else {
-            throw new IllegalStateException();// TODO
+            throw new IllegalParameterTypeRuntimeException(type);
         }
         final ValueType valueType = getValueType(field);
         ppt.setValueType(valueType);
