@@ -15,41 +15,18 @@
  */
 package org.seasar.dao.impl;
 
-import java.lang.reflect.Method;
-
-import javax.sql.DataSource;
-
-import org.seasar.dao.ProcedureMetaData;
+import org.seasar.dao.SqlCommand;
 import org.seasar.dao.handler.ProcedureHandler;
-import org.seasar.dao.handler.ProcedureHandlerImpl;
-import org.seasar.extension.jdbc.ResultSetFactory;
-import org.seasar.extension.jdbc.ResultSetHandler;
-import org.seasar.extension.jdbc.StatementFactory;
 
-/**
- * データベースのメタデータを利用してプロシージャを実行するコマンドです。
- * 
- * @author taedium
- */
-public class StaticStoredProcedureCommand extends AbstractProcedureCommand {
+public class StaticStoredProcedureCommand implements SqlCommand {
 
-    protected ProcedureHandler handler;
+    private ProcedureHandler handler;
 
-    public StaticStoredProcedureCommand(final DataSource dataSource,
-            final ResultSetHandler resultSetHandler,
-            final StatementFactory statementFactory,
-            final ResultSetFactory resultSetFactory,
-            final ProcedureMetaData procedureMetaData, final Method daoMethod) {
-
-        final ProcedureHandlerImpl handler = new ProcedureHandlerImpl(dataSource,
-                createSql(procedureMetaData), resultSetHandler,
-                statementFactory, resultSetFactory, procedureMetaData,
-                daoMethod);
-        handler.setFetchSize(-1);
+    public StaticStoredProcedureCommand(ProcedureHandler handler) {
         this.handler = handler;
     }
 
-    public Object execute(final Object[] args) {
+    public Object execute(Object[] args) {
         return handler.execute(args);
     }
 

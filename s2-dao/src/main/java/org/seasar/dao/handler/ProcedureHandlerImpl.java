@@ -17,93 +17,114 @@ package org.seasar.dao.handler;
 
 import java.lang.reflect.Method;
 import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.seasar.dao.ProcedureMetaData;
-import org.seasar.dao.ProcedureParameterType;
-import org.seasar.extension.jdbc.ResultSetFactory;
+import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.DaoAnnotationReader;
+import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
-import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.framework.exception.SQLRuntimeException;
 import org.seasar.framework.exception.SRuntimeException;
+import org.seasar.framework.util.ResultSetUtil;
+import org.seasar.framework.util.StatementUtil;
 
 /**
  * @author manhole
- * @author taedium
  */
-public class ProcedureHandlerImpl extends AbstractProcedureHandler {
+public class ProcedureHandlerImpl extends AbstractBasicProcedureHandler {
 
     private Method daoMethod;
 
-    public Method getDaoMethod() {
-        return daoMethod;
+    private BeanMetaData beanMetaData;
+
+    private DaoAnnotationReader daoAnnotationReader;
+
+    private ResultSetHandlerFactory resultSetHandlerFactory;
+
+    private int outParameterNumbers;
+
+    public void initialize() {
+        outParameterNumbers = initTypes();
     }
 
-    public void setDaoMethod(final Method daoMethod) {
-        this.daoMethod = daoMethod;
+    protected Object execute(final Connection connection, final Object[] args) {
+        CallableStatement cs = null;
+        try {
+            cs = prepareCallableStatement(connection);
+            bindArgs(cs, args);
+            if (cs.execute()) {
+                return handleResultSet(cs);
+            } else {
+                return handleNoResultSet(cs);
+            }
+        } catch (final SQLException e) {
+            throw new SQLRuntimeException(e);
+        } finally {
+            StatementUtil.close(cs);
+        }
     }
 
-    public ProcedureHandlerImpl(final DataSource dataSource, final String sql,
-            final ResultSetHandler resultSetHandler,
-            final StatementFactory statementFactory,
-            final ResultSetFactory resultSetFactory,
-            final ProcedureMetaData procedureMetaData, final Method daoMethod) {
-
-        super(dataSource, sql, resultSetHandler, statementFactory,
-                resultSetFactory, procedureMetaData);
-        setDaoMethod(daoMethod);
-    }
-
-    protected void bindArgs(final CallableStatement cs, final Object[] args)
+    protected Object handleResultSet(final CallableStatement cs)
             throws SQLException {
-        if (args == null) {
-            return;
-        }
-        final ProcedureMetaData procedureMetaData = getProcedureMetaData();
-        final int size = procedureMetaData.getParameterTypeSize();
-        for (int i = 0, argIndex = 0; i < size; i++) {
-            final ProcedureParameterType ppt = procedureMetaData.getParameterType(i);
-            if (isReturnOrOutType(ppt)) {
-                registerOutParameter(cs, ppt);
+        ResultSet rs = null;
+        try {
+            rs = cs.getResultSet();
+            if (rs == null) {
+                throw new IllegalStateException("JDBC Driver's BUG");
             }
-            if (ppt.isInType()) {
-                bindValue(cs, ppt, args[argIndex]);
-                argIndex++;
-            }
+            final ResultSetHandler resultSetHandler = resultSetHandlerFactory
+                    .getResultSetHandler(daoAnnotationReader, beanMetaData,
+                            daoMethod);
+            return resultSetHandler.handle(rs);
+        } finally {
+            ResultSetUtil.close(rs);
         }
     }
 
-    protected Object handleNoResultSet(final CallableStatement cs,
-            final Object[] args) throws SQLException {
-        final Class returnType = getDaoMethod().getReturnType();
-        final ProcedureMetaData procedureMetaData = getProcedureMetaData();
+    protected Object handleNoResultSet(final CallableStatement cs)
+            throws SQLException {
+        final Class returnType = daoMethod.getReturnType();
         if (Map.class.isAssignableFrom(returnType)) {
             final Map result = new HashMap();
-            for (int i = 0; i < procedureMetaData.getParameterTypeSize(); i++) {
-                final ProcedureParameterType ppt = procedureMetaData
-                        .getParameterType(i);
-                if (isReturnOrOutType(ppt)) {
-                    result.put(ppt.getParameterName(), getValue(cs, ppt));
+            for (int i = 0; i < columnInOutTypes.length; i++) {
+                if (isOutputColum(columnInOutTypes[i].intValue())) {
+                    result.put(columnNames[i], cs.getObject(i + 1));
                 }
             }
             return result;
         } else {
-            Object result = null;
-            for (int i = 0; i < procedureMetaData.getParameterTypeSize(); i++) {
-                if (result != null) {
-                    throw new SRuntimeException("EDAO0010");
-                }
-                final ProcedureParameterType ppt = procedureMetaData
-                        .getParameterType(i);
-                if (isReturnOrOutType(ppt)) {
-                    result = getValue(cs, ppt);
+            if (outParameterNumbers > 1) {
+                throw new SRuntimeException("EDAO0010");
+            }
+            for (int i = 0; i < columnInOutTypes.length; i++) {
+                if (isOutputColum(columnInOutTypes[i].intValue())) {
+                    return cs.getObject(i + 1);
                 }
             }
-            return result;
+            return null;
         }
+    }
+
+    public void setDaoMethod(final Method method) {
+        this.daoMethod = method;
+    }
+
+    public void setResultSetHandlerFactory(
+            final ResultSetHandlerFactory resultSetHandlerFactory) {
+        this.resultSetHandlerFactory = resultSetHandlerFactory;
+    }
+
+    public void setBeanMetaData(final BeanMetaData beanMetaData) {
+        this.beanMetaData = beanMetaData;
+    }
+
+    public void setDaoAnnotationReader(
+            final DaoAnnotationReader daoAnnotationReader) {
+        this.daoAnnotationReader = daoAnnotationReader;
     }
 
 }

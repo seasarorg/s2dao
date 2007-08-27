@@ -53,6 +53,7 @@ import org.seasar.dao.SqlCommand;
 import org.seasar.dao.SqlFileNotFoundRuntimeException;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
+import org.seasar.dao.handler.ProcedureHandlerImpl;
 import org.seasar.dao.pager.NullPagingSqlRewriter;
 import org.seasar.dao.pager.PagingSqlRewriter;
 import org.seasar.extension.jdbc.PropertyType;
@@ -242,13 +243,17 @@ public class DaoMetaDataImpl implements DaoMetaData {
             command = new DtoProcedureCommand(dataSource, resultSetHandler,
                     statementFactory, resultSetFactory, metaData);
         } else {
-            final ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
-                    procedureName, dataSource, dbms);
-            final ProcedureMetaData metaData = factory
-                    .createProcedureMetaData();
-            command = new StaticStoredProcedureCommand(dataSource,
-                    resultSetHandler, statementFactory, resultSetFactory,
-                    metaData, method);
+            final ProcedureHandlerImpl handler = new ProcedureHandlerImpl();
+            handler.setDataSource(dataSource);
+            handler.setDbms(dbms);
+            handler.setDaoMethod(method);
+            handler.setDaoAnnotationReader(daoAnnotationReader);
+            handler.setBeanMetaData(beanMetaData);
+            handler.setProcedureName(procedureName);
+            handler.setResultSetHandlerFactory(resultSetHandlerFactory);
+            handler.setStatementFactory(statementFactory);
+            handler.initialize();
+            command = new StaticStoredProcedureCommand(handler);
         }
         sqlCommands.put(method.getName(), command);
     }
