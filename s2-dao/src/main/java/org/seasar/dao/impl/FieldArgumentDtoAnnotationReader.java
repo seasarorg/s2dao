@@ -18,43 +18,28 @@ package org.seasar.dao.impl;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.seasar.dao.ArgumentDtoAnnotationReader;
-import org.seasar.dao.ProcedureParameterType;
 import org.seasar.framework.beans.BeanDesc;
-import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
 import org.seasar.framework.util.FieldUtil;
-import org.seasar.framework.util.StringUtil;
 
 /**
+ * フィールドアノテーションを読み取る{@link ArgumentDtoAnnotationReader}の実装クラスです。
+ * 
  * @author taedium
- *
  */
 public class FieldArgumentDtoAnnotationReader implements
         ArgumentDtoAnnotationReader {
 
+    /** <code>PROCEDURE_PARAMETERS</code>アノテーション */
     protected String PROCEDURE_PARAMETERS = "PROCEDURE_PARAMETERS";
 
+    /** <code>PROCEDURE_PARAMETER</code>アノテーションのサフィックス */
     protected String PROCEDURE_PARAMETER_SUFFIX = "_PROCEDURE_PARAMETER";
 
+    /** <code>VALUE_TYPE</code>アノテーションのサフィックス */
     protected String VALUE_TYPE_SUFFIX = "_VALUE_TYPE";
-
-    protected String PROCEDURE_PARAMETER_TYPE = "type";
-
-    protected String PROCEDURE_PARAMETER_IN = "in";
-
-    protected String PROCEDURE_PARAMETER_OUT = "out";
-
-    protected String PROCEDURE_PARAMETER_INOUT = "inout";
-
-    protected String PROCEDURE_PARAMETER_RETURN = "return";
-
-    protected String PROCEDURE_PARAMETER_NAME = "name";
-
-    protected String PROCEDURE_PARAMETER_INDEX = "index";
 
     public boolean isProcedureParameters(final Class dtoClass) {
         if (isSimpleType(dtoClass)) {
@@ -64,97 +49,31 @@ public class FieldArgumentDtoAnnotationReader implements
         return dtoDesc.hasField(PROCEDURE_PARAMETERS);
     }
 
-    public ProcedureParameterType getProcedureParameter(final BeanDesc dtoDesc,
-            final PropertyDesc propertyDesc) {
-        final String fieldName = propertyDesc.getPropertyName()
-                + PROCEDURE_PARAMETER_SUFFIX;
-        String annotation = null;
-        if (dtoDesc.hasField(fieldName)) {
-            final Field field = dtoDesc.getField(fieldName);
-            annotation = (String) FieldUtil.get(field, null);
-        }
-        final Map pairs = getKeyValuePairs(annotation);
-        final ProcedureParameterType ppt = new ProcedureParameterTypeImpl(
-                propertyDesc);
-        setupParameterName(ppt, pairs, propertyDesc.getPropertyName());
-        setupParameterType(ppt, pairs);
-        setupParameterIndex(ppt, pairs);
-        return ppt;
-    }
-
-    public String getValueType(final BeanDesc dtoDesc,
-            final PropertyDesc propertyDesc) {
-        final String fieldName = propertyDesc.getPropertyName()
-                + VALUE_TYPE_SUFFIX;
-        if (dtoDesc.hasField(fieldName)) {
-            final Field field = dtoDesc.getField(fieldName);
-            return (String) FieldUtil.get(field, null);
+    public String getProcedureParameter(final BeanDesc dtoDesc,
+            final Field field) {
+        final String name = field.getName() + PROCEDURE_PARAMETER_SUFFIX;
+        if (dtoDesc.hasField(name)) {
+            final Field f = dtoDesc.getField(name);
+            return (String) FieldUtil.get(f, null);
         }
         return null;
     }
 
-    protected Map getKeyValuePairs(final String annotation) {
-        final Map map = new HashMap();
-        final String[] pairs = StringUtil.split(annotation, ",");
-        for (int i = 0; i < pairs.length; i++) {
-            final String[] pair = pairs[i].split("=");
-            if (pair.length != 2) {
-                throw new RuntimeException(); //TODO
-            }
-            final String key = trim(pair[0]);
-            final String value = trim(pair[1]);
-            map.put(key, value);
+    public String getValueType(final BeanDesc dtoDesc, final Field field) {
+        final String name = field.getName() + VALUE_TYPE_SUFFIX;
+        if (dtoDesc.hasField(name)) {
+            final Field f = dtoDesc.getField(name);
+            return (String) FieldUtil.get(f, null);
         }
-        return map;
+        return null;
     }
 
-    protected String trim(final String s) {
-        return StringUtil.ltrim(StringUtil.rtrim(s));
-    }
-
-    protected void setupParameterName(final ProcedureParameterType ppt,
-            final Map pairs, final String defaultName) {
-        final String name = (String) pairs.get(PROCEDURE_PARAMETER_NAME);
-        if (name == null) {
-            ppt.setParameterName(defaultName);
-        } else {
-            ppt.setParameterName(name);
-        }
-    }
-
-    protected void setupParameterType(final ProcedureParameterType ppt,
-            final Map pairs) {
-        final String type = (String) pairs.get(PROCEDURE_PARAMETER_TYPE);
-        if (type == null) {
-            ppt.setInType(true);
-        } else if (type.equalsIgnoreCase(PROCEDURE_PARAMETER_IN)) {
-            ppt.setInType(true);
-        } else if (type.equalsIgnoreCase(PROCEDURE_PARAMETER_OUT)) {
-            ppt.setOutType(true);
-        } else if (type.equalsIgnoreCase(PROCEDURE_PARAMETER_INOUT)) {
-            ppt.setInType(true);
-            ppt.setOutType(true);
-        } else if (type.equalsIgnoreCase(PROCEDURE_PARAMETER_RETURN)) {
-            ppt.setReturnType(true);
-        } else {
-            throw new RuntimeException(); //TODO
-        }
-    }
-
-    protected void setupParameterIndex(final ProcedureParameterType ppt,
-            final Map pairs) {
-        final String index = (String) pairs.get(PROCEDURE_PARAMETER_INDEX);
-        if (index == null) {
-            return;
-        }
-        try {
-            final Integer i = Integer.valueOf(index);
-            ppt.setIndex(i);
-        } catch (final NumberFormatException e) {
-            throw new RuntimeException(e); //TODO
-        }
-    }
-
+    /**
+     * 単純なクラスの場合に<code>true</code>を返します。
+     * 
+     * @param clazz クラス
+     * @return 単純なクラスの場合<code>true</code>、そうでない場合<code>false</code>
+     */
     protected boolean isSimpleType(final Class clazz) {
         if (clazz == null) {
             throw new NullPointerException("clazz");

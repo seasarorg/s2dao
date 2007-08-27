@@ -235,12 +235,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
         if (paramTypes.length == 1
                 && argumentDtoAnnotationReader
                         .isProcedureParameters(paramTypes[0])) {
-            final ProcedureMetaDataFactory factory = new DtoProcedureMetaDataFactory(
+            final ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
                     procedureName, paramTypes[0], valueTypeFactory,
                     argumentDtoAnnotationReader);
             final ProcedureMetaData metaData = factory
                     .createProcedureMetaData();
-            command = new DtoProcedureCommand(dataSource, resultSetHandler,
+            command = new ArgumentDtoProcedureCommand(dataSource, resultSetHandler,
                     statementFactory, resultSetFactory, metaData);
         } else {
             final ProcedureHandlerImpl handler = new ProcedureHandlerImpl();

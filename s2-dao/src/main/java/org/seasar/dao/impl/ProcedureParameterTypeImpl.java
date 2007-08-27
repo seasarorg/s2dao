@@ -15,10 +15,11 @@
  */
 package org.seasar.dao.impl;
 
+import java.lang.reflect.Field;
+
 import org.seasar.dao.ProcedureParameterType;
 import org.seasar.extension.jdbc.ValueType;
-import org.seasar.framework.beans.PropertyDesc;
-import org.seasar.framework.exception.EmptyRuntimeException;
+import org.seasar.framework.util.FieldUtil;
 
 /**
  * {@link ProcedureParameterType}の実装クラスです。
@@ -29,7 +30,7 @@ public class ProcedureParameterTypeImpl implements ProcedureParameterType {
 
     private String parameterName;
 
-    private PropertyDesc propertyDesc;
+    private Field field;
 
     private ValueType valueType;
 
@@ -39,37 +40,18 @@ public class ProcedureParameterTypeImpl implements ProcedureParameterType {
 
     private boolean returnType;
 
-    private Integer index;
-
     /**
      * インスタンスを構築します。
      * 
+     * @param field
      */
-    public ProcedureParameterTypeImpl() {
-    }
-
-    /**
-     * インスタンスを構築します。
-     * 
-     * @param propertyDesc プロパティ記述
-     */
-    public ProcedureParameterTypeImpl(final PropertyDesc propertyDesc) {
-        this.propertyDesc = propertyDesc;
+    public ProcedureParameterTypeImpl(Field field) {
+        this.field = field;
+        this.parameterName = field.getName();
     }
 
     public String getParameterName() {
         return parameterName;
-    }
-
-    public void setParameterName(final String parameterName) {
-        this.parameterName = parameterName;
-    }
-
-    public PropertyDesc getPropertyDesc() {
-        if (propertyDesc == null) {
-            throw new EmptyRuntimeException("propertyDesc");
-        }
-        return propertyDesc;
     }
 
     public ValueType getValueType() {
@@ -104,16 +86,12 @@ public class ProcedureParameterTypeImpl implements ProcedureParameterType {
         this.returnType = returnType;
     }
 
-    public boolean hasIndex() {
-        return index != null;
+    public Object getValue(Object target) {
+        return FieldUtil.get(field, target);
     }
 
-    public Integer getIndex() {
-        return index;
-    }
-
-    public void setIndex(final Integer index) {
-        this.index = index;
+    public void setValue(Object target, Object value) {
+        FieldUtil.set(field, target, value);
     }
 
 }

@@ -15,8 +15,9 @@
  */
 package org.seasar.dao;
 
+import java.lang.reflect.Field;
+
 import org.seasar.framework.beans.BeanDesc;
-import org.seasar.framework.beans.PropertyDesc;
 
 /**
  * メソッドの引数に使用されるDTOのアノテーションを読み取るインタフェースです。
@@ -34,22 +35,20 @@ public interface ArgumentDtoAnnotationReader {
     boolean isProcedureParameters(Class argClass);
 
     /**
-     * プロシージャのパラメータのタイプを返します。
+     * <code>PROCEDURE_PARAMETER</code>アノテーションの文字列を返します。
      * 
      * @param dtoDesc DTOのクラス記述
-     * @param propertyDesc プロパティ記述
-     * @return ProcedureParameterアノテーションが存在する場合はそのアノテーションが示す
-     * {@link ProcedureParameterType}、存在しない場合はデフォルトの{@link ProcedureParameterType}
+     * @param field フィールド
+     * @return <code>PROCEDURE_PARAMETER</code>アノテーションが存在する場合はそのアノテーションの文字列、存在しない場合は<code>null</code>
      */
-    ProcedureParameterType getProcedureParameter(BeanDesc dtoDesc,
-            PropertyDesc propertyDesc);
+    String getProcedureParameter(BeanDesc dtoDesc, Field field);
 
     /**
-     * ValueTypeアノテーションの文字列を返します。
+     * <code>VALUE_TYPE</code>アノテーションの文字列を返します。
      * 
      * @param dtoDesc DTOのクラス記述
-     * @param propertyDesc プロパティ記述
-     * @return ValueTypeアノテーションが存在する場合はそのアノテーションの文字列、存在しない場合は<code>null</code>
+     * @param field フィールド
+     * @return <code>VALUE_TYPE</code>アノテーションが存在する場合はそのアノテーションの文字列、存在しない場合は<code>null</code>
      */
-    String getValueType(BeanDesc dtoDesc, PropertyDesc propertyDesc);
+    String getValueType(BeanDesc dtoDesc, Field field);
 }

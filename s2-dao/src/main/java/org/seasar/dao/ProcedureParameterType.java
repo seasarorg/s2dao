@@ -16,7 +16,6 @@
 package org.seasar.dao;
 
 import org.seasar.extension.jdbc.ValueType;
-import org.seasar.framework.beans.PropertyDesc;
 
 /**
  * プロシージャのパラメータのタイプです。
@@ -31,18 +30,6 @@ public interface ProcedureParameterType {
      * @return パラメータ名
      */
     String getParameterName();
-
-    /**
-     * パラメータ名を設定します。
-     */
-    void setParameterName(String parameterName);
-
-    /**
-     * プロパティ記述を返します。
-     * 
-     * @return プロパティ記述
-     */
-    PropertyDesc getPropertyDesc();
 
     /**
      * {@link ValueType}を返します。
@@ -61,7 +48,8 @@ public interface ProcedureParameterType {
     /**
      * <code>IN</code>パラメータもしくは<code>INOUT</code>パラメータである場合に<code>true</code>を返します。
      * 
-     * @return　<code>IN</code>パラメータもしくは<code>INOUT</code>パラメータである場合<code>true</code>、そうでない場合<code>false</code>
+     * @return　<code>IN</code>パラメータ
+     * もしくは<code>INOUT</code>パラメータである場合<code>true</code>、そうでない場合<code>false</code>
      */
     boolean isInType();
 
@@ -73,21 +61,25 @@ public interface ProcedureParameterType {
     void setInType(boolean inType);
 
     /**
-     * <code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合に<code>true</code>を返します。
+     * <code>OUT</code>パラメータ、<code>INOUT</code>パラメータ
+     * もしくは<code>RETURN</code>パラメータである場合に<code>true</code>を返します。
      * 
-     * @return　<code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合<code>true</code>、そうでない場合<code>false</code>
+     * @return　<code>OUT</code>パラメータ、<code>INOUT</code>パラメータ
+     * もしくは<code>RETURN</code>パラメータである場合<code>true</code>、そうでない場合<code>false</code>
      */
     boolean isOutType();
 
     /**
-     * <code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合に<code>true</code>を設定します。
+     * <code>OUT</code>パラメータ、<code>INOUT</code>パラメータ
+     * もしくは<code>RETURN</code>パラメータである場合に<code>true</code>を設定します。
      * 
-     * @param outType　<code>OUT</code>パラメータもしくは<code>INOUT</code>パラメータである場合<code>true</code>
+     * @param outType　<code>OUT</code>パラメータ、<code>INOUT</code>パラメータ
+     * もしくは<code>RETURN</code>パラメータである場合<code>true</code>
      */
     void setOutType(boolean outType);
 
     /**
-     * <code>RETURN</code>パラメータである場合に<code>true</code>を返します。
+     * ppt.setOutType(true);ある場合に<code>true</code>を返します。
      * 
      * @return　<code>RETURN</code>パラメータである場合<code>true</code>、そうでない場合<code>false</code>
      */
@@ -101,24 +93,19 @@ public interface ProcedureParameterType {
     void setReturnType(boolean returnType);
 
     /**
-     * 位置を持っている場合<code>true</code>を返します。
+     * 値を返します。
      * 
-     * @return　位置を持っている場合<code>true</code>、そうでない場合<code>false</code>
+     * @param target 対象のオブジェクト
+     * @return 値
      */
-    boolean hasIndex();
+    Object getValue(Object target);
 
     /**
-     * 位置を返します。
+     * 値を設定します。
      * 
-     * @return　位置
+     * @param target 対象のオブジェクト
+     * @param value 値
      */
-    Integer getIndex();
-
-    /**
-     * 位置を設定します。
-     * 
-     * @param index 位置
-     */
-    void setIndex(Integer index);
+    void setValue(Object target, Object value);
 
 }

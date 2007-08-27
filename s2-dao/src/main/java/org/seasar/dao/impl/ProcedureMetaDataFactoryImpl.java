@@ -15,23 +15,17 @@
  */
 package org.seasar.dao.impl;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
-import javax.sql.DataSource;
-
-import org.seasar.dao.Dbms;
+import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.ProcedureMetaDataFactory;
-import org.seasar.extension.jdbc.types.ValueTypes;
-import org.seasar.extension.jdbc.util.ConnectionUtil;
-import org.seasar.extension.jdbc.util.DataSourceUtil;
-import org.seasar.extension.jdbc.util.DatabaseMetaDataUtil;
-import org.seasar.framework.exception.SQLRuntimeException;
-import org.seasar.framework.exception.SRuntimeException;
-import org.seasar.framework.util.ResultSetUtil;
+import org.seasar.dao.ProcedureParameterType;
+import org.seasar.dao.ValueTypeFactory;
+import org.seasar.extension.jdbc.ValueType;
+import org.seasar.framework.beans.BeanDesc;
+import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
  * {@link ProcedureMetaDataFactory}の実装クラスです。
@@ -40,154 +34,120 @@ import org.seasar.framework.util.ResultSetUtil;
  */
 public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
 
+    protected static String procedureParameterInType = "in";
+
+    protected static String procedureParameterOutType = "out";
+
+    protected static String procedureParameterInOutType = "inOut";
+
+    protected static String procedureParameterReturnType = "return";
+
     /** プロシージャ名 */
     protected String procedureName;
 
-    /** データソース */
-    protected DataSource dataSource;
+    /** DTOのクラス */
+    protected Class dtoClass;
 
-    /** DBMS */
-    protected Dbms dbms;
+    /** DTOのクラス記述 */
+    protected BeanDesc dtoDesc;
+
+    /** {@link ValueType}のファクトリ */
+    protected ValueTypeFactory valueTypeFactory;
+
+    /** 引数のDTOのアノテーションリーダ */
+    protected ArgumentDtoAnnotationReader annotationReader;
 
     /**
      * インスタンスを構築します。
      * 
      * @param procedureName プロシージャ名
-     * @param dataSource データソース
-     * @param dbms　DBMS
+     * @param dtoDesc DTOのクラス記述
+     * @param valueTypeFactory {@link ValueType}のファクトリ
+     * @param annotationReader DTOのアノテーションリーダ
      */
     public ProcedureMetaDataFactoryImpl(final String procedureName,
-            final DataSource dataSource, final Dbms dbms) {
+            final Class dtoClass, final ValueTypeFactory valueTypeFactory,
+            final ArgumentDtoAnnotationReader annotationReader) {
         this.procedureName = procedureName;
-        this.dataSource = dataSource;
-        this.dbms = dbms;
+        this.dtoClass = dtoClass;
+        this.dtoDesc = BeanDescFactory.getBeanDesc(dtoClass);
+        this.valueTypeFactory = valueTypeFactory;
+        this.annotationReader = annotationReader;
     }
 
     public ProcedureMetaData createProcedureMetaData() {
-        final Connection con = DataSourceUtil.getConnection(dataSource);
-        final DatabaseMetaData dmd = ConnectionUtil.getMetaData(con);
-        ResultSet rs = null;
-        try {
-            final ProcedureNamePattern pattern = getProcedureNamePattern(dbms,
-                    dmd, procedureName);
-            rs = dmd.getProcedureColumns(pattern.catalog, pattern.schema,
-                    pattern.name, null);
-            try {
-                final ProcedureMetaDataImpl meta = new ProcedureMetaDataImpl(
-                        procedureName);
-                int index = 1;
-                while (rs.next()) {
-                    final String columnName = rs.getString(4);
-                    final int columnType = rs.getInt(5);
-                    final int dataType = rs.getInt(6);
-                    final ProcedureParameterTypeImpl ppt = new ProcedureParameterTypeImpl();
-                    ppt.setParameterName(columnName);
-                    ppt.setValueType(ValueTypes.getValueType(dataType));
-                    ppt.setIndex(new Integer(index));
-                    switch (columnType) {
-                    case DatabaseMetaData.procedureColumnIn:
-                        ppt.setInType(true);
-                        break;
-                    case DatabaseMetaData.procedureColumnInOut:
-                        ppt.setInType(true);
-                        ppt.setOutType(true);
-                        break;
-                    case DatabaseMetaData.procedureColumnOut:
-                        ppt.setOutType(true);
-                        break;
-                    case DatabaseMetaData.procedureColumnReturn:
-                        ppt.setReturnType(true);
-                        break;
-                    case DatabaseMetaData.procedureColumnResult:
-                        continue; // ignore
-                    default:
-                        throw new SRuntimeException("EDAO0010",
-                                new Object[] { procedureName });
-                    }
-                    meta.addParameterType(ppt);
-                    index++;
-                }
-                return meta;
-            } finally {
-                ResultSetUtil.close(rs);
+        final ProcedureMetaDataImpl metaData = new ProcedureMetaDataImpl(
+                procedureName);
+        Field[] fields = dtoClass.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            final Field field = fields[i];
+            if (!isInstanceField(field)) {
+                continue;
             }
-        } catch (final SQLException e) {
-            throw new SQLRuntimeException(e);
-        } finally {
-            ConnectionUtil.close(con);
+            ProcedureParameterType ppt = getProcedureParameterType(field);
+            if (ppt == null) {
+                continue;
+            }
+            metaData.addParameterType(ppt);
         }
+        return metaData;
     }
 
     /**
-     * プロシージャの名前のパターンを返します。
+     * プロシージャのパラメータのタイプを返します。
      * 
-     * @param dbms DBMS
-     * @param databaseMetaData データベースのメタデータ
-     * @param procedureName プロシージャ名
-     * @return プロシージャの名前のパターン
+     * @param field フィールド
+     * @return　プロシージャのパラメータのタイプ、存在しない場合<code>null</code>
      */
-    protected ProcedureNamePattern getProcedureNamePattern(final Dbms dbms,
-            final DatabaseMetaData databaseMetaData, final String procedureName) {
-        final String name = DatabaseMetaDataUtil.convertIdentifier(
-                databaseMetaData, procedureName);
-        ProcedureNamePattern pattern = createProcedureNamePattern(dbms,
-                databaseMetaData, name);
-        if (pattern == null) {
-            pattern = createProcedureNamePattern(dbms, databaseMetaData,
-                    procedureName);
-            if (pattern == null) {
-                throw new SRuntimeException("EDAO0012",
-                        new Object[] { procedureName });
-            }
-        }
-        return pattern;
-    }
-
-    /**
-     * プロシージャの名前のパターンを作成します。
-     * 
-     * @param dbms DBMS
-     * @param databaseMetaData データベースのメタデータ
-     * @param procedureName プロシージャ名
-     * @return プロシージャの名前のパターン
-     */
-    protected ProcedureNamePattern createProcedureNamePattern(final Dbms dbms,
-            final DatabaseMetaData databaseMetaData, final String procedureName) {
-        final ResultSet rs = dbms
-                .getProcedures(databaseMetaData, procedureName);
-        if (rs == null) {
+    protected ProcedureParameterType getProcedureParameterType(final Field field) {
+        final String type = annotationReader.getProcedureParameter(dtoDesc,
+                field);
+        if (type == null) {
             return null;
         }
-        try {
-            if (rs.next()) {
-                final ProcedureNamePattern pattern = new ProcedureNamePattern();
-                pattern.catalog = rs.getString(1);
-                pattern.schema = rs.getString(2);
-                pattern.name = rs.getString(3);
-                if (rs.next()) {
-                    throw new SRuntimeException("EDAO0013",
-                            new Object[] { procedureName });
-                }
-                return pattern;
-            }
-            return null;
-        } catch (final SQLException e) {
-            throw new SQLRuntimeException(e);
-        } finally {
-            ResultSetUtil.close(rs);
+        field.setAccessible(true);
+        ProcedureParameterType ppt = new ProcedureParameterTypeImpl(field);
+        if (type.equalsIgnoreCase(procedureParameterInType)) {
+            ppt.setInType(true);
+        } else if (type.equalsIgnoreCase(procedureParameterOutType)) {
+            ppt.setOutType(true);
+        } else if (type.equalsIgnoreCase(procedureParameterInOutType)) {
+            ppt.setInType(true);
+            ppt.setOutType(true);
+        } else if (type.equalsIgnoreCase(procedureParameterReturnType)) {
+            ppt.setOutType(true);
+            ppt.setReturnType(true);
+        } else {
+            throw new IllegalStateException();// TODO
         }
+        final ValueType valueType = getValueType(field);
+        ppt.setValueType(valueType);
+        return ppt;
     }
 
     /**
-     * プロシージャの名前のパターンです。
+     * {@link ValueType}を返します。
      * 
-     * @author taedium
+     * @param field フィールド
+     * @return {@link ValueType}
      */
-    protected static class ProcedureNamePattern {
-        protected String catalog;
+    protected ValueType getValueType(final Field field) {
+        final String name = annotationReader.getValueType(dtoDesc, field);
+        if (name != null) {
+            return valueTypeFactory.getValueTypeByName(name);
+        }
+        final Class type = field.getType();
+        return valueTypeFactory.getValueTypeByClass(type);
+    }
 
-        protected String schema;
-
-        protected String name;
+    /**
+     * <code>field</code>がインスタンスフィールドの場合<code>true</code>
+     * 
+     * @param field フィールド
+     * @return <code>field</code>がインスタンスフィールドの場合<code>true</code>、そうでない場合<code>false</code>
+     */
+    protected boolean isInstanceField(Field field) {
+        int mod = field.getModifiers();
+        return !Modifier.isStatic(mod) && !Modifier.isFinal(mod);
     }
 }

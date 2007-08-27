@@ -15,11 +15,11 @@
  */
 package org.seasar.dao.impl;
 
+import java.lang.reflect.Field;
+
 import junit.framework.TestCase;
 
-import org.seasar.dao.ProcedureParameterType;
 import org.seasar.framework.beans.BeanDesc;
-import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
@@ -37,95 +37,42 @@ public class FieldArgumentDtoAnnotationReaderTest extends TestCase {
     }
 
     public void testGetProcedureParameter() throws Exception {
-        PropertyDesc pd = beanDesc.getPropertyDesc("aaa");
-        ProcedureParameterType ppt = reader.getProcedureParameter(beanDesc, pd);
-        assertEquals("hoge", ppt.getParameterName());
-        assertTrue(ppt.isOutType());
-        assertEquals(new Integer(1), ppt.getIndex());
+        Field field = beanDesc.getField("aaa");
+        String value = reader.getProcedureParameter(beanDesc, field);
+        assertEquals("in", value);
     }
 
-    public void testGetProcedureParameter_default() throws Exception {
-        PropertyDesc pd = beanDesc.getPropertyDesc("bbb");
-        ProcedureParameterType ppt = reader.getProcedureParameter(beanDesc, pd);
-        assertEquals("bbb", ppt.getParameterName());
-        assertTrue(ppt.isInType());
-        assertEquals(null, ppt.getIndex());
+    public void testGetProcedureParameter_none() throws Exception {
+        Field field = beanDesc.getField("bbb");
+        String value = reader.getProcedureParameter(beanDesc, field);
+        assertNull(value);
     }
 
-    public void testGetProcedureParameter_invalidType() throws Exception {
-        PropertyDesc pd = beanDesc.getPropertyDesc("ccc");
-        try {
-            reader.getProcedureParameter(beanDesc, pd);
-            fail();
-        } catch (RuntimeException ignore) {
-        }
-    }
-
-    public void testGetProcedureParameter_invalidIndex() throws Exception {
-        PropertyDesc pd = beanDesc.getPropertyDesc("ddd");
-        try {
-            reader.getProcedureParameter(beanDesc, pd);
-            fail();
-        } catch (RuntimeException ignore) {
-        }
+    public void testGetProcedureParameter_public() throws Exception {
+        Field field = beanDesc.getField("ccc");
+        String value = reader.getProcedureParameter(beanDesc, field);
+        assertEquals("out", value);
     }
 
     public void testGetValueType() throws Exception {
-        PropertyDesc pd = beanDesc.getPropertyDesc("aaa");
-        assertEquals("hogeValueType", reader.getValueType(beanDesc, pd));
+        Field field = beanDesc.getField("aaa");
+        assertEquals("hogeValueType", reader.getValueType(beanDesc, field));
     }
 
     public static class Hoge {
 
         public static final String PROCEDURE_PARAMETERS = null;
 
-        public static final String aaa_PROCEDURE_PARAMETER = "name=hoge, type=out, index=1";
-
-        public static final String ccc_PROCEDURE_PARAMETER = "type=x";
-
-        public static final String ddd_PROCEDURE_PARAMETER = "index=x";
-
         public static final String aaa_VALUE_TYPE = "hogeValueType";
+
+        public static final String aaa_PROCEDURE_PARAMETER = "in";
+
+        public static final String ccc_PROCEDURE_PARAMETER = "out";
 
         private String aaa;
 
         private String bbb;
 
-        private String ccc;
-
-        private String ddd;
-
-        public String getAaa() {
-            return aaa;
-        }
-
-        public void setAaa(String aaa) {
-            this.aaa = aaa;
-        }
-
-        public String getBbb() {
-            return bbb;
-        }
-
-        public void setBbb(String bbb) {
-            this.bbb = bbb;
-        }
-
-        public String getCcc() {
-            return ccc;
-        }
-
-        public void setCcc(String ccc) {
-            this.ccc = ccc;
-        }
-
-        public String getDdd() {
-            return ddd;
-        }
-
-        public void setDdd(String ddd) {
-            this.ddd = ddd;
-        }
-
+        public String ccc;
     }
 }

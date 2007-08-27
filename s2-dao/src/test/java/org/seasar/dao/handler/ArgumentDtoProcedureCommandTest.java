@@ -25,9 +25,9 @@ import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.ProcedureMetaDataFactory;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.ValueTypeFactory;
-import org.seasar.dao.impl.DtoProcedureCommand;
-import org.seasar.dao.impl.DtoProcedureMetaDataFactory;
+import org.seasar.dao.impl.ArgumentDtoProcedureCommand;
 import org.seasar.dao.impl.FieldArgumentDtoAnnotationReader;
+import org.seasar.dao.impl.ProcedureMetaDataFactoryImpl;
 import org.seasar.dao.impl.Procedures;
 import org.seasar.dao.impl.ValueTypeFactoryImpl;
 import org.seasar.extension.jdbc.ResultSetFactory;
@@ -40,7 +40,7 @@ import org.seasar.extension.unit.S2TestCase;
  * @author taedium
  *
  */
-public class DtoProcedureCommandTest extends S2TestCase {
+public class ArgumentDtoProcedureCommandTest extends S2TestCase {
 
     private DataSource dataSource;
 
@@ -159,10 +159,10 @@ public class DtoProcedureCommandTest extends S2TestCase {
     private SqlCommand createSqlCommand(String procedureName, Class dtoClass) {
         ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
         FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
-        ProcedureMetaDataFactory factory = new DtoProcedureMetaDataFactory(
+        ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
                 procedureName, dtoClass, valueTypeFactory, reader);
         ProcedureMetaData metaData = factory.createProcedureMetaData();
-        return new DtoProcedureCommand(dataSource, resultSetHandler,
+        return new ArgumentDtoProcedureCommand(dataSource, resultSetHandler,
                 statementFactory, resultSetFactory, metaData);
     }
 
@@ -170,7 +170,7 @@ public class DtoProcedureCommandTest extends S2TestCase {
 
         public static String PROCEDURE_PARAMETERS = null;
 
-        public static String foo_PROCEDURE_PARAMETER = "type=out, index=1";
+        public static String foo_PROCEDURE_PARAMETER = "out";
 
         private String foo;
 
@@ -187,9 +187,9 @@ public class DtoProcedureCommandTest extends S2TestCase {
 
         public static String PROCEDURE_PARAMETERS = null;
 
-        public static String bbb_PROCEDURE_PARAMETER = "type=out, index=1";
+        public static String bbb_PROCEDURE_PARAMETER = "out";
 
-        public static String ccc_PROCEDURE_PARAMETER = "type=out, index=2";
+        public static String ccc_PROCEDURE_PARAMETER = "out";
 
         private String bbb;
 
@@ -220,7 +220,7 @@ public class DtoProcedureCommandTest extends S2TestCase {
 
         public static String PROCEDURE_PARAMETERS = null;
 
-        public static String ccc_PROCEDURE_PARAMETER = "type=in, index=1";
+        public static String ccc_PROCEDURE_PARAMETER = "in";
 
         private String ccc;
 
@@ -237,11 +237,11 @@ public class DtoProcedureCommandTest extends S2TestCase {
 
         public static String PROCEDURE_PARAMETERS = null;
 
-        public static String ccc_PROCEDURE_PARAMETER = "index=1";
+        public static String ccc_PROCEDURE_PARAMETER = "in";
 
-        public static String ddd_PROCEDURE_PARAMETER = "type=in, index=2";
+        public static String ddd_PROCEDURE_PARAMETER = "in";
 
-        public static String xxx_PROCEDURE_PARAMETER = "type=in, index=3, name=eee";
+        public static String xxx_PROCEDURE_PARAMETER = "in";
 
         private String ccc;
 
@@ -278,11 +278,11 @@ public class DtoProcedureCommandTest extends S2TestCase {
 
         public static String PROCEDURE_PARAMETERS = null;
 
-        public static String ccc_PROCEDURE_PARAMETER = "index=1";
+        public static String ccc_PROCEDURE_PARAMETER = "in";
 
-        public static String ddd_PROCEDURE_PARAMETER = "type=in, index=2";
+        public static String ddd_PROCEDURE_PARAMETER = "in";
 
-        public static String eee_PROCEDURE_PARAMETER = "type=out, index=3";
+        public static String eee_PROCEDURE_PARAMETER = "out";
 
         private String ccc;
 
@@ -319,11 +319,11 @@ public class DtoProcedureCommandTest extends S2TestCase {
 
         public static String PROCEDURE_PARAMETERS = null;
 
-        public static String ccc_PROCEDURE_PARAMETER = "type=out, index=1";
+        public static String ccc_PROCEDURE_PARAMETER = "out";
 
-        public static String ddd_PROCEDURE_PARAMETER = "index=2";
+        public static String ddd_PROCEDURE_PARAMETER = "in";
 
-        public static String eee_PROCEDURE_PARAMETER = "type=out, index=3";
+        public static String eee_PROCEDURE_PARAMETER = "out";
 
         private String ccc;
 
@@ -360,7 +360,7 @@ public class DtoProcedureCommandTest extends S2TestCase {
 
         public static String PROCEDURE_PARAMETERS = null;
 
-        public static String ccc_PROCEDURE_PARAMETER = "type=inout, index=1";
+        public static String ccc_PROCEDURE_PARAMETER = "inout";
 
         private String ccc;
 
