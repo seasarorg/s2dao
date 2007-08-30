@@ -85,9 +85,13 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
         // - - - - - - - - - - - 
         // Recursive Call Point!
         // - - - - - - - - - - -
+
+        // Select句に該当RelationのPropertyが一つも指定されていない場合は、
+        // この時点ですぐにreturn null;とする。以前のS2Daoの仕様通りである。[DAO-7]
         if (!res.hasPropertyCacheElement()) {
             return null;
         }
+
         setupRelationKeyValue(res);
         setupRelationAllValue(res);
         return res.getRow();
@@ -124,19 +128,20 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
     protected void setupRelationAllValue(RelationRowCreationResource res)
             throws SQLException {
         final Map propertyCacheElement = res.extractPropertyCacheElement();
-        final Set columnNameSet = propertyCacheElement.keySet();
-        for (final Iterator ite = columnNameSet.iterator(); ite.hasNext();) {
+        final Set columnNameCacheElementKeySet = propertyCacheElement.keySet();
+        for (final Iterator ite = columnNameCacheElementKeySet.iterator(); ite
+                .hasNext();) {
             final String columnName = (String) ite.next();
             final PropertyType pt = (PropertyType) propertyCacheElement
                     .get(columnName);
             res.setCurrentPropertyType(pt);
-            if (!isValidRelation(res)) {
-                res.setRow(null);
+            if (!isValidRelationPerPropertyLoop(res)) {
+                res.clearRowInstance();
                 return;
             }
             setupRelationProperty(res);
         }
-        if (!res.isCreateDeadLink() && !res.hasValidValueCount()) {
+        if (!isValidRelationAfterPropertyLoop(res)) {
             res.clearRowInstance();
             return;
         }
@@ -146,9 +151,17 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
         }
     }
 
-    protected boolean isValidRelation(RelationRowCreationResource res)
-            throws SQLException {
+    protected boolean isValidRelationPerPropertyLoop(
+            RelationRowCreationResource res) throws SQLException {
         return true;// Always true as default. This method is for extension(for override).
+    }
+
+    protected boolean isValidRelationAfterPropertyLoop(
+            RelationRowCreationResource res) throws SQLException {
+        if (res.isCreateDeadLink()) {
+            return true;
+        }
+        return res.hasValidValueCount();
     }
 
     protected void setupRelationProperty(RelationRowCreationResource res)
@@ -338,7 +351,7 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
     protected Map newRelationPropertyCache() {
         return new HashMap();
     }
-    
+
     // ===================================================================================
     //                                                                        Common Logic
     //                                                                        ============
