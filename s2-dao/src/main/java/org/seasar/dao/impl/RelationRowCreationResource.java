@@ -187,7 +187,7 @@ public class RelationRowCreationResource {
         addRelationNoSuffix(additionalRelationNoSuffix);
     }
 
-    protected void restoreSuffix() {
+    public void restoreSuffix() {
         restoreBaseSuffix();
         restoreRelationNoSuffix();
     }
