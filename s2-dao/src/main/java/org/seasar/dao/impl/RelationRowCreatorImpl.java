@@ -146,18 +146,18 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
         }
     }
 
-    protected boolean isValidRelation(RelationRowCreationResource resource)
+    protected boolean isValidRelation(RelationRowCreationResource res)
             throws SQLException {
         return true;// Always true as default. This method is for extension(for override).
     }
 
-    protected void setupRelationProperty(RelationRowCreationResource resource)
+    protected void setupRelationProperty(RelationRowCreationResource res)
             throws SQLException {
-        final String columnName = resource.buildRelationColumnName();
-        if (!resource.hasRowInstance()) {
-            resource.setRow(newRelationRow(resource));
+        final String columnName = res.buildRelationColumnName();
+        if (!res.hasRowInstance()) {
+            res.setRow(newRelationRow(res));
         }
-        registerRelationValue(resource, columnName);
+        registerRelationValue(res, columnName);
     }
 
     protected void registerRelationValue(RelationRowCreationResource res,
