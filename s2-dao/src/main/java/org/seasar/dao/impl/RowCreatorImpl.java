@@ -26,6 +26,7 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.RowCreator;
 import org.seasar.dao.util.DaoNamingConventionUtil;
+import org.seasar.dao.util.PropertyDescUtil;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.framework.beans.PropertyDesc;
@@ -189,6 +190,6 @@ public class RowCreatorImpl implements RowCreator {
         //  --> 該当のPropertyを処理対象とするか否か。
         // - - - - - - - - - - - - - - - - - - - - - - - -
         // If the property is not writable, the property is out of target!
-        return pt.getPropertyDesc().hasWriteMethod();
+        return PropertyDescUtil.isWritable(pt.getPropertyDesc());
     }
 }

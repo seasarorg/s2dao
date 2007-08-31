@@ -25,6 +25,7 @@ import java.util.Set;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.RelationRowCreator;
+import org.seasar.dao.util.PropertyDescUtil;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.framework.beans.PropertyDesc;
@@ -377,7 +378,7 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
         //  --> 該当のPropertyを処理対象とするか否か。
         // - - - - - - - - - - - - - - - - - - - - - - - -
         final PropertyType pt = res.getCurrentPropertyType();
-        return pt.getPropertyDesc().hasWriteMethod();
+        return PropertyDescUtil.isWritable(pt.getPropertyDesc());
     }
 
     protected boolean isCreateDeadLink() {
