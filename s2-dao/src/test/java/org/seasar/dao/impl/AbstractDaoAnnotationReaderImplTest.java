@@ -126,4 +126,9 @@ public abstract class AbstractDaoAnnotationReaderImplTest extends TestCase {
         assertEquals(false, isSqlFile);
     }
 
+    public void testProcedureCall() throws Exception {
+        final Method method = daoClazz.getMethod("execute", new Class[] {});
+        final String name = annotationReader.getProcedureCallName(method);
+        assertEquals("hoge", name);
+    }
 }

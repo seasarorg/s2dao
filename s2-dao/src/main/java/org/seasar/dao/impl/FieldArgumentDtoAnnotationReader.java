@@ -16,12 +16,9 @@
 package org.seasar.dao.impl;
 
 import java.lang.reflect.Field;
-import java.util.Calendar;
-import java.util.Date;
 
 import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.framework.beans.BeanDesc;
-import org.seasar.framework.beans.factory.BeanDescFactory;
 import org.seasar.framework.util.FieldUtil;
 
 /**
@@ -32,22 +29,11 @@ import org.seasar.framework.util.FieldUtil;
 public class FieldArgumentDtoAnnotationReader implements
         ArgumentDtoAnnotationReader {
 
-    /** <code>PROCEDURE_PARAMETERS</code>アノテーション */
-    protected String PROCEDURE_PARAMETERS = "PROCEDURE_PARAMETERS";
-
     /** <code>PROCEDURE_PARAMETER</code>アノテーションのサフィックス */
     protected String PROCEDURE_PARAMETER_SUFFIX = "_PROCEDURE_PARAMETER";
 
     /** <code>VALUE_TYPE</code>アノテーションのサフィックス */
     protected String VALUE_TYPE_SUFFIX = "_VALUE_TYPE";
-
-    public boolean isProcedureParameters(final Class dtoClass) {
-        if (isSimpleType(dtoClass)) {
-            return false;
-        }
-        final BeanDesc dtoDesc = BeanDescFactory.getBeanDesc(dtoClass);
-        return dtoDesc.hasField(PROCEDURE_PARAMETERS);
-    }
 
     public String getProcedureParameter(final BeanDesc dtoDesc,
             final Field field) {
@@ -66,24 +52,6 @@ public class FieldArgumentDtoAnnotationReader implements
             return (String) FieldUtil.get(f, null);
         }
         return null;
-    }
-
-    /**
-     * 単純なクラスの場合に<code>true</code>を返します。
-     * 
-     * @param clazz クラス
-     * @return 単純なクラスの場合<code>true</code>、そうでない場合<code>false</code>
-     */
-    protected boolean isSimpleType(final Class clazz) {
-        if (clazz == null) {
-            throw new NullPointerException("clazz");
-        }
-        return clazz == String.class || clazz.isPrimitive()
-                || clazz == Boolean.class || clazz == Character.class
-                || Number.class.isAssignableFrom(clazz)
-                || Date.class.isAssignableFrom(clazz)
-                || Calendar.class.isAssignableFrom(clazz)
-                || clazz == byte[].class;
     }
 
 }

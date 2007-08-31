@@ -27,14 +27,6 @@ import org.seasar.framework.beans.BeanDesc;
 public interface ArgumentDtoAnnotationReader {
 
     /**
-     * プロシージャのパラメータを表すDTOの場合に<code>true</code>を返します。
-     * 
-     * @param argClass
-     * @return プロシージャのパラメータを表すDTOの場合<code>true</code>、そうでない場合<code>false</code>
-     */
-    boolean isProcedureParameters(Class argClass);
-
-    /**
      * <code>PROCEDURE_PARAMETER</code>アノテーションの文字列を返します。
      * 
      * @param dtoDesc DTOのクラス記述

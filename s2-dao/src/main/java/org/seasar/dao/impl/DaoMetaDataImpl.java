@@ -211,6 +211,11 @@ public class DaoMetaDataImpl implements DaoMetaData {
         if (sql != null) {
             setupMethodByManual(method, sql);
         }
+        final String procedureCallName = daoAnnotationReader
+                .getProcedureCallName(method);
+        if (procedureCallName != null) {
+            setupProcedureCallMethod(method, procedureCallName);
+        }
         final String procedureName = daoAnnotationReader
                 .getStoredProcedureName(method);
         if (procedureName != null) {
@@ -229,32 +234,31 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected void setupProcedureMethod(final Method method,
             final String procedureName) {
 
-        SqlCommand command;
+        final ProcedureHandlerImpl handler = new ProcedureHandlerImpl();
+        handler.setDataSource(dataSource);
+        handler.setDbms(dbms);
+        handler.setDaoMethod(method);
+        handler.setDaoAnnotationReader(daoAnnotationReader);
+        handler.setBeanMetaData(beanMetaData);
+        handler.setProcedureName(procedureName);
+        handler.setResultSetHandlerFactory(resultSetHandlerFactory);
+        handler.setStatementFactory(statementFactory);
+        handler.initialize();
+        final SqlCommand command = new StaticStoredProcedureCommand(handler);
+        sqlCommands.put(method.getName(), command);
+    }
+
+    protected void setupProcedureCallMethod(final Method method,
+            final String procedureName) {
+
         final ResultSetHandler resultSetHandler = createResultSetHandler(method);
-        final Class[] paramTypes = method.getParameterTypes();
-        if (paramTypes.length == 1
-                && argumentDtoAnnotationReader
-                        .isProcedureParameters(paramTypes[0])) {
-            final ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
-                    procedureName, paramTypes[0], valueTypeFactory,
-                    argumentDtoAnnotationReader);
-            final ProcedureMetaData metaData = factory
-                    .createProcedureMetaData();
-            command = new ArgumentDtoProcedureCommand(dataSource, resultSetHandler,
-                    statementFactory, resultSetFactory, metaData);
-        } else {
-            final ProcedureHandlerImpl handler = new ProcedureHandlerImpl();
-            handler.setDataSource(dataSource);
-            handler.setDbms(dbms);
-            handler.setDaoMethod(method);
-            handler.setDaoAnnotationReader(daoAnnotationReader);
-            handler.setBeanMetaData(beanMetaData);
-            handler.setProcedureName(procedureName);
-            handler.setResultSetHandlerFactory(resultSetHandlerFactory);
-            handler.setStatementFactory(statementFactory);
-            handler.initialize();
-            command = new StaticStoredProcedureCommand(handler);
-        }
+        final ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
+                procedureName, valueTypeFactory, argumentDtoAnnotationReader,
+                method);
+        final ProcedureMetaData metaData = factory.createProcedureMetaData();
+        final SqlCommand command = new ArgumentDtoProcedureCommand(dataSource,
+                resultSetHandler, statementFactory, resultSetFactory, metaData);
+
         sqlCommands.put(method.getName(), command);
     }
 

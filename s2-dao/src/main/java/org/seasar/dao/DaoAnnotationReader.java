@@ -29,7 +29,20 @@ public interface DaoAnnotationReader {
      */
     String getQuery(Method method);
 
+    /**
+     * 
+     * @param method
+     * @return
+     * @deprecated {@link #getProcedureCallName(Method)を使用してください}
+     */
     String getStoredProcedureName(Method method);
+
+    /**
+     * 
+     * @param method
+     * @return
+     */
+    String getProcedureCallName(Method method);
 
     /**
      * @param method

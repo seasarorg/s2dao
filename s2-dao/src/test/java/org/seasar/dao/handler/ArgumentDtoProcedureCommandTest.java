@@ -15,6 +15,7 @@
  */
 package org.seasar.dao.handler;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -64,16 +65,16 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
 
     public void testAaa1Tx() throws Exception {
         Aaa1 dto = new Aaa1();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA1", dto
-                .getClass());
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA1", Dao.class
+                .getMethod("executeAaa1", new Class[] { Aaa1.class }));
         command.execute(new Object[] { dto });
         assertNotNull(dto.getFoo());
     }
 
-    public void testAaa2Tx() {
+    public void testAaa2Tx() throws Exception {
         Aaa2 dto = new Aaa2();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA2", dto
-                .getClass());
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA2", Dao.class
+                .getMethod("executeAaa2", new Class[] { Aaa2.class }));
         command.execute(new Object[] { dto });
         assertNotNull(dto.getBbb());
         assertNotNull(dto.getCcc());
@@ -81,14 +82,15 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
 
     public void testAaa3Tx() throws Exception {
         Aaa3 dto = new Aaa3();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA3", dto
-                .getClass());
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA3", Dao.class
+                .getMethod("executeAaa3", new Class[] { Aaa3.class }));
         command.execute(new Object[] { dto });
         assertTrue(Procedures.isAaa3Invoked);
     }
 
     public void testAaa3_nullTx() throws Exception {
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA3", Aaa3.class);
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA3", Dao.class
+                .getMethod("executeAaa3", new Class[] { Aaa3.class }));
         try {
             command.execute(new Object[] { null });
             fail();
@@ -100,8 +102,8 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
 
     public void testBbb1Tx() throws Exception {
         Bbb1 dto = new Bbb1();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_BBB1", dto
-                .getClass());
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_BBB1", Dao.class
+                .getMethod("executeBbb1", new Class[] { Bbb1.class }));
         dto.setCcc("hoge");
 
         command.execute(new Object[] { dto });
@@ -110,8 +112,8 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
 
     public void testBbb2Tx() throws Exception {
         Bbb2 dto = new Bbb2();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_BBB2", dto
-                .getClass());
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_BBB2", Dao.class
+                .getMethod("executeBbb2", new Class[] { Bbb2.class }));
         dto.setCcc("hoge");
         dto.setDdd(new BigDecimal("10"));
         dto.setXxx(Timestamp.valueOf("2007-08-26 14:30:00"));
@@ -126,8 +128,8 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
 
     public void testCcc1Tx() throws Exception {
         Ccc1 dto = new Ccc1();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_CCC1", dto
-                .getClass());
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_CCC1", Dao.class
+                .getMethod("executeCcc1", new Class[] { Ccc1.class }));
         dto.setCcc("hoge");
         dto.setDdd(new BigDecimal("10"));
         command.execute(new Object[] { dto });
@@ -139,7 +141,8 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
     }
 
     public void testCcc1_nullTx() throws Exception {
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_CCC1", Ccc1.class);
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_CCC1", Dao.class
+                .getMethod("executeCcc1", new Class[] { Ccc1.class }));
         try {
             command.execute(new Object[] { null });
             fail();
@@ -151,8 +154,8 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
 
     public void testCcc2Tx() throws Exception {
         Ccc2 dto = new Ccc2();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_CCC2", dto
-                .getClass());
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_CCC2", Dao.class
+                .getMethod("executeCcc2", new Class[] { Ccc2.class }));
         dto.setDdd(new BigDecimal("10"));
         command.execute(new Object[] { dto });
 
@@ -164,22 +167,40 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
 
     public void testDdd1Tx() throws Exception {
         Ddd1 dto = new Ddd1();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_DDD1", dto
-                .getClass());
+        SqlCommand command = createSqlCommand("PROCEDURE_TEST_DDD1", Dao.class
+                .getMethod("executeDdd1", new Class[] { Ddd1.class }));
         dto.setCcc("ab");
         command.execute(new Object[] { dto });
 
         assertEquals("abcd", dto.getCcc());
     }
 
-    private SqlCommand createSqlCommand(String procedureName, Class dtoClass) {
+    private SqlCommand createSqlCommand(String procedureName, Method method) {
         ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
         FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
         ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
-                procedureName, dtoClass, valueTypeFactory, reader);
+                procedureName, valueTypeFactory, reader, method);
         ProcedureMetaData metaData = factory.createProcedureMetaData();
         return new ArgumentDtoProcedureCommand(dataSource, resultSetHandler,
                 statementFactory, resultSetFactory, metaData);
+    }
+
+    public static interface Dao {
+        void executeAaa1(Aaa1 aaa1);
+
+        void executeAaa2(Aaa2 aaa2);
+
+        void executeAaa3(Aaa3 aaa3);
+
+        void executeBbb1(Bbb1 bbb1);
+
+        void executeBbb2(Bbb2 bbb2);
+
+        void executeCcc1(Ccc1 ccc1);
+
+        void executeCcc2(Ccc2 ccc2);
+
+        void executeDdd1(Ddd1 ddd1);
     }
 
     public static class Aaa1 {

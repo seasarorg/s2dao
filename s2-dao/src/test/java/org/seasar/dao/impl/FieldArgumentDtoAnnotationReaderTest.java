@@ -32,10 +32,6 @@ public class FieldArgumentDtoAnnotationReaderTest extends TestCase {
 
     private BeanDesc beanDesc = BeanDescFactory.getBeanDesc(Hoge.class);
 
-    public void testIsProcedureParameters() throws Exception {
-        assertTrue(reader.isProcedureParameters(Hoge.class));
-    }
-
     public void testGetProcedureParameter() throws Exception {
         Field field = beanDesc.getField("aaa");
         String value = reader.getProcedureParameter(beanDesc, field);

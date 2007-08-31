@@ -16,10 +16,16 @@
 package org.seasar.dao.impl;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
 
 import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.dao.IllegalParameterTypeRuntimeException;
+import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.ProcedureMetaDataFactory;
 import org.seasar.dao.ProcedureParameterType;
@@ -46,46 +52,75 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
     /** プロシージャ名 */
     protected String procedureName;
 
-    /** DTOのクラス */
-    protected Class dtoClass;
-
-    /** DTOのクラス記述 */
-    protected BeanDesc dtoDesc;
-
     /** {@link ValueType}のファクトリ */
     protected ValueTypeFactory valueTypeFactory;
 
     /** 引数のDTOのアノテーションリーダ */
     protected ArgumentDtoAnnotationReader annotationReader;
 
+    /** DTOのクラス */
+    protected Class dtoClass;
+
+    /** DTOのクラス記述 */
+    protected BeanDesc dtoDesc;
+
     /**
      * インスタンスを構築します。
      * 
      * @param procedureName プロシージャ名
-     * @param dtoDesc DTOのクラス記述
      * @param valueTypeFactory {@link ValueType}のファクトリ
      * @param annotationReader DTOのアノテーションリーダ
+     * @param method メソッド
      */
     public ProcedureMetaDataFactoryImpl(final String procedureName,
-            final Class dtoClass, final ValueTypeFactory valueTypeFactory,
-            final ArgumentDtoAnnotationReader annotationReader) {
+            final ValueTypeFactory valueTypeFactory,
+            final ArgumentDtoAnnotationReader annotationReader,
+            final Method method) {
         this.procedureName = procedureName;
-        this.dtoClass = dtoClass;
-        this.dtoDesc = BeanDescFactory.getBeanDesc(dtoClass);
         this.valueTypeFactory = valueTypeFactory;
         this.annotationReader = annotationReader;
+        final Class parameterType = getParameterType(method);
+        if (parameterType != null) {
+            if (isDtoType(parameterType)) {
+                this.dtoClass = parameterType;
+                this.dtoDesc = BeanDescFactory.getBeanDesc(dtoClass);
+            } else {
+                throw new IllegalSignatureRuntimeException("EDAO0031", method
+                        .toString());
+            }
+        }
+    }
+
+    /**
+     * パラメータの型を返します。
+     * 
+     * @param method メソッド
+     * @return パラメータが1つのみ存在する場合はそのパラメータの型、存在しない場合は<code>null</code>
+     */
+    protected Class getParameterType(final Method method) {
+        final Class[] parameterTypes = method.getParameterTypes();
+        if (parameterTypes.length == 0) {
+            return null;
+        } else if (parameterTypes.length == 1) {
+            return parameterTypes[0];
+        }
+        throw new IllegalSignatureRuntimeException("EDAO0030", method
+                .toString());
     }
 
     public ProcedureMetaData createProcedureMetaData() {
         final ProcedureMetaDataImpl metaData = new ProcedureMetaDataImpl(
                 procedureName);
-        Field[] fields = dtoClass.getDeclaredFields();
+        if (dtoClass == null) {
+            return metaData;
+        }
+        final Field[] fields = dtoClass.getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             final Field field = fields[i];
             if (!isInstanceField(field)) {
                 continue;
             }
-            ProcedureParameterType ppt = getProcedureParameterType(field);
+            final ProcedureParameterType ppt = getProcedureParameterType(field);
             if (ppt == null) {
                 continue;
             }
@@ -107,7 +142,7 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
             return null;
         }
         field.setAccessible(true);
-        ProcedureParameterType ppt = new ProcedureParameterTypeImpl(field);
+        final ProcedureParameterType ppt = new ProcedureParameterTypeImpl(field);
         if (type.equalsIgnoreCase(procedureParameterInType)) {
             ppt.setInType(true);
         } else if (type.equalsIgnoreCase(procedureParameterOutType)) {
@@ -147,8 +182,51 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
      * @param field フィールド
      * @return <code>field</code>がインスタンスフィールドの場合<code>true</code>、そうでない場合<code>false</code>
      */
-    protected boolean isInstanceField(Field field) {
-        int mod = field.getModifiers();
+    protected boolean isInstanceField(final Field field) {
+        final int mod = field.getModifiers();
         return !Modifier.isStatic(mod) && !Modifier.isFinal(mod);
     }
+
+    /**
+     * DTOとみなすことができる型の場合<code>true</code>を返します。
+     * 
+     * @param clazz クラス
+     * @return DTOとみなすことができる型の場合<code>true</code>、そうでない場合<code>false</code>
+     */
+    protected boolean isDtoType(final Class clazz) {
+        return !isSimpleType(clazz) && !isContainerType(clazz);
+    }
+
+    /**
+     * 単純なクラスの場合に<code>true</code>を返します。
+     * 
+     * @param clazz クラス
+     * @return 単純なクラスの場合<code>true</code>、そうでない場合<code>false</code>
+     */
+    protected boolean isSimpleType(final Class clazz) {
+        if (clazz == null) {
+            throw new NullPointerException("clazz");
+        }
+        return clazz == String.class || clazz.isPrimitive()
+                || clazz == Boolean.class || clazz == Character.class
+                || Number.class.isAssignableFrom(clazz)
+                || Date.class.isAssignableFrom(clazz)
+                || Calendar.class.isAssignableFrom(clazz)
+                || clazz == byte[].class;
+    }
+
+    /**
+     * コンテナを表すクラスの場合に<code>true</code>を返します。
+     * 
+     * @param clazz クラス
+     * @return コンテナを表すクラスの場合<code>true</code>、そうでない場合<code>false</code>
+     */
+    protected boolean isContainerType(final Class clazz) {
+        if (clazz == null) {
+            throw new NullPointerException("clazz");
+        }
+        return Collection.class.isAssignableFrom(clazz)
+                || Map.class.isAssignableFrom(clazz) || clazz.isArray();
+    }
+
 }

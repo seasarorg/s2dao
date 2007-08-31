@@ -15,6 +15,7 @@
  */
 package org.seasar.dao.impl;
 
+import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.ProcedureMetaDataFactory;
 import org.seasar.dao.ProcedureParameterType;
@@ -33,13 +34,13 @@ public class ProcedureMetaDataFactoryImplTest extends S2TestCase {
         include("j2ee-derby.dicon");
     }
 
-    public void testCreateProcedureMetaData() {
+    public void testCreateProcedureMetaData() throws Exception {
         String name = "PROCEDURE_TEST_CCC2";
-        Class dtoClass = Hoge.class;
         ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
         FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
         ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
-                name, dtoClass, valueTypeFactory, reader);
+                name, valueTypeFactory, reader, Dao.class.getMethod("execute",
+                        new Class[] { Hoge.class }));
         ProcedureMetaData metaData = factory.createProcedureMetaData();
 
         assertNotNull(metaData);
@@ -56,6 +57,56 @@ public class ProcedureMetaDataFactoryImplTest extends S2TestCase {
         ppt = metaData.getParameterType("eee");
         assertTrue(ppt.isOutType());
         assertEquals(ValueTypes.STRING, ppt.getValueType());
+    }
+
+    public void testCreateProcedureMetaData_noParameter() throws Exception {
+        String name = "PROCEDURE_TEST_CCC2";
+        ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
+        FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
+        ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
+                name, valueTypeFactory, reader, Dao.class.getMethod(
+                        "executeWithNoParameter", null));
+        ProcedureMetaData metaData = factory.createProcedureMetaData();
+        assertNotNull(metaData);
+        assertEquals(0, metaData.getParameterTypeSize());
+    }
+
+    public void testCreateProcedureMetaData_simpleParameter() throws Exception {
+        String name = "PROCEDURE_TEST_CCC2";
+        ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
+        FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
+        try {
+            new ProcedureMetaDataFactoryImpl(name, valueTypeFactory, reader,
+                    Dao.class.getMethod("executeWithSimpleParameter",
+                            new Class[] { int.class }));
+            fail();
+        } catch (IllegalSignatureRuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void testCreateProcedureMetaData_multiParameters() throws Exception {
+        String name = "PROCEDURE_TEST_CCC2";
+        ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
+        FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
+        try {
+            new ProcedureMetaDataFactoryImpl(name, valueTypeFactory, reader,
+                    Dao.class.getMethod("executeWithMultiParameters",
+                            new Class[] { Hoge.class, int.class }));
+            fail();
+        } catch (IllegalSignatureRuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public interface Dao {
+        void execute(Hoge hoge);
+
+        void executeWithNoParameter();
+
+        void executeWithSimpleParameter(int aaa);
+
+        void executeWithMultiParameters(Hoge hoge, int aaa);
     }
 
     public static class Hoge {
