@@ -43,6 +43,7 @@ public class InsertBatchAutoDynamicCommand extends InsertAutoDynamicCommand {
 
         AbstractAutoHandler handler = new InsertBatchAutoHandler(
                 getDataSource(), getStatementFactory(), bmd, propertyTypes);
+        injectDaoClass(handler);
         handler.setSql(sql);
         int rows = handler.execute(args);
         return new Integer(rows);

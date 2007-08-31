@@ -20,10 +20,10 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
+import org.seasar.dao.InjectDaoClassSupport;
 import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.handler.ArgumentDtoProcedureHandler;
-import org.seasar.dao.handler.ProcedureHandler;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
@@ -33,10 +33,20 @@ import org.seasar.extension.jdbc.StatementFactory;
  * 
  * @author taedium
  */
-public class ArgumentDtoProcedureCommand implements SqlCommand {
+public class ArgumentDtoProcedureCommand implements SqlCommand,
+        InjectDaoClassSupport {
 
-    /** プロシージャのハンドラ */
-    protected ProcedureHandler handler;
+    protected DataSource dataSource;
+
+    protected ResultSetHandler resultSetHandler;
+
+    protected StatementFactory statementFactory;
+
+    protected ResultSetFactory resultSetFactory;
+
+    protected ProcedureMetaData procedureMetaData;
+
+    protected Class daoClass;
 
     /**
      * インスタンスを構築します。
@@ -53,15 +63,26 @@ public class ArgumentDtoProcedureCommand implements SqlCommand {
             final ResultSetFactory resultSetFactory,
             final ProcedureMetaData procedureMetaData) {
 
-        final ArgumentDtoProcedureHandler handler = new ArgumentDtoProcedureHandler(
-                dataSource, createSql(procedureMetaData), resultSetHandler,
-                statementFactory, resultSetFactory, procedureMetaData);
-        handler.setFetchSize(-1);
-        this.handler = handler;
+        this.dataSource = dataSource;
+        this.resultSetHandler = resultSetHandler;
+        this.statementFactory = statementFactory;
+        this.resultSetFactory = resultSetFactory;
+        this.procedureMetaData = procedureMetaData;
     }
 
     public Object execute(final Object[] args) {
+        final ArgumentDtoProcedureHandler handler = new ArgumentDtoProcedureHandler(
+                dataSource, createSql(procedureMetaData), resultSetHandler,
+                statementFactory, resultSetFactory, procedureMetaData);
+        if (daoClass != null) {
+            handler.setLoggerClass(daoClass);
+        }
+        handler.setFetchSize(-1);
         return handler.execute(args);
+    }
+
+    public void setDaoClass(Class clazz) {
+        daoClass = clazz;
     }
 
     /**

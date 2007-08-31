@@ -245,7 +245,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         handler.setStatementFactory(statementFactory);
         handler.initialize();
         final SqlCommand command = new StaticStoredProcedureCommand(handler);
-        sqlCommands.put(method.getName(), command);
+        putSqlCommand(method.getName(), command);
     }
 
     protected void setupProcedureCallMethod(final Method method,
@@ -259,7 +259,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         final SqlCommand command = new ArgumentDtoProcedureCommand(dataSource,
                 resultSetHandler, statementFactory, resultSetFactory, metaData);
 
-        sqlCommands.put(method.getName(), command);
+        putSqlCommand(method.getName(), command);
     }
 
     protected String readText(final String path) {
@@ -323,7 +323,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
     }
 
     protected boolean completedSetupMethod(final Method method) {
-        return sqlCommands.get(method.getName()) != null;
+        return hasSqlCommand(method.getName());
     }
 
     private Method getSameSignatureMethod(final Class clazz, final Method method) {
@@ -362,7 +362,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         cmd.setSql(sql);
         cmd.setArgNames(daoAnnotationReader.getArgNames(method));
         cmd.setArgTypes(method.getParameterTypes());
-        sqlCommands.put(method.getName(), cmd);
+        putSqlCommand(method.getName(), cmd);
     }
 
     protected SelectDynamicCommand createSelectDynamicCommand(
@@ -478,7 +478,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         cmd.setArgTypes(method.getParameterTypes());
         cmd
                 .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
-        sqlCommands.put(method.getName(), cmd);
+        putSqlCommand(method.getName(), cmd);
     }
 
     protected boolean isUpdateSignatureForBean(final Method method) {
@@ -518,7 +518,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
                     propertyNames);
             command = cmd;
         }
-        sqlCommands.put(method.getName(), command);
+        putSqlCommand(method.getName(), command);
     }
 
     // update
@@ -539,7 +539,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
             cmd = new UpdateBatchAutoStaticCommand(dataSource,
                     statementFactory, beanMetaData, propertyNames);
         }
-        sqlCommands.put(method.getName(), cmd);
+        putSqlCommand(method.getName(), cmd);
     }
 
     /**
@@ -582,7 +582,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
             cmd = new DeleteBatchAutoStaticCommand(dataSource,
                     statementFactory, beanMetaData, propertyNames);
         }
-        sqlCommands.put(method.getName(), cmd);
+        putSqlCommand(method.getName(), cmd);
     }
 
     protected String[] getPersistentPropertyNames(final Method method) {
@@ -646,7 +646,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
             cmd = setupNonQuerySelectMethodByAuto(method, handler, argNames,
                     query);
         }
-        sqlCommands.put(method.getName(), cmd);
+        putSqlCommand(method.getName(), cmd);
     }
 
     protected boolean isQuerySelectMethodByAuto(final Method method,
@@ -885,6 +885,15 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return false;
     }
 
+    protected void putSqlCommand(String methodName, SqlCommand cmd) {
+        if (useDaoClassForLog) {
+            if (cmd instanceof InjectDaoClassSupport) {
+                ((InjectDaoClassSupport) cmd).setDaoClass(daoClass);
+            }
+        }
+        sqlCommands.put(methodName, cmd);
+    }
+
     /**
      * @see org.seasar.dao.DaoMetaData#getBeanClass()
      */
@@ -912,11 +921,6 @@ public class DaoMetaDataImpl implements DaoMetaData {
         final SqlCommand cmd = (SqlCommand) sqlCommands.get(methodName);
         if (cmd == null) {
             throw new MethodNotFoundRuntimeException(daoClass, methodName, null);
-        }
-        if (useDaoClassForLog) {
-            if (cmd instanceof InjectDaoClassSupport) {
-                ((InjectDaoClassSupport) cmd).setDaoClass(daoClass);
-            }
         }
         return cmd;
     }

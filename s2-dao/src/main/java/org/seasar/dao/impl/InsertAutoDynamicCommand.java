@@ -22,16 +22,19 @@ import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.IdentifierGenerator;
+import org.seasar.dao.InjectDaoClassSupport;
 import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
+import org.seasar.extension.jdbc.impl.BasicHandler;
 import org.seasar.framework.exception.SRuntimeException;
 
 /**
  * @author manhole
  */
-public class InsertAutoDynamicCommand implements SqlCommand {
+public class InsertAutoDynamicCommand implements SqlCommand,
+        InjectDaoClassSupport {
 
     private DataSource dataSource;
 
@@ -42,6 +45,8 @@ public class InsertAutoDynamicCommand implements SqlCommand {
     private String[] propertyNames;
 
     private Class notSingleRowUpdatedExceptionClass;
+
+    private Class daoClass;
 
     public InsertAutoDynamicCommand() {
     }
@@ -55,12 +60,23 @@ public class InsertAutoDynamicCommand implements SqlCommand {
 
         InsertAutoHandler handler = new InsertAutoHandler(getDataSource(),
                 getStatementFactory(), bmd, propertyTypes);
+        injectDaoClass(handler);
         handler.setSql(sql);
         int rows = handler.execute(args);
         if (rows != 1) {
             throw new NotSingleRowUpdatedRuntimeException(args[0], rows);
         }
         return new Integer(rows);
+    }
+
+    public void setDaoClass(Class clazz) {
+        daoClass = clazz;
+    }
+
+    protected void injectDaoClass(BasicHandler handler) {
+        if (daoClass != null) {
+            handler.setLoggerClass(daoClass);
+        }
     }
 
     protected String createInsertSql(BeanMetaData bmd,
