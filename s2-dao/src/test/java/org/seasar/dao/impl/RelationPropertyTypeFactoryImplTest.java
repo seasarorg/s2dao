@@ -50,6 +50,6 @@ public class RelationPropertyTypeFactoryImplTest extends S2DaoTestCase {
         boolean isStopRelationCreation = false;
         return new RelationPropertyTypeFactoryImpl(beanClass,
                 beanAnnotationReader, beanMetaDataFactory, databaseMetaData,
-                relationNestLevel, isStopRelationCreation);
+                relationNestLevel, isStopRelationCreation, getBeanEnhancer());
     }
 }

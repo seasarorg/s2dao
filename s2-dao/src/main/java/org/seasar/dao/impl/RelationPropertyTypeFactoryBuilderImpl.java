@@ -18,6 +18,7 @@ package org.seasar.dao.impl;
 import java.sql.DatabaseMetaData;
 
 import org.seasar.dao.BeanAnnotationReader;
+import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.RelationPropertyTypeFactory;
 import org.seasar.dao.RelationPropertyTypeFactoryBuilder;
@@ -34,11 +35,11 @@ public class RelationPropertyTypeFactoryBuilderImpl implements
             BeanAnnotationReader beanAnnotationReader,
             BeanMetaDataFactory beanMetaDataFactory,
             DatabaseMetaData databaseMetaData, int relationNestLevel,
-            boolean isStopRelationCreation) {
+            boolean isStopRelationCreation, BeanEnhancer beanEnhancer) {
 
         return new RelationPropertyTypeFactoryImpl(beanClass,
                 beanAnnotationReader, beanMetaDataFactory, databaseMetaData,
-                relationNestLevel, isStopRelationCreation);
+                relationNestLevel, isStopRelationCreation, beanEnhancer);
     }
 
 }

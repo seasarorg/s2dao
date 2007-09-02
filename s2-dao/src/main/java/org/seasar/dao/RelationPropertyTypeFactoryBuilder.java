@@ -33,11 +33,12 @@ public interface RelationPropertyTypeFactoryBuilder {
      * @param databaseMetaData 
      * @param relationNestLevel リレーションのネストレベル
      * @param isStopRelationCreation リレーションを作成しないならば<code>true</code>
+     * @param beanEnhancer Beanのエンハンサ
      * @return {@link RelationPropertyTypeFactory}
      */
     RelationPropertyTypeFactory build(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
             BeanMetaDataFactory beanMetaDataFactory,
             DatabaseMetaData databaseMetaData, int relationNestLevel,
-            boolean isStopRelationCreation);
+            boolean isStopRelationCreation, BeanEnhancer beanEnhancer);
 }

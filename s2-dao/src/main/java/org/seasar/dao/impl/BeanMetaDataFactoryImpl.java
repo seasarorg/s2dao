@@ -176,7 +176,7 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
             boolean isStopRelationCreation) {
         return relationPropertyTypeFactoryBuilder.build(originalBeanClass,
                 beanAnnotationReader, beanMetaDataFactory, databaseMetaData,
-                relationNestLevel, isStopRelationCreation);
+                relationNestLevel, isStopRelationCreation, getBeanEnhancer());
     }
 
     protected Dbms getDbms() {
