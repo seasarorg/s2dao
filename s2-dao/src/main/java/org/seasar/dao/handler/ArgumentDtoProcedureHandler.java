@@ -174,6 +174,9 @@ public class ArgumentDtoProcedureHandler extends BasicSelectHandler implements
      */
     protected void bindArgs(final CallableStatement cs, final Object dto)
             throws SQLException {
+        if (dto == null) {
+            return;
+        }
         final int size = procedureMetaData.getParameterTypeSize();
         for (int i = 0; i < size; i++) {
             final ProcedureParameterType ppt = procedureMetaData
@@ -217,6 +220,9 @@ public class ArgumentDtoProcedureHandler extends BasicSelectHandler implements
      */
     protected Object handleOutParameters(final CallableStatement cs,
             final Object dto) throws SQLException {
+        if (dto == null) {
+            return null;
+        }
         final int size = procedureMetaData.getParameterTypeSize();
         for (int i = 0; i < size; i++) {
             final ProcedureParameterType ppt = procedureMetaData
@@ -237,13 +243,16 @@ public class ArgumentDtoProcedureHandler extends BasicSelectHandler implements
      * @return 引数のDTO
      */
     protected Object getArgumentDto(Object[] args) {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("args");
+        if (args.length == 0) {
+            return null;
         }
-        if (args[0] == null) {
-            throw new SIllegalArgumentException("EDAO0029", new Object[] {});
+        if (args.length == 1) {
+            if (args[0] == null) {
+                throw new SIllegalArgumentException("EDAO0029", new Object[] {});
+            }
+            return args[0];
         }
-        return args[0];
+        throw new IllegalArgumentException("args");
     }
 
 }

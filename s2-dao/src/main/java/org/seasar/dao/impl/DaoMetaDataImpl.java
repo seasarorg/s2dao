@@ -210,16 +210,19 @@ public class DaoMetaDataImpl implements DaoMetaData {
         final String sql = daoAnnotationReader.getSQL(method, dbms.getSuffix());
         if (sql != null) {
             setupMethodByManual(method, sql);
+            return;
         }
         final String procedureCallName = daoAnnotationReader
                 .getProcedureCallName(method);
         if (procedureCallName != null) {
             setupProcedureCallMethod(method, procedureCallName);
+            return;
         }
         final String procedureName = daoAnnotationReader
                 .getStoredProcedureName(method);
         if (procedureName != null) {
             setupProcedureMethod(method, procedureName);
+            return;
         }
     }
 

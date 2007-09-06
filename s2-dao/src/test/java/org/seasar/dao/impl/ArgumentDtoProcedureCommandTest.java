@@ -13,44 +13,22 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.dao.handler;
+package org.seasar.dao.impl;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
-import javax.sql.DataSource;
-
-import org.seasar.dao.ProcedureMetaData;
-import org.seasar.dao.ProcedureMetaDataFactory;
+import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.SqlCommand;
-import org.seasar.dao.ValueTypeFactory;
-import org.seasar.dao.impl.ArgumentDtoProcedureCommand;
-import org.seasar.dao.impl.FieldArgumentDtoAnnotationReader;
-import org.seasar.dao.impl.ProcedureMetaDataFactoryImpl;
-import org.seasar.dao.impl.Procedures;
-import org.seasar.dao.impl.ValueTypeFactoryImpl;
-import org.seasar.extension.jdbc.ResultSetFactory;
-import org.seasar.extension.jdbc.ResultSetHandler;
-import org.seasar.extension.jdbc.StatementFactory;
-import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
-import org.seasar.extension.unit.S2TestCase;
+import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.framework.exception.SIllegalArgumentException;
 
 /**
  * @author taedium
  *
  */
-public class ArgumentDtoProcedureCommandTest extends S2TestCase {
-
-    private DataSource dataSource;
-
-    private ResultSetHandler resultSetHandler = new ObjectResultSetHandler();
-
-    private ResultSetFactory resultSetFactory;
-
-    private StatementFactory statementFactory;
+public class ArgumentDtoProcedureCommandTest extends S2DaoTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -63,61 +41,46 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
         super.tearDown();
     }
 
-    public void testAaa1Tx() throws Exception {
+    public void testOutParameterTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Dao.class);
+        SqlCommand command = dmd.getSqlCommand("executeAaa1");
         Aaa1 dto = new Aaa1();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA1", Dao.class
-                .getMethod("executeAaa1", new Class[] { Aaa1.class }));
         command.execute(new Object[] { dto });
         assertNotNull(dto.getFoo());
     }
 
-    public void testAaa2Tx() throws Exception {
+    public void testMultiOutParametersTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Dao.class);
+        SqlCommand command = dmd.getSqlCommand("executeAaa2");
         Aaa2 dto = new Aaa2();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA2", Dao.class
-                .getMethod("executeAaa2", new Class[] { Aaa2.class }));
         command.execute(new Object[] { dto });
         assertNotNull(dto.getBbb());
         assertNotNull(dto.getCcc());
     }
 
-    public void testAaa3Tx() throws Exception {
-        Aaa3 dto = new Aaa3();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA3", Dao.class
-                .getMethod("executeAaa3", new Class[] { Aaa3.class }));
-        command.execute(new Object[] { dto });
+    public void testEmptyArgumentTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Dao.class);
+        SqlCommand command = dmd.getSqlCommand("executeAaa3");
+        command.execute(new Object[] {});
         assertTrue(Procedures.isAaa3Invoked);
     }
 
-    public void testAaa3_nullTx() throws Exception {
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_AAA3", Dao.class
-                .getMethod("executeAaa3", new Class[] { Aaa3.class }));
-        try {
-            command.execute(new Object[] { null });
-            fail();
-        } catch (SIllegalArgumentException e) {
-            assertEquals("EDAO0029", e.getMessageCode());
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void testBbb1Tx() throws Exception {
+    public void testInParameterTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Dao.class);
+        SqlCommand command = dmd.getSqlCommand("executeBbb1");
         Bbb1 dto = new Bbb1();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_BBB1", Dao.class
-                .getMethod("executeBbb1", new Class[] { Bbb1.class }));
         dto.setCcc("hoge");
-
         command.execute(new Object[] { dto });
         assertEquals("hoge", Procedures.params.get("ccc"));
     }
 
-    public void testBbb2Tx() throws Exception {
+    public void testMultiInParametersTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Dao.class);
+        SqlCommand command = dmd.getSqlCommand("executeBbb2");
         Bbb2 dto = new Bbb2();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_BBB2", Dao.class
-                .getMethod("executeBbb2", new Class[] { Bbb2.class }));
         dto.setCcc("hoge");
         dto.setDdd(new BigDecimal("10"));
         dto.setXxx(Timestamp.valueOf("2007-08-26 14:30:00"));
-
         command.execute(new Object[] { dto });
         assertEquals("hoge", Procedures.params.get("ccc"));
         assertEquals(new BigDecimal("10"), (BigDecimal) Procedures.params
@@ -126,23 +89,22 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
                 (Timestamp) Procedures.params.get("eee"));
     }
 
-    public void testCcc1Tx() throws Exception {
+    public void testInOutMixedParametersTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Dao.class);
+        SqlCommand command = dmd.getSqlCommand("executeCcc1");
         Ccc1 dto = new Ccc1();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_CCC1", Dao.class
-                .getMethod("executeCcc1", new Class[] { Ccc1.class }));
         dto.setCcc("hoge");
         dto.setDdd(new BigDecimal("10"));
         command.execute(new Object[] { dto });
-
         assertEquals("hoge", Procedures.params.get("ccc"));
         assertEquals(new BigDecimal("10"), (BigDecimal) Procedures.params
                 .get("ddd"));
         assertNotNull(dto.getEee());
     }
 
-    public void testCcc1_nullTx() throws Exception {
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_CCC1", Dao.class
-                .getMethod("executeCcc1", new Class[] { Ccc1.class }));
+    public void testNullArgumentTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Dao.class);
+        SqlCommand command = dmd.getSqlCommand("executeCcc1");
         try {
             command.execute(new Object[] { null });
             fail();
@@ -152,45 +114,50 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
         }
     }
 
-    public void testCcc2Tx() throws Exception {
+    public void testInOutMixedParameters2Tx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Dao.class);
+        SqlCommand command = dmd.getSqlCommand("executeCcc2");
         Ccc2 dto = new Ccc2();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_CCC2", Dao.class
-                .getMethod("executeCcc2", new Class[] { Ccc2.class }));
         dto.setDdd(new BigDecimal("10"));
         command.execute(new Object[] { dto });
-
         assertNotNull(dto.getCcc());
         assertEquals(new BigDecimal("10"), (BigDecimal) Procedures.params
                 .get("ddd"));
         assertNotNull(dto.getEee());
     }
 
-    public void testDdd1Tx() throws Exception {
+    public void testInOutParameterTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Dao.class);
+        SqlCommand command = dmd.getSqlCommand("executeDdd1");
         Ddd1 dto = new Ddd1();
-        SqlCommand command = createSqlCommand("PROCEDURE_TEST_DDD1", Dao.class
-                .getMethod("executeDdd1", new Class[] { Ddd1.class }));
         dto.setCcc("ab");
         command.execute(new Object[] { dto });
-
         assertEquals("abcd", dto.getCcc());
     }
 
-    private SqlCommand createSqlCommand(String procedureName, Method method) {
-        ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
-        FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
-        ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
-                procedureName, valueTypeFactory, reader, method);
-        ProcedureMetaData metaData = factory.createProcedureMetaData();
-        return new ArgumentDtoProcedureCommand(dataSource, resultSetHandler,
-                statementFactory, resultSetFactory, metaData);
-    }
-
     public static interface Dao {
+
+        public static String executeAaa1_PROCEDURE_CALL = "PROCEDURE_TEST_AAA1";
+
+        public static String executeAaa2_PROCEDURE_CALL = "PROCEDURE_TEST_AAA2";
+
+        public static String executeAaa3_PROCEDURE_CALL = "PROCEDURE_TEST_AAA3";
+
+        public static String executeBbb1_PROCEDURE_CALL = "PROCEDURE_TEST_BBB1";
+
+        public static String executeBbb2_PROCEDURE_CALL = "PROCEDURE_TEST_BBB2";
+
+        public static String executeCcc1_PROCEDURE_CALL = "PROCEDURE_TEST_CCC1";
+
+        public static String executeCcc2_PROCEDURE_CALL = "PROCEDURE_TEST_CCC2";
+
+        public static String executeDdd1_PROCEDURE_CALL = "PROCEDURE_TEST_DDD1";
+
         void executeAaa1(Aaa1 aaa1);
 
         void executeAaa2(Aaa2 aaa2);
 
-        void executeAaa3(Aaa3 aaa3);
+        void executeAaa3();
 
         void executeBbb1(Bbb1 bbb1);
 
@@ -204,8 +171,6 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
     }
 
     public static class Aaa1 {
-
-        public static String PROCEDURE_PARAMETERS = null;
 
         public static String foo_PROCEDURE_PARAMETER = "out";
 
@@ -221,8 +186,6 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
     }
 
     public static class Aaa2 {
-
-        public static String PROCEDURE_PARAMETERS = null;
 
         public static String bbb_PROCEDURE_PARAMETER = "out";
 
@@ -249,13 +212,7 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
         }
     }
 
-    public static class Aaa3 {
-        public static String PROCEDURE_PARAMETERS = null;
-    }
-
     public static class Bbb1 {
-
-        public static String PROCEDURE_PARAMETERS = null;
 
         public static String ccc_PROCEDURE_PARAMETER = "in";
 
@@ -271,8 +228,6 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
     }
 
     public static class Bbb2 {
-
-        public static String PROCEDURE_PARAMETERS = null;
 
         public static String ccc_PROCEDURE_PARAMETER = "in";
 
@@ -313,8 +268,6 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
 
     public static class Ccc1 {
 
-        public static String PROCEDURE_PARAMETERS = null;
-
         public static String ccc_PROCEDURE_PARAMETER = "in";
 
         public static String ddd_PROCEDURE_PARAMETER = "in";
@@ -354,8 +307,6 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
 
     public static class Ccc2 {
 
-        public static String PROCEDURE_PARAMETERS = null;
-
         public static String ccc_PROCEDURE_PARAMETER = "out";
 
         public static String ddd_PROCEDURE_PARAMETER = "in";
@@ -394,8 +345,6 @@ public class ArgumentDtoProcedureCommandTest extends S2TestCase {
     }
 
     public static class Ddd1 {
-
-        public static String PROCEDURE_PARAMETERS = null;
 
         public static String ccc_PROCEDURE_PARAMETER = "inout";
 
