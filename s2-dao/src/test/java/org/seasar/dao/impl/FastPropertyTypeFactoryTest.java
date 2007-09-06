@@ -18,8 +18,6 @@ package org.seasar.dao.impl;
 import java.sql.DatabaseMetaData;
 
 import org.seasar.dao.BeanAnnotationReader;
-import org.seasar.dao.ColumnNaming;
-import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.PropertyTypeFactoryBuilder;
@@ -34,9 +32,9 @@ import org.seasar.extension.unit.S2TestCase;
  */
 public class FastPropertyTypeFactoryTest extends S2TestCase {
 
-    private Class beanClass = Employee21.class;
+    private PropertyTypeFactoryBuilder builder;
 
-    private PropertyTypeFactoryBuilder builder = new FastPropertyTypeFactoryBuilder();
+    private Class beanClass = Employee21.class;
 
     private boolean empnoInvoked;
 
@@ -50,7 +48,7 @@ public class FastPropertyTypeFactoryTest extends S2TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        include("j2ee.dicon");
+        include(getClass().getName().replace(".", "/") + ".dicon");
     }
 
     public void testDto() throws Exception {
@@ -131,23 +129,15 @@ public class FastPropertyTypeFactoryTest extends S2TestCase {
     private PropertyTypeFactory createDtoPropertyTypeFactory() {
         BeanAnnotationReader beanAnnotationReader = new FieldBeanAnnotationReader(
                 beanClass);
-        ValueTypeFactoryImpl valueTypeFactory = new ValueTypeFactoryImpl();
-        valueTypeFactory.setContainer(getContainer());
-        ColumnNaming columnNaming = new DefaultColumnNaming();
-        return builder.build(beanClass, beanAnnotationReader, valueTypeFactory,
-                columnNaming);
+        return builder.build(beanClass, beanAnnotationReader);
     }
 
     private PropertyTypeFactory createBeanPropertyTypeFactory() {
         BeanAnnotationReader beanAnnotationReader = new FieldBeanAnnotationReader(
                 beanClass);
-        ValueTypeFactoryImpl valueTypeFactory = new ValueTypeFactoryImpl();
-        valueTypeFactory.setContainer(getContainer());
-        ColumnNaming columnNaming = new DefaultColumnNaming();
-        DaoNamingConvention daoNamingConvention = new DaoNamingConventionImpl();
         DatabaseMetaData databaseMetaData = getDatabaseMetaData();
         Dbms dbms = DbmsManager.getDbms(getDatabaseMetaData());
-        return builder.build(beanClass, beanAnnotationReader, valueTypeFactory,
-                columnNaming, daoNamingConvention, dbms, databaseMetaData);
+        return builder.build(beanClass, beanAnnotationReader, dbms,
+                databaseMetaData);
     }
 }

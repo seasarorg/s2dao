@@ -138,7 +138,7 @@ public abstract class S2DaoTestCase extends S2TestCase {
                 .createBeanAnnotationReader(dtoClass);
         final PropertyTypeFactoryBuilder builder = getPropertyTypeFactoryBuilder();
         PropertyTypeFactory propertyTypeFactory = builder.build(dtoClass,
-                reader, getValueTypeFactory(), getColumnNaming());
+                reader);
         dmd.setBeanClass(dtoClass);
         dmd.setBeanAnnotationReader(getAnnotationReaderFactory()
                 .createBeanAnnotationReader(dtoClass));
@@ -180,15 +180,13 @@ public abstract class S2DaoTestCase extends S2TestCase {
                 }
             };
             impl.setAnnotationReaderFactory(getAnnotationReaderFactory());
-            impl.setValueTypeFactory(getValueTypeFactory());
             impl.setDataSource(getDataSource());
             impl.setDaoNamingConvention(getDaoNamingConvention());
             impl.setBeanEnhancer(getBeanEnhancer());
             impl.setPropertyTypeFactoryBuilder(getPropertyTypeFactoryBuilder());
             impl
-                    .setRelationPropertyTypeFactoryBuilder(getRelationPropertyTypeFactoryBuilder());
+                    .setRelationPropertyTypeFactoryBuilder(getRelationPropertyTypeFactoryBuilder(impl));
             impl.setTableNaming(getTableNaming());
-            impl.setColumnNaming(getColumnNaming());
             beanMetaDataFactory = impl;
         }
         return beanMetaDataFactory;
@@ -274,10 +272,8 @@ public abstract class S2DaoTestCase extends S2TestCase {
         if (dtoMetaDataFactory == null) {
             final DtoMetaDataFactoryImpl factory = new DtoMetaDataFactoryImpl();
             factory.setAnnotationReaderFactory(getAnnotationReaderFactory());
-            factory.setValueTypeFactory(getValueTypeFactory());
             factory
                     .setPropertyTypeFactoryBuilder(getPropertyTypeFactoryBuilder());
-            factory.setColumnNaming(getColumnNaming());
             dtoMetaDataFactory = factory;
         }
         return dtoMetaDataFactory;
@@ -300,7 +296,11 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     public PropertyTypeFactoryBuilder getPropertyTypeFactoryBuilder() {
         if (propertyTypeFactoryBuilder == null) {
-            propertyTypeFactoryBuilder = new PropertyTypeFactoryBuilderImpl();
+            PropertyTypeFactoryBuilderImpl builder = new PropertyTypeFactoryBuilderImpl();
+            builder.setColumnNaming(getColumnNaming());
+            builder.setDaoNamingConvention(getDaoNamingConvention());
+            builder.setValueTypeFactory(getValueTypeFactory());
+            propertyTypeFactoryBuilder = builder;
         }
         return propertyTypeFactoryBuilder;
     }
@@ -310,9 +310,13 @@ public abstract class S2DaoTestCase extends S2TestCase {
         this.propertyTypeFactoryBuilder = propertyTypeFactoryBuilder;
     }
 
-    public RelationPropertyTypeFactoryBuilder getRelationPropertyTypeFactoryBuilder() {
+    public RelationPropertyTypeFactoryBuilder getRelationPropertyTypeFactoryBuilder(
+            BeanMetaDataFactory beanMetaDataFactory) {
         if (relationPropertyTypeFactoryBuilder == null) {
-            relationPropertyTypeFactoryBuilder = new RelationPropertyTypeFactoryBuilderImpl();
+            RelationPropertyTypeFactoryBuilderImpl builder = new RelationPropertyTypeFactoryBuilderImpl();
+            builder.setBeanEnhancer(beanEnhancer);
+            builder.setBeanMetaDataFactory(beanMetaDataFactory);
+            relationPropertyTypeFactoryBuilder = builder;
         }
         return relationPropertyTypeFactoryBuilder;
     }

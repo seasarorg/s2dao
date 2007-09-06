@@ -33,18 +33,39 @@ import org.seasar.dao.ValueTypeFactory;
 public class FastPropertyTypeFactoryBuilder implements
         PropertyTypeFactoryBuilder {
 
+    public static final String valueTypeFactory_BINDING = "bindingType=must";
+
+    public static final String columnNaming_BINDING = "bindingType=must";
+
+    public static final String daoNamingConvention_BINDING = "bindingType=must";
+
+    protected ValueTypeFactory valueTypeFactory;
+
+    protected ColumnNaming columnNaming;
+
+    protected DaoNamingConvention daoNamingConvention;
+
+    public void setColumnNaming(ColumnNaming columnNaming) {
+        this.columnNaming = columnNaming;
+    }
+
+    public void setDaoNamingConvention(DaoNamingConvention daoNamingConvention) {
+        this.daoNamingConvention = daoNamingConvention;
+    }
+
+    public void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {
+        this.valueTypeFactory = valueTypeFactory;
+    }
+
     public PropertyTypeFactory build(Class beanClass,
-            BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming) {
+            BeanAnnotationReader beanAnnotationReader) {
 
         return new FastPropertyTypeFactory(beanClass, beanAnnotationReader,
                 valueTypeFactory, columnNaming);
     }
 
     public PropertyTypeFactory build(Class beanClass,
-            BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
-            DaoNamingConvention daoNamingConvention, Dbms dbms,
+            BeanAnnotationReader beanAnnotationReader, Dbms dbms,
             DatabaseMetaData databaseMetaData) {
 
         return new FastPropertyTypeFactory(beanClass, beanAnnotationReader,

@@ -31,11 +31,26 @@ import org.seasar.dao.RelationPropertyTypeFactoryBuilder;
 public class RelationPropertyTypeFactoryBuilderImpl implements
         RelationPropertyTypeFactoryBuilder {
 
+    public static final String beanMetaDataFactory_BINDING = "bindingType=must";
+
+    public static final String beanEnhancer_BINDING = "bindingType=must";
+
+    protected BeanMetaDataFactory beanMetaDataFactory;
+
+    protected BeanEnhancer beanEnhancer;
+
+    public void setBeanEnhancer(BeanEnhancer beanEnhancer) {
+        this.beanEnhancer = beanEnhancer;
+    }
+
+    public void setBeanMetaDataFactory(BeanMetaDataFactory beanMetaDataFactory) {
+        this.beanMetaDataFactory = beanMetaDataFactory;
+    }
+
     public RelationPropertyTypeFactory build(Class beanClass,
             BeanAnnotationReader beanAnnotationReader,
-            BeanMetaDataFactory beanMetaDataFactory,
             DatabaseMetaData databaseMetaData, int relationNestLevel,
-            boolean isStopRelationCreation, BeanEnhancer beanEnhancer) {
+            boolean isStopRelationCreation) {
 
         return new RelationPropertyTypeFactoryImpl(beanClass,
                 beanAnnotationReader, beanMetaDataFactory, databaseMetaData,

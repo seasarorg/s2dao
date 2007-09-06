@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE components PUBLIC "-//SEASAR2.1//DTD S2Container//EN"
+	"http://www.seasar.org/dtd/components21.dtd">
+<components namespace="dao">
+	<component class="org.seasar.dao.impl.DtoMetaDataFactoryImpl"/>
+	<component class="org.seasar.dao.impl.FieldAnnotationReaderFactory"/>
+	<component class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
+	<component class="org.seasar.dao.impl.PropertyTypeFactoryBuilderImpl"/>
+	<component class="org.seasar.dao.impl.DefaultColumnNaming"/>
+	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
+</components>

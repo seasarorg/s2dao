@@ -20,12 +20,10 @@ import java.util.Map;
 
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.BeanAnnotationReader;
-import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.DtoMetaData;
 import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.PropertyTypeFactoryBuilder;
-import org.seasar.dao.ValueTypeFactory;
 import org.seasar.framework.util.Disposable;
 import org.seasar.framework.util.DisposableUtil;
 
@@ -37,19 +35,11 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
 
     public static final String annotationReaderFactory_BINDING = "bindingType=must";
 
-    public static final String valueTypeFactory_BINDING = "bindingType=must";
-
     public static final String propertyTypeFactoryBuilder_BINDING = "bindingType=must";
-
-    public static final String columnNaming_BINDING = "bindingType=must";
 
     protected AnnotationReaderFactory annotationReaderFactory;
 
-    protected ValueTypeFactory valueTypeFactory;
-
     protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder;
-
-    protected ColumnNaming columnNaming;
 
     private Map cache = new HashMap(100);
 
@@ -64,27 +54,9 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
         this.annotationReaderFactory = annotationReaderFactory;
     }
 
-    /**
-     * @return Returns the valueTypeFactory.
-     */
-    public ValueTypeFactory getValueTypeFactory() {
-        return valueTypeFactory;
-    }
-
-    /**
-     * @param valueTypeFactory The valueTypeFactory to set.
-     */
-    public void setValueTypeFactory(ValueTypeFactory valueTypeFactory) {
-        this.valueTypeFactory = valueTypeFactory;
-    }
-
     public void setPropertyTypeFactoryBuilder(
             PropertyTypeFactoryBuilder propertyTypeFactoryBuilder) {
         this.propertyTypeFactoryBuilder = propertyTypeFactoryBuilder;
-    }
-
-    public void setColumnNaming(ColumnNaming columnNaming) {
-        this.columnNaming = columnNaming;
     }
 
     public synchronized DtoMetaData getDtoMetaData(Class dtoClass) {
@@ -117,7 +89,6 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
 
     protected PropertyTypeFactory createPropertyTypeFactory(Class dtoClass,
             BeanAnnotationReader beanAnnotationReader) {
-        return propertyTypeFactoryBuilder.build(dtoClass, beanAnnotationReader,
-                valueTypeFactory, columnNaming);
+        return propertyTypeFactoryBuilder.build(dtoClass, beanAnnotationReader);
     }
 }

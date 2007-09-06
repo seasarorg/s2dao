@@ -15,31 +15,21 @@
  */
 package org.seasar.dao.impl;
 
-import junit.framework.TestCase;
-
 import org.seasar.dao.DtoMetaData;
+import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.extension.jdbc.PropertyType;
-import org.seasar.framework.util.DisposableUtil;
+import org.seasar.extension.unit.S2TestCase;
 
 /**
  * @author higa
  *
  */
-public class DtoMetaDataFactoryImplTest extends TestCase {
+public class DtoMetaDataFactoryImplTest extends S2TestCase {
 
-    private DtoMetaDataFactoryImpl factory;
+    private DtoMetaDataFactory factory;
 
     protected void setUp() throws Exception {
-        factory = new DtoMetaDataFactoryImpl();
-        factory.setAnnotationReaderFactory(new FieldAnnotationReaderFactory());
-        factory.setValueTypeFactory(new ValueTypeFactoryImpl());
-        factory
-                .setPropertyTypeFactoryBuilder(new PropertyTypeFactoryBuilderImpl());
-        factory.setColumnNaming(new DefaultColumnNaming());
-    }
-
-    protected void tearDown() throws Exception {
-        DisposableUtil.dispose();
+        include(getClass().getName().replace(".", "/") + ".dicon");
     }
 
     /**
@@ -51,7 +41,7 @@ public class DtoMetaDataFactoryImplTest extends TestCase {
         assertSame(dmd, factory.getDtoMetaData(EmployeeDto.class));
     }
 
-    public void testColumnAnnotationToDto() {
+    public void testColumnAnnotationForDto() {
         DtoMetaData dmd = factory.getDtoMetaData(EmployeeDto2.class);
         PropertyType pt = dmd.getPropertyType("departmentName");
         assertEquals("dname", pt.getColumnName());

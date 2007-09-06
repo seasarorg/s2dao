@@ -37,7 +37,6 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
         final BeanMetaDataFactoryImpl beanMetaDataFactoryImpl = new BeanMetaDataFactoryImpl() {
             public String toString() {
                 assertNotNull(this.annotationReaderFactory);
-                assertNotNull(this.valueTypeFactory);
                 return invokeMark;
             }
         };
@@ -45,7 +44,6 @@ public class BeanMetaDataFactoryImplTest extends S2DaoTestCase {
         // ## Act ##
         beanMetaDataFactoryImpl
                 .setAnnotationReaderFactory(getAnnotationReaderFactory());
-        beanMetaDataFactoryImpl.setValueTypeFactory(getValueTypeFactory());
 
         // ## Assert ##
         assertEquals(invokeMark, beanMetaDataFactoryImpl.toString());

@@ -17,8 +17,6 @@ package org.seasar.dao;
 
 import java.sql.DatabaseMetaData;
 
-import org.seasar.extension.jdbc.ValueType;
-
 /**
  * {@link PropertyTypeFactory}のビルダのインタフェースです。
  * 
@@ -31,29 +29,21 @@ public interface PropertyTypeFactoryBuilder {
      * 
      * @param beanClass Beanのクラス
      * @param beanAnnotationReader Beanのアノテーションリーダ
-     * @param valueTypeFactory {@link ValueType}のファクトリ
-     * @param columnNaming カラムのネーミング
      * @return {@link PropertyTypeFactory}
      */
     PropertyTypeFactory build(Class beanClass,
-            BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming);
+            BeanAnnotationReader beanAnnotationReader);
 
     /**
      * {@link PropertyTypeFactory}を組み立てます。
      * 
      * @param beanClass Beanのクラス
      * @param beanAnnotationReader Beanのアノテーションリーダ
-     * @param valueTypeFactory {@link ValueType}のファクトリ
-     * @param columnNaming カラムのネーミング 
-     * @param daoNamingConvention Daoのネーミング規約
      * @param dbms DBMS
      * @param databaseMetaData データベースのメタデータ
      * @return {@link PropertyTypeFactory}
      */
     PropertyTypeFactory build(Class beanClass,
-            BeanAnnotationReader beanAnnotationReader,
-            ValueTypeFactory valueTypeFactory, ColumnNaming columnNaming,
-            DaoNamingConvention daoNamingConvention, Dbms dbms,
+            BeanAnnotationReader beanAnnotationReader, Dbms dbms,
             DatabaseMetaData databaseMetaData);
 }

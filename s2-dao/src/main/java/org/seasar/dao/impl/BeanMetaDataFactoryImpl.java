@@ -25,7 +25,6 @@ import org.seasar.dao.BeanAnnotationReader;
 import org.seasar.dao.BeanEnhancer;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
-import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.NullBean;
@@ -34,7 +33,6 @@ import org.seasar.dao.PropertyTypeFactoryBuilder;
 import org.seasar.dao.RelationPropertyTypeFactory;
 import org.seasar.dao.RelationPropertyTypeFactoryBuilder;
 import org.seasar.dao.TableNaming;
-import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.extension.jdbc.util.DataSourceUtil;
@@ -46,8 +44,6 @@ import org.seasar.extension.jdbc.util.DataSourceUtil;
 public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     public static final String annotationReaderFactory_BINDING = "bindingType=must";
-
-    public static final String valueTypeFactory_BINDING = "bindingType=must";
 
     public static final String dataSource_BINDING = "bindingType=must";
 
@@ -61,11 +57,7 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     public static final String relationPropertyTypeFactoryBuilder_BINDING = "bindingType=must";
 
-    public static final String columnNaming_BINDING = "bindingType=must";
-
     protected AnnotationReaderFactory annotationReaderFactory;
-
-    protected ValueTypeFactory valueTypeFactory;
 
     protected DataSource dataSource;
 
@@ -78,8 +70,6 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
     protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder;
 
     protected RelationPropertyTypeFactoryBuilder relationPropertyTypeFactoryBuilder;
-
-    protected ColumnNaming columnNaming;
 
     public BeanMetaData createBeanMetaData(final Class daoInterface,
             final Class beanClass) {
@@ -123,7 +113,7 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
         final PropertyTypeFactory ptf = createPropertyTypeFactory(
                 originalBeanClass, bar, dbMetaData, dbms);
         final RelationPropertyTypeFactory rptf = createRelationPropertyTypeFactory(
-                originalBeanClass, bar, this, dbMetaData, relationNestLevel,
+                originalBeanClass, bar, dbMetaData, relationNestLevel,
                 stopRelationCreation);
         final BeanMetaDataImpl bmd = createBeanMetaDataImpl();
 
@@ -165,18 +155,16 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
             Class originalBeanClass, BeanAnnotationReader beanAnnotationReader,
             DatabaseMetaData databaseMetaData, Dbms dbms) {
         return propertyTypeFactoryBuilder.build(originalBeanClass,
-                beanAnnotationReader, valueTypeFactory, columnNaming,
-                daoNamingConvention, dbms, databaseMetaData);
+                beanAnnotationReader, dbms, databaseMetaData);
     }
 
     protected RelationPropertyTypeFactory createRelationPropertyTypeFactory(
             Class originalBeanClass, BeanAnnotationReader beanAnnotationReader,
-            BeanMetaDataFactory beanMetaDataFactory,
             DatabaseMetaData databaseMetaData, int relationNestLevel,
             boolean isStopRelationCreation) {
         return relationPropertyTypeFactoryBuilder.build(originalBeanClass,
-                beanAnnotationReader, beanMetaDataFactory, databaseMetaData,
-                relationNestLevel, isStopRelationCreation, getBeanEnhancer());
+                beanAnnotationReader, databaseMetaData, relationNestLevel,
+                isStopRelationCreation);
     }
 
     protected Dbms getDbms() {
@@ -207,10 +195,6 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
     public void setAnnotationReaderFactory(
             final AnnotationReaderFactory annotationReaderFactory) {
         this.annotationReaderFactory = annotationReaderFactory;
-    }
-
-    public void setValueTypeFactory(final ValueTypeFactory valueTypeFactory) {
-        this.valueTypeFactory = valueTypeFactory;
     }
 
     public DaoNamingConvention getDaoNamingConvention() {
@@ -246,10 +230,6 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
     public void setRelationPropertyTypeFactoryBuilder(
             RelationPropertyTypeFactoryBuilder relationPropertyTypeFactoryBuilder) {
         this.relationPropertyTypeFactoryBuilder = relationPropertyTypeFactoryBuilder;
-    }
-
-    public void setColumnNaming(ColumnNaming columnNaming) {
-        this.columnNaming = columnNaming;
     }
 
 }
