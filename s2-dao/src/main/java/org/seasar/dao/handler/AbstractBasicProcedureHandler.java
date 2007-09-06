@@ -64,6 +64,8 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
 
     protected Dbms dbms;
 
+    protected int inParameterSize;
+
     public DataSource getDataSource() {
         return dataSource;
     }
@@ -135,6 +137,9 @@ public abstract class AbstractBasicProcedureHandler implements ProcedureHandler 
             while (rs.next()) {
                 columnNames.add(rs.getObject(4));
                 int columnType = rs.getInt(5);
+                if (isInputColum(columnType)) {
+                    inParameterSize++;
+                }
                 inOutTypes.add(new Integer(columnType));
                 dataType.add(new Integer(rs.getInt(6)));
                 if (columnType == DatabaseMetaData.procedureColumnIn) {
