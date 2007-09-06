@@ -31,7 +31,9 @@ import org.seasar.dao.Dbms;
 import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.PropertyTypeFactory;
 import org.seasar.dao.PropertyTypeFactoryBuilder;
+import org.seasar.dao.RelationPropertyTypeFactoryBuilder;
 import org.seasar.dao.ResultSetHandlerFactory;
+import org.seasar.dao.TableNaming;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.dao.impl.BeanEnhancerImpl;
@@ -39,10 +41,12 @@ import org.seasar.dao.impl.BeanMetaDataFactoryImpl;
 import org.seasar.dao.impl.DaoMetaDataImpl;
 import org.seasar.dao.impl.DaoNamingConventionImpl;
 import org.seasar.dao.impl.DefaultColumnNaming;
+import org.seasar.dao.impl.DefaultTableNaming;
 import org.seasar.dao.impl.DtoMetaDataFactoryImpl;
 import org.seasar.dao.impl.DtoMetaDataImpl;
 import org.seasar.dao.impl.FieldAnnotationReaderFactory;
 import org.seasar.dao.impl.PropertyTypeFactoryBuilderImpl;
+import org.seasar.dao.impl.RelationPropertyTypeFactoryBuilderImpl;
 import org.seasar.dao.impl.ResultSetHandlerFactoryImpl;
 import org.seasar.dao.impl.ValueTypeFactoryImpl;
 import org.seasar.dao.pager.PagerContext;
@@ -78,6 +82,10 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     private PropertyTypeFactoryBuilder propertyTypeFactoryBuilder;
 
+    private RelationPropertyTypeFactoryBuilder relationPropertyTypeFactoryBuilder;
+
+    private TableNaming tableNaming;
+
     private ColumnNaming columnNaming;
 
     public S2DaoTestCase() {
@@ -92,6 +100,13 @@ public abstract class S2DaoTestCase extends S2TestCase {
         annotationReaderFactory = null;
         beanMetaDataFactory = null;
         dbms = null;
+        beanEnhancer = null;
+        resultSetHandlerFactory = null;
+        dtoMetaDataFactory = null;
+        propertyTypeFactoryBuilder = null;
+        relationPropertyTypeFactoryBuilder = null;
+        tableNaming = null;
+        columnNaming = null;
         PagerContext.end();
         super.tearDown();
     }
@@ -169,6 +184,11 @@ public abstract class S2DaoTestCase extends S2TestCase {
             impl.setDataSource(getDataSource());
             impl.setDaoNamingConvention(getDaoNamingConvention());
             impl.setBeanEnhancer(getBeanEnhancer());
+            impl.setPropertyTypeFactoryBuilder(getPropertyTypeFactoryBuilder());
+            impl
+                    .setRelationPropertyTypeFactoryBuilder(getRelationPropertyTypeFactoryBuilder());
+            impl.setTableNaming(getTableNaming());
+            impl.setColumnNaming(getColumnNaming());
             beanMetaDataFactory = impl;
         }
         return beanMetaDataFactory;
@@ -288,6 +308,29 @@ public abstract class S2DaoTestCase extends S2TestCase {
     public void setPropertyTypeFactoryBuilder(
             PropertyTypeFactoryBuilder propertyTypeFactoryBuilder) {
         this.propertyTypeFactoryBuilder = propertyTypeFactoryBuilder;
+    }
+
+    public RelationPropertyTypeFactoryBuilder getRelationPropertyTypeFactoryBuilder() {
+        if (relationPropertyTypeFactoryBuilder == null) {
+            relationPropertyTypeFactoryBuilder = new RelationPropertyTypeFactoryBuilderImpl();
+        }
+        return relationPropertyTypeFactoryBuilder;
+    }
+
+    public void setRelationPropertyTypeFactoryBuilder(
+            RelationPropertyTypeFactoryBuilder relationPropertyTypeFactoryBuilder) {
+        this.relationPropertyTypeFactoryBuilder = relationPropertyTypeFactoryBuilder;
+    }
+
+    public TableNaming getTableNaming() {
+        if (tableNaming == null) {
+            tableNaming = new DefaultTableNaming();
+        }
+        return tableNaming;
+    }
+
+    public void setTableNaming(TableNaming tableNaming) {
+        this.tableNaming = tableNaming;
     }
 
 }

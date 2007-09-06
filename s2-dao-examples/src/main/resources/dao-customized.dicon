@@ -27,4 +27,10 @@
 	</component>
 
 	<component class="org.seasar.dao.impl.BeanEnhancerImpl"/>
+	<component class="org.seasar.dao.impl.ResultSetHandlerFactoryImpl"/>
+	<component class="org.seasar.dao.impl.DtoMetaDataFactoryImpl"/>
+	<component class="org.seasar.dao.impl.PropertyTypeFactoryBuilderImpl"/>
+	<component class="org.seasar.dao.impl.RelationPropertyTypeFactoryBuilderImpl"/>
+	<component class="org.seasar.dao.impl.DefaultTableNaming"/>
+	<component class="org.seasar.dao.impl.DefaultColumnNaming"/>
 </components>

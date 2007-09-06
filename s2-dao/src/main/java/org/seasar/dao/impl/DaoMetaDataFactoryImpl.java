@@ -23,13 +23,11 @@ import javax.sql.DataSource;
 import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.dao.BeanMetaDataFactory;
-import org.seasar.dao.ColumnNaming;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoMetaDataFactory;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.DtoMetaDataFactory;
-import org.seasar.dao.PropertyTypeFactoryBuilder;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.pager.PagingSqlRewriter;
@@ -47,10 +45,6 @@ import org.seasar.framework.util.DisposableUtil;
  */
 public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
-    public static final String INIT_METHOD = "initialize";
-
-    public static final String daoMetaDataCache_BINDING = "bindingType=must";
-
     public static final String dataSource_BINDING = "bindingType=must";
 
     public static final String statementFactory_BINDING = "bindingType=must";
@@ -65,17 +59,11 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     public static final String daoNamingConvention_BINDING = "bindingType=must";
 
-    public static final String resultSetHandlerFactory_BINDING = "bindingType=may";
+    public static final String resultSetHandlerFactory_BINDING = "bindingType=must";
 
-    public static final String dtoMetaDataFactory_BINDING = "bindingType=may";
+    public static final String dtoMetaDataFactory_BINDING = "bindingType=must";
 
     public static final String pagingSQLRewriter_BINDING = "bindingType=may";
-
-    public static final String propertyTypeFactoryBuilder_BINDING = "bindingType=may";
-
-    public static final String columnNaming_BINDING = "bindingType=may";
-
-    protected Map daoMetaDataCache = new HashMap();
 
     protected DataSource dataSource;
 
@@ -87,15 +75,9 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected ValueTypeFactory valueTypeFactory;
 
-    protected String sqlFileEncoding;
-
     protected BeanMetaDataFactory beanMetaDataFactory;
 
     protected DaoNamingConvention daoNamingConvention;
-
-    protected boolean initialized;
-
-    protected boolean useDaoClassForLog = false;
 
     protected ResultSetHandlerFactory resultSetHandlerFactory;
 
@@ -103,27 +85,15 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     protected PagingSqlRewriter pagingSqlRewriter;
 
-    protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder = new PropertyTypeFactoryBuilderImpl();
+    protected Map daoMetaDataCache = new HashMap();
 
-    protected ColumnNaming columnNaming = new DefaultColumnNaming();
+    protected boolean initialized;
+
+    protected boolean useDaoClassForLog;
+
+    protected String sqlFileEncoding;
 
     public DaoMetaDataFactoryImpl() {
-    }
-
-    public void initialize() {
-        if (dtoMetaDataFactory == null) {
-            final DtoMetaDataFactoryImpl factory = new DtoMetaDataFactoryImpl();
-            factory.setAnnotationReaderFactory(annotationReaderFactory);
-            factory.setValueTypeFactory(valueTypeFactory);
-            factory.setPropertyTypeFactoryBuilder(propertyTypeFactoryBuilder);
-            factory.setColumnNaming(columnNaming);
-            dtoMetaDataFactory = factory;
-        }
-        if (resultSetHandlerFactory == null) {
-            final ResultSetHandlerFactoryImpl factory = new ResultSetHandlerFactoryImpl();
-            factory.setDtoMetaDataFactory(dtoMetaDataFactory);
-            resultSetHandlerFactory = factory;
-        }
     }
 
     public DaoMetaDataFactoryImpl(final DataSource dataSource,
@@ -260,15 +230,6 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     public void setPagingSQLRewriter(final PagingSqlRewriter pagingSqlRewriter) {
         this.pagingSqlRewriter = pagingSqlRewriter;
-    }
-
-    public void setColumnNaming(final ColumnNaming columnNaming) {
-        this.columnNaming = columnNaming;
-    }
-
-    public void setPropertyTypeFactoryBuilder(
-            final PropertyTypeFactoryBuilder propertyTypeFactoryBuilder) {
-        this.propertyTypeFactoryBuilder = propertyTypeFactoryBuilder;
     }
 
 }

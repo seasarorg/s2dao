@@ -55,6 +55,14 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     public static final String beanEnhancer_BINDING = "bindingType=must";
 
+    public static final String tableNaming_BINDING = "bindingType=must";
+
+    public static final String propertyTypeFactoryBuilder_BINDING = "bindingType=must";
+
+    public static final String relationPropertyTypeFactoryBuilder_BINDING = "bindingType=must";
+
+    public static final String columnNaming_BINDING = "bindingType=must";
+
     protected AnnotationReaderFactory annotationReaderFactory;
 
     protected ValueTypeFactory valueTypeFactory;
@@ -65,21 +73,13 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
 
     protected BeanEnhancer beanEnhancer;
 
-    public static final String tableNaming_BINDING = "bindingType=may";
+    protected TableNaming tableNaming;
 
-    protected TableNaming tableNaming = new DefaultTableNaming();
+    protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder;
 
-    public static final String propertyTypeFactoryBuilder_BINDING = "bindingType=may";
+    protected RelationPropertyTypeFactoryBuilder relationPropertyTypeFactoryBuilder;
 
-    protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder = new PropertyTypeFactoryBuilderImpl();
-
-    public static final String relationPropertyTypeFactoryBuilder_BINDING = "bindingType=may";
-
-    protected RelationPropertyTypeFactoryBuilder relationPropertyTypeFactoryBuilder = new RelationPropertyTypeFactoryBuilderImpl();
-
-    public static final String columnNaming_BINDING = "bindingType=may";
-
-    protected ColumnNaming columnNaming = new DefaultColumnNaming();
+    protected ColumnNaming columnNaming;
 
     public BeanMetaData createBeanMetaData(final Class daoInterface,
             final Class beanClass) {
@@ -246,6 +246,10 @@ public class BeanMetaDataFactoryImpl implements BeanMetaDataFactory {
     public void setRelationPropertyTypeFactoryBuilder(
             RelationPropertyTypeFactoryBuilder relationPropertyTypeFactoryBuilder) {
         this.relationPropertyTypeFactoryBuilder = relationPropertyTypeFactoryBuilder;
+    }
+
+    public void setColumnNaming(ColumnNaming columnNaming) {
+        this.columnNaming = columnNaming;
     }
 
 }

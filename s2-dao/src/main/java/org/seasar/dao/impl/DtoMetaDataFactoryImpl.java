@@ -35,9 +35,13 @@ import org.seasar.framework.util.DisposableUtil;
  */
 public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
 
-    private Map cache = new HashMap(100);
+    public static final String annotationReaderFactory_BINDING = "bindingType=must";
 
-    protected boolean initialized = false;
+    public static final String valueTypeFactory_BINDING = "bindingType=must";
+
+    public static final String propertyTypeFactoryBuilder_BINDING = "bindingType=must";
+
+    public static final String columnNaming_BINDING = "bindingType=must";
 
     protected AnnotationReaderFactory annotationReaderFactory;
 
@@ -46,6 +50,10 @@ public class DtoMetaDataFactoryImpl implements DtoMetaDataFactory, Disposable {
     protected PropertyTypeFactoryBuilder propertyTypeFactoryBuilder;
 
     protected ColumnNaming columnNaming;
+
+    private Map cache = new HashMap(100);
+
+    protected boolean initialized = false;
 
     public AnnotationReaderFactory getAnnotationReaderFactory() {
         return annotationReaderFactory;
