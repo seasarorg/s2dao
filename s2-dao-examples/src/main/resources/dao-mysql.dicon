@@ -19,5 +19,6 @@
 	<component class="org.seasar.dao.impl.PropertyTypeFactoryBuilderImpl"/>
 	<component class="org.seasar.dao.impl.RelationPropertyTypeFactoryBuilderImpl"/>
 	<component class="org.seasar.dao.impl.DefaultTableNaming"/>
-	<component class="org.seasar.dao.impl.DefaultColumnNaming"/>	
+	<component class="org.seasar.dao.impl.DefaultColumnNaming"/>
+	<component class="org.seasar.dao.impl.ProcedureMetaDataFactoryImpl"/>
 </components>

@@ -29,7 +29,7 @@ public class DtoMetaDataFactoryImplTest extends S2TestCase {
     private DtoMetaDataFactory factory;
 
     protected void setUp() throws Exception {
-        include(getClass().getName().replace(".", "/") + ".dicon");
+        include(getClass().getName().replace('.', '/') + ".dicon");
     }
 
     /**

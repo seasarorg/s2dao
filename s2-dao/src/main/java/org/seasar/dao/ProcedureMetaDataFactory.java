@@ -1,5 +1,3 @@
-package org.seasar.dao;
-
 /*
  * Copyright 2004-2007 the Seasar Foundation and the Others.
  *
@@ -15,6 +13,9 @@ package org.seasar.dao;
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+package org.seasar.dao;
+
+import java.lang.reflect.Method;
 
 /**
  * {@link ProcedureMetaData}のファクトリを表すインタフェースです。
@@ -26,6 +27,9 @@ public interface ProcedureMetaDataFactory {
     /**
      * プロシージャのメタデータを作成します。
      * 
+     * @param procedureName プロシージャの名前
+     * @param method プロシージャを呼び出すメソッド
      */
-    ProcedureMetaData createProcedureMetaData();
+    ProcedureMetaData createProcedureMetaData(String procedureName,
+            Method method);
 }

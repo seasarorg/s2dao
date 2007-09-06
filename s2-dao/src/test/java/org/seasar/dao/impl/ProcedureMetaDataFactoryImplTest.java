@@ -17,9 +17,7 @@ package org.seasar.dao.impl;
 
 import org.seasar.dao.IllegalSignatureRuntimeException;
 import org.seasar.dao.ProcedureMetaData;
-import org.seasar.dao.ProcedureMetaDataFactory;
 import org.seasar.dao.ProcedureParameterType;
-import org.seasar.dao.ValueTypeFactory;
 import org.seasar.extension.jdbc.types.ValueTypes;
 import org.seasar.extension.unit.S2TestCase;
 
@@ -36,12 +34,12 @@ public class ProcedureMetaDataFactoryImplTest extends S2TestCase {
 
     public void testCreateProcedureMetaData() throws Exception {
         String name = "PROCEDURE_TEST_CCC2";
-        ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
-        FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
-        ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
-                name, valueTypeFactory, reader, Dao.class.getMethod("execute",
-                        new Class[] { Hoge.class }));
-        ProcedureMetaData metaData = factory.createProcedureMetaData();
+        ProcedureMetaDataFactoryImpl factory = new ProcedureMetaDataFactoryImpl();
+        factory.setValueTypeFactory(new ValueTypeFactoryImpl());
+        factory.setAnnotationReaderFactory(new FieldAnnotationReaderFactory());
+        factory.initialize();
+        ProcedureMetaData metaData = factory.createProcedureMetaData(name,
+                Dao.class.getMethod("execute", new Class[] { Hoge.class }));
 
         assertNotNull(metaData);
         assertEquals(3, metaData.getParameterTypeSize());
@@ -61,24 +59,25 @@ public class ProcedureMetaDataFactoryImplTest extends S2TestCase {
 
     public void testCreateProcedureMetaData_noParameter() throws Exception {
         String name = "PROCEDURE_TEST_CCC2";
-        ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
-        FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
-        ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
-                name, valueTypeFactory, reader, Dao.class.getMethod(
-                        "executeWithNoParameter", null));
-        ProcedureMetaData metaData = factory.createProcedureMetaData();
+        ProcedureMetaDataFactoryImpl factory = new ProcedureMetaDataFactoryImpl();
+        factory.setValueTypeFactory(new ValueTypeFactoryImpl());
+        factory.setAnnotationReaderFactory(new FieldAnnotationReaderFactory());
+        factory.initialize();
+        ProcedureMetaData metaData = factory.createProcedureMetaData(name,
+                Dao.class.getMethod("executeWithNoParameter", new Class[] {}));
         assertNotNull(metaData);
         assertEquals(0, metaData.getParameterTypeSize());
     }
 
     public void testCreateProcedureMetaData_simpleParameter() throws Exception {
         String name = "PROCEDURE_TEST_CCC2";
-        ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
-        FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
+        ProcedureMetaDataFactoryImpl factory = new ProcedureMetaDataFactoryImpl();
+        factory.setValueTypeFactory(new ValueTypeFactoryImpl());
+        factory.setAnnotationReaderFactory(new FieldAnnotationReaderFactory());
+        factory.initialize();
         try {
-            new ProcedureMetaDataFactoryImpl(name, valueTypeFactory, reader,
-                    Dao.class.getMethod("executeWithSimpleParameter",
-                            new Class[] { int.class }));
+            factory.createProcedureMetaData(name, Dao.class.getMethod(
+                    "executeWithSimpleParameter", new Class[] { int.class }));
             fail();
         } catch (IllegalSignatureRuntimeException e) {
             System.out.println(e.getMessage());
@@ -87,12 +86,14 @@ public class ProcedureMetaDataFactoryImplTest extends S2TestCase {
 
     public void testCreateProcedureMetaData_multiParameters() throws Exception {
         String name = "PROCEDURE_TEST_CCC2";
-        ValueTypeFactory valueTypeFactory = new ValueTypeFactoryImpl();
-        FieldArgumentDtoAnnotationReader reader = new FieldArgumentDtoAnnotationReader();
+        ProcedureMetaDataFactoryImpl factory = new ProcedureMetaDataFactoryImpl();
+        factory.setValueTypeFactory(new ValueTypeFactoryImpl());
+        factory.setAnnotationReaderFactory(new FieldAnnotationReaderFactory());
+        factory.initialize();
         try {
-            new ProcedureMetaDataFactoryImpl(name, valueTypeFactory, reader,
-                    Dao.class.getMethod("executeWithMultiParameters",
-                            new Class[] { Hoge.class, int.class }));
+            factory.createProcedureMetaData(name, Dao.class.getMethod(
+                    "executeWithMultiParameters", new Class[] { Hoge.class,
+                            int.class }));
             fail();
         } catch (IllegalSignatureRuntimeException e) {
             System.out.println(e.getMessage());

@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
-import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoAnnotationReader;
@@ -137,7 +136,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected PagingSqlRewriter pagingSqlRewriter = new NullPagingSqlRewriter();
 
-    protected ArgumentDtoAnnotationReader argumentDtoAnnotationReader;
+    protected ProcedureMetaDataFactory procedureMetaDataFactory;
 
     public DaoMetaDataImpl() {
     }
@@ -254,11 +253,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
     protected void setupProcedureCallMethod(final Method method,
             final String procedureName) {
 
+        final ProcedureMetaData metaData = procedureMetaDataFactory
+                .createProcedureMetaData(procedureName, method);
         final ResultSetHandler resultSetHandler = createResultSetHandler(method);
-        final ProcedureMetaDataFactory factory = new ProcedureMetaDataFactoryImpl(
-                procedureName, valueTypeFactory, argumentDtoAnnotationReader,
-                method);
-        final ProcedureMetaData metaData = factory.createProcedureMetaData();
         final SqlCommand command = new ArgumentDtoProcedureCommand(dataSource,
                 resultSetHandler, statementFactory, resultSetFactory, metaData);
 
@@ -1089,9 +1086,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
         this.pagingSqlRewriter = pagingSqlRewriter;
     }
 
-    public void setArgumentDtoAnnotationReader(
-            final ArgumentDtoAnnotationReader argumentDtoAnnotationReader) {
-        this.argumentDtoAnnotationReader = argumentDtoAnnotationReader;
+    public void setProcedureMetaDataFactory(
+            ProcedureMetaDataFactory procedureMetaDataFactory) {
+        this.procedureMetaDataFactory = procedureMetaDataFactory;
     }
 
 }

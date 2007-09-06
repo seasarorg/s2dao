@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
+import org.seasar.dao.AnnotationReaderFactory;
 import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.dao.IllegalParameterTypeRuntimeException;
 import org.seasar.dao.IllegalSignatureRuntimeException;
@@ -41,6 +42,12 @@ import org.seasar.framework.beans.factory.BeanDescFactory;
  */
 public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
 
+    public static final String INIT_METHOD = "initialize";
+
+    public static final String valueTypeFactory_BINDING = "bindingType=must";
+
+    public static final String annotationReaderFactory_BINDING = "bindingType=must";
+
     protected static String procedureParameterInType = "in";
 
     protected static String procedureParameterOutType = "out";
@@ -49,46 +56,57 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
 
     protected static String procedureParameterReturnType = "return";
 
-    /** プロシージャ名 */
-    protected String procedureName;
-
     /** {@link ValueType}のファクトリ */
     protected ValueTypeFactory valueTypeFactory;
 
-    /** 引数のDTOのアノテーションリーダ */
+    /** アノテーションリーダのファクトリ */
+    protected AnnotationReaderFactory annotationReaderFactory;
+
+    /** メソッドの引数のDTOに対するアノテーションリーダ */
     protected ArgumentDtoAnnotationReader annotationReader;
 
-    /** DTOのクラス */
-    protected Class dtoClass;
+    public void initialize() {
+        annotationReader = annotationReaderFactory
+                .createArgumentDtoAnnotationReader();
+    }
 
-    /** DTOのクラス記述 */
-    protected BeanDesc dtoDesc;
+    public void setAnnotationReaderFactory(
+            final AnnotationReaderFactory annotationReaderFactory) {
+        this.annotationReaderFactory = annotationReaderFactory;
+    }
 
-    /**
-     * インスタンスを構築します。
-     * 
-     * @param procedureName プロシージャ名
-     * @param valueTypeFactory {@link ValueType}のファクトリ
-     * @param annotationReader DTOのアノテーションリーダ
-     * @param method メソッド
-     */
-    public ProcedureMetaDataFactoryImpl(final String procedureName,
-            final ValueTypeFactory valueTypeFactory,
-            final ArgumentDtoAnnotationReader annotationReader,
-            final Method method) {
-        this.procedureName = procedureName;
+    public void setValueTypeFactory(final ValueTypeFactory valueTypeFactory) {
         this.valueTypeFactory = valueTypeFactory;
-        this.annotationReader = annotationReader;
-        final Class parameterType = getParameterType(method);
-        if (parameterType != null) {
-            if (isDtoType(parameterType)) {
-                this.dtoClass = parameterType;
-                this.dtoDesc = BeanDescFactory.getBeanDesc(dtoClass);
-            } else {
+    }
+
+    public ProcedureMetaData createProcedureMetaData(final String procedureName,
+            final Method method) {
+        final ProcedureMetaDataImpl metaData = new ProcedureMetaDataImpl(
+                procedureName);
+        final Class dtoClass = getParameterType(method);
+        if (dtoClass == null) {
+            return metaData;
+        } else {
+            if (!isDtoType(dtoClass)) {
                 throw new IllegalSignatureRuntimeException("EDAO0031", method
                         .toString());
             }
         }
+        final BeanDesc dtoDesc = BeanDescFactory.getBeanDesc(dtoClass);
+        final Field[] fields = dtoClass.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            final Field field = fields[i];
+            if (!isInstanceField(field)) {
+                continue;
+            }
+            final ProcedureParameterType ppt = getProcedureParameterType(
+                    dtoDesc, field);
+            if (ppt == null) {
+                continue;
+            }
+            metaData.addParameterType(ppt);
+        }
+        return metaData;
     }
 
     /**
@@ -108,34 +126,15 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
                 .toString());
     }
 
-    public ProcedureMetaData createProcedureMetaData() {
-        final ProcedureMetaDataImpl metaData = new ProcedureMetaDataImpl(
-                procedureName);
-        if (dtoClass == null) {
-            return metaData;
-        }
-        final Field[] fields = dtoClass.getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            final Field field = fields[i];
-            if (!isInstanceField(field)) {
-                continue;
-            }
-            final ProcedureParameterType ppt = getProcedureParameterType(field);
-            if (ppt == null) {
-                continue;
-            }
-            metaData.addParameterType(ppt);
-        }
-        return metaData;
-    }
-
     /**
      * プロシージャのパラメータのタイプを返します。
      * 
+     * @param Bean記述
      * @param field フィールド
      * @return　プロシージャのパラメータのタイプ、存在しない場合<code>null</code>
      */
-    protected ProcedureParameterType getProcedureParameterType(final Field field) {
+    protected ProcedureParameterType getProcedureParameterType(
+            final BeanDesc dtoDesc, final Field field) {
         final String type = annotationReader.getProcedureParameter(dtoDesc,
                 field);
         if (type == null) {
@@ -156,7 +155,7 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
         } else {
             throw new IllegalParameterTypeRuntimeException(type);
         }
-        final ValueType valueType = getValueType(field);
+        final ValueType valueType = getValueType(dtoDesc, field);
         ppt.setValueType(valueType);
         return ppt;
     }
@@ -164,10 +163,11 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
     /**
      * {@link ValueType}を返します。
      * 
+     * @param Bean記述
      * @param field フィールド
      * @return {@link ValueType}
      */
-    protected ValueType getValueType(final Field field) {
+    protected ValueType getValueType(final BeanDesc dtoDesc, final Field field) {
         final String name = annotationReader.getValueType(dtoDesc, field);
         if (name != null) {
             return valueTypeFactory.getValueTypeByName(name);

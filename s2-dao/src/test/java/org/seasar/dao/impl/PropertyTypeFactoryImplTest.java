@@ -46,7 +46,7 @@ public class PropertyTypeFactoryImplTest extends S2TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        include(getClass().getName().replace(".", "/") + ".dicon");
+        include(getClass().getName().replace('.', '/') + ".dicon");
     }
 
     public void testDto() throws Exception {

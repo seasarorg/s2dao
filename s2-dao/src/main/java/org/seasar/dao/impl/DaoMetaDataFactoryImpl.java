@@ -21,13 +21,13 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.seasar.dao.AnnotationReaderFactory;
-import org.seasar.dao.ArgumentDtoAnnotationReader;
 import org.seasar.dao.BeanMetaDataFactory;
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoMetaDataFactory;
 import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.DtoMetaDataFactory;
+import org.seasar.dao.ProcedureMetaDataFactory;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.ValueTypeFactory;
 import org.seasar.dao.pager.PagingSqlRewriter;
@@ -63,6 +63,8 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
 
     public static final String dtoMetaDataFactory_BINDING = "bindingType=must";
 
+    public static final String procedureMetaDataFactory_BINDING = "bindingType=must";
+
     public static final String pagingSQLRewriter_BINDING = "bindingType=may";
 
     protected DataSource dataSource;
@@ -82,6 +84,8 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
     protected ResultSetHandlerFactory resultSetHandlerFactory;
 
     protected DtoMetaDataFactory dtoMetaDataFactory;
+
+    protected ProcedureMetaDataFactory procedureMetaDataFactory;
 
     protected PagingSqlRewriter pagingSqlRewriter;
 
@@ -140,8 +144,6 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         final BeanDesc daoBeanDesc = BeanDescFactory.getBeanDesc(daoClass);
         final DaoAnnotationReader daoAnnotationReader = annotationReaderFactory
                 .createDaoAnnotationReader(daoBeanDesc);
-        final ArgumentDtoAnnotationReader dtoAnnotationReader = annotationReaderFactory
-                .createArgumentDtoAnnotationReader();
 
         final DaoMetaDataImpl daoMetaData = createDaoMetaDataImpl();
         daoMetaData.setDaoClass(daoClass);
@@ -153,7 +155,7 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
         daoMetaData.setDaoNamingConvention(getDaoNamingConvention());
         daoMetaData.setUseDaoClassForLog(useDaoClassForLog);
         daoMetaData.setDaoAnnotationReader(daoAnnotationReader);
-        daoMetaData.setArgumentDtoAnnotationReader(dtoAnnotationReader);
+        daoMetaData.setProcedureMetaDataFactory(procedureMetaDataFactory);
         daoMetaData.setDtoMetaDataFactory(dtoMetaDataFactory);
         daoMetaData.setResultSetHandlerFactory(resultSetHandlerFactory);
         if (sqlFileEncoding != null) {
@@ -226,6 +228,11 @@ public class DaoMetaDataFactoryImpl implements DaoMetaDataFactory, Disposable {
     public void setDtoMetaDataFactory(
             final DtoMetaDataFactory dtoMetaDataFactory) {
         this.dtoMetaDataFactory = dtoMetaDataFactory;
+    }
+
+    public void setProcedureMetaDataFactory(
+            ProcedureMetaDataFactory procedureMetaDataFactory) {
+        this.procedureMetaDataFactory = procedureMetaDataFactory;
     }
 
     public void setPagingSQLRewriter(final PagingSqlRewriter pagingSqlRewriter) {
