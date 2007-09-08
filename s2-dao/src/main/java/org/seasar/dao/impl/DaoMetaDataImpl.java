@@ -555,7 +555,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
      * @param propertyNames
      * @return
      */
-    private AbstractSqlCommand createUpdateAutoDynamicCommand(
+    protected AbstractSqlCommand createUpdateAutoDynamicCommand(
             final Method method, final String[] propertyNames) {
         AbstractSqlCommand cmd;
         final UpdateAutoDynamicCommand uac = new UpdateAutoDynamicCommand(
@@ -568,7 +568,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return cmd;
     }
 
-    private AbstractSqlCommand createUpdateModifiedOnlyCommand(
+    protected AbstractSqlCommand createUpdateModifiedOnlyCommand(
             final Method method, final String[] propertyNames) {
         final UpdateModifiedOnlyCommand uac = new UpdateModifiedOnlyCommand(
                 dataSource, statementFactory);
