@@ -29,14 +29,32 @@ public class UpdateBatchAutoStaticCommandTest extends S2DaoTestCase {
         DaoMetaData dmd = createDaoMetaData(EmployeeAutoDao.class);
         SqlCommand cmd = dmd.getSqlCommand("updateBatch");
         Employee emp = new Employee();
-        emp.setEmpno(7788);
+        emp.setEmpno(7499);
         emp.setEname("hoge");
+        emp.setTimestamp(Timestamp.valueOf("2000-01-01 00:00:00.0"));
         Employee emp2 = new Employee();
         emp2.setEmpno(7369);
         emp2.setEname("hoge2");
+        emp2.setTimestamp(Timestamp.valueOf("2000-01-01 00:00:00.0"));
         Integer count = (Integer) cmd.execute(new Object[] { new Employee[] {
                 emp, emp2 } });
         assertEquals("1", new Integer(2), count);
+
+        // update failure test
+        SqlCommand cmd2 = dmd.getSqlCommand("updateBatch2");
+        Employee emp3 = new Employee();
+        emp3.setEmpno(7782);
+        emp3.setEname("hoge");
+        emp3.setTimestamp(Timestamp.valueOf("2000-01-01 00:00:00.0"));
+        Employee emp4 = new Employee();
+        emp4.setEmpno(7788);
+        emp4.setEname("hoge2");
+        emp4.setTimestamp(Timestamp.valueOf("2000-01-01 00:00:00.0")); // timestamp unmatch
+        int[] ret = (int[]) cmd2.execute(new Object[] { new Employee[] { emp3,
+                emp4 } });
+        assertEquals("2", 2, ret.length);
+        assertEquals("3", 1, ret[0]);
+        assertEquals("4", 0, ret[1]); // update failure
     }
 
     public void testExecuteByListTx() throws Exception {

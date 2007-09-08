@@ -29,12 +29,16 @@ public class DeleteBatchAutoStaticCommand extends
 
     public DeleteBatchAutoStaticCommand(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData,
-            String[] propertyNames) {
+            String[] propertyNames, boolean returningRows) {
 
-        super(dataSource, statementFactory, beanMetaData, propertyNames);
+        super(dataSource, statementFactory, beanMetaData, propertyNames, returningRows);
     }
 
     protected AbstractAutoHandler createAutoHandler() {
+        return createBatchAutoHandler();
+    }
+
+    protected AbstractBatchAutoHandler createBatchAutoHandler() {
         return new DeleteBatchAutoHandler(getDataSource(),
                 getStatementFactory(), getBeanMetaData(), getPropertyTypes());
     }

@@ -29,12 +29,16 @@ public class UpdateBatchAutoStaticCommand extends
 
     public UpdateBatchAutoStaticCommand(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData,
-            String[] propertyNames) {
+            String[] propertyNames, boolean returningRows) {
 
-        super(dataSource, statementFactory, beanMetaData, propertyNames);
+        super(dataSource, statementFactory, beanMetaData, propertyNames, returningRows);
     }
 
     protected AbstractAutoHandler createAutoHandler() {
+        return createBatchAutoHandler();
+    }
+
+    protected AbstractBatchAutoHandler createBatchAutoHandler() {
         return new UpdateBatchAutoHandler(getDataSource(),
                 getStatementFactory(), getBeanMetaData(), getPropertyTypes());
     }

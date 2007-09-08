@@ -513,9 +513,13 @@ public class DaoMetaDataImpl implements DaoMetaData {
             cmd.setStatementFactory(statementFactory);
             command = cmd;
         } else {
+            boolean returningRows = false;
+            if (int[].class.isAssignableFrom(method.getReturnType())) {
+                returningRows = true;
+            }
             final InsertBatchAutoStaticCommand cmd = new InsertBatchAutoStaticCommand(
                     dataSource, statementFactory, getBeanMetaData(),
-                    propertyNames);
+                    propertyNames, returningRows);
             command = cmd;
         }
         putSqlCommand(method.getName(), command);
@@ -536,8 +540,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
                         beanMetaData, propertyNames);
             }
         } else {
+            boolean returningRows = false;
+            if (int[].class.isAssignableFrom(method.getReturnType())) {
+                returningRows = true;
+            }
             cmd = new UpdateBatchAutoStaticCommand(dataSource,
-                    statementFactory, beanMetaData, propertyNames);
+                    statementFactory, beanMetaData, propertyNames, returningRows);
         }
         putSqlCommand(method.getName(), cmd);
     }
@@ -579,8 +587,12 @@ public class DaoMetaDataImpl implements DaoMetaData {
             cmd = new DeleteAutoStaticCommand(dataSource, statementFactory,
                     beanMetaData, propertyNames);
         } else {
+            boolean returningRows = false;
+            if (int[].class.isAssignableFrom(method.getReturnType())) {
+                returningRows = true;
+            }
             cmd = new DeleteBatchAutoStaticCommand(dataSource,
-                    statementFactory, beanMetaData, propertyNames);
+                    statementFactory, beanMetaData, propertyNames, returningRows);
         }
         putSqlCommand(method.getName(), cmd);
     }

@@ -17,12 +17,15 @@ package org.seasar.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.extension.jdbc.PropertyType;
+import org.seasar.extension.jdbc.ReturningRowsBatchHandler;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.util.ConnectionUtil;
 import org.seasar.framework.exception.SQLRuntimeException;
@@ -33,7 +36,8 @@ import org.seasar.framework.util.StatementUtil;
  * @author higa
  * 
  */
-public abstract class AbstractBatchAutoHandler extends AbstractAutoHandler {
+public abstract class AbstractBatchAutoHandler extends AbstractAutoHandler
+        implements ReturningRowsBatchHandler {
 
     public AbstractBatchAutoHandler(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData,
@@ -42,31 +46,63 @@ public abstract class AbstractBatchAutoHandler extends AbstractAutoHandler {
         super(dataSource, statementFactory, beanMetaData, propertyTypes);
     }
 
-    public int execute(Object[] args) throws SQLRuntimeException {
+    public int[] execute(List list, Class[] argTypes)
+            throws SQLRuntimeException {
+        return execute(list);
+    }
+
+    public int[] execute(List list) throws SQLRuntimeException {
+        if (list == null) {
+            throw new IllegalArgumentException("list");
+        }
         Connection connection = getConnection();
         try {
-            Object[] beans = null;
-            if (args[0] instanceof Object[]) {
-                beans = (Object[]) args[0];
-            } else if (args[0] instanceof List) {
-                beans = ((List) args[0]).toArray();
-            }
-            if (beans == null) {
-                throw new IllegalArgumentException("args[0]");
-            }
             PreparedStatement ps = prepareStatement(connection);
             try {
-                for (int i = 0; i < beans.length; ++i) {
-                    execute(ps, beans[i]);
+                for (Iterator iter = list.iterator(); iter.hasNext();) {
+                    Object bean = (Object) iter.next();
+                    execute(ps, bean);
                 }
-                PreparedStatementUtil.executeBatch(ps);
+                return PreparedStatementUtil.executeBatch(ps);
             } finally {
                 StatementUtil.close(ps);
             }
-            return beans.length;
         } finally {
             ConnectionUtil.close(connection);
         }
+    }
+
+    public int execute(Object[] args) throws SQLRuntimeException {
+        List list = null;
+        if (args[0] instanceof Object[]) {
+            list = Arrays.asList((Object[]) args[0]);
+        } else if (args[0] instanceof List) {
+            list = (List) args[0];
+        }
+        if (list == null) {
+            throw new IllegalArgumentException("args[0]");
+        }
+        int[] ret = execute(list);
+        int updatedRow = 0;
+        for (int i = 0; i < ret.length; i++) {
+            if (ret[i] > 0) {
+                updatedRow += ret[i];
+            }
+        }
+        return updatedRow;
+    }
+
+    public int[] executeBatch(Object[] args) throws SQLRuntimeException {
+        List list = null;
+        if (args[0] instanceof Object[]) {
+            list = Arrays.asList((Object[]) args[0]);
+        } else if (args[0] instanceof List) {
+            list = (List) args[0];
+        }
+        if (list == null) {
+            throw new IllegalArgumentException("args[0]");
+        }
+        return execute(list);
     }
 
     protected void execute(PreparedStatement ps, Object bean) {

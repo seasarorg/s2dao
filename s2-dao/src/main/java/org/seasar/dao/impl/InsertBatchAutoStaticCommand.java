@@ -28,12 +28,16 @@ public class InsertBatchAutoStaticCommand extends
 
     public InsertBatchAutoStaticCommand(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData,
-            String[] propertyNames) {
+            String[] propertyNames, boolean returningRows) {
 
-        super(dataSource, statementFactory, beanMetaData, propertyNames);
+        super(dataSource, statementFactory, beanMetaData, propertyNames, returningRows);
     }
 
     protected AbstractAutoHandler createAutoHandler() {
+        return createBatchAutoHandler();
+    }
+
+    protected AbstractBatchAutoHandler createBatchAutoHandler() {
         return new InsertBatchAutoHandler(getDataSource(),
                 getStatementFactory(), getBeanMetaData(), getPropertyTypes());
     }

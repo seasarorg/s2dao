@@ -27,17 +27,27 @@ import org.seasar.extension.jdbc.StatementFactory;
 public abstract class AbstractBatchAutoStaticCommand extends
         AbstractAutoStaticCommand {
 
+    protected final boolean returningRows;
+
     public AbstractBatchAutoStaticCommand(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData,
-            String[] propertyNames) {
+            String[] propertyNames, boolean returningRows) {
 
         super(dataSource, statementFactory, beanMetaData, propertyNames);
+        this.returningRows = returningRows;
     }
 
+    protected abstract AbstractBatchAutoHandler createBatchAutoHandler();
+
     public Object execute(Object[] args) {
-        AbstractAutoHandler handler = createAutoHandler();
+        AbstractBatchAutoHandler handler = createBatchAutoHandler();
+        injectDaoClass(handler);
         handler.setSql(getSql());
-        int updatedRows = handler.execute(args);
-        return new Integer(updatedRows);
+        if (this.returningRows) {
+            return handler.executeBatch(args);
+        } else {
+            int updatedRows = handler.execute(args);
+            return new Integer(updatedRows);
+        }
     }
 }

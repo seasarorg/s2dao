@@ -37,6 +37,19 @@ public class InsertBatchAutoStaticCommandTest extends S2DaoTestCase {
         Integer count = (Integer) cmd.execute(new Object[] { new Employee[] {
                 emp, emp2 } });
         assertEquals("1", new Integer(2), count);
+
+        SqlCommand cmd2 = dmd.getSqlCommand("insertBatch2");
+        Employee emp3 = new Employee();
+        emp3.setEmpno(97);
+        emp3.setEname("hoge3");
+        Employee emp4 = new Employee();
+        emp4.setEmpno(96);
+        emp4.setEname("hoge2");
+        int[] ret = (int[]) cmd2.execute(new Object[] { new Employee[] { emp3,
+                emp4 } });
+        assertEquals("2", 2, ret.length);
+        assertEquals("3", 1, ret[0]);
+        assertEquals("4", 1, ret[1]);
     }
 
     public void setUp() {

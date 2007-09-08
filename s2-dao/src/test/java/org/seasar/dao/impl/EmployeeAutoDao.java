@@ -61,6 +61,8 @@ public interface EmployeeAutoDao {
 
     public void insertBatch(Employee[] employees);
 
+    public int[] insertBatch2(Employee[] employees);
+
     public void update(Employee employee);
 
     public String update2_NO_PERSISTENT_PROPS = "job, mgr, hiredate, sal, comm, deptno";
@@ -73,11 +75,15 @@ public interface EmployeeAutoDao {
 
     public void updateBatch(Employee[] employees);
 
+    public int[] updateBatch2(Employee[] employees);
+
     public void updateBatchByList(List employees);
 
     public void delete(Employee employee);
 
     public void deleteBatch(Employee[] employees);
+
+    public int[] deleteBatch2(Employee[] employees);
 
     public void updateUnlessNull(Employee employee);
 
