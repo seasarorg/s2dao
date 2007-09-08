@@ -545,7 +545,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 returningRows = true;
             }
             cmd = new UpdateBatchAutoStaticCommand(dataSource,
-                    statementFactory, beanMetaData, propertyNames, returningRows);
+                    statementFactory, beanMetaData, propertyNames,
+                    returningRows);
         }
         putSqlCommand(method.getName(), cmd);
     }
@@ -584,17 +585,29 @@ public class DaoMetaDataImpl implements DaoMetaData {
         final String[] propertyNames = getPersistentPropertyNames(method);
         SqlCommand cmd = null;
         if (isUpdateSignatureForBean(method)) {
-            cmd = new DeleteAutoStaticCommand(dataSource, statementFactory,
-                    beanMetaData, propertyNames);
+            cmd = createDeleteAutoStaticCommand(method, propertyNames);
         } else {
             boolean returningRows = false;
             if (int[].class.isAssignableFrom(method.getReturnType())) {
                 returningRows = true;
             }
-            cmd = new DeleteBatchAutoStaticCommand(dataSource,
-                    statementFactory, beanMetaData, propertyNames, returningRows);
+            cmd = createDeleteBatchAutoStaticCommand(method, propertyNames,
+                    returningRows);
         }
         putSqlCommand(method.getName(), cmd);
+    }
+
+    protected DeleteAutoStaticCommand createDeleteAutoStaticCommand(
+            final Method method, final String[] propertyNames) {
+        return new DeleteAutoStaticCommand(dataSource, statementFactory,
+                beanMetaData, propertyNames);
+    }
+
+    protected DeleteBatchAutoStaticCommand createDeleteBatchAutoStaticCommand(
+            final Method method, final String[] propertyNames,
+            boolean returningRows) {
+        return new DeleteBatchAutoStaticCommand(dataSource, statementFactory,
+                beanMetaData, propertyNames, returningRows);
     }
 
     protected String[] getPersistentPropertyNames(final Method method) {
