@@ -114,32 +114,21 @@ public class ArgumentDtoProcedureHandler extends BasicSelectHandler implements
         StringBuffer buf = new StringBuffer(100);
         int pos = 0;
         int pos2 = 0;
-        int pos3 = 0;
         int size = procedureMetaData.getParameterTypeSize();
-        if (procedureMetaData.hasReturnParameterType()) {
-            if ((pos = sql.indexOf('?')) > 0) {
-                buf.append(sql.subSequence(0, pos));
-                buf.append("null");
-                pos2 = pos + 1;
-            }
-            size--;
-        }
         for (int i = 0; i < size; i++) {
             ProcedureParameterType ppt = procedureMetaData.getParameterType(i);
-            if ((pos3 = sql.indexOf('?', pos2)) < 0) {
+            if ((pos2 = sql.indexOf('?', pos)) < 0) {
                 break;
             }
+            buf.append(sql.substring(pos, pos2));
+            pos = pos2 + 1;
             if (ppt.isInType()) {
-                buf.append(sql.substring(pos2, pos3));
                 buf.append(getBindVariableText(ppt.getValue(dto)));
-                pos2 = pos3 + 1;
             } else {
-                buf.append(sql.substring(pos2, pos3));
-                buf.append("null");
-                pos2 = pos3 + 1;
+                buf.append(sql.substring(pos2, pos));
             }
         }
-        buf.append(sql.substring(pos2));
+        buf.append(sql.substring(pos));
         return buf.toString();
     }
 

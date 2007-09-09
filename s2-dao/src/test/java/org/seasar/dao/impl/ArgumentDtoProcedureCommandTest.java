@@ -135,6 +135,16 @@ public class ArgumentDtoProcedureCommandTest extends S2DaoTestCase {
         assertEquals("abcd", dto.getCcc());
     }
 
+    public void testReturnParameterTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(Dao.class);
+        SqlCommand command = dmd.getSqlCommand("max");
+        MaxDto dto = new MaxDto();
+        dto.setBbb(5d);
+        dto.setCcc(10d);
+        command.execute(new Object[] { dto });
+        assertEquals(10d, dto.getAaa(), 0);
+    }
+
     public static interface Dao {
 
         public static String executeAaa1_PROCEDURE_CALL = "PROCEDURE_TEST_AAA1";
@@ -153,6 +163,8 @@ public class ArgumentDtoProcedureCommandTest extends S2DaoTestCase {
 
         public static String executeDdd1_PROCEDURE_CALL = "PROCEDURE_TEST_DDD1";
 
+        public static String max_PROCEDURE_CALL = "FUNCTION_TEST_MAX";
+
         void executeAaa1(Aaa1 aaa1);
 
         void executeAaa2(Aaa2 aaa2);
@@ -168,6 +180,8 @@ public class ArgumentDtoProcedureCommandTest extends S2DaoTestCase {
         void executeCcc2(Ccc2 ccc2);
 
         void executeDdd1(Ddd1 ddd1);
+
+        double max(MaxDto maxDto);
     }
 
     public static class Aaa1 {
@@ -357,5 +371,45 @@ public class ArgumentDtoProcedureCommandTest extends S2DaoTestCase {
         public void setCcc(String ccc) {
             this.ccc = ccc;
         }
+    }
+
+    public static class MaxDto {
+
+        public static String aaa_PROCEDURE_PARAMETER = "return";
+
+        public static String bbb_PROCEDURE_PARAMETER = "in";
+
+        public static String ccc_PROCEDURE_PARAMETER = "in";
+
+        private double aaa;
+
+        private double bbb;
+
+        private double ccc;
+
+        public double getAaa() {
+            return aaa;
+        }
+
+        public void setAaa(double aaa) {
+            this.aaa = aaa;
+        }
+
+        public double getBbb() {
+            return bbb;
+        }
+
+        public void setBbb(double bbb) {
+            this.bbb = bbb;
+        }
+
+        public double getCcc() {
+            return ccc;
+        }
+
+        public void setCcc(double ccc) {
+            this.ccc = ccc;
+        }
+
     }
 }
