@@ -59,6 +59,7 @@
 			</zipfileset>
 			<zipfileset prefix="s2dao-tiger/resources" dir="../s2dao-tiger-1.0.x/s2-dao-tiger/src/test/resources">
 				<include name="j2ee.dicon"/>
+				<include name="s2junit4.dicon"/>				
 				<include name="log4j.properties"/>
 			</zipfileset>
 			<zipfileset prefix="s2dao-tiger/resources" dir="s2-dao-s24-test/src/test/resources">
