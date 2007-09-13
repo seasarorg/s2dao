@@ -19,13 +19,21 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.seasar.dao.BeanEnhancer;
+import org.seasar.dao.DaoNamingConvention;
 import org.seasar.dao.impl.BeanMetaDataImpl.ModifiedPropertySupport;
+import org.seasar.framework.beans.BeanDesc;
+import org.seasar.framework.beans.PropertyDesc;
+import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
  * @author taichi
  *
  */
 public class NullBeanEnhancer implements BeanEnhancer, ModifiedPropertySupport {
+
+    public static final String daoNamingConvention_BINDING = "bindingType=must";
+
+    private DaoNamingConvention daoNamingConvention;
 
     private static final Set EMPTY_SET = Collections.EMPTY_SET;
 
@@ -62,6 +70,25 @@ public class NullBeanEnhancer implements BeanEnhancer, ModifiedPropertySupport {
      * @see org.seasar.dao.impl.BeanMetaDataImpl.ModifiedPropertySupport#getModifiedPropertyNames(java.lang.Object)
      */
     public Set getModifiedPropertyNames(Object bean) {
-        return EMPTY_SET;
+        final BeanDesc beanDesc = BeanDescFactory.getBeanDesc(bean.getClass());
+        final String propertyName = getDaoNamingConvention()
+                .getModifiedPropertyNamesPropertyName();
+        if (!beanDesc.hasPropertyDesc(propertyName)) {
+            return EMPTY_SET;
+        }
+        final PropertyDesc propertyDesc = beanDesc
+                .getPropertyDesc(propertyName);
+        final Object value = propertyDesc.getValue(bean);
+        final Set names = (Set) value;
+        return names;
+    }
+
+    public DaoNamingConvention getDaoNamingConvention() {
+        return daoNamingConvention;
+    }
+
+    public void setDaoNamingConvention(
+            final DaoNamingConvention daoNamingConvention) {
+        this.daoNamingConvention = daoNamingConvention;
     }
 }
