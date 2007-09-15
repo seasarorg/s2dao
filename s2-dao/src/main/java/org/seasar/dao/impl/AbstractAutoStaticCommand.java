@@ -30,7 +30,7 @@ import org.seasar.framework.exception.SRuntimeException;
 
 /**
  * @author higa
- * 
+ * @author jflute
  */
 public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
 

@@ -28,7 +28,7 @@ import org.seasar.extension.jdbc.StatementFactory;
 
 /**
  * @author taichi
- * 
+ * @author jflute
  */
 public class UpdateAutoDynamicCommand extends AbstractSqlCommand {
 
@@ -58,9 +58,14 @@ public class UpdateAutoDynamicCommand extends AbstractSqlCommand {
         handler.setSql(createUpdateSql(bmd, propertyTypes));
         int i = handler.execute(args);
         if (i < 1) {
-            throw new NotSingleRowUpdatedRuntimeException(args[0], i);
+            throw createNotSingleRowUpdatedRuntimeException(args[0], i);
         }
         return new Integer(i);
+    }
+    
+    protected NotSingleRowUpdatedRuntimeException createNotSingleRowUpdatedRuntimeException(
+            Object bean, int rows) {
+        return new NotSingleRowUpdatedRuntimeException(bean, rows);
     }
 
     protected PropertyType[] createUpdatePropertyTypes(BeanMetaData bmd,
