@@ -62,12 +62,17 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
         handler.setSql(createUpdateSql(bmd, propertyTypes));
         final int i = handler.execute(args);
         if (i < 1) {
-            throw new NotSingleRowUpdatedRuntimeException(args[0], i);
+            throw createNotSingleRowUpdatedRuntimeException(args[0], i);
         }
         return new Integer(i);
     }
 
-    private String createNoUpdateLogMessage(final Object bean,
+    protected NotSingleRowUpdatedRuntimeException createNotSingleRowUpdatedRuntimeException(
+            Object bean, int rows) {
+        return new NotSingleRowUpdatedRuntimeException(bean, rows);
+    }
+    
+    protected String createNoUpdateLogMessage(final Object bean,
             final BeanMetaData bmd) {
         final StringBuffer sb = new StringBuffer();
         sb.append("skip UPDATE: table=");

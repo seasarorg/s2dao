@@ -51,9 +51,14 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
         injectDaoClass(handler);
         int rows = handler.execute(args);
         if (rows != 1) {
-            throw new NotSingleRowUpdatedRuntimeException(args[0], rows);
+            throw createNotSingleRowUpdatedRuntimeException(args[0], rows);
         }
         return new Integer(rows);
+    }
+
+    protected NotSingleRowUpdatedRuntimeException createNotSingleRowUpdatedRuntimeException(
+            Object bean, int rows) {
+        return new NotSingleRowUpdatedRuntimeException(bean, rows);
     }
 
     protected PropertyType[] getPropertyTypes() {
