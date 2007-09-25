@@ -536,19 +536,23 @@ public class DaoMetaDataImpl implements DaoMetaData {
             } else if (isModifiedOnly(method.getName())) {
                 cmd = createUpdateModifiedOnlyCommand(method, propertyNames);
             } else {
-                cmd = new UpdateAutoStaticCommand(dataSource, statementFactory,
-                        beanMetaData, propertyNames);
+                cmd = createUpdateAutoStaticCommand(method, propertyNames);
             }
         } else {
             boolean returningRows = false;
             if (int[].class.isAssignableFrom(method.getReturnType())) {
                 returningRows = true;
             }
-            cmd = new UpdateBatchAutoStaticCommand(dataSource,
-                    statementFactory, beanMetaData, propertyNames,
+            cmd = createUpdateBatchAutoStaticCommand(method, propertyNames,
                     returningRows);
         }
         putSqlCommand(method.getName(), cmd);
+    }
+
+    protected UpdateAutoStaticCommand createUpdateAutoStaticCommand(
+            final Method method, final String[] propertyNames) {
+        return new UpdateAutoStaticCommand(dataSource, statementFactory,
+                beanMetaData, propertyNames);
     }
 
     /**
@@ -578,6 +582,13 @@ public class DaoMetaDataImpl implements DaoMetaData {
         uac
                 .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
         return uac;
+    }
+
+    protected UpdateBatchAutoStaticCommand createUpdateBatchAutoStaticCommand(
+            final Method method, final String[] propertyNames,
+            boolean returningRows) {
+        return new UpdateBatchAutoStaticCommand(dataSource, statementFactory,
+                beanMetaData, propertyNames, returningRows);
     }
 
     protected void setupDeleteMethodByAuto(final Method method) {
