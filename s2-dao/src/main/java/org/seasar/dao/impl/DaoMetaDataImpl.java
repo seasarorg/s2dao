@@ -196,7 +196,9 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
             if (!completedSetupMethod(method)
                     && daoAnnotationReader.isSqlFile(method)) {
-                throw new SqlFileNotFoundRuntimeException(daoInterface, method);
+                String fileName = getSqlFilePath(daoInterface, method) + ".sql";
+                throw new SqlFileNotFoundRuntimeException(daoInterface, method,
+                        fileName);
             }
 
             if (!completedSetupMethod(method)) {
@@ -275,8 +277,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected void setupMethodBySqlFile(final Class daoInterface,
             final Method method) {
-        final String base = daoInterface.getName().replace('.', '/') + "_"
-                + method.getName();
+        final String base = getSqlFilePath(daoInterface, method);
         final String dbmsPath = base + dbms.getSuffix() + ".sql";
         final String standardPath = base + ".sql";
         if (ResourceUtil.isExist(dbmsPath)) {
@@ -297,6 +298,24 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 }
             }
         }
+    }
+
+    /**
+     * @param daoInterface
+     * @param method
+     * @return
+     */
+    protected String getSqlFilePath(final Class daoInterface,
+            final Method method) {
+        String base;
+        String fileByAnnotation = daoAnnotationReader.getSqlFilePath(method);
+        if (StringUtil.isEmpty(fileByAnnotation)) {
+            base = daoInterface.getName().replace('.', '/') + "_"
+                    + method.getName();
+        } else {
+            base = fileByAnnotation.replaceAll(".sql$", "");
+        }
+        return base;
     }
 
     protected void setupMethodByInterfaces(final Class daoInterface,

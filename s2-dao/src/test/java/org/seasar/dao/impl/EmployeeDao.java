@@ -44,6 +44,10 @@ public interface EmployeeDao {
 
     public int getCount();
 
+    public String getCount2_SQL_FILE = "org/seasar/dao/impl/sqlfile/getCount.sql";
+
+    public int getCount2();
+
     public void update(Employee employee);
 
     public Employee[] getEmployeesByDeptno(int deptno);

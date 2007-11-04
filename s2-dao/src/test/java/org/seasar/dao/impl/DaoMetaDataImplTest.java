@@ -329,6 +329,26 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         assertEquals("1", 1, employees.size());
     }
 
+    public void testSelectCountBySqlFile1() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeDao"));
+        SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
+                .getSqlCommand("getCount");
+        Object obj = cmd.execute(new Object[] {});
+        assertTrue("1", obj instanceof Integer);
+        int ret = ((Integer) obj).intValue();
+        assertEquals("2", 14, ret);
+    }
+
+    public void testSelectCountBySqlFile2() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeDao"));
+        SelectDynamicCommand cmd = (SelectDynamicCommand) dmd
+                .getSqlCommand("getCount2");
+        Object obj = cmd.execute(new Object[] {});
+        assertTrue("1", obj instanceof Integer);
+        int ret = ((Integer) obj).intValue();
+        assertEquals("2", 14, ret);
+    }
+
     public void testRelation1() throws Exception {
         DaoMetaData dmd = createDaoMetaData(getDaoClass("Employee2Dao"));
         SqlCommand cmd = dmd.getSqlCommand("getAllEmployees");

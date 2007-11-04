@@ -126,6 +126,28 @@ public abstract class AbstractDaoAnnotationReaderImplTest extends TestCase {
         assertEquals(false, isSqlFile);
     }
 
+    public void testSqlFileWithPath() throws Exception {
+        final Method method = daoClazz.getMethod("findUsingSqlFile2",
+                new Class[] { int.class });
+        final String sqlFile = annotationReader.getSqlFilePath(method);
+        assertEquals("org/seasar/dao/impl/sqlfile/testFile.sql", sqlFile);
+    }
+
+    public void testSqlFileWithoutPath() throws Exception {
+        {
+            final Method method = daoClazz.getMethod("findUsingSqlFile",
+                    new Class[] { int.class });
+            final String sqlFile = annotationReader.getSqlFilePath(method);
+            assertEquals("1", "", sqlFile);
+        }
+        {
+            final Method method = daoClazz.getMethod("getAaaById1",
+                    new Class[] { int.class });
+            final String sqlFile = annotationReader.getSqlFilePath(method);
+            assertEquals("2", "", sqlFile);
+        }
+    }
+
     public void testProcedureCall() throws Exception {
         final Method method = daoClazz.getMethod("execute", new Class[] {});
         final String name = annotationReader.getProcedureCallName(method);

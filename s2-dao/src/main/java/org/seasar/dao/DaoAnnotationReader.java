@@ -86,6 +86,17 @@ public interface DaoAnnotationReader {
     boolean isSqlFile(Method method);
 
     /**
+     * SQLファイルのパスを返します。
+     * 
+     * <p>
+     * 取得できなかった場合は、空文字列を返します。
+     * </p>
+     * @param method
+     * @return
+     */
+    String getSqlFilePath(Method method);
+
+    /**
      * 
      * @return
      */

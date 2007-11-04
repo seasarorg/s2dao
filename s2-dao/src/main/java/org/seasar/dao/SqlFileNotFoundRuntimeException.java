@@ -27,9 +27,9 @@ public class SqlFileNotFoundRuntimeException extends SRuntimeException {
     private static final long serialVersionUID = 1L;
 
     public SqlFileNotFoundRuntimeException(final Class daoClass,
-            final Method daoMethod) {
+            final Method daoMethod, String fileName) {
         super("EDAO0025", new Object[] { daoClass.getName(),
-                daoMethod.getName() });
+                daoMethod.getName(), fileName });
     }
 
 }

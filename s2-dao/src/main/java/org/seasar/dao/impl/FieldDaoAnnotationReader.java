@@ -182,6 +182,18 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
         return false;
     }
 
+    public String getSqlFilePath(Method method) {
+        final String fieldName = method.getName() + SQL_FILE_SUFFIX;
+        if (daoBeanDesc.hasField(fieldName)) {
+            Field field = daoBeanDesc.getField(fieldName);
+            Object obj = FieldUtil.get(field, null);
+            if (obj instanceof String) {
+                return (String) obj;
+            }
+        }
+        return "";
+    }
+
     public boolean isCheckSingleRowUpdate() {
         return getSingleRowUpdateCheckValue(CHECK_SINGLE_ROW_UPDATE);
     }
