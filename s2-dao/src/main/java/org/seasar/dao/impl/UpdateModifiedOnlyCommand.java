@@ -61,7 +61,7 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
         injectDaoClass(handler);
         handler.setSql(createUpdateSql(bmd, propertyTypes));
         final int i = handler.execute(args);
-        if (i < 1) {
+        if (isCheckSingleRowUpdate() && i < 1) {
             throw createNotSingleRowUpdatedRuntimeException(args[0], i);
         }
         return new Integer(i);
@@ -71,7 +71,7 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
             Object bean, int rows) {
         return new NotSingleRowUpdatedRuntimeException(bean, rows);
     }
-    
+
     protected String createNoUpdateLogMessage(final Object bean,
             final BeanMetaData bmd) {
         final StringBuffer sb = new StringBuffer();

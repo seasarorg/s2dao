@@ -73,6 +73,10 @@ public interface EmployeeAutoDao {
 
     public void update3(Employee employee);
 
+    public boolean update4_CHECK_SINGLE_ROW_UPDATE = false;
+
+    public int update4(Employee employee);
+
     public void updateBatch(Employee[] employees);
 
     public int[] updateBatch2(Employee[] employees);

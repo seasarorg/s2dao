@@ -15,6 +15,7 @@
  */
 package org.seasar.dao.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -172,6 +173,22 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         Object emp = cmd2.execute(new Object[] { new Integer(7788) });
         setProperty(emp, "ename", "hoge2");
         cmd.execute(new Object[] { emp });
+    }
+
+    public void testUpdateNoCheckTx() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
+        SqlCommand cmd = dmd.getSqlCommand("update4");
+        assertNotNull("1", cmd);
+        SelectDynamicCommand cmd2 = (SelectDynamicCommand) dmd
+                .getSqlCommand("getEmployee");
+        Object emp = cmd2.execute(new Object[] { new Integer(7788) });
+        setProperty(emp, "ename", "hoge4");
+        setProperty(emp, "timestamp", Timestamp
+                .valueOf("1995-01-23 01:23:45.678"));
+        Object obj2 = cmd.execute(new Object[] { emp });
+        assertTrue("2", obj2 instanceof Integer);
+        int ret = ((Integer) obj2).intValue();
+        assertEquals("3", 0, ret);
     }
 
     public void testDeleteAutoTx() throws Exception {

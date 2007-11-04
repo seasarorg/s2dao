@@ -78,6 +78,23 @@ public interface DaoAnnotationReader {
      */
     String getSQL(Method method, String suffix);
 
+    /**
+     * 
+     * @param method
+     * @return
+     */
     boolean isSqlFile(Method method);
 
+    /**
+     * 
+     * @return
+     */
+    boolean isCheckSingleRowUpdate();
+
+    /**
+     * 
+     * @param method
+     * @return
+     */
+    boolean isCheckSingleRowUpdate(Method method);
 }

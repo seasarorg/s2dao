@@ -36,6 +36,8 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
 
     private PropertyType[] propertyTypes;
 
+    private boolean checkSingleRowUpdate = true;
+
     public AbstractAutoStaticCommand(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData,
             String[] propertyNames) {
@@ -50,10 +52,18 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
         handler.setSql(getSql());
         injectDaoClass(handler);
         int rows = handler.execute(args);
-        if (rows != 1) {
+        if (isCheckSingleRowUpdate() && rows != 1) {
             throw createNotSingleRowUpdatedRuntimeException(args[0], rows);
         }
         return new Integer(rows);
+    }
+
+    public boolean isCheckSingleRowUpdate() {
+        return checkSingleRowUpdate;
+    }
+
+    public void setCheckSingleRowUpdate(boolean checkSingleRowUpdate) {
+        this.checkSingleRowUpdate = checkSingleRowUpdate;
     }
 
     protected NotSingleRowUpdatedRuntimeException createNotSingleRowUpdatedRuntimeException(

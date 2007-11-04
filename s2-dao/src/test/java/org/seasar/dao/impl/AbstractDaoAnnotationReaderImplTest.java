@@ -131,4 +131,23 @@ public abstract class AbstractDaoAnnotationReaderImplTest extends TestCase {
         final String name = annotationReader.getProcedureCallName(method);
         assertEquals("hoge", name);
     }
+
+    public void testNoCheckSingleRowUpdateOnMethod() throws Exception {
+        final Method method = daoClazz.getMethod("createAaa3",
+                new Class[] { aaaClazz });
+        boolean resultCheck = annotationReader.isCheckSingleRowUpdate(method);
+        assertFalse(resultCheck);
+    }
+
+    public void testCheckSingleRowUpdateOnMethod() throws Exception {
+        final Method method = daoClazz.getMethod("createAaa2",
+                new Class[] { aaaClazz });
+        boolean resultCheck = annotationReader.isCheckSingleRowUpdate(method);
+        assertTrue(resultCheck);
+    }
+
+    public void testNoCheckSingleRowUpdateOnDao() throws Exception {
+        boolean resultCheck = annotationReader.isCheckSingleRowUpdate();
+        assertFalse(resultCheck);
+    }
 }

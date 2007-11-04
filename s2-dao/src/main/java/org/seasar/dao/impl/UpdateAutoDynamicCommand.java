@@ -36,6 +36,8 @@ public class UpdateAutoDynamicCommand extends AbstractSqlCommand {
 
     private String[] propertyNames;
 
+    private boolean checkSingleRowUpdate = true;
+
     public UpdateAutoDynamicCommand(DataSource dataSource,
             StatementFactory statementFactory) {
         super(dataSource, statementFactory);
@@ -57,12 +59,12 @@ public class UpdateAutoDynamicCommand extends AbstractSqlCommand {
         injectDaoClass(handler);
         handler.setSql(createUpdateSql(bmd, propertyTypes));
         int i = handler.execute(args);
-        if (i < 1) {
+        if (isCheckSingleRowUpdate() && i < 1) {
             throw createNotSingleRowUpdatedRuntimeException(args[0], i);
         }
         return new Integer(i);
     }
-    
+
     protected NotSingleRowUpdatedRuntimeException createNotSingleRowUpdatedRuntimeException(
             Object bean, int rows) {
         return new NotSingleRowUpdatedRuntimeException(bean, rows);
@@ -158,6 +160,14 @@ public class UpdateAutoDynamicCommand extends AbstractSqlCommand {
      */
     public void setPropertyNames(String[] propertyNames) {
         this.propertyNames = propertyNames;
+    }
+
+    public boolean isCheckSingleRowUpdate() {
+        return checkSingleRowUpdate;
+    }
+
+    public void setCheckSingleRowUpdate(boolean resultCheck) {
+        this.checkSingleRowUpdate = resultCheck;
     }
 
 }

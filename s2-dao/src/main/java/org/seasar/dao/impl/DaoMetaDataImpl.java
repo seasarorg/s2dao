@@ -138,6 +138,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected ProcedureMetaDataFactory procedureMetaDataFactory;
 
+    protected boolean checkSingleRowUpdateForAll = true;
+
     public DaoMetaDataImpl() {
     }
 
@@ -154,6 +156,8 @@ public class DaoMetaDataImpl implements DaoMetaData {
         }
         this.beanMetaData = beanMetaDataFactory.createBeanMetaData(
                 daoInterface, beanClass);
+        checkSingleRowUpdateForAll = daoAnnotationReader
+                .isCheckSingleRowUpdate();
         setupSqlCommand();
     }
 
@@ -511,6 +515,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
                     .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
             cmd.setPropertyNames(propertyNames);
             cmd.setStatementFactory(statementFactory);
+            cmd.setCheckSingleRowUpdate(isCheckSingleRowUpdate(method));
             command = cmd;
         } else {
             boolean returningRows = false;
@@ -551,8 +556,10 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected UpdateAutoStaticCommand createUpdateAutoStaticCommand(
             final Method method, final String[] propertyNames) {
-        return new UpdateAutoStaticCommand(dataSource, statementFactory,
-                beanMetaData, propertyNames);
+        UpdateAutoStaticCommand cmd = new UpdateAutoStaticCommand(dataSource,
+                statementFactory, beanMetaData, propertyNames);
+        cmd.setCheckSingleRowUpdate(isCheckSingleRowUpdate(method));
+        return cmd;
     }
 
     /**
@@ -569,6 +576,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         uac.setPropertyNames(propertyNames);
         uac
                 .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
+        uac.setCheckSingleRowUpdate(isCheckSingleRowUpdate(method));
         cmd = uac;
         return cmd;
     }
@@ -581,6 +589,7 @@ public class DaoMetaDataImpl implements DaoMetaData {
         uac.setPropertyNames(propertyNames);
         uac
                 .setNotSingleRowUpdatedExceptionClass(getNotSingleRowUpdatedExceptionClass(method));
+        uac.setCheckSingleRowUpdate(isCheckSingleRowUpdate(method));
         return uac;
     }
 
@@ -610,8 +619,10 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected DeleteAutoStaticCommand createDeleteAutoStaticCommand(
             final Method method, final String[] propertyNames) {
-        return new DeleteAutoStaticCommand(dataSource, statementFactory,
-                beanMetaData, propertyNames);
+        DeleteAutoStaticCommand cmd = new DeleteAutoStaticCommand(dataSource,
+                statementFactory, beanMetaData, propertyNames);
+        cmd.setCheckSingleRowUpdate(isCheckSingleRowUpdate(method));
+        return cmd;
     }
 
     protected DeleteBatchAutoStaticCommand createDeleteBatchAutoStaticCommand(
@@ -928,6 +939,21 @@ public class DaoMetaDataImpl implements DaoMetaData {
             }
         }
         sqlCommands.put(methodName, cmd);
+    }
+
+    /**
+     * メソッドおよびDao全体のいずれもSingleRowUpdateチェックが有効になっているかどうかを返します。
+     *
+     * <p>
+     * メソッドまたはDao全体のいずれもチェックが有効として設定されている場合のみ、<code>true</code>を返します。
+     * どちらか一方でもチェック無効に設定されていれば、 falseを返します。
+     * </p>
+     * @param method チェック対象のメソッド
+     * @return 指定されたメソッドの実行時チェックが有効なら<code>true</code>を返す。
+     */
+    protected boolean isCheckSingleRowUpdate(Method method) {
+        return checkSingleRowUpdateForAll
+                & daoAnnotationReader.isCheckSingleRowUpdate(method);
     }
 
     /**

@@ -46,6 +46,8 @@ public class FieldDaoAnnotationReaderTest extends
 
         public Class BEAN = Aaa.class;
 
+        public boolean CHECK_SINGLE_ROW_UPDATE = false;
+
         public String getAaaById1_ARGS = "aaa1, aaa2";
 
         public Aaa getAaaById1(int id);
@@ -73,6 +75,10 @@ public class FieldDaoAnnotationReaderTest extends
         public String createAaa2_PERSISTENT_PROPS = "def";
 
         public Aaa createAaa2(Aaa aaa);
+
+        public boolean createAaa3_CHECK_SINGLE_ROW_UPDATE = false;
+
+        public int createAaa3(Aaa aaa);
 
         public String selectB_SQL = "SELECT * FROM DDD";
 

@@ -53,6 +53,10 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
 
     public String SQL_FILE_SUFFIX = "_SQL_FILE";
 
+    public String CHECK_SINGLE_ROW_UPDATE = "CHECK_SINGLE_ROW_UPDATE";
+
+    public String CHECK_SINGLE_ROW_UPDATE_SUFFIX = "_CHECK_SINGLE_ROW_UPDATE";
+
     protected BeanDesc daoBeanDesc;
 
     /**
@@ -178,4 +182,29 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
         return false;
     }
 
+    public boolean isCheckSingleRowUpdate() {
+        return getSingleRowUpdateCheckValue(CHECK_SINGLE_ROW_UPDATE);
+    }
+
+    public boolean isCheckSingleRowUpdate(Method method) {
+        final String fieldName = method.getName()
+                + CHECK_SINGLE_ROW_UPDATE_SUFFIX;
+        return getSingleRowUpdateCheckValue(fieldName);
+    }
+
+    /**
+     * @param field
+     */
+    private boolean getSingleRowUpdateCheckValue(String fieldName) {
+        if (daoBeanDesc.hasField(fieldName)) {
+            Field field = daoBeanDesc.getField(fieldName);
+            Object obj = FieldUtil.get(field, null);
+            if (obj instanceof Boolean) {
+                // 正常にフィールド定義されていた場合のみ、指定された値を使用。
+                return ((Boolean) obj).booleanValue();
+            }
+        }
+        // 未指定を含め、デフォルトはtrue(チェックして例外を出す）
+        return true;
+    }
 }

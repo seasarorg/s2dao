@@ -48,6 +48,8 @@ public class InsertAutoDynamicCommand implements SqlCommand,
 
     private Class daoClass;
 
+    private boolean checkSingleRowUpdate = true;
+
     public InsertAutoDynamicCommand() {
     }
 
@@ -63,7 +65,7 @@ public class InsertAutoDynamicCommand implements SqlCommand,
         injectDaoClass(handler);
         handler.setSql(sql);
         int rows = handler.execute(args);
-        if (rows != 1) {
+        if (isCheckSingleRowUpdate() && rows != 1) {
             throw new NotSingleRowUpdatedRuntimeException(args[0], rows);
         }
         return new Integer(rows);
@@ -182,6 +184,14 @@ public class InsertAutoDynamicCommand implements SqlCommand,
 
     public void setPropertyNames(String[] propertyNames) {
         this.propertyNames = propertyNames;
+    }
+
+    public boolean isCheckSingleRowUpdate() {
+        return checkSingleRowUpdate;
+    }
+
+    public void setCheckSingleRowUpdate(boolean checkSingleRowUpdate) {
+        this.checkSingleRowUpdate = checkSingleRowUpdate;
     }
 
 }
