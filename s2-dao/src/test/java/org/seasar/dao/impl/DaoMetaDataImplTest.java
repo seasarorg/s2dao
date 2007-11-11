@@ -29,7 +29,6 @@ import org.seasar.dao.SqlFileNotFoundRuntimeException;
 import org.seasar.dao.dbms.Oracle;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.PropertyType;
-import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;

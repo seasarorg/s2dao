@@ -18,9 +18,7 @@ package org.seasar.dao.impl;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Map;
 
 import org.seasar.dao.AnnotationReaderFactory;
@@ -31,6 +29,7 @@ import org.seasar.dao.ProcedureMetaData;
 import org.seasar.dao.ProcedureMetaDataFactory;
 import org.seasar.dao.ProcedureParameterType;
 import org.seasar.dao.ValueTypeFactory;
+import org.seasar.dao.util.TypeUtil;
 import org.seasar.extension.jdbc.ValueType;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
@@ -79,8 +78,8 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
         this.valueTypeFactory = valueTypeFactory;
     }
 
-    public ProcedureMetaData createProcedureMetaData(final String procedureName,
-            final Method method) {
+    public ProcedureMetaData createProcedureMetaData(
+            final String procedureName, final Method method) {
         final ProcedureMetaDataImpl metaData = new ProcedureMetaDataImpl(
                 procedureName);
         final Class dtoClass = getParameterType(method);
@@ -112,7 +111,8 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
     /**
      * パラメータの型を返します。
      * 
-     * @param method メソッド
+     * @param method
+     *            メソッド
      * @return パラメータが1つのみ存在する場合はそのパラメータの型、存在しない場合は<code>null</code>
      */
     protected Class getParameterType(final Method method) {
@@ -130,8 +130,9 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
      * プロシージャのパラメータのタイプを返します。
      * 
      * @param Bean記述
-     * @param field フィールド
-     * @return　プロシージャのパラメータのタイプ、存在しない場合<code>null</code>
+     * @param field
+     *            フィールド
+     * @return プロシージャのパラメータのタイプ、存在しない場合<code>null</code>
      */
     protected ProcedureParameterType getProcedureParameterType(
             final BeanDesc dtoDesc, final Field field) {
@@ -164,7 +165,8 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
      * {@link ValueType}を返します。
      * 
      * @param Bean記述
-     * @param field フィールド
+     * @param field
+     *            フィールド
      * @return {@link ValueType}
      */
     protected ValueType getValueType(final BeanDesc dtoDesc, final Field field) {
@@ -179,7 +181,8 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
     /**
      * <code>field</code>がインスタンスフィールドの場合<code>true</code>
      * 
-     * @param field フィールド
+     * @param field
+     *            フィールド
      * @return <code>field</code>がインスタンスフィールドの場合<code>true</code>、そうでない場合<code>false</code>
      */
     protected boolean isInstanceField(final Field field) {
@@ -190,35 +193,19 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
     /**
      * DTOとみなすことができる型の場合<code>true</code>を返します。
      * 
-     * @param clazz クラス
+     * @param clazz
+     *            クラス
      * @return DTOとみなすことができる型の場合<code>true</code>、そうでない場合<code>false</code>
      */
     protected boolean isDtoType(final Class clazz) {
-        return !isSimpleType(clazz) && !isContainerType(clazz);
-    }
-
-    /**
-     * 単純なクラスの場合に<code>true</code>を返します。
-     * 
-     * @param clazz クラス
-     * @return 単純なクラスの場合<code>true</code>、そうでない場合<code>false</code>
-     */
-    protected boolean isSimpleType(final Class clazz) {
-        if (clazz == null) {
-            throw new NullPointerException("clazz");
-        }
-        return clazz == String.class || clazz.isPrimitive()
-                || clazz == Boolean.class || clazz == Character.class
-                || Number.class.isAssignableFrom(clazz)
-                || Date.class.isAssignableFrom(clazz)
-                || Calendar.class.isAssignableFrom(clazz)
-                || clazz == byte[].class;
+        return !TypeUtil.isSimpleType(clazz) && !isContainerType(clazz);
     }
 
     /**
      * コンテナを表すクラスの場合に<code>true</code>を返します。
      * 
-     * @param clazz クラス
+     * @param clazz
+     *            クラス
      * @return コンテナを表すクラスの場合<code>true</code>、そうでない場合<code>false</code>
      */
     protected boolean isContainerType(final Class clazz) {

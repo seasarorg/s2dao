@@ -52,6 +52,9 @@ public abstract class AbstractDaoAnnotationReaderImplTest extends TestCase {
         method = daoClazz.getMethod("findArray", null);
         assertEquals(aaaClazz, annotationReader.getBeanClass(method));
 
+        method = daoClazz.getMethod("findSimpleTypeArray", null);
+        assertEquals(int.class, annotationReader.getBeanClass(method));
+
         method = daoClazz.getMethod("find", new Class[] { int.class });
         assertEquals(aaaClazz, annotationReader.getBeanClass(method));
     }

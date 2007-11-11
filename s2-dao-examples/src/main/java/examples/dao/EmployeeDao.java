@@ -44,4 +44,8 @@ public interface EmployeeDao {
 
     public int update(Employee employee);
 
+    public String getAllEmployeeNumbers_SQL = "SELECT empno FROM emp";
+
+    public int[] getAllEmployeeNumbers();
+
 }

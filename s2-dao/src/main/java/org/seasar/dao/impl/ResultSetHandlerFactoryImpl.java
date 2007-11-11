@@ -27,8 +27,8 @@ import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.RowCreator;
+import org.seasar.dao.util.TypeUtil;
 import org.seasar.extension.jdbc.ResultSetHandler;
-import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 
 /**
  * @author manhole
@@ -47,6 +47,16 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
         final Class beanClass = daoAnnotationReader.getBeanClass();
         final Class clazz = daoAnnotationReader.getBeanClass(method);
         if ((clazz != null) && !clazz.isAssignableFrom(beanClass)) {
+            if (TypeUtil.isSimpleType(clazz)) {
+                if (List.class.isAssignableFrom(method.getReturnType())) {
+                    return createObjectListResultSetHandler(clazz);
+                } else if (method.getReturnType().isArray()
+                        && !TypeUtil.isSimpleType(method.getReturnType())) {
+                    return createObjectArrayResultSetHandler(clazz);
+                } else {
+                    return createObjectResultSetHandler(clazz);
+                }
+            }
             if (Map.class.isAssignableFrom(clazz)) {
                 if (List.class.isAssignableFrom(method.getReturnType())) {
                     return createMapListResultSetHandler();
@@ -75,7 +85,7 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
                 return createBeanArrayMetaDataResultSetHandler(beanMetaData);
             }
         }
-        return createObjectResultSetHandler();
+        return createObjectResultSetHandler(null);
     }
 
     protected ResultSetHandler createDtoListMetaDataResultSetHandler(
@@ -125,8 +135,16 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
                 createRowCreator(), createRelationRowCreator());
     }
 
-    protected ResultSetHandler createObjectResultSetHandler() {
-        return new ObjectResultSetHandler();
+    protected ResultSetHandler createObjectListResultSetHandler(Class clazz) {
+        return new ObjectListResultSetHandler(clazz);
+    }
+
+    protected ResultSetHandler createObjectResultSetHandler(Class clazz) {
+        return new ObjectResultSetHandler(clazz);
+    }
+
+    protected ResultSetHandler createObjectArrayResultSetHandler(Class clazz) {
+        return new ObjectArrayResultSetHandler(clazz);
     }
 
     protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)

@@ -49,6 +49,11 @@ public class EmployeeDaoClient {
             dao.getEmployeeByDeptno(null);
 
             System.out.println("updatedRows:" + dao.update(employee));
+
+            int[] numbers = dao.getAllEmployeeNumbers();
+            for (int i = 0; i < numbers.length; i++) {
+                System.out.println(numbers[i]);
+            }
         } finally {
             container.destroy();
         }

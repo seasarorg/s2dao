@@ -17,12 +17,11 @@ package org.seasar.dao.impl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.seasar.dao.DaoAnnotationReader;
 import org.seasar.dao.NullBean;
+import org.seasar.dao.util.TypeUtil;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.util.FieldUtil;
 import org.seasar.framework.util.StringUtil;
@@ -124,23 +123,13 @@ public class FieldDaoAnnotationReader implements DaoAnnotationReader {
         if (List.class.isAssignableFrom(method.getReturnType())) {
             return null;
         }
+        if (TypeUtil.isSimpleType(method.getReturnType())) {
+            return method.getReturnType();
+        }
         if (method.getReturnType().isArray()) {
             return method.getReturnType().getComponentType();
         }
-        if (isSingleValueType(method.getReturnType())) {
-            return null;
-        }
         return method.getReturnType();
-    }
-
-    protected boolean isSingleValueType(Class clazz) {
-        if (clazz.isPrimitive()) {
-            return true;
-        }
-        return clazz == String.class || clazz == Boolean.class
-                || Number.class.isAssignableFrom(clazz)
-                || Date.class.isAssignableFrom(clazz)
-                || Calendar.class.isAssignableFrom(clazz);
     }
 
     public String[] getNoPersistentProps(Method method) {

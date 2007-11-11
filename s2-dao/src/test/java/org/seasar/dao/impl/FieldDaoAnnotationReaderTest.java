@@ -37,11 +37,6 @@ public class FieldDaoAnnotationReaderTest extends
         daoClazz = AaaDao.class;
     }
 
-    public void testIsSingleValueType() throws Exception {
-        assertTrue(((FieldDaoAnnotationReader) annotationReader)
-                .isSingleValueType(void.class));
-    }
-
     public static interface AaaDao {
 
         public Class BEAN = Aaa.class;
@@ -65,6 +60,8 @@ public class FieldDaoAnnotationReaderTest extends
         public List findAll();
 
         public Aaa[] findArray();
+
+        public int[] findSimpleTypeArray();
 
         public Aaa find(int id);
 
