@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.seasar.extension.jdbc.ResultSetHandler;
+import org.seasar.framework.log.Logger;
 
 /**
  * オブジェクトを返す{@link ResultSetHandler}です。
@@ -26,6 +27,9 @@ import org.seasar.extension.jdbc.ResultSetHandler;
  * @author taedium
  */
 public class ObjectResultSetHandler extends AbstractObjectResultSetHandler {
+
+    private static final Logger logger = Logger
+            .getLogger(ObjectResultSetHandler.class);
 
     /**
      * {@link ObjectResultSetHandler}を生成します。
@@ -39,7 +43,11 @@ public class ObjectResultSetHandler extends AbstractObjectResultSetHandler {
 
     public Object handle(ResultSet rs) throws SQLException {
         if (rs.next()) {
-            return getValueType(rs).getValue(rs, 1);
+            Object value = getValueType(rs).getValue(rs, 1);
+            if (rs.next()) {
+                logger.log("WDAO0003", null);
+            }
+            return value;
         }
         return null;
     }
