@@ -87,10 +87,12 @@ public abstract class AbstractBeanAnnotationReaderTest extends TestCase {
         assertEquals("1", "identity", str1);
         String str2 = reader1.getId(beanDesc.getPropertyDesc("aaa"),
                 new MySQL());
-        assertEquals("2", "sequence, sequenceName=myseq", str2);
+        assertEquals("2", "sequence, sequenceName=myseq, allocationSize=0",
+                str2);
         String str3 = reader1.getId(beanDesc.getPropertyDesc("aaa"),
                 new PostgreSQL());
-        assertEquals("3", "sequence, sequenceName=myseq_2", str3);
+        assertEquals("3", "sequence, sequenceName=myseq_2, allocationSize=10",
+                str3);
         String str4 = reader1.getId(beanDesc.getPropertyDesc("bbb"),
                 new MySQL());
         assertNull("4", str4);

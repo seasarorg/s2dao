@@ -61,5 +61,9 @@ public class IdentifierGeneratorFactoryTest extends S2TestCase {
                 dbms, "sequence, sequenceName = myseq");
         assertEquals("3", "myseq", ((SequenceIdentifierGenerator) generator)
                 .getSequenceName());
+        generator = IdentifierGeneratorFactory.createIdentifierGenerator("id",
+                dbms, "sequence, sequenceName = myseq, allocationSize = 10");
+        assertEquals("4", 10, ((SequenceIdentifierGenerator) generator)
+                .getAllocationSize());
     }
 }

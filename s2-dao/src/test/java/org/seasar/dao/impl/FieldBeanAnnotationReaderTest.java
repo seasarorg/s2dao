@@ -151,9 +151,9 @@ public class FieldBeanAnnotationReaderTest extends
 
         public static final String aaa_oracle_ID = "identity";
 
-        public static final String aaa_mysql_ID = "sequence, sequenceName=myseq";
+        public static final String aaa_mysql_ID = "sequence, sequenceName=myseq, allocationSize=0";
 
-        public static final String aaa_ID = "sequence, sequenceName=myseq_2";
+        public static final String aaa_ID = "sequence, sequenceName=myseq_2, allocationSize=10";
 
         public String getAaa() {
             return aaa;

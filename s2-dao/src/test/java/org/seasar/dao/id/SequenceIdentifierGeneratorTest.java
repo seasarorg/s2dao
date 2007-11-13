@@ -24,24 +24,8 @@ import org.seasar.extension.unit.S2TestCase;
  */
 public class SequenceIdentifierGeneratorTest extends S2TestCase {
 
-    /**
-     * Constructor for InvocationImplTest.
-     * 
-     * @param arg0
-     */
-    public SequenceIdentifierGeneratorTest(String arg0) {
-        super(arg0);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(SequenceIdentifierGeneratorTest.class);
-    }
-
     protected void setUp() throws Exception {
         include("j2ee.dicon");
-    }
-
-    protected void tearDown() throws Exception {
     }
 
     public void testGenerateTx() throws Exception {
@@ -53,4 +37,23 @@ public class SequenceIdentifierGeneratorTest extends S2TestCase {
         System.out.println(hoge.getId());
         assertTrue("1", hoge.getId() > 0);
     }
+
+    public void testGenerate_allocationSizeTx() throws Exception {
+        SequenceIdentifierGenerator generator = new SequenceIdentifierGenerator(
+                "id", new HSQL());
+        generator.setSequenceName("myseq2");
+        generator.setAllocationSize(10L);
+        Hoge hoge = new Hoge();
+        generator.setIdentifier(hoge, getDataSource());
+        System.out.println(hoge.getId());
+        assertTrue(hoge.getId() > 0);
+        int prev = hoge.getId();
+        for (int i = 0; i < 31; i++) {
+            generator.setIdentifier(hoge, getDataSource());
+            System.out.println(hoge.getId());
+            assertTrue(hoge.getId() > prev);
+            prev = hoge.getId();
+        }
+    }
+
 }
