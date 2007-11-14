@@ -100,11 +100,11 @@ public class SequenceIdentifierGenerator extends AbstractIdentifierGenerator {
      * @return 識別子の値
      */
     protected Object getNextValue(DataSource ds) {
-        if (allocationSize == 0) {
-            return getNewInitialValue(ds);
+        if (allocationSize > 0) {
+            long value = getIdContext(ds).getNextValue(ds);
+            return new Long(value);
         }
-        long value = getIdContext(ds).getNextValue(ds);
-        return new Long(value);
+        return getNewInitialValue(ds);
     }
 
     /**
