@@ -23,19 +23,20 @@ import org.seasar.framework.util.ClassUtil;
  * ページャ管理ユーティリティクラス。
  * <p>
  * セッション中のページャ検索条件オブジェクトを管理します。
- * <p>
+ * </p>
  * <p>
  * 使用方法は以下のようになります。
+ * </p>
  * 
  * <pre>
- * public class XXXXAction extends Action {
- *   private PagerSupport pager = new Pager(20, MyPagerCondition.class, "myPagerCondition");
+ * public class XxxAction extends Action {
+ *   private PagerSupport pager = new PagerSupport(20, MyPagerCondition.class, "myPagerCondition");
  *   private MyLogic logic;
  *   public void setMyLogic(MyLogic logic) {
  *     this.logic = logic;
  *   }
  * 
- *   public ActionForward doExecute(ActionMapping mapping, ActionForm _form,
+ *   public ActionForward doExecute(ActionMapping mapping, ActionForm form,
  *       HttpServletRequest request, HttpServletResponse response) throws Exception {
  * 
  *      // パラメータoffsetを元にページャのoffset位置を更新
