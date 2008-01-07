@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2006 the Seasar Foundation and the Others.
+ * Copyright 2004-2008 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,7 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
     private Dbms dbms;
 
     /**
-     * 全件数取得時のSQLからorder by句を除去するかどうかのフラグです。
-     * trueならorder by句を除去します、falseなら除去しません
+     * 全件数取得時のSQLからorder by句を除去するかどうかのフラグです。 trueならorder by句を除去します、falseなら除去しません
      */
     private boolean chopOrderBy = true;
 
@@ -90,7 +89,9 @@ public class PagerResultSetFactoryLimitOffsetWrapper implements
 
     /**
      * 全件数取得時のSQLからorder by句を除去するフラグをセットします
-     * @param chopOrderBy trueならorder by句を除去します、falseなら除去しません
+     * 
+     * @param chopOrderBy
+     *            trueならorder by句を除去します、falseなら除去しません
      */
     public void setChopOrderBy(boolean chopOrderBy) {
         this.chopOrderBy = chopOrderBy;
