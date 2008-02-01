@@ -72,12 +72,10 @@ public abstract class AbstractDynamicCommand extends AbstractSqlCommand {
         if (args != null) {
             for (int i = 0; i < args.length; ++i) {
                 Class argType = null;
-                if (args[i] != null) {
-                    if (i < argTypes.length) {
-                        argType = argTypes[i];
-                    } else if (args[i] != null) {
-                        argType = args[i].getClass();
-                    }
+                if (i < argTypes.length) {
+                    argType = argTypes[i];
+                } else if (args[i] != null) {
+                    argType = args[i].getClass();
                 }
                 if (i < argNames.length) {
                     ctx.addArg(argNames[i], args[i], argType);
