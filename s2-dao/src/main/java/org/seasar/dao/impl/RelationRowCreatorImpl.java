@@ -43,7 +43,7 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
      * @param rs Result set. (NotNull)
      * @param rpt The type of relation property. (NotNull)
      * @param columnNames The set of column name. (NotNull)
-     * @param relKeyValues The map of rel key values. (Nullable)
+     * @param relKeyValues The map of relation key values. (Nullable)
      * @param relationPropertyCache The map of relation property cache. Map{String(relationNoSuffix), Map{String(columnName), PropertyType}} (NotNull)
      * @return Created relation row. (Nullable)
      * @throws SQLException
@@ -185,10 +185,15 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
             value = valueType.getValue(res.getResultSet(), columnName);
         }
         if (value != null) {
-            res.incrementValidValueCount();
-            final PropertyDesc pd = pt.getPropertyDesc();
-            pd.setValue(res.getRow(), value);
+            registerRelationValidValue(res, pt, value);
         }
+    }
+    
+    protected void registerRelationValidValue(RelationRowCreationResource res,
+            PropertyType pt, Object value) throws SQLException {
+        res.incrementValidValueCount();
+        final PropertyDesc pd = pt.getPropertyDesc();
+        pd.setValue(res.getRow(), value);
     }
 
     // -----------------------------------------------------
@@ -290,6 +295,12 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
         // 「一つも無い」という状態がCacheされることになる。。
         res.initializePropertyCacheElement();
 
+        // Check whether the relation is target or not.
+        if (!isTargetRelation(res)) {
+            return;
+        }
+        
+        // Set up property cache about current beanMetaData.
         final BeanMetaData nextBmd = res.getRelationBeanMetaData();
         for (int i = 0; i < nextBmd.getPropertyTypeSize(); ++i) {
             final PropertyType pt = nextBmd.getPropertyType(i);
@@ -298,15 +309,17 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
                 continue;
             }
             setupPropertyCacheElement(res);
-            if (res.hasNextRelationProperty() && res.hasNextRelationLevel()) {
-                res.backupRelationPropertyType();
-                res.incrementCurrentRelationNestLevel();
-                try {
-                    setupNextPropertyCache(res, nextBmd);
-                } finally {
-                    res.restoreRelationPropertyType();
-                    res.decrementCurrentRelationNestLevel();
-                }
+        }
+        
+        // Set up next relation.
+        if (res.hasNextRelationProperty() && res.hasNextRelationLevel()) {
+            res.backupRelationPropertyType();
+            res.incrementCurrentRelationNestLevel();
+            try {
+                setupNextPropertyCache(res, nextBmd);
+            } finally {
+                res.restoreRelationPropertyType();
+                res.decrementCurrentRelationNestLevel();
             }
         }
     }
@@ -371,6 +384,15 @@ public class RelationRowCreatorImpl implements RelationRowCreator {
     // ===================================================================================
     //                                                                     Extension Point
     //                                                                     ===============
+    protected boolean isTargetRelation(RelationRowCreationResource res)
+            throws SQLException {
+        // - - - - - - - - - - - - - - - - - - - - - - - -
+        // Extension Point!
+        //  --> 該当のRelationを処理対象とするか否か。
+        // - - - - - - - - - - - - - - - - - - - - - - - -
+        return true;// 基本はtrue固定。拡張クラスで何かの情報をもとに判定してもらうことを想定。
+    }
+    
     protected boolean isTargetProperty(RelationRowCreationResource res)
             throws SQLException {
         // - - - - - - - - - - - - - - - - - - - - - - - -

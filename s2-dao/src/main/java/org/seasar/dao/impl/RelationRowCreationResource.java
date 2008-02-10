@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationPropertyType;
@@ -33,52 +34,52 @@ public class RelationRowCreationResource {
     //                                                                           Attribute
     //                                                                           =========
     /** Result set. */
-    private ResultSet resultSet;
+    protected ResultSet resultSet;
 
-    /** Relation row. Initialized at first or initialied after. */
-    private Object row;
+    /** Relation row. Initialized at first or initialized after. */
+    protected Object row;
 
     /** Relation property type. */
-    private RelationPropertyType relationPropertyType;
+    protected RelationPropertyType relationPropertyType;
 
     /** The set of column name. */
-    private Set columnNames;
+    protected Set columnNames;
 
-    /** The map of rel key values. */
-    private Map relKeyValues;
+    /** The map of relation key values. */
+    protected Map relKeyValues;
 
     /** The map of relation property cache. */
-    private Map relationPropertyCache;// Map<String(relationNoSuffix), Map<String(columnName), PropertyType>>
+    protected Map relationPropertyCache;// Map<String(relationNoSuffix), Map<String(columnName), PropertyType>>
 
     /** The suffix of base object. */
-    private String baseSuffix;
+    protected String baseSuffix;
 
     /** The suffix of relation no. */
-    private String relationNoSuffix;
+    protected String relationNoSuffix;
 
-    /** The limit of relation nest leve. */
-    private int limitRelationNestLevel;
+    /** The limit of relation nest level. */
+    protected int limitRelationNestLevel;
 
     /** The current relation nest level. Default is one. */
-    private int currentRelationNestLevel;
+    protected int currentRelationNestLevel;
 
     /** Current property type. This variable is temporary. */
-    private PropertyType currentPropertyType;
-
-    /** The temporary variable for relation property type. */
-    private RelationPropertyType tmpRelationPropertyType;
-
-    /** The temporary variable for base suffix. */
-    private String tmpBaseSuffix;
-
-    /** The temporary variable for relation no suffix. */
-    private String tmpRelationNoSuffix;
+    protected PropertyType currentPropertyType;
 
     /** The count of valid value. */
-    private int validValueCount;
+    protected int validValueCount;
 
     /** Does it create dead link? */
-    private boolean createDeadLink;
+    protected boolean createDeadLink;
+    
+    /** The backup of relation property type. The element type is RelationPropertyType. */
+    protected Stack relationPropertyTypeBackup;
+    
+    /** The backup of base suffix. The element type is String. */
+    protected Stack baseSuffixBackup;
+    
+    /** The backup of base suffix. The element type is String. */
+    protected Stack relationSuffixBackup;
 
     // ===================================================================================
     //                                                                            Behavior
@@ -106,13 +107,20 @@ public class RelationRowCreationResource {
     }
 
     public void backupRelationPropertyType() {
-        tmpRelationPropertyType = relationPropertyType;
+        getOrCreateRelationPropertyTypeBackup().push(getRelationPropertyType());
     }
 
     public void restoreRelationPropertyType() {
-        relationPropertyType = tmpRelationPropertyType;
+        setRelationPropertyType((RelationPropertyType)getOrCreateRelationPropertyTypeBackup().pop());
     }
-
+    
+    protected Stack getOrCreateRelationPropertyTypeBackup() {
+        if (relationPropertyTypeBackup == null) {
+            relationPropertyTypeBackup = new Stack();
+        }
+        return relationPropertyTypeBackup;
+    }
+    
     // -----------------------------------------------------
     //                                           columnNames
     //                                           -----------
@@ -192,20 +200,34 @@ public class RelationRowCreationResource {
         restoreRelationNoSuffix();
     }
 
-    private void backupBaseSuffix() {
-        tmpBaseSuffix = baseSuffix;
+    protected void backupBaseSuffix() {
+        getOrCreateBaseSuffixBackup().push(getBaseSuffix());
     }
 
-    private void restoreBaseSuffix() {
-        baseSuffix = tmpBaseSuffix;
+    protected void restoreBaseSuffix() {
+        setBaseSuffix((String)getOrCreateBaseSuffixBackup().pop());
     }
 
-    private void backupRelationNoSuffix() {
-        tmpRelationNoSuffix = relationNoSuffix;
+    protected Stack getOrCreateBaseSuffixBackup() {
+        if (baseSuffixBackup == null) {
+            baseSuffixBackup = new Stack();
+        }
+        return baseSuffixBackup;
+    }
+    
+    protected void backupRelationNoSuffix() {
+        getOrCreateRelationNoSuffixBackup().push(getRelationNoSuffix());;
     }
 
-    private void restoreRelationNoSuffix() {
-        relationNoSuffix = tmpRelationNoSuffix;
+    protected void restoreRelationNoSuffix() {
+        setRelationNoSuffix((String)getOrCreateRelationNoSuffixBackup().pop());
+    }
+
+    protected Stack getOrCreateRelationNoSuffixBackup() {
+        if (relationSuffixBackup == null) {
+            relationSuffixBackup = new Stack();
+        }
+        return relationSuffixBackup;
     }
 
     // -----------------------------------------------------
