@@ -19,9 +19,10 @@ import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.MethodSetupFailureRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.dao.unit.S2DaoTestCase;
+import org.seasar.framework.exception.SRuntimeException;
 
 /**
- * @author taichi 
+ * @author taichi
  * @author azusa
  */
 public class PkOnlyTableTest extends S2DaoTestCase {
@@ -50,31 +51,37 @@ public class PkOnlyTableTest extends S2DaoTestCase {
         assertEquals(1, i.intValue());
     }
 
+    public void setUpUpdateUnlessNullTx() {
+        include("PkOnlyTableTest.dicon");
+    }
+
     public void testUpdateUnlessNullTx() throws Exception {
+        PkOnlyTableDao2 dao = (PkOnlyTableDao2) getComponent(PkOnlyTableDao2.class);
         try {
-            DaoMetaData dmd = createDaoMetaData(PkOnlyTableDao2.class);
-            SqlCommand cmd = dmd.getSqlCommand("updateUnlessNull");
-            PkOnlyTable data = new PkOnlyTable();
-            data.setAaa("value");
-            cmd.execute(new Object[] { data });
+            dao.updateUnlessNull(new PkOnlyTable());
             fail();
-            //TODO 発生する例外が変わってしまいました...
-            //        } catch (NoUpdatePropertyTypeRuntimeException e) {
         } catch (MethodSetupFailureRuntimeException e) {
-            assertTrue(true);
+            assertEquals("EDAO0020", ((SRuntimeException) e.getCause())
+                    .getMessageCode());
+            e.printStackTrace();
         }
+    }
+
+    public void setUpUpdateTx() {
+        include("PkOnlyTableTest.dicon");
     }
 
     /*
      * https://www.seasar.org/issues/browse/DAO-52
      */
     public void testUpdateTx() throws Exception {
-        //TODO なんか変...
+        PkOnlyTableDao2 dao = (PkOnlyTableDao2) getComponent(PkOnlyTableDao2.class);
         try {
-            createDaoMetaData(PkOnlyTableDao2.class);
+            dao.update(new PkOnlyTable());
             fail();
         } catch (MethodSetupFailureRuntimeException e) {
-            assertTrue(true);
+            assertEquals("EDAO0020", ((SRuntimeException) e.getCause())
+                    .getMessageCode());
             e.printStackTrace();
         }
 

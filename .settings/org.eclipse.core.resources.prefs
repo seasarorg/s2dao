@@ -1,8 +1,9 @@
-#Sat Aug 11 00:50:26 JST 2007
+#Fri Feb 29 12:40:36 JST 2008
 eclipse.preferences.version=1
 encoding//s2-dao-examples/src/main/resources/examples/dao/TruncateTableDao.dicon=UTF-8
 encoding//s2-dao/src/main/resources/dao.dicon=MS932
 encoding//s2-dao/src/test/resources/app.dicon=UTF-8
 encoding//s2-dao/src/test/resources/dao-derby.dicon=MS932
+encoding//s2-dao/src/test/resources/org/seasar/dao/impl/PkOnlyTableTest.dicon=UTF-8
 encoding/<project>=UTF-8
 encoding/copyZip.bat=MS932
