@@ -22,7 +22,6 @@ import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.IdentifierGenerator;
-import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.dao.PrimaryKeyNotFoundRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
@@ -52,9 +51,6 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
         handler.setSql(getSql());
         injectDaoClass(handler);
         int rows = handler.execute(args);
-        if (isCheckSingleRowUpdate() && rows != 1) {
-            throw createNotSingleRowUpdatedRuntimeException(args[0], rows);
-        }
         return new Integer(rows);
     }
 
@@ -64,11 +60,6 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
 
     public void setCheckSingleRowUpdate(boolean checkSingleRowUpdate) {
         this.checkSingleRowUpdate = checkSingleRowUpdate;
-    }
-
-    protected NotSingleRowUpdatedRuntimeException createNotSingleRowUpdatedRuntimeException(
-            Object bean, int rows) {
-        return new NotSingleRowUpdatedRuntimeException(bean, rows);
     }
 
     protected PropertyType[] getPropertyTypes() {

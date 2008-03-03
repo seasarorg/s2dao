@@ -43,7 +43,7 @@ public abstract class AbstractBatchAutoHandler extends AbstractAutoHandler
             StatementFactory statementFactory, BeanMetaData beanMetaData,
             PropertyType[] propertyTypes) {
 
-        super(dataSource, statementFactory, beanMetaData, propertyTypes);
+        super(dataSource, statementFactory, beanMetaData, propertyTypes, false);
     }
 
     public int[] execute(List list, Class[] argTypes)

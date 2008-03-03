@@ -26,6 +26,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.UpdateHandler;
@@ -58,14 +59,17 @@ public abstract class AbstractAutoHandler extends BasicHandler implements
 
     private PropertyType[] propertyTypes;
 
+    private boolean checkSingleRowUpdate;
+
     public AbstractAutoHandler(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData,
-            PropertyType[] propertyTypes) {
+            PropertyType[] propertyTypes, boolean checkSingleRowUpdate) {
 
         setDataSource(dataSource);
         setStatementFactory(statementFactory);
         this.beanMetaData = beanMetaData;
         this.propertyTypes = propertyTypes;
+        this.checkSingleRowUpdate = checkSingleRowUpdate;
     }
 
     public BeanMetaData getBeanMetaData() {
@@ -141,6 +145,9 @@ public abstract class AbstractAutoHandler extends BasicHandler implements
             ret = PreparedStatementUtil.executeUpdate(ps);
         } finally {
             StatementUtil.close(ps);
+        }
+        if (checkSingleRowUpdate && ret != 1) {
+            throw new NotSingleRowUpdatedRuntimeException(bean, ret);
         }
         postUpdateBean(bean);
         return ret;

@@ -22,7 +22,6 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
-import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.framework.log.Logger;
@@ -57,19 +56,12 @@ public class UpdateModifiedOnlyCommand extends UpdateAutoDynamicCommand {
         }
 
         final UpdateAutoHandler handler = new UpdateAutoHandler(
-                getDataSource(), getStatementFactory(), bmd, propertyTypes);
+                getDataSource(), getStatementFactory(), bmd, propertyTypes,
+                isCheckSingleRowUpdate());
         injectDaoClass(handler);
         handler.setSql(createUpdateSql(bmd, propertyTypes));
         final int i = handler.execute(args);
-        if (isCheckSingleRowUpdate() && i < 1) {
-            throw createNotSingleRowUpdatedRuntimeException(args[0], i);
-        }
         return new Integer(i);
-    }
-
-    protected NotSingleRowUpdatedRuntimeException createNotSingleRowUpdatedRuntimeException(
-            Object bean, int rows) {
-        return new NotSingleRowUpdatedRuntimeException(bean, rows);
     }
 
     protected String createNoUpdateLogMessage(final Object bean,

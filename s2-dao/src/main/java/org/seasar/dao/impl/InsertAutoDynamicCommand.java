@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.IdentifierGenerator;
 import org.seasar.dao.InjectDaoClassSupport;
-import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.dao.SqlCommand;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
@@ -61,13 +60,11 @@ public class InsertAutoDynamicCommand implements SqlCommand,
         final String sql = createInsertSql(bmd, propertyTypes);
 
         InsertAutoHandler handler = new InsertAutoHandler(getDataSource(),
-                getStatementFactory(), bmd, propertyTypes);
+                getStatementFactory(), bmd, propertyTypes,
+                isCheckSingleRowUpdate());
         injectDaoClass(handler);
         handler.setSql(sql);
         int rows = handler.execute(args);
-        if (isCheckSingleRowUpdate() && rows != 1) {
-            throw new NotSingleRowUpdatedRuntimeException(args[0], rows);
-        }
         return new Integer(rows);
     }
 

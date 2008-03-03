@@ -22,7 +22,6 @@ import javax.sql.DataSource;
 
 import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.NoUpdatePropertyTypeRuntimeException;
-import org.seasar.dao.NotSingleRowUpdatedRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.StatementFactory;
 
@@ -55,19 +54,12 @@ public class UpdateAutoDynamicCommand extends AbstractSqlCommand {
                 bean, getPropertyNames());
 
         UpdateAutoHandler handler = new UpdateAutoHandler(getDataSource(),
-                getStatementFactory(), bmd, propertyTypes);
+                getStatementFactory(), bmd, propertyTypes,
+                isCheckSingleRowUpdate());
         injectDaoClass(handler);
         handler.setSql(createUpdateSql(bmd, propertyTypes));
         int i = handler.execute(args);
-        if (isCheckSingleRowUpdate() && i < 1) {
-            throw createNotSingleRowUpdatedRuntimeException(args[0], i);
-        }
         return new Integer(i);
-    }
-
-    protected NotSingleRowUpdatedRuntimeException createNotSingleRowUpdatedRuntimeException(
-            Object bean, int rows) {
-        return new NotSingleRowUpdatedRuntimeException(bean, rows);
     }
 
     protected PropertyType[] createUpdatePropertyTypes(BeanMetaData bmd,

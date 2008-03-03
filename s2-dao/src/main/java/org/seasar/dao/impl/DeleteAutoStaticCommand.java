@@ -35,7 +35,7 @@ public class DeleteAutoStaticCommand extends AbstractAutoStaticCommand {
 
     protected AbstractAutoHandler createAutoHandler() {
         return new DeleteAutoHandler(getDataSource(), getStatementFactory(),
-                getBeanMetaData(), getPropertyTypes());
+                getBeanMetaData(), getPropertyTypes(), isCheckSingleRowUpdate());
     }
 
     protected void setupSql() {

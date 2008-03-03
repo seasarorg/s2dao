@@ -36,7 +36,7 @@ public class InsertAutoStaticCommand extends AbstractAutoStaticCommand {
 
     protected AbstractAutoHandler createAutoHandler() {
         return new InsertAutoHandler(getDataSource(), getStatementFactory(),
-                getBeanMetaData(), getPropertyTypes());
+                getBeanMetaData(), getPropertyTypes(), isCheckSingleRowUpdate());
     }
 
     protected void setupSql() {

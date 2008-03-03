@@ -35,7 +35,7 @@ public class UpdateAutoStaticCommand extends AbstractAutoStaticCommand {
 
     protected AbstractAutoHandler createAutoHandler() {
         return new UpdateAutoHandler(getDataSource(), getStatementFactory(),
-                getBeanMetaData(), getPropertyTypes());
+                getBeanMetaData(), getPropertyTypes(), isCheckSingleRowUpdate());
     }
 
     protected void setupSql() {

@@ -29,9 +29,10 @@ public class DeleteAutoHandler extends AbstractAutoHandler {
 
     public DeleteAutoHandler(DataSource dataSource,
             StatementFactory statementFactory, BeanMetaData beanMetaData,
-            PropertyType[] propertyTypes) {
+            PropertyType[] propertyTypes, boolean checkSingleRowUpdate) {
 
-        super(dataSource, statementFactory, beanMetaData, propertyTypes);
+        super(dataSource, statementFactory, beanMetaData, propertyTypes,
+                checkSingleRowUpdate);
     }
 
     protected void setupBindVariables(Object bean) {
