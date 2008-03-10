@@ -38,7 +38,7 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
 
     public static final String dtoMetaDataFactory_BINDING = "bindingType=must";
 
-    private DtoMetaDataFactory dtoMetaDataFactory;
+    protected DtoMetaDataFactory dtoMetaDataFactory;
 
     public ResultSetHandler getResultSetHandler(
             final DaoAnnotationReader daoAnnotationReader,
