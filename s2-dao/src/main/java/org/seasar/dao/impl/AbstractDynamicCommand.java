@@ -21,6 +21,7 @@ import org.seasar.dao.CommandContext;
 import org.seasar.dao.Node;
 import org.seasar.dao.context.CommandContextImpl;
 import org.seasar.dao.parser.SqlParserImpl;
+import org.seasar.dao.util.FetchHandlerUtil;
 import org.seasar.extension.jdbc.StatementFactory;
 
 /**
@@ -71,6 +72,10 @@ public abstract class AbstractDynamicCommand extends AbstractSqlCommand {
         CommandContext ctx = new CommandContextImpl();
         if (args != null) {
             for (int i = 0; i < args.length; ++i) {
+                if (i == (args.length - 1) && args[i] != null
+                        && FetchHandlerUtil.isFetchHandler(args[i].getClass())) {
+                    break;
+                }
                 Class argType = null;
                 if (i < argTypes.length) {
                     argType = argTypes[i];

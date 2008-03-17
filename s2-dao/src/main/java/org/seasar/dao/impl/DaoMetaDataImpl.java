@@ -55,6 +55,7 @@ import org.seasar.dao.dbms.DbmsManager;
 import org.seasar.dao.handler.ProcedureHandlerImpl;
 import org.seasar.dao.pager.NullPagingSqlRewriter;
 import org.seasar.dao.pager.PagingSqlRewriter;
+import org.seasar.dao.util.FetchHandlerUtil;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
@@ -755,7 +756,17 @@ public class DaoMetaDataImpl implements DaoMetaData {
 
     protected boolean isAutoSelectSqlByDto(final Method method,
             final String[] argNames) {
-        return argNames.length == 0 && method.getParameterTypes().length == 1;
+        if (argNames.length == 0) {
+            if (method.getParameterTypes().length == 1) {
+                return true;
+            } else if (method.getParameterTypes().length == 2) {
+                Class clazz = method.getParameterTypes()[1];
+                if (FetchHandlerUtil.isFetchHandler(clazz)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     protected SelectDynamicCommand setupNonQuerySelectMethodByDto(

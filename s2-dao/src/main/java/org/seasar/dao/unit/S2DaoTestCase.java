@@ -48,7 +48,7 @@ import org.seasar.dao.impl.FieldAnnotationReaderFactory;
 import org.seasar.dao.impl.ProcedureMetaDataFactoryImpl;
 import org.seasar.dao.impl.PropertyTypeFactoryBuilderImpl;
 import org.seasar.dao.impl.RelationPropertyTypeFactoryBuilderImpl;
-import org.seasar.dao.impl.ResultSetHandlerFactoryImpl;
+import org.seasar.dao.impl.ResultSetHandlerFactorySelector;
 import org.seasar.dao.impl.ValueTypeFactoryImpl;
 import org.seasar.dao.pager.PagerContext;
 import org.seasar.extension.dataset.DataSet;
@@ -258,8 +258,9 @@ public abstract class S2DaoTestCase extends S2TestCase {
 
     protected ResultSetHandlerFactory getResultSetHandlerFactory() {
         if (resultSetHandlerFactory == null) {
-            final ResultSetHandlerFactoryImpl factory = new ResultSetHandlerFactoryImpl();
+            final ResultSetHandlerFactorySelector factory = new ResultSetHandlerFactorySelector();
             factory.setDtoMetaDataFactory(getDtoMetaDataFactory());
+            factory.init();
             resultSetHandlerFactory = factory;
         }
         return resultSetHandlerFactory;
@@ -281,7 +282,8 @@ public abstract class S2DaoTestCase extends S2TestCase {
         return dtoMetaDataFactory;
     }
 
-    protected void setDtoMetaDataFactory(final DtoMetaDataFactory dtoMetaDataFactory) {
+    protected void setDtoMetaDataFactory(
+            final DtoMetaDataFactory dtoMetaDataFactory) {
         this.dtoMetaDataFactory = dtoMetaDataFactory;
     }
 
