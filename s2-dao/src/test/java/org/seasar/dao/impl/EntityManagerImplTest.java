@@ -16,6 +16,7 @@
 package org.seasar.dao.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.DaoMetaDataFactory;
@@ -39,9 +40,23 @@ public class EntityManagerImplTest extends S2TestCase {
         assertEquals("1", 1, employees.size());
     }
 
+    public void testFind_BTS6491_ByDto() throws Exception {
+        List employees = entityManager.find(EmployeeDto.class,
+                "\n SELECT * FROM EMP WHERE empno = ?", new Integer(7788));
+        System.out.println(employees);
+        assertEquals("1", 1, employees.size());
+        assertTrue("2", employees.get(0) instanceof EmployeeDto);
+    }
+
     public void testFindArray() throws Exception {
         Employee[] employees = (Employee[]) entityManager.findArray(
                 "empno = ?", new Integer(7788));
+        assertEquals("1", 1, employees.length);
+    }
+
+    public void testFindArrayByDto() throws Exception {
+        EmployeeDto[] employees = (EmployeeDto[]) entityManager.findArray(
+                EmployeeDto.class, "empno = ?", new Integer(7788));
         assertEquals("1", 1, employees.length);
     }
 
@@ -49,6 +64,32 @@ public class EntityManagerImplTest extends S2TestCase {
         Employee employee = (Employee) entityManager.findBean("empno = ?",
                 new Integer(7788));
         assertEquals("1", "SCOTT", employee.getEname());
+    }
+
+    public void testFindBeanByDto() throws Exception {
+        EmployeeDto employee = (EmployeeDto) entityManager.findBean(
+                EmployeeDto.class, "empno = ?", new Integer(7788));
+        assertEquals("1", "SCOTT", employee.getEname());
+    }
+
+    public void testFindMap() throws Exception {
+        Map employee = (Map) entityManager.findMap("empno = ?", new Integer(
+                7788));
+        assertEquals("1", "SCOTT", employee.get("ename"));
+    }
+
+    public void testFindMapList() throws Exception {
+        List employees = (List) entityManager.findMapList("empno = ?",
+                new Integer(7788));
+        assertEquals("1", 1, employees.size());
+        assertEquals("2", "SCOTT", ((Map) employees.get(0)).get("ename"));
+    }
+
+    public void testFindMapArray() throws Exception {
+        Map[] employees = (Map[]) entityManager.findMapArray("empno = ?",
+                new Integer(7788));
+        assertEquals("1", 1, employees.length);
+        assertEquals("2", "SCOTT", employees[0].get("ename"));
     }
 
     public void testFindObject() throws Exception {

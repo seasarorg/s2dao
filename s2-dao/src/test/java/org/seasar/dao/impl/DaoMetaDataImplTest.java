@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.seasar.dao.DaoMetaData;
 import org.seasar.dao.IllegalAnnotationRuntimeException;
@@ -285,6 +286,46 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
         assertTrue("1", cmd.getSql().endsWith(" AND empno = ?"));
     }
 
+    public void testCreateFindCommandByDto() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
+        SqlCommand cmd = dmd.createFindCommand(EmployeeDto.class, null);
+        List employees = (List) cmd.execute(null);
+        System.out.println(employees);
+        assertTrue("1", employees.size() > 0);
+        assertTrue("2", employees.get(0) instanceof EmployeeDto);
+    }
+
+    public void testCreateFindCommand2ByDto() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
+        SqlCommand cmd = dmd.createFindCommand(EmployeeDto.class, null);
+        List employees = (List) cmd.execute(null);
+        System.out.println(employees);
+        assertTrue("1", employees.size() > 0);
+        assertTrue("2", employees.get(0) instanceof EmployeeDto);
+    }
+
+    public void testCreateFindCommand3ByDto() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
+
+        SqlCommand cmd = dmd.createFindCommand(EmployeeDto.class,
+                "select * from emp");
+        List employees = (List) cmd.execute(null);
+        System.out.println(employees);
+        assertTrue("1", employees.size() > 0);
+        assertTrue("2", employees.get(0) instanceof EmployeeDto);
+    }
+
+    public void testCreateFindCommand4ByDto() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
+
+        SqlCommand cmd = dmd.createFindCommand(EmployeeDto.class,
+                "order by empno");
+        List employees = (List) cmd.execute(null);
+        System.out.println(employees);
+        assertTrue("1", employees.size() > 0);
+        assertTrue("2", employees.get(0) instanceof EmployeeDto);
+    }
+
     public void testCreateFindBeanCommand() throws Exception {
         DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
 
@@ -301,6 +342,48 @@ public abstract class DaoMetaDataImplTest extends S2DaoTestCase {
                 .createFindObjectCommand("select count(*) from emp");
         Integer count = (Integer) cmd.execute(null);
         assertEquals("1", 14, count.intValue());
+    }
+
+    public void testCreateFindBeanCommandByDto() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
+
+        SqlCommand cmd = dmd.createFindBeanCommand(EmployeeDto.class,
+                "empno = ?");
+        Object employee = cmd.execute(new Object[] { new Integer(7788) });
+        System.out.println(employee);
+        assertNotNull("1", employee);
+        assertTrue("2", employee instanceof EmployeeDto);
+    }
+
+    public void testCreateFindMapCommand() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
+
+        SqlCommand cmd = dmd.createFindMapCommand("empno = ?");
+        Object employee = cmd.execute(new Object[] { new Integer(7788) });
+        System.out.println(employee);
+        assertNotNull("1", employee);
+        assertTrue("2", employee instanceof Map);
+    }
+
+    public void testCreateFindMapListCommand() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
+
+        SqlCommand cmd = dmd.createFindMapListCommand("empno = ?");
+        Object employee = cmd.execute(new Object[] { new Integer(7788) });
+        System.out.println(employee);
+        assertNotNull("1", employee);
+        assertTrue("2", employee instanceof List);
+        assertTrue("3", ((List) employee).get(0) instanceof Map);
+    }
+
+    public void testCreateFindMapArrayCommand() throws Exception {
+        DaoMetaData dmd = createDaoMetaData(getDaoClass("EmployeeAutoDao"));
+
+        SqlCommand cmd = dmd.createFindMapArrayCommand("empno = ?");
+        Object employee = cmd.execute(new Object[] { new Integer(7788) });
+        System.out.println(employee);
+        assertNotNull("1", employee);
+        assertTrue("2", employee instanceof Map[]);
     }
 
     public void testSelectAutoByQuery() throws Exception {

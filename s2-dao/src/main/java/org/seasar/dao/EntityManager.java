@@ -16,6 +16,7 @@
 package org.seasar.dao;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author higa
@@ -33,6 +34,17 @@ public interface EntityManager {
 
     public List find(String query, Object[] args);
 
+    public List find(Class dtoClass, String query);
+
+    public List find(Class dtoClass, String query, Object arg1);
+
+    public List find(Class dtoClass, String query, Object arg1, Object arg2);
+
+    public List find(Class dtoClass, String query, Object arg1, Object arg2,
+            Object arg3);
+
+    public List find(Class dtoClass, String query, Object[] args);
+
     public Object[] findArray(String query);
 
     public Object[] findArray(String query, Object arg1);
@@ -44,6 +56,18 @@ public interface EntityManager {
 
     public Object[] findArray(String query, Object[] args);
 
+    public Object[] findArray(Class dtoClass, String query);
+
+    public Object[] findArray(Class dtoClass, String query, Object arg1);
+
+    public Object[] findArray(Class dtoClass, String query, Object arg1,
+            Object arg2);
+
+    public Object[] findArray(Class dtoClass, String query, Object arg1,
+            Object arg2, Object arg3);
+
+    public Object[] findArray(Class dtoClass, String query, Object[] args);
+
     public Object findBean(String query);
 
     public Object findBean(String query, Object arg1);
@@ -53,6 +77,49 @@ public interface EntityManager {
     public Object findBean(String query, Object arg1, Object arg2, Object arg3);
 
     public Object findBean(String query, Object[] args);
+
+    public Object findBean(Class dtoClass, String query);
+
+    public Object findBean(Class dtoClass, String query, Object arg1);
+
+    public Object findBean(Class dtoClass, String query, Object arg1,
+            Object arg2);
+
+    public Object findBean(Class dtoClass, String query, Object arg1,
+            Object arg2, Object arg3);
+
+    public Object findBean(Class dtoClass, String query, Object[] args);
+
+    public Map findMap(String query);
+
+    public Map findMap(String query, Object arg1);
+
+    public Map findMap(String query, Object arg1, Object arg2);
+
+    public Map findMap(String query, Object arg1, Object arg2, Object arg3);
+
+    public Map findMap(String query, Object[] args);
+
+    public List findMapList(String query);
+
+    public List findMapList(String query, Object arg1);
+
+    public List findMapList(String query, Object arg1, Object arg2);
+
+    public List findMapList(String query, Object arg1, Object arg2, Object arg3);
+
+    public List findMapList(String query, Object[] args);
+
+    public Map[] findMapArray(String query);
+
+    public Map[] findMapArray(String query, Object arg1);
+
+    public Map[] findMapArray(String query, Object arg1, Object arg2);
+
+    public Map[] findMapArray(String query, Object arg1, Object arg2,
+            Object arg3);
+
+    public Map[] findMapArray(String query, Object[] args);
 
     public Object findObject(String query);
 

@@ -37,9 +37,21 @@ public interface DaoMetaData {
 
     SqlCommand createFindCommand(String query);
 
+    SqlCommand createFindCommand(Class dtoClass, String query);
+
     SqlCommand createFindArrayCommand(String query);
 
+    SqlCommand createFindArrayCommand(Class dtoClass, String query);
+
     SqlCommand createFindBeanCommand(String query);
+
+    SqlCommand createFindBeanCommand(Class dtoClass, String query);
+
+    SqlCommand createFindMapCommand(String query);
+
+    SqlCommand createFindMapListCommand(String query);
+
+    SqlCommand createFindMapArrayCommand(String query);
 
     SqlCommand createFindObjectCommand(String query);
 

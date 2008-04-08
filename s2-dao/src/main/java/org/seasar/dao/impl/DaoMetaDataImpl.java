@@ -1045,10 +1045,22 @@ public class DaoMetaDataImpl implements DaoMetaData {
                 query);
     }
 
+    public SqlCommand createFindCommand(Class dtoClass, String query) {
+        return createSelectDynamicCommand(
+                new DtoListMetaDataResultSetHandler(dtoMetaDataFactory
+                        .getDtoMetaData(dtoClass), createRowCreator()), query);
+    }
+
     public SqlCommand createFindArrayCommand(final String query) {
         return createSelectDynamicCommand(
                 new BeanArrayMetaDataResultSetHandler(beanMetaData,
                         createRowCreator(), createRelationRowCreator()), query);
+    }
+
+    public SqlCommand createFindArrayCommand(Class dtoClass, String query) {
+        return createSelectDynamicCommand(
+                new DtoArrayMetaDataResultSetHandler(dtoMetaDataFactory
+                        .getDtoMetaData(dtoClass), createRowCreator()), query);
     }
 
     /**
@@ -1058,6 +1070,24 @@ public class DaoMetaDataImpl implements DaoMetaData {
         return createSelectDynamicCommand(new BeanMetaDataResultSetHandler(
                 beanMetaData, createRowCreator(), createRelationRowCreator()),
                 query);
+    }
+
+    public SqlCommand createFindBeanCommand(Class dtoClass, String query) {
+        return createSelectDynamicCommand(
+                new DtoMetaDataResultSetHandler(dtoMetaDataFactory
+                        .getDtoMetaData(dtoClass), createRowCreator()), query);
+    }
+
+    public SqlCommand createFindMapCommand(String query) {
+        return createSelectDynamicCommand(new MapResultSetHandler(), query);
+    }
+
+    public SqlCommand createFindMapListCommand(String query) {
+        return createSelectDynamicCommand(new MapListResultSetHandler(), query);
+    }
+
+    public SqlCommand createFindMapArrayCommand(String query) {
+        return createSelectDynamicCommand(new MapArrayResultSetHandler(), query);
     }
 
     protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)
