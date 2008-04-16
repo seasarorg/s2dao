@@ -19,7 +19,6 @@ import org.seasar.dao.CommandContext;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
-import org.seasar.framework.exception.SRuntimeException;
 import org.seasar.framework.util.StringUtil;
 
 /**
