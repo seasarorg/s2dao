@@ -9,7 +9,7 @@
   <artifactId>s2-dao-project</artifactId>
   <packaging>pom</packaging>
   <name>S2Dao Project</name>
-  <version>1.0.48-RC2-SNAPSHOT</version>
+  <version>1.0.48</version>
   <description></description>
   <url>http://s2dao.seasar.org/</url>
   <issueManagement>
@@ -217,14 +217,14 @@
     <repository>
       <id>maven.snapshot.seasar.org</id>
       <name>The Seasar Foundation Maven2 Repository(snapshot)</name>
-      <url>http://maven.seasar.org/maven2-snapshot</url>
+      <url>http://maven.seasar.org/maven2</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <!--
     <pluginRepository>
-      <id>people.apache.org m2-snapshot</id>
-      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+      <id>people.apache.org m2</id>
+      <url>http://people.apache.org/repo/m2-repository</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -328,7 +328,7 @@
       <uniqueVersion>true</uniqueVersion>
       <id>maven.seasar.org</id>
       <name>The Seasar Foundation Maven2 Snapshot Repository</name>
-      <url>dav:https://www.seasar.org/maven/maven2-snapshot</url>
+      <url>dav:https://www.seasar.org/maven/maven2</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
