@@ -117,6 +117,8 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
 
         BasicSelectHandler handler = new BasicSelectHandler(dataSource,
                 countSQL, new ObjectResultSetHandler());
+        //[DAO-139]
+        handler.setFetchSize(-1);
         Object ret = handler.execute(args, (Class[]) argTypes);
         if (ret != null) {
             return IntegerConversionUtil.toPrimitiveInt(ret);
