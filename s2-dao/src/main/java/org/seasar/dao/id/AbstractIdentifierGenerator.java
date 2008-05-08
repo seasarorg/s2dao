@@ -56,6 +56,8 @@ public abstract class AbstractIdentifierGenerator implements
     protected Object executeSql(DataSource ds, String sql, Object[] args) {
         BasicSelectHandler handler = new BasicSelectHandler(ds, sql,
                 resultSetHandler);
+        //[DAO-139]
+        handler.setFetchSize(-1);
         return handler.execute(args);
     }
 
