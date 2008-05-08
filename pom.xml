@@ -328,7 +328,7 @@
       <uniqueVersion>true</uniqueVersion>
       <id>maven.seasar.org</id>
       <name>The Seasar Foundation Maven2 Snapshot Repository</name>
-      <url>dav:https://www.seasar.org/maven/maven2</url>
+      <url>dav:https://www.seasar.org/maven/maven2-snapshot</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
