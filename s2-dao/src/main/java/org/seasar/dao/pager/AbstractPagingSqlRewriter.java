@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import org.seasar.extension.jdbc.ResultSetFactory;
+import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.impl.BasicSelectHandler;
 import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 import org.seasar.framework.exception.SQLRuntimeException;
@@ -34,7 +36,7 @@ import org.seasar.framework.util.IntegerConversionUtil;
  * </p>
  * 
  * @author jundu
- *
+ * 
  */
 public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
 
@@ -50,14 +52,22 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
                             | Pattern.UNICODE_CASE);
 
     /*
-     * 全件数取得時のSQLからorder by句を除去するかどうかのフラグです。
-     * trueならorder by句を除去します、falseなら除去しません。
+     * 全件数取得時のSQLからorder by句を除去するかどうかのフラグです。 trueならorder
+     * by句を除去します、falseなら除去しません。
      */
     private boolean chopOrderBy = true;
 
     public static final String dataSource_BINDING = "bindingType=must";
 
     private DataSource dataSource;
+
+    public static final String statementFactory_BINDING = "bindingType=must";
+
+    private StatementFactory statementFactory;
+
+    public static final String resultsetFactory_BINDING = "bindingType=must";
+
+    private ResultSetFactory resultsetFactory;
 
     public String rewrite(String sql, Object[] args, Class[] argTypes) {
         final Object[] pagingArgs = PagerContext.getContext().peekArgs();
@@ -79,7 +89,9 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
 
     /**
      * 全件数取得時のSQLからorder by句を除去するフラグをセットします
-     * @param chopOrderBy trueならorder by句を除去します、falseなら除去しません
+     * 
+     * @param chopOrderBy
+     *            trueならorder by句を除去します、falseなら除去しません
      */
     public void setChopOrderBy(boolean chopOrderBy) {
         this.chopOrderBy = chopOrderBy;
@@ -87,6 +99,7 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
 
     /**
      * 全件数取得時のSQLからorder by句を除去するかどうかを返します
+     * 
      * @return order by句を除去するならtrue、それ以外ではfalse
      */
     public boolean isChopOrderBy() {
@@ -99,6 +112,22 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public StatementFactory getStatementFactory() {
+        return statementFactory;
+    }
+
+    public void setStatementFactory(StatementFactory statementFactory) {
+        this.statementFactory = statementFactory;
+    }
+
+    public ResultSetFactory getResultsetFactory() {
+        return resultsetFactory;
+    }
+
+    public void setResultsetFactory(ResultSetFactory resultsetFactory) {
+        this.resultsetFactory = resultsetFactory;
     }
 
     /**
@@ -116,8 +145,9 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
         String countSQL = makeCountSql(baseSQL);
 
         BasicSelectHandler handler = new BasicSelectHandler(dataSource,
-                countSQL, new ObjectResultSetHandler());
-        //[DAO-139]
+                countSQL, new ObjectResultSetHandler(), statementFactory,
+                resultsetFactory);
+        // [DAO-139]
         handler.setFetchSize(-1);
         Object ret = handler.execute(args, (Class[]) argTypes);
         if (ret != null) {
@@ -145,9 +175,12 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
     /**
      * 指定したオフセットと件数で絞り込む条件を付加したSQLを作成します。
      * 
-     * @param baseSQL 変更前のSQL
-     * @param limit 取得する件数
-     * @param offset 何行目以降を取得するか（offset >= 0)
+     * @param baseSQL
+     *            変更前のSQL
+     * @param limit
+     *            取得する件数
+     * @param offset
+     *            何行目以降を取得するか（offset >= 0)
      * @return 条件を付加したSQL
      */
     abstract String makeLimitOffsetSql(String baseSQL, int limit, int offset);
