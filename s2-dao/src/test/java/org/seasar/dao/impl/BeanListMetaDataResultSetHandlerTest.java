@@ -28,9 +28,8 @@ import org.seasar.extension.jdbc.ResultSetHandler;
 
 public class BeanListMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
-    private BeanMetaData beanMetaData;
-
     public void testHandle() throws Exception {
+        BeanMetaData beanMetaData = createBeanMetaData(Employee.class);
         ResultSetHandler handler = new BeanListMetaDataResultSetHandler(
                 beanMetaData, createRowCreator(), createRelationRowCreator());
         String sql = "select * from emp";
@@ -55,6 +54,7 @@ public class BeanListMetaDataResultSetHandlerTest extends S2DaoTestCase {
     }
 
     public void testHandle2() throws Exception {
+        BeanMetaData beanMetaData = createBeanMetaData(Employee.class);
         ResultSetHandler handler = new BeanListMetaDataResultSetHandler(
                 beanMetaData, createRowCreator(), createRelationRowCreator());
         String sql = "select emp.*, dept.dname as dname_0 from emp, dept where emp.deptno = dept.deptno and emp.deptno = 20";
@@ -83,6 +83,7 @@ public class BeanListMetaDataResultSetHandlerTest extends S2DaoTestCase {
     }
 
     public void testHandle3() throws Exception {
+        BeanMetaData beanMetaData = createBeanMetaData(Employee.class);
         ResultSetHandler handler = new BeanListMetaDataResultSetHandler(
                 beanMetaData, createRowCreator(), createRelationRowCreator());
         String sql = "select emp.*, dept.deptno as deptno_0, dept.dname as dname_0 from emp, dept where dept.deptno = 20 and emp.deptno = dept.deptno";
@@ -104,6 +105,34 @@ public class BeanListMetaDataResultSetHandlerTest extends S2DaoTestCase {
         assertSame("1", emp.getDepartment(), emp2.getDepartment());
     }
 
+    public void testHandle_relationship() throws Exception {
+        BeanMetaData beanMetaData = createBeanMetaData(Employee23.class);
+        ResultSetHandler handler = new BeanListMetaDataResultSetHandler(
+                beanMetaData, createRowCreator(), createRelationRowCreator());
+        String sql = "select emp.empno, emp.ename, emp.deptno, department.deptno as deptno_0, department.dname as dname_0 from EMP5 emp LEFT OUTER JOIN DEPT department on emp.deptno = department.deptno order by emp.empno";
+        Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
+        List ret = null;
+        try {
+            ResultSet rs = ps.executeQuery();
+            try {
+                ret = (List) handler.handle(rs);
+            } finally {
+                rs.close();
+            }
+        } finally {
+            ps.close();
+        }
+        Employee23 emp = (Employee23) ret.get(0);
+        assertNull(emp.getDepartment());
+        Employee23 emp2 = (Employee23) ret.get(1);
+
+        Department dept2 = emp2.getDepartment();
+        assertNotNull(dept2);
+        assertEquals(10, dept2.getDeptno());
+        assertEquals("ACCOUNTING", dept2.getDname());
+    }
+
     protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)
         return new RowCreatorImpl();
     }
@@ -111,14 +140,9 @@ public class BeanListMetaDataResultSetHandlerTest extends S2DaoTestCase {
     protected RelationRowCreator createRelationRowCreator() {
         return new RelationRowCreatorImpl();
     }
-    
+
     public void setUp() {
         include("j2ee.dicon");
-    }
-
-    protected void setUpAfterBindFields() throws Throwable {
-        super.setUpAfterBindFields();
-        beanMetaData = createBeanMetaData(Employee.class);
     }
 
 }

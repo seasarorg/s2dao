@@ -27,8 +27,6 @@ import org.seasar.dao.BeanMetaData;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.RowCreator;
-import org.seasar.extension.jdbc.PropertyType;
-import org.seasar.extension.jdbc.ValueType;
 import org.seasar.framework.beans.PropertyDesc;
 
 /**
@@ -38,9 +36,12 @@ public class BeanListMetaDataResultSetHandler extends
         AbstractBeanMetaDataResultSetHandler {
 
     /**
-     * @param dtoMetaData Dto meta data. (NotNull)
-     * @param rowCreator Row creator. (NotNull)
-     * @param relationRowCreator Relation row creator. (NotNul)
+     * @param dtoMetaData
+     *            Dto meta data. (NotNull)
+     * @param rowCreator
+     *            Row creator. (NotNull)
+     * @param relationRowCreator
+     *            Relation row creator. (NotNul)
      */
     public BeanListMetaDataResultSetHandler(BeanMetaData beanMetaData,
             RowCreator rowCreator, RelationRowCreator relationRowCreator) {
@@ -65,7 +66,8 @@ public class BeanListMetaDataResultSetHandler extends
         final RelationRowCache relRowCache = new RelationRowCache(relSize);
 
         while (rs.next()) {
-            // Lazy initialization because if the result is zero, the cache is unused.
+            // Lazy initialization because if the result is zero, the cache is
+            // unused.
             if (propertyCache == null) {
                 propertyCache = createPropertyCache(columnNames);
             }
@@ -107,47 +109,4 @@ public class BeanListMetaDataResultSetHandler extends
         return list;
     }
 
-    protected RelationKey createRelationKey(ResultSet rs,
-            RelationPropertyType rpt, Set columnNames, Map relKeyValues)
-            throws SQLException {
-
-        List keyList = new ArrayList();
-        BeanMetaData bmd = rpt.getBeanMetaData();
-        for (int i = 0; i < rpt.getKeySize(); ++i) {
-            /*
-             * PropertyType pt = bmd
-             * .getPropertyTypeByColumnName(rpt.getYourKey(i)); ValueType
-             * valueType = pt.getValueType(); String columnName =
-             * pt.getColumnName() + "_" + rpt.getRelationNo();
-             */
-            ValueType valueType = null;
-            String columnName = rpt.getMyKey(i);
-            if (columnNames.contains(columnName)) {
-                PropertyType pt = getBeanMetaData()
-                        .getPropertyTypeByColumnName(columnName);
-                valueType = pt.getValueType();
-            } else {
-                PropertyType pt = bmd.getPropertyTypeByColumnName(rpt
-                        .getYourKey(i));
-                columnName = pt.getColumnName() + "_" + rpt.getRelationNo();
-                if (columnNames.contains(columnName)) {
-                    valueType = pt.getValueType();
-                } else {
-                    return null;
-                }
-            }
-            Object value = valueType.getValue(rs, columnName);
-            if (value == null) {
-                return null;
-            }
-            relKeyValues.put(columnName, value);
-            keyList.add(value);
-        }
-        if (keyList.size() > 0) {
-            Object[] keys = keyList.toArray();
-            return new RelationKey(keys);
-        } else {
-            return null;
-        }
-    }
 }

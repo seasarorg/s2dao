@@ -17,6 +17,7 @@ package org.seasar.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,9 +38,12 @@ public class BeanMetaDataResultSetHandler extends
             .getLogger(BeanMetaDataResultSetHandler.class);
 
     /**
-     * @param dtoMetaData Dto meta data. (NotNull)
-     * @param rowCreator Row creator. (NotNull)
-     * @param relationRowCreator Relation row creator. (NotNul)
+     * @param dtoMetaData
+     *            Dto meta data. (NotNull)
+     * @param rowCreator
+     *            Row creator. (NotNull)
+     * @param relationRowCreator
+     *            Relation row creator. (NotNul)
      */
     public BeanMetaDataResultSetHandler(BeanMetaData beanMetaData,
             RowCreator rowCreator, RelationRowCreator relationRowCreator) {
@@ -52,13 +56,16 @@ public class BeanMetaDataResultSetHandler extends
     public Object handle(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
             // Set<String(columnName)>
-            final Set columnNames = createColumnNames(resultSet.getMetaData());// [DAO-118] (2007/08/26)
+            final Set columnNames = createColumnNames(resultSet.getMetaData());// [DAO-118]
+            // (2007/08/26)
 
             // Map<String(columnName), PropertyType>
-            Map propertyCache = createPropertyCache(columnNames);// [DAO-118] (2007/08/25)
+            Map propertyCache = createPropertyCache(columnNames);// [DAO-118]
+            // (2007/08/25)
 
             // Map<String(relationNoSuffix), Set<PropertyType>>
-            final Map relationPropertyCache = createRelationPropertyCache(columnNames);// [DAO-118] (2007/08/26)
+            final Map relationPropertyCache = createRelationPropertyCache(columnNames);// [DAO-118]
+            // (2007/08/26)
 
             final Object row = createRow(resultSet, propertyCache);
             for (int i = 0; i < getBeanMetaData().getRelationPropertyTypeSize(); ++i) {
@@ -67,8 +74,14 @@ public class BeanMetaDataResultSetHandler extends
                 if (rpt == null) {
                     continue;
                 }
-                Object relationRow = createRelationRow(resultSet, rpt,
-                        columnNames, null, relationPropertyCache);
+                Map relKeyValues = new HashMap();
+                RelationKey relKey = createRelationKey(resultSet, rpt,
+                        columnNames, relKeyValues);
+                Object relationRow = null;
+                if (relKey != null) {
+                    relationRow = createRelationRow(resultSet, rpt,
+                            columnNames, relKeyValues, relationPropertyCache);
+                }
                 if (relationRow != null) {
                     PropertyDesc pd = rpt.getPropertyDesc();
                     pd.setValue(row, relationRow);

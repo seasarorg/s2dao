@@ -27,9 +27,8 @@ import org.seasar.extension.jdbc.ResultSetHandler;
 
 public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
 
-    private BeanMetaData beanMetaData;
-
     public void testHandle() throws Exception {
+        BeanMetaData beanMetaData = createBeanMetaData(Employee.class);
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
                 beanMetaData, createRowCreator(), createRelationRowCreator());
         String sql = "select emp.*, dept.deptno as deptno_0, dept.dname as dname_0 from emp, dept where empno = 7788 and emp.deptno = dept.deptno";
@@ -55,6 +54,7 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
     }
 
     public void testHandle2() throws Exception {
+        BeanMetaData beanMetaData = createBeanMetaData(Employee.class);
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
                 beanMetaData, createRowCreator(), createRelationRowCreator());
         String sql = "select ename, job from emp where empno = 7788";
@@ -77,28 +77,83 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
         assertNull("2", dept);
     }
 
-    public void testHandle3() throws Exception {
+    // public void testHandle3() throws Exception {
+    // BeanMetaData beanMetaData = createBeanMetaData(Employee.class);
+    // ResultSetHandler handler = new BeanMetaDataResultSetHandler(
+    // beanMetaData, createRowCreator(), createRelationRowCreator());
+    // String sql = "select ename, dept.dname as dname_0 from emp, dept where
+    // empno = 7788 and emp.deptno = dept.deptno";
+    // Connection con = getConnection();
+    // PreparedStatement ps = con.prepareStatement(sql);
+    // Employee ret = null;
+    // try {
+    // ResultSet rs = ps.executeQuery();
+    // try {
+    // ret = (Employee) handler.handle(rs);
+    // } finally {
+    // rs.close();
+    // }
+    // } finally {
+    // ps.close();
+    // }
+    // assertNotNull("1", ret);
+    // System.out.println(ret.getEname());
+    // Department dept = ret.getDepartment();
+    // assertNotNull("2", dept);
+    // assertEquals("3", "RESEARCH", dept.getDname());
+    // }
+
+    public void testHandle_relationshipIsNull() throws Exception {
+        BeanMetaData beanMetaData = createBeanMetaData(Employee23.class);
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
                 beanMetaData, createRowCreator(), createRelationRowCreator());
-        String sql = "select ename, dept.dname as dname_0 from emp, dept where empno = 7788 and emp.deptno = dept.deptno";
+        String sql = "select emp.empno, emp.ename, emp.deptno, department.deptno as deptno_0, department.dname as dname_0 from EMP5 emp LEFT OUTER JOIN DEPT department on emp.deptno = department.deptno where emp.empno = 7788";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
-        Employee ret = null;
+        Employee23 ret = null;
         try {
             ResultSet rs = ps.executeQuery();
             try {
-                ret = (Employee) handler.handle(rs);
+                ret = (Employee23) handler.handle(rs);
             } finally {
                 rs.close();
             }
         } finally {
             ps.close();
         }
-        assertNotNull("1", ret);
-        System.out.println(ret.getEname());
+        assertNotNull(ret);
+        assertEquals(7788, ret.getEmpno());
+        assertEquals("SCOTT", ret.getEname());
+        assertNull(ret.getDeptno());
+        assertNull(ret.getDepartment());
+    }
+
+    public void testHandle_relationshipIsNotNull() throws Exception {
+        BeanMetaData beanMetaData = createBeanMetaData(Employee23.class);
+        ResultSetHandler handler = new BeanMetaDataResultSetHandler(
+                beanMetaData, createRowCreator(), createRelationRowCreator());
+        String sql = "select emp.empno, emp.ename, emp.deptno, department.deptno as deptno_0, department.dname as dname_0 from EMP5 emp LEFT OUTER JOIN DEPT department on emp.deptno = department.deptno where emp.empno = 7839";
+        Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
+        Employee23 ret = null;
+        try {
+            ResultSet rs = ps.executeQuery();
+            try {
+                ret = (Employee23) handler.handle(rs);
+            } finally {
+                rs.close();
+            }
+        } finally {
+            ps.close();
+        }
+        assertNotNull(ret);
+        assertEquals(7839, ret.getEmpno());
+        assertEquals("KING", ret.getEname());
+        assertEquals(new Integer(10), ret.getDeptno());
         Department dept = ret.getDepartment();
-        assertNotNull("2", dept);
-        assertEquals("3", "RESEARCH", dept.getDname());
+        assertNotNull(dept);
+        assertEquals(10, dept.getDeptno());
+        assertEquals("ACCOUNTING", dept.getDname());
     }
 
     protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)
@@ -108,14 +163,9 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
     protected RelationRowCreator createRelationRowCreator() {
         return new RelationRowCreatorImpl();
     }
-    
+
     public void setUp() {
         include("j2ee.dicon");
-    }
-
-    protected void setUpAfterBindFields() throws Throwable {
-        super.setUpAfterBindFields();
-        beanMetaData = createBeanMetaData(Employee.class);
     }
 
 }
