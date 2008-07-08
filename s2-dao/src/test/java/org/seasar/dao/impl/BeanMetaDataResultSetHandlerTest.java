@@ -77,32 +77,6 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
         assertNull("2", dept);
     }
 
-    // public void testHandle3() throws Exception {
-    // BeanMetaData beanMetaData = createBeanMetaData(Employee.class);
-    // ResultSetHandler handler = new BeanMetaDataResultSetHandler(
-    // beanMetaData, createRowCreator(), createRelationRowCreator());
-    // String sql = "select ename, dept.dname as dname_0 from emp, dept where
-    // empno = 7788 and emp.deptno = dept.deptno";
-    // Connection con = getConnection();
-    // PreparedStatement ps = con.prepareStatement(sql);
-    // Employee ret = null;
-    // try {
-    // ResultSet rs = ps.executeQuery();
-    // try {
-    // ret = (Employee) handler.handle(rs);
-    // } finally {
-    // rs.close();
-    // }
-    // } finally {
-    // ps.close();
-    // }
-    // assertNotNull("1", ret);
-    // System.out.println(ret.getEname());
-    // Department dept = ret.getDepartment();
-    // assertNotNull("2", dept);
-    // assertEquals("3", "RESEARCH", dept.getDname());
-    // }
-
     public void testHandle_relationshipIsNull() throws Exception {
         BeanMetaData beanMetaData = createBeanMetaData(Employee23.class);
         ResultSetHandler handler = new BeanMetaDataResultSetHandler(
