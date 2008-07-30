@@ -32,7 +32,8 @@ import org.seasar.framework.util.IntegerConversionUtil;
  * S2Dao用にSELECT文を書き換えるための骨格実装を提供するクラスです。
  * <p>
  * 元のSELECT文を編集して、 カウントを取るSQLを実行した後、
- * {@link org.seasar.dao.pager.PagingCondition}として渡されたパラメータの値に従ってページング処理を含むSQLを生成します。
+ * {@link org.seasar.dao.pager.PagingCondition}
+ * として渡されたパラメータの値に従ってページング処理を含むSQLを生成します。
  * </p>
  * 
  * @author jundu
@@ -42,14 +43,8 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
 
     private static final Pattern patternOrderBy = Pattern
             .compile(
-                    "order\\s+by\\s+("
-                            + // order by
-                            "[\\w\\p{L}.`\\[\\]]+(\\s+(asc|desc))?"
-                            + // 並び替え条件1個の場合
-                            "|([\\w\\p{L}.`\\[\\]]+(\\s+(asc|desc))?\\s*,\\s*)+[\\w\\p{L}.`\\[\\]])+(\\s+(asc|desc))?"
-                            + // 並び替え条件2個以上の場合
-                            "\\s*$", Pattern.CASE_INSENSITIVE
-                            | Pattern.UNICODE_CASE);
+                    "order\\s+by\\s+([\\w\\p{L}.`\\[\\]]+(\\s+(asc|desc))?\\s*)(,\\s*[\\w\\p{L}.`\\[\\]]+(\\s+(asc|desc))?)*\\s*$",
+                    Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /*
      * 全件数取得時のSQLからorder by句を除去するかどうかのフラグです。 trueならorder

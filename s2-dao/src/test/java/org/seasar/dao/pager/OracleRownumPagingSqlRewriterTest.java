@@ -19,7 +19,7 @@ import junit.framework.TestCase;
 
 /**
  * @author jundu
- *
+ * 
  */
 public class OracleRownumPagingSqlRewriterTest extends TestCase {
 
@@ -88,6 +88,14 @@ public class OracleRownumPagingSqlRewriterTest extends TestCase {
         assertEquals("count(*)で全件数を取得するSQLを生成(chopOrderBy=false, order by 除去)",
                 "SELECT count(*) FROM (SELECT * FROM DEPARTMENT order by id)",
                 rewriter.makeCountSql("SELECT * FROM DEPARTMENT order by id"));
+    }
+
+    public void testMakeCountSql_orderbyClauseInSubquery() throws Exception {
+        String actual = rewriter
+                .makeCountSql("SELECT * FROM (SELECT * FROM EMPLOYEE E ORDER BY E.EMPLOYEE_NAME ASC, E.EMPLOYEE_ID DESC, E.EMPLOYEE_HIREDATE ASC)");
+        assertEquals(
+                "SELECT count(*) FROM (SELECT * FROM (SELECT * FROM EMPLOYEE E ORDER BY E.EMPLOYEE_NAME ASC, E.EMPLOYEE_ID DESC, E.EMPLOYEE_HIREDATE ASC))",
+                actual);
     }
 
     /*
