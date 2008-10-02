@@ -32,6 +32,9 @@ public class FieldArgumentDtoAnnotationReader implements
     /** <code>PROCEDURE_PARAMETER</code>アノテーションのサフィックス */
     protected String PROCEDURE_PARAMETER_SUFFIX = "_PROCEDURE_PARAMETER";
 
+    /** <code>PROCEDURE_PARAMETER_INDEX</code>アノテーションのサフィックス */
+    protected String PROCEDURE_PARAMETER_INDEX_SUFFIX = "_PROCEDURE_PARAMETER_INDEX";
+
     /** <code>VALUE_TYPE</code>アノテーションのサフィックス */
     protected String VALUE_TYPE_SUFFIX = "_VALUE_TYPE";
 
@@ -41,6 +44,16 @@ public class FieldArgumentDtoAnnotationReader implements
         if (dtoDesc.hasField(name)) {
             final Field f = dtoDesc.getField(name);
             return (String) FieldUtil.get(f, null);
+        }
+        return null;
+    }
+
+    public Integer getProcedureParameterIndex(BeanDesc dtoDesc, Field field) {
+        final String name = field.getName() + PROCEDURE_PARAMETER_INDEX_SUFFIX;
+        if (dtoDesc.hasField(name)) {
+            final Field f = dtoDesc.getField(name);
+            final int index = FieldUtil.getInt(f, null);
+            return new Integer(index);
         }
         return null;
     }
