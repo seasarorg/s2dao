@@ -29,36 +29,18 @@ public interface ArgumentDtoAnnotationReader {
     /**
      * <code>PROCEDURE_PARAMETER</code>アノテーションの文字列を返します。
      * 
-     * @param dtoDesc
-     *            DTOのクラス記述
-     * @param field
-     *            フィールド
-     * @return <code>PROCEDURE_PARAMETER</code>
-     *         アノテーションが存在する場合はそのアノテーションの文字列、存在しない場合は<code>null</code>
+     * @param dtoDesc DTOのクラス記述
+     * @param field フィールド
+     * @return <code>PROCEDURE_PARAMETER</code>アノテーションが存在する場合はそのアノテーションの文字列、存在しない場合は<code>null</code>
      */
     String getProcedureParameter(BeanDesc dtoDesc, Field field);
 
     /**
-     * <code>PROCEDURE_PARAMETER_INDEX</code>アノテーションの文字列を返します。
-     * 
-     * @param dtoDesc
-     *            DTOのクラス記述
-     * @param field
-     *            フィールド
-     * @return <code>PROCEDURE_PARAMETER_INDEX</code>
-     *         アノテーションが存在する場合はそのアノテーションの値、存在しない場合は<code>null</code>
-     */
-    Integer getProcedureParameterIndex(BeanDesc dtoDesc, Field field);
-
-    /**
      * <code>VALUE_TYPE</code>アノテーションの文字列を返します。
      * 
-     * @param dtoDesc
-     *            DTOのクラス記述
-     * @param field
-     *            フィールド
-     * @return <code>VALUE_TYPE</code>アノテーションが存在する場合はそのアノテーションの文字列、存在しない場合は
-     *         <code>null</code>
+     * @param dtoDesc DTOのクラス記述
+     * @param field フィールド
+     * @return <code>VALUE_TYPE</code>アノテーションが存在する場合はそのアノテーションの文字列、存在しない場合は<code>null</code>
      */
     String getValueType(BeanDesc dtoDesc, Field field);
 }
