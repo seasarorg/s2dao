@@ -92,7 +92,7 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
             }
         }
         final BeanDesc dtoDesc = BeanDescFactory.getBeanDesc(dtoClass);
-        final Field[] fields = dtoClass.getDeclaredFields();
+        final Field[] fields = TypeUtil.getDeclaredFields(dtoClass);
         for (int i = 0; i < fields.length; i++) {
             final Field field = fields[i];
             if (!isInstanceField(field)) {
@@ -183,7 +183,8 @@ public class ProcedureMetaDataFactoryImpl implements ProcedureMetaDataFactory {
      * 
      * @param field
      *            フィールド
-     * @return <code>field</code>がインスタンスフィールドの場合<code>true</code>、そうでない場合<code>false</code>
+     * @return <code>field</code>がインスタンスフィールドの場合<code>true</code>、そうでない場合
+     *         <code>false</code>
      */
     protected boolean isInstanceField(final Field field) {
         final int mod = field.getModifiers();

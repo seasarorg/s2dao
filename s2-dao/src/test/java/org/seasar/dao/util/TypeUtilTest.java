@@ -15,6 +15,7 @@
  */
 package org.seasar.dao.util;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -30,4 +31,25 @@ public class TypeUtilTest extends TestCase {
         assertTrue(TypeUtil.isSimpleType(int.class));
     }
 
+    public void testGetDeclaredFields() throws Exception {
+        Field[] fields = TypeUtil.getDeclaredFields(TestClass.class);
+        assertEquals(5, fields.length);
+        assertEquals("aaa", fields[0].getName());
+        assertEquals("bbb", fields[1].getName());
+        assertEquals("ccc", fields[2].getName());
+        assertEquals("ddd", fields[3].getName());
+        assertEquals("eee", fields[4].getName());
+    }
+
+    public static class TestClass {
+        int aaa;
+
+        int bbb;
+
+        int ccc;
+
+        int ddd;
+
+        int eee;
+    }
 }

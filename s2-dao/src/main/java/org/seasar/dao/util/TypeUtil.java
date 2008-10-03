@@ -15,8 +15,16 @@
  */
 package org.seasar.dao.util;
 
+import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
+
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtField;
+
+import org.seasar.framework.exception.NoSuchFieldRuntimeException;
+import org.seasar.framework.util.ClassPoolUtil;
 
 /**
  * 型に関するユーティリティです。
@@ -45,6 +53,44 @@ public class TypeUtil {
                 || Date.class.isAssignableFrom(clazz)
                 || Calendar.class.isAssignableFrom(clazz)
                 || clazz == byte[].class;
+    }
+
+    /**
+     * クラスに定義された{@link Field フィールド}をクラスファイルに定義された順番で返します。
+     * 
+     * @param clazz
+     *            対象のクラス
+     * @return このクラスに定義されたフィールドの配列
+     */
+    public static Field[] getDeclaredFields(final Class clazz) {
+        final ClassPool pool = ClassPoolUtil.getClassPool(clazz);
+        final CtClass ctClass = ClassPoolUtil.toCtClass(pool, clazz);
+        final CtField[] ctFields = ctClass.getDeclaredFields();
+        final int size = ctFields.length;
+        final Field[] fields = new Field[size];
+        for (int i = 0; i < size; ++i) {
+            fields[i] = TypeUtil.getDeclaredField(clazz, ctFields[i].getName());
+        }
+        return fields;
+    }
+
+    /**
+     * クラスに宣言されている {@link Field}を返します。
+     * 
+     * @param clazz
+     * @param fieldName
+     * @return {@link Field}
+     * @throws NoSuchFieldRuntimeException
+     *             {@link NoSuchFieldException}がおきた場合
+     * @see Class#getDeclaredField(String)
+     */
+    public static Field getDeclaredField(Class clazz, String fieldName)
+            throws NoSuchFieldRuntimeException {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException ex) {
+            throw new NoSuchFieldRuntimeException(clazz, fieldName, ex);
+        }
     }
 
 }
