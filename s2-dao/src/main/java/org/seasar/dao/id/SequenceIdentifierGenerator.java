@@ -20,6 +20,7 @@ import java.util.HashMap;
 import javax.sql.DataSource;
 
 import org.seasar.dao.Dbms;
+import org.seasar.dao.util.SelectableDataSourceProxyUtil;
 import org.seasar.framework.util.LongConversionUtil;
 
 /**
@@ -128,10 +129,12 @@ public class SequenceIdentifierGenerator extends AbstractIdentifierGenerator {
      */
     protected IdContext getIdContext(DataSource ds) {
         synchronized (idContextMap) {
-            IdContext context = (IdContext) idContextMap.get(ds);
+            String dsName = SelectableDataSourceProxyUtil
+                    .getSelectableDataSourceName(ds);
+            IdContext context = (IdContext) idContextMap.get(dsName);
             if (context == null) {
                 context = new IdContext();
-                idContextMap.put(ds, context);
+                idContextMap.put(dsName, context);
             }
             return context;
         }
