@@ -13,10 +13,9 @@
 		</arg>
 	</component>
 	<component class="org.seasar.dao.impl.ValueTypeFactoryImpl"/>
-	<component 
-		name="stringClobType" 
-		class="org.seasar.extension.jdbc.types.StringClobType"
-	/>
+	<component name="stringClobType"> 
+		@org.seasar.dao.types.ValueTypes@CLOB
+	</component>
 	<component class="org.seasar.dao.impl.BeanMetaDataFactoryImpl"/>
 	<component class="org.seasar.dao.impl.DaoNamingConventionImpl"/>
 	<component class="org.seasar.dao.impl.NullBeanEnhancer"/>
