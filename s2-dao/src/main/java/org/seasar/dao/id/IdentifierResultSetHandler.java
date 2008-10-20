@@ -15,32 +15,29 @@
  */
 package org.seasar.dao.id;
 
-import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import org.seasar.dao.Dbms;
-import org.seasar.extension.jdbc.PropertyType;
+import org.seasar.extension.jdbc.ResultSetHandler;
+import org.seasar.extension.jdbc.ValueType;
 
 /**
- * @author higa
+ * @author taedium
  * 
  */
-public class AssignedIdentifierGenerator extends AbstractIdentifierGenerator {
+public class IdentifierResultSetHandler implements ResultSetHandler {
 
-    public AssignedIdentifierGenerator(PropertyType propertyType, Dbms dbms) {
-        super(propertyType, dbms);
+    private ValueType valueType;
+
+    public IdentifierResultSetHandler(ValueType valueType) {
+        this.valueType = valueType;
     }
 
-    /**
-     * @see org.seasar.dao.IdentifierGenerator#setIdentifier(java.lang.Object,
-     *      javax.sql.DataSource)
-     */
-    public void setIdentifier(Object bean, DataSource ds) {
+    public Object handle(ResultSet rs) throws SQLException {
+        if (rs.next()) {
+            return valueType.getValue(rs, 1);
+        }
+        return null;
     }
 
-    /**
-     * @see org.seasar.dao.IdentifierGenerator#isSelfGenerate()
-     */
-    public boolean isSelfGenerate() {
-        return true;
-    }
 }

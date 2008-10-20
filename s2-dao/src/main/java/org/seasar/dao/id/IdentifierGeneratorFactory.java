@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.seasar.dao.Dbms;
 import org.seasar.dao.IdentifierGenerator;
+import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
@@ -54,26 +55,26 @@ public class IdentifierGeneratorFactory {
     }
 
     public static IdentifierGenerator createIdentifierGenerator(
-            String propertyName, Dbms dbms) {
+            PropertyType propertyType, Dbms dbms) {
 
-        return createIdentifierGenerator(propertyName, dbms, null);
+        return createIdentifierGenerator(propertyType, dbms, null);
     }
 
     public static IdentifierGenerator createIdentifierGenerator(
-            String propertyName, Dbms dbms, String annotation) {
-        if (propertyName == null) {
-            throw new EmptyRuntimeException("propertyName");
+            PropertyType propertyType, Dbms dbms, String annotation) {
+        if (propertyType == null) {
+            throw new EmptyRuntimeException("propertyType");
         }
         if (dbms == null) {
             throw new EmptyRuntimeException("dbms");
         }
         if (annotation == null) {
-            return new AssignedIdentifierGenerator(propertyName, dbms);
+            return new AssignedIdentifierGenerator(propertyType, dbms);
         }
         String[] array = StringUtil.split(annotation, "=, ");
         Class clazz = getGeneratorClass(array[0]);
         IdentifierGenerator generator = createIdentifierGenerator(clazz,
-                propertyName, dbms);
+                propertyType, dbms);
         for (int i = 1; i < array.length; i += 2) {
             setProperty(generator, array[i].trim(), array[i + 1].trim());
         }
@@ -89,11 +90,11 @@ public class IdentifierGeneratorFactory {
     }
 
     protected static IdentifierGenerator createIdentifierGenerator(Class clazz,
-            String propertyName, Dbms dbms) {
+            PropertyType propertyType, Dbms dbms) {
         Constructor constructor = ClassUtil.getConstructor(clazz, new Class[] {
-                String.class, Dbms.class });
+                PropertyType.class, Dbms.class });
         return (IdentifierGenerator) ConstructorUtil.newInstance(constructor,
-                new Object[] { propertyName, dbms });
+                new Object[] { propertyType, dbms });
     }
 
     protected static void setProperty(IdentifierGenerator generator,

@@ -313,7 +313,7 @@ public class BeanMetaDataImpl extends DtoMetaDataImpl implements BeanMetaData {
         String propertyName = propertyType.getPropertyName();
         String idType = beanAnnotationReader.getId(pd, dbms);
         IdentifierGenerator generator = IdentifierGeneratorFactory
-                .createIdentifierGenerator(propertyName, dbms, idType);
+                .createIdentifierGenerator(propertyType, dbms, idType);
         identifierGenerators.add(generator);
         identifierGeneratorsByPropertyName.put(propertyName, generator);
     }

@@ -19,12 +19,10 @@ import javax.sql.DataSource;
 
 import org.seasar.dao.Dbms;
 import org.seasar.dao.IdentifierGenerator;
+import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.impl.BasicSelectHandler;
-import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
-import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.PropertyDesc;
-import org.seasar.framework.beans.factory.BeanDescFactory;
 import org.seasar.framework.exception.EmptyRuntimeException;
 
 /**
@@ -34,19 +32,21 @@ import org.seasar.framework.exception.EmptyRuntimeException;
 public abstract class AbstractIdentifierGenerator implements
         IdentifierGenerator {
 
-    private static ResultSetHandler resultSetHandler = new ObjectResultSetHandler();
+    protected ResultSetHandler resultSetHandler;
 
-    private String propertyName;
+    protected PropertyType propertyType;
 
-    private Dbms dbms;
+    protected Dbms dbms;
 
-    public AbstractIdentifierGenerator(String propertyName, Dbms dbms) {
-        this.propertyName = propertyName;
+    public AbstractIdentifierGenerator(PropertyType propertyType, Dbms dbms) {
+        this.propertyType = propertyType;
         this.dbms = dbms;
+        resultSetHandler = new IdentifierResultSetHandler(propertyType
+                .getValueType());
     }
 
     public String getPropertyName() {
-        return propertyName;
+        return propertyType.getPropertyName();
     }
 
     public Dbms getDbms() {
@@ -56,17 +56,16 @@ public abstract class AbstractIdentifierGenerator implements
     protected Object executeSql(DataSource ds, String sql, Object[] args) {
         BasicSelectHandler handler = new BasicSelectHandler(ds, sql,
                 resultSetHandler);
-        //[DAO-139]
+        // [DAO-139]
         handler.setFetchSize(-1);
         return handler.execute(args);
     }
 
     protected void setIdentifier(Object bean, Object value) {
-        if (propertyName == null) {
-            throw new EmptyRuntimeException("propertyName");
+        if (propertyType == null) {
+            throw new EmptyRuntimeException("propertyType");
         }
-        BeanDesc beanDesc = BeanDescFactory.getBeanDesc(bean.getClass());
-        PropertyDesc pd = beanDesc.getPropertyDesc(propertyName);
+        PropertyDesc pd = propertyType.getPropertyDesc();
         pd.setValue(bean, value);
     }
 }

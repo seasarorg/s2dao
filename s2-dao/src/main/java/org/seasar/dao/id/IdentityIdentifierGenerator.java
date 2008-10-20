@@ -18,6 +18,7 @@ package org.seasar.dao.id;
 import javax.sql.DataSource;
 
 import org.seasar.dao.Dbms;
+import org.seasar.extension.jdbc.PropertyType;
 
 /**
  * @author higa
@@ -26,11 +27,11 @@ import org.seasar.dao.Dbms;
 public class IdentityIdentifierGenerator extends AbstractIdentifierGenerator {
 
     /**
-     * @param propertyName
+     * @param propertyType
      * @param dbms
      */
-    public IdentityIdentifierGenerator(String propertyName, Dbms dbms) {
-        super(propertyName, dbms);
+    public IdentityIdentifierGenerator(PropertyType propertyType, Dbms dbms) {
+        super(propertyType, dbms);
     }
 
     /**

@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 
 import org.seasar.dao.Dbms;
 import org.seasar.dao.util.SelectableDataSourceProxyUtil;
+import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.framework.util.LongConversionUtil;
 
 /**
@@ -38,13 +39,13 @@ public class SequenceIdentifierGenerator extends AbstractIdentifierGenerator {
     private HashMap idContextMap = new HashMap();
 
     /**
-     * @param propertyName
-     *            識別子のプロパティ名
+     * @param propertyType
+     *            プロパティの型
      * @param dbms
      *            DBMS
      */
-    public SequenceIdentifierGenerator(String propertyName, Dbms dbms) {
-        super(propertyName, dbms);
+    public SequenceIdentifierGenerator(PropertyType propertyType, Dbms dbms) {
+        super(propertyType, dbms);
     }
 
     /**

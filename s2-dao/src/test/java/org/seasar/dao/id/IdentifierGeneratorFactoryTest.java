@@ -18,7 +18,13 @@ package org.seasar.dao.id;
 import org.seasar.dao.Dbms;
 import org.seasar.dao.IdentifierGenerator;
 import org.seasar.dao.dbms.HSQL;
+import org.seasar.extension.jdbc.PropertyType;
+import org.seasar.extension.jdbc.impl.PropertyTypeImpl;
+import org.seasar.extension.jdbc.types.ValueTypes;
 import org.seasar.extension.unit.S2TestCase;
+import org.seasar.framework.beans.BeanDesc;
+import org.seasar.framework.beans.PropertyDesc;
+import org.seasar.framework.beans.factory.BeanDescFactory;
 
 /**
  * @author higa
@@ -49,20 +55,25 @@ public class IdentifierGeneratorFactoryTest extends S2TestCase {
         Dbms dbms = new HSQL();
         Hoge hoge = new Hoge();
         hoge.setId(1);
+        BeanDesc beanDesc = BeanDescFactory.getBeanDesc(Hoge.class);
+        PropertyDesc propertyDesc = beanDesc.getPropertyDesc("id");
+        PropertyType propertyType = new PropertyTypeImpl(propertyDesc,
+                ValueTypes.getValueType(int.class));
         IdentifierGenerator generator = IdentifierGeneratorFactory
-                .createIdentifierGenerator("id", dbms, null);
+                .createIdentifierGenerator(propertyType, dbms, null);
         assertEquals("1", AssignedIdentifierGenerator.class, generator
                 .getClass());
-        generator = IdentifierGeneratorFactory.createIdentifierGenerator("id",
-                dbms, "identity");
+        generator = IdentifierGeneratorFactory.createIdentifierGenerator(
+                propertyType, dbms, "identity");
         assertEquals("2", IdentityIdentifierGenerator.class, generator
                 .getClass());
-        generator = IdentifierGeneratorFactory.createIdentifierGenerator("id",
-                dbms, "sequence, sequenceName = myseq");
+        generator = IdentifierGeneratorFactory.createIdentifierGenerator(
+                propertyType, dbms, "sequence, sequenceName = myseq");
         assertEquals("3", "myseq", ((SequenceIdentifierGenerator) generator)
                 .getSequenceName());
-        generator = IdentifierGeneratorFactory.createIdentifierGenerator("id",
-                dbms, "sequence, sequenceName = myseq, allocationSize = 10");
+        generator = IdentifierGeneratorFactory.createIdentifierGenerator(
+                propertyType, dbms,
+                "sequence, sequenceName = myseq, allocationSize = 10");
         assertEquals("4", 10, ((SequenceIdentifierGenerator) generator)
                 .getAllocationSize());
     }
