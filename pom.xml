@@ -9,7 +9,7 @@
   <artifactId>s2-dao-project</artifactId>
   <packaging>pom</packaging>
   <name>S2Dao Project</name>
-  <version>1.0.49</version>
+  <version>1.0.50-SNAPSHOT</version>
   <description></description>
   <url>http://s2dao.seasar.org/</url>
   <issueManagement>
