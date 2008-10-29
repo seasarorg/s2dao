@@ -1,5 +1,17 @@
 S2Dao 変更履歴
     
+1.0.49
+-------------------------------------------------------------------------------
+** Bug
+    * [DAO-140] - OracleRownumPagingSqlRewriter使用時にBooleanToIntStatementFactoryが利用できない問題に対処しました。
+    * [DAO-141] - N:1マッピングで1側のデータが存在しなくても1側のインスタンスが生成されてしまう問題に対処しました[Seasar-user:14866]。
+    * [DAO-142] - Oracleのページング処理でORDER BY句がサブクエリにあるとハングアップする問題に対処しました。[Seasar-user:15211]
+    * [DAO-143] - Java の実装によっては @ProcedureCall で @ProcedureParameter の定義順に引数セットされない問題に対処しました。
+    * [DAO-144] - SelectableDataSourceを使用している場合に、シーケンスを使ったIDの採番のキャッシュが複数DataSourceで共有されてしまう問題に対処しました。
+    * [DAO-147] - BeanクラスにアノテーションId、ValueTypeを設定するとID自動設定でIllegalPropertyRuntimeExceptionが発生する不具合に対処しました。
+
+** New Feature
+    * [DAO-146] - byte配列やSerializable型をPostgresSQLのOID型やBYTEA型にマッピングできるようにしました。
     
 1.0.48
 -------------------------------------------------------------------------------
