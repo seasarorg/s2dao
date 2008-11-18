@@ -13,6 +13,17 @@
   <packaging>jar</packaging>
   <name>S2Dao tests for Seasar2.4.x</name>
   <url>http://s2dao.seasar.org/</url>
+  <properties>
+    <seasar2.version>2.4.32</seasar2.version>
+  </properties>
+  <profiles>
+    <profile>
+      <id>snapshot</id>
+      <properties>
+        <seasar2.version>[2.4,)</seasar2.version>
+      </properties>
+    </profile>
+  </profiles>
   <build>
     <testSourceDirectory>${basedir}/../s2-dao/src/test/java</testSourceDirectory>
     <testResources>
@@ -62,7 +73,7 @@
     <dependency>
       <groupId>org.seasar.container</groupId>
       <artifactId>s2-extension</artifactId>
-      <version>2.4.31</version>
+      <version>${seasar2.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
