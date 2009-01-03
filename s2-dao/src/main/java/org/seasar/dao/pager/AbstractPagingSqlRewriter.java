@@ -43,7 +43,7 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
 
     private static final Pattern patternOrderBy = Pattern
             .compile(
-                    "order\\s+by\\s+([\\w\\p{L}.`\\[\\]]+(\\s+(asc|desc))?\\s*)(,\\s*[\\w\\p{L}.`\\[\\]]+(\\s+(asc|desc))?)*\\s*$",
+                    "order\\s+by\\s+([\\w\\p{L}.`\\[\\]]+(\\s+(asc|desc))?\\s*)(,\\s*[\\w\\p{L}.`\\[\\]]+(\\s+(asc|desc))?\\s*)*$",
                     Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /*

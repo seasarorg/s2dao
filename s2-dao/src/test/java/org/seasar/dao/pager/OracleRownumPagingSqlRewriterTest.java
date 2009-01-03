@@ -78,6 +78,11 @@ public class OracleRownumPagingSqlRewriterTest extends TestCase {
                 "SELECT count(*) FROM (SELECT * FROM DEPARTMENT )",
                 rewriter
                         .makeCountSql("SELECT * FROM DEPARTMENT order\n\tby\n\n 名前 \n\tASC \n\n\n, 組織_ID \n\tDESC \n"));
+        assertEquals(
+                "count(*)で全件数を取得するSQLを生成(order by除去 Order byのカンマの前に空白)",
+                "SELECT count(*) FROM (SELECT * FROM DEPARTMENT )",
+                rewriter
+                        .makeCountSql("SELECT * FROM DEPARTMENT order by aaa , bbb , ccc"));
     }
 
     public void testSetChopOrderByAndMakeCountSql() throws Exception {
@@ -110,7 +115,7 @@ public class OracleRownumPagingSqlRewriterTest extends TestCase {
     public void testLimitOffsetSql() throws Exception {
         assertEquals(
                 "指定されたlimit offsetが付加されたSQLを生成",
-                "SELECT * FROM (SELECT ROWNUM AS S2DAO_ROWNUMBER, S2DAO_ORIGINAL_DATA.* FROM (SELECT * FROM DEPARTMENT) S2DAO_ORIGINAL_DATA) WHERE S2DAO_ROWNUMBER BETWEEN 56 AND 65 AND ROWNUM <= 10 ORDER BY S2DAO_ROWNUMBER",
+                "SELECT * FROM (SELECT S2DAO_ORIGINAL_DATA.*, ROWNUM AS S2DAO_ROWNUMBER FROM (SELECT * FROM DEPARTMENT) S2DAO_ORIGINAL_DATA) WHERE S2DAO_ROWNUMBER BETWEEN 56 AND 65 AND ROWNUM <= 10 ORDER BY S2DAO_ROWNUMBER",
                 rewriter.makeLimitOffsetSql("SELECT * FROM DEPARTMENT", 10, 55));
     }
 

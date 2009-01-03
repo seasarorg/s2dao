@@ -17,12 +17,16 @@ package org.seasar.dao.pager;
 
 /**
  * @author jundu
- *
+ * 
  */
 public class OracleRownumPagingSqlRewriter extends AbstractPagingSqlRewriter {
 
-    /* (non-Javadoc)
-     * @see org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeCountSql(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeCountSql(
+     * java.lang.String)
      */
     String makeCountSql(String baseSQL) {
         StringBuffer sqlBuf = new StringBuffer("SELECT count(*) FROM (");
@@ -35,8 +39,12 @@ public class OracleRownumPagingSqlRewriter extends AbstractPagingSqlRewriter {
         return sqlBuf.toString();
     }
 
-    /* (non-Javadoc)
-     * @see org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeLimitOffsetSql(java.lang.String, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeLimitOffsetSql
+     * (java.lang.String, int, int)
      */
     String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
         if (offset < 0) {
@@ -47,7 +55,7 @@ public class OracleRownumPagingSqlRewriter extends AbstractPagingSqlRewriter {
         StringBuffer sqlBuf = new StringBuffer(baseSQL);
         sqlBuf
                 .insert(0,
-                        "SELECT * FROM (SELECT ROWNUM AS S2DAO_ROWNUMBER, S2DAO_ORIGINAL_DATA.* FROM (");
+                        "SELECT * FROM (SELECT S2DAO_ORIGINAL_DATA.*, ROWNUM AS S2DAO_ROWNUMBER FROM (");
         sqlBuf.append(") S2DAO_ORIGINAL_DATA) WHERE S2DAO_ROWNUMBER BETWEEN ");
         sqlBuf.append(offset + 1);
         sqlBuf.append(" AND ");
