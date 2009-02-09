@@ -98,6 +98,9 @@ public abstract class AbstractAutoStaticCommand extends AbstractStaticCommand {
     }
 
     protected void setupUpdatePropertyTypes(String[] propertyNames) {
+        if (propertyNames.length == 0) {
+            throw new SRuntimeException("EDAO0035");
+        }
         List types = new ArrayList();
         for (int i = 0; i < propertyNames.length; ++i) {
             PropertyType pt = getBeanMetaData().getPropertyType(
