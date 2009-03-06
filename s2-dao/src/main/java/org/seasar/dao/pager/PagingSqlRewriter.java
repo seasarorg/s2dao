@@ -15,22 +15,48 @@
  */
 package org.seasar.dao.pager;
 
+import java.sql.SQLException;
+
 /**
  * S2Pager用にSELECT文を実行直前に書き換えるためのインターフェースです。
  * 
  * @author jundu
- *
+ * 
  */
 public interface PagingSqlRewriter {
 
     /**
      * 指定されたSQL文を書き換え、 ページング処理が含まれたSQLを返します。
      * 
-     * @param sql 書き換え対象のSQL
-     * @param args 対象のSQLにバインドされる予定の値
-     * @param argTypes 対象のSQLにバインドされる予定の値の型
+     * @param sql
+     *            書き換え対象のSQL
+     * @param args
+     *            対象のSQLにバインドされる予定の値
+     * @param argTypes
+     *            対象のSQLにバインドされる予定の値の型
      * @return 書き換え済みのSQL
      */
     public String rewrite(String sql, Object[] args, Class[] argTypes);
+
+    /**
+     * 元のSQLによる結果総件数を取得します
+     * 
+     * @param ps
+     *            元のPreparedStatement
+     * @param baseSQL
+     *            元のSQL
+     * @return 結果総件数
+     * @throws SQLException
+     * @throws SQLException
+     */
+    public int getCount(String baseSQL, Object[] args, Class[] argTypes,
+            Object ret) throws SQLException;
+
+    /**
+     * カウントを取るSQLの実行タイミングの互換性設定を返します。
+     * 
+     * @return S2Dao1.0.49以前と同様のタイミングの場合<code>true</code>
+     */
+    public boolean isCountSqlCompatibility();
 
 }

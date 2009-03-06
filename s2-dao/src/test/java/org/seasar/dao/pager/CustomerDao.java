@@ -24,4 +24,6 @@ public interface CustomerDao {
 
     public Customer[] getPagedRow2(PagerTestCondition condition);
 
+    public Customer[] getAll();
+
 }

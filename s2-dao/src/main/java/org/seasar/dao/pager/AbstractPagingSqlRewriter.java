@@ -31,12 +31,12 @@ import org.seasar.framework.util.IntegerConversionUtil;
 /**
  * S2Dao用にSELECT文を書き換えるための骨格実装を提供するクラスです。
  * <p>
- * 元のSELECT文を編集して、 カウントを取るSQLを実行した後、
- * {@link org.seasar.dao.pager.PagingCondition}
- * として渡されたパラメータの値に従ってページング処理を含むSQLを生成します。
+ * 元のSELECT文を編集して、 {@link org.seasar.dao.pager.PagingCondition}
+ * として渡されたパラメータの値に従ってページング処理を含むSQLを生成した後、カウントを取るSQLを実行します。
  * </p>
  * 
  * @author jundu
+ * @author azusa
  * 
  */
 public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
@@ -64,12 +64,19 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
 
     private ResultSetFactory resultsetFactory;
 
+    /**
+     * カウントを取るタイミングについての互換性設定です。(デフォルト<code>true</code>>)
+     */
+    protected boolean countSqlCompatibility = true;
+
     public String rewrite(String sql, Object[] args, Class[] argTypes) {
         final Object[] pagingArgs = PagerContext.getContext().peekArgs();
         if (PagerContext.isPagerCondition(pagingArgs)) {
             try {
                 PagerCondition dto = PagerContext.getPagerCondition(pagingArgs);
-                dto.setCount(getCount(sql, args, argTypes));
+                if (countSqlCompatibility) {
+                    dto.setCount(getCountLogic(sql, args, argTypes));
+                }
                 if (dto.getLimit() > 0 && dto.getOffset() > -1) {
                     String limitOffsetSql = makeLimitOffsetSql(sql, dto
                             .getLimit(), dto.getOffset());
@@ -125,17 +132,21 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
         this.resultsetFactory = resultsetFactory;
     }
 
-    /**
-     * 元のSQLによる結果総件数を取得します
-     * 
-     * @param ps
-     *            元のPreparedStatement
-     * @param baseSQL
-     *            元のSQL
-     * @return 結果総件数
-     * @throws SQLException
-     */
-    protected int getCount(String baseSQL, Object[] args, Class[] argTypes)
+    public int getCount(String baseSQL, Object[] args, Class[] argTypes,
+            Object ret) throws SQLException {
+        if (countSqlCompatibility) {
+            if (PagerContext.isPagerCondition(args)) {
+                PagerCondition dto = PagerContext.getPagerCondition(args);
+                return dto.getCount();
+            } else {
+                return getCountLogic(baseSQL, args, argTypes);
+            }
+        } else {
+            return getCountLogic(baseSQL, args, argTypes);
+        }
+    }
+
+    protected int getCountLogic(String baseSQL, Object[] args, Class[] argTypes)
             throws SQLException {
         String countSQL = makeCountSql(baseSQL);
 
@@ -181,12 +192,27 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
     abstract String makeLimitOffsetSql(String baseSQL, int limit, int offset);
 
     /**
-     * count(*)で全件数を取得するSQLを生成します。<br/> パフォーマンス向上のためorder by句を除去したSQLを発行します
+     * count(*)で全件数を取得するSQLを生成します。<br/>
+     * パフォーマンス向上のためorder by句を除去したSQLを発行します
      * 
      * @param baseSQL
      *            元のSQL
      * @return count(*)が付加されたSQL
      */
     abstract String makeCountSql(String baseSQL);
+
+    public boolean isCountSqlCompatibility() {
+        return countSqlCompatibility;
+    }
+
+    /**
+     * カウントを取るSQLの実行タイミングの互換性設定を設定します。
+     * 
+     * @param countSqlCompatibility
+     *            S2Dao1.0.49以前と同様のタイミングの場合<code>true</code>
+     */
+    public void setCountSqlCompatibility(boolean countSqlCompatibility) {
+        this.countSqlCompatibility = countSqlCompatibility;
+    }
 
 }

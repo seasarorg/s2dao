@@ -15,14 +15,19 @@
  */
 package org.seasar.dao.impl;
 
+import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 import org.seasar.dao.CommandContext;
+import org.seasar.dao.pager.PagerCondition;
+import org.seasar.dao.pager.PagerContext;
 import org.seasar.dao.pager.PagingSqlRewriter;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.impl.BasicSelectHandler;
+import org.seasar.framework.exception.SQLRuntimeException;
 
 /**
  * @author higa
@@ -54,8 +59,11 @@ public class SelectDynamicCommand extends AbstractDynamicCommand {
 
     public Object execute(Object[] args) {
         CommandContext ctx = apply(args);
-        String executingSql = pagingSqlRewriter.rewrite(ctx.getSql(), ctx
-                .getBindVariables(), ctx.getBindVariableTypes());
+        Object[] bindVariables = ctx.getBindVariables();
+        Class[] bindVariableTypes = ctx.getBindVariableTypes();
+        String sql = ctx.getSql();
+        String executingSql = pagingSqlRewriter.rewrite(sql, bindVariables,
+                bindVariableTypes);
         BasicSelectHandler selectHandler = new BasicSelectHandler(
                 getDataSource(), executingSql, resultSetHandler,
                 getStatementFactory(), resultSetFactory);
@@ -66,8 +74,18 @@ public class SelectDynamicCommand extends AbstractDynamicCommand {
          * https://www.seasar.org/issues/browse/DAO-2
          */
         selectHandler.setFetchSize(-1);
-        return selectHandler.execute(ctx.getBindVariables(), ctx
+        Object ret = selectHandler.execute(ctx.getBindVariables(), ctx
                 .getBindVariableTypes());
+        if (args != null && PagerContext.isPagerCondition(args)
+                && !pagingSqlRewriter.isCountSqlCompatibility()) {
+            PagerCondition condition = PagerContext.getPagerCondition(args);
+            try {
+                condition.setCount(pagingSqlRewriter.getCount(sql,
+                        bindVariables, bindVariableTypes, ret));
+            } catch (SQLException e) {
+                throw new SQLRuntimeException(e);
+            }
+        }
+        return ret;
     }
-
 }
