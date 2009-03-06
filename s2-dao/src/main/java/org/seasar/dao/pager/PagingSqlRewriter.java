@@ -41,13 +41,17 @@ public interface PagingSqlRewriter {
     /**
      * 元のSQLによる結果総件数を取得します
      * 
-     * @param ps
-     *            元のPreparedStatement
      * @param baseSQL
      *            元のSQL
+     * @param args
+     *            対象のSQLにバインドされる予定の値
+     * @param argTypes
+     *            対象のSQLにバインドされる予定の値の型
+     * @param ret
+     *            SQLの実行結果
      * @return 結果総件数
      * @throws SQLException
-     * @throws SQLException
+     *             SQLExceptionが発生した場合
      */
     public int getCount(String baseSQL, Object[] args, Class[] argTypes,
             Object ret) throws SQLException;
