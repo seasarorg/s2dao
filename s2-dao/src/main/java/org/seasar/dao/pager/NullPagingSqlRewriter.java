@@ -15,8 +15,6 @@
  */
 package org.seasar.dao.pager;
 
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * @author jundu
@@ -30,17 +28,9 @@ public class NullPagingSqlRewriter implements PagingSqlRewriter {
         return sql;
     }
 
-    public int getCount(String baseSQL, Object[] args, Class[] argTypes,
-            Object ret) throws SQLException {
-        if (List.class.isAssignableFrom(ret.getClass())) {
-            return ((List) ret).size();
-        } else if (ret.getClass().isArray()) {
-            return ((Object[]) ret).length;
-        } else if (ret == null) {
-            return 0;
-        } else {
-            return 1;
-        }
+    public void setCount(String baseSQL, Object[] args, Object[] bindVariables,
+            Class[] bindVariableTypes) {
+        // 何もしない
     }
 
     public boolean isCountSqlCompatibility() {

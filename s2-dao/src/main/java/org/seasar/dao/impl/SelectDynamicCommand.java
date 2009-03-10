@@ -15,19 +15,14 @@
  */
 package org.seasar.dao.impl;
 
-import java.sql.SQLException;
-
 import javax.sql.DataSource;
 
 import org.seasar.dao.CommandContext;
-import org.seasar.dao.pager.PagerCondition;
-import org.seasar.dao.pager.PagerContext;
 import org.seasar.dao.pager.PagingSqlRewriter;
 import org.seasar.extension.jdbc.ResultSetFactory;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.extension.jdbc.StatementFactory;
 import org.seasar.extension.jdbc.impl.BasicSelectHandler;
-import org.seasar.framework.exception.SQLRuntimeException;
 
 /**
  * @author higa
@@ -76,16 +71,8 @@ public class SelectDynamicCommand extends AbstractDynamicCommand {
         selectHandler.setFetchSize(-1);
         Object ret = selectHandler.execute(ctx.getBindVariables(), ctx
                 .getBindVariableTypes());
-        if (args != null && PagerContext.isPagerCondition(args)
-                && !pagingSqlRewriter.isCountSqlCompatibility()) {
-            PagerCondition condition = PagerContext.getPagerCondition(args);
-            try {
-                condition.setCount(pagingSqlRewriter.getCount(sql,
-                        bindVariables, bindVariableTypes, ret));
-            } catch (SQLException e) {
-                throw new SQLRuntimeException(e);
-            }
-        }
+        pagingSqlRewriter.setCount(sql, args, bindVariables, bindVariableTypes);
+
         return ret;
     }
 }

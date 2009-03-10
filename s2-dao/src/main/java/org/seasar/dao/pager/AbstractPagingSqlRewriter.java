@@ -132,17 +132,19 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
         this.resultsetFactory = resultsetFactory;
     }
 
-    public int getCount(String baseSQL, Object[] args, Class[] argTypes,
-            Object ret) throws SQLException {
-        if (countSqlCompatibility) {
+    public void setCount(String baseSQL, Object[] args, Object[] bindVariables,
+            Class[] bindVariableTypes) {
+        if (!countSqlCompatibility) {
+            // trueの場合はrewrite()で設定済み
             if (PagerContext.isPagerCondition(args)) {
-                PagerCondition dto = PagerContext.getPagerCondition(args);
-                return dto.getCount();
-            } else {
-                return getCountLogic(baseSQL, args, argTypes);
+                PagerCondition condition = PagerContext.getPagerCondition(args);
+                try {
+                    condition.setCount(getCountLogic(baseSQL, bindVariables,
+                            bindVariableTypes));
+                } catch (SQLException e) {
+                    throw new SQLRuntimeException(e);
+                }
             }
-        } else {
-            return getCountLogic(baseSQL, args, argTypes);
         }
     }
 

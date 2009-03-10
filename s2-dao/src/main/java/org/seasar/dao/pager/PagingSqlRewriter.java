@@ -39,22 +39,21 @@ public interface PagingSqlRewriter {
     public String rewrite(String sql, Object[] args, Class[] argTypes);
 
     /**
-     * 元のSQLによる結果総件数を取得します
+     * 元のSQLによる結果総件数を設定します
      * 
      * @param baseSQL
      *            元のSQL
      * @param args
+     *            メソッド引数
+     * @param bindVariables
      *            対象のSQLにバインドされる予定の値
-     * @param argTypes
+     * @param bindVariableTypes
      *            対象のSQLにバインドされる予定の値の型
-     * @param ret
-     *            SQLの実行結果
-     * @return 結果総件数
      * @throws SQLException
      *             SQLExceptionが発生した場合
      */
-    public int getCount(String baseSQL, Object[] args, Class[] argTypes,
-            Object ret) throws SQLException;
+    public void setCount(String baseSQL, Object[] args, Object[] bindVariables,
+            Class[] bindVariableTypes);
 
     /**
      * カウントを取るSQLの実行タイミングの互換性設定を返します。
