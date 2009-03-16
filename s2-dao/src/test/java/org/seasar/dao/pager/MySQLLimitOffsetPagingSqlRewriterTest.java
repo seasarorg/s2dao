@@ -46,4 +46,10 @@ public class MySQLLimitOffsetPagingSqlRewriterTest extends TestCase {
                 rewriter.makeLimitOffsetSql("SELECT * FROM DEPARTMENT", 10, 55));
     }
 
+    public void testLimitOffsetSql2() {
+        assertEquals(
+                "SQL_CALC_FOUND_ROWSが付加されたSQLを生成 (select小文字)",
+                "select SQL_CALC_FOUND_ROWS * FROM DEPARTMENT LIMIT 10 OFFSET 55",
+                rewriter.makeLimitOffsetSql("select * FROM DEPARTMENT", 10, 55));
+    }
 }
