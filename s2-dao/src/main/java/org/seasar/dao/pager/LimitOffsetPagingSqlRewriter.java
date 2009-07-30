@@ -17,14 +17,18 @@ package org.seasar.dao.pager;
 
 /**
  * @author jundu
- *
+ * 
  */
 public class LimitOffsetPagingSqlRewriter extends AbstractPagingSqlRewriter {
 
-    /* (non-Javadoc)
-     * @see org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeCountSql(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeCountSql(
+     * java.lang.String)
      */
-    String makeCountSql(String baseSQL) {
+    protected String makeCountSql(String baseSQL) {
         StringBuffer sqlBuf = new StringBuffer("SELECT count(*) FROM (");
         if (isChopOrderBy()) {
             sqlBuf.append(chopOrderBy(baseSQL));
@@ -35,16 +39,30 @@ public class LimitOffsetPagingSqlRewriter extends AbstractPagingSqlRewriter {
         return sqlBuf.toString();
     }
 
-    /* (non-Javadoc)
-     * @see org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeLimitOffsetSql(java.lang.String, int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeLimitOffsetSql
+     * (java.lang.String, int, int)
      */
-    String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
+    protected String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
         StringBuffer sqlBuf = new StringBuffer(baseSQL);
         sqlBuf.append(" LIMIT ");
         sqlBuf.append(limit);
         sqlBuf.append(" OFFSET ");
         sqlBuf.append(offset);
         return sqlBuf.toString();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.seasar.dao.pager.AbstractPagingSqlRewriter#
+     * isOriginalArgsRequiredForCounting()
+     */
+    protected boolean isOriginalArgsRequiredForCounting() {
+        return true;
     }
 
 }

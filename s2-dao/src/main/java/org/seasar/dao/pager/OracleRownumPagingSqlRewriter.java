@@ -28,7 +28,7 @@ public class OracleRownumPagingSqlRewriter extends AbstractPagingSqlRewriter {
      * org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeCountSql(
      * java.lang.String)
      */
-    String makeCountSql(String baseSQL) {
+    protected String makeCountSql(String baseSQL) {
         StringBuffer sqlBuf = new StringBuffer("SELECT count(*) FROM (");
         if (isChopOrderBy()) {
             sqlBuf.append(chopOrderBy(baseSQL));
@@ -46,7 +46,7 @@ public class OracleRownumPagingSqlRewriter extends AbstractPagingSqlRewriter {
      * org.seasar.dao.pager.AbstractSqlRewriteStatementFactory#makeLimitOffsetSql
      * (java.lang.String, int, int)
      */
-    String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
+    protected String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
         if (offset < 0) {
             throw new IllegalArgumentException(
                     "The offset must be greater than or equal to zero.("
@@ -64,6 +64,16 @@ public class OracleRownumPagingSqlRewriter extends AbstractPagingSqlRewriter {
         sqlBuf.append(limit);
         sqlBuf.append(" ORDER BY S2DAO_ROWNUMBER");
         return sqlBuf.toString();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.seasar.dao.pager.AbstractPagingSqlRewriter#
+     * isOriginalArgsRequiredForCounting()
+     */
+    protected boolean isOriginalArgsRequiredForCounting() {
+        return true;
     }
 
 }

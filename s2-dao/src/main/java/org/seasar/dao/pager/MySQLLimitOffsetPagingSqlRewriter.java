@@ -28,29 +28,33 @@ import java.util.regex.Pattern;
 public class MySQLLimitOffsetPagingSqlRewriter extends
         LimitOffsetPagingSqlRewriter {
 
-    String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
+    private static final Pattern baseSqlPattern = Pattern.compile(
+            "^.*?(select)", Pattern.CASE_INSENSITIVE);
+
+    protected String makeLimitOffsetSql(String baseSQL, int limit, int offset) {
         return super.makeLimitOffsetSql(makeCalcFoundRowsSQL(baseSQL), limit,
                 offset);
     }
-
-    private static final Pattern baseSqlPattern = Pattern.compile(
-            "^.*?(select)", Pattern.CASE_INSENSITIVE);
 
     public MySQLLimitOffsetPagingSqlRewriter() {
         this.countSqlCompatibility = false;
     }
 
-    String makeCountSql(String baseSQL) {
+    public String makeCountSql(String baseSQL) {
         return "SELECT FOUND_ROWS()";
     }
 
-    String makeCalcFoundRowsSQL(String baseSQL) {
+    public String makeCalcFoundRowsSQL(String baseSQL) {
         Matcher matcher = baseSqlPattern.matcher(baseSQL);
         if (matcher.find()) {
             baseSQL = matcher.replaceFirst(matcher.group(1)
                     + " SQL_CALC_FOUND_ROWS");
         }
         return baseSQL;
+    }
+
+    protected boolean isOriginalArgsRequiredForCounting() {
+        return false;
     }
 
 }

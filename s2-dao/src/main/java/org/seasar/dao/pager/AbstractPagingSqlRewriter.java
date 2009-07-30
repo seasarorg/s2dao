@@ -157,7 +157,12 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
                 resultsetFactory);
         // [DAO-139]
         handler.setFetchSize(-1);
-        Object ret = handler.execute(args, (Class[]) argTypes);
+        Object ret = null;
+        if (isOriginalArgsRequiredForCounting()) {
+            ret = handler.execute(args, (Class[]) argTypes);
+        } else {
+            ret = handler.execute(new Object[] {}, new Class[] {});
+        }
         if (ret != null) {
             return IntegerConversionUtil.toPrimitiveInt(ret);
         }
@@ -191,17 +196,19 @@ public abstract class AbstractPagingSqlRewriter implements PagingSqlRewriter {
      *            何行目以降を取得するか（offset >= 0)
      * @return 条件を付加したSQL
      */
-    abstract String makeLimitOffsetSql(String baseSQL, int limit, int offset);
+    protected abstract String makeLimitOffsetSql(String baseSQL, int limit,
+            int offset);
 
     /**
-     * count(*)で全件数を取得するSQLを生成します。<br/>
-     * パフォーマンス向上のためorder by句を除去したSQLを発行します
+     * count(*)で全件数を取得するSQLを生成します。<br/> パフォーマンス向上のためorder by句を除去したSQLを発行します
      * 
      * @param baseSQL
      *            元のSQL
      * @return count(*)が付加されたSQL
      */
-    abstract String makeCountSql(String baseSQL);
+    protected abstract String makeCountSql(String baseSQL);
+
+    protected abstract boolean isOriginalArgsRequiredForCounting();
 
     public boolean isCountSqlCompatibility() {
         return countSqlCompatibility;
