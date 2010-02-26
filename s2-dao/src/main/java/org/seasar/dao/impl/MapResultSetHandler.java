@@ -18,6 +18,7 @@ package org.seasar.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.seasar.dao.NotSingleResultRuntimeException;
 import org.seasar.extension.jdbc.PropertyType;
 import org.seasar.framework.log.Logger;
 
@@ -37,11 +38,34 @@ public class MapResultSetHandler extends AbstractMapResultSetHandler {
             PropertyType[] propertyTypes = createPropertyTypes(resultSet
                     .getMetaData());
             Object row = createRow(resultSet, propertyTypes);
-            if (resultSet.next()) {
-                logger.log("WDAO0003", null);
-            }
+            handleNotSingleResult();
             return row;
         }
         return null;
+    }
+
+    /**
+     * 結果が1件でない場合の処理を行います。 デフォルトでは警告ログを出力します。
+     */
+    protected void handleNotSingleResult() {
+        logger.log("WDAO0003", null);
+    }
+
+    /**
+     * 結果が2件以上のときに例外をスローする{@link ObjectResultSetHandler}です。
+     * 
+     * @author azusa
+     * 
+     */
+    public static class RestrictMapResultSetHandler extends MapResultSetHandler {
+
+        public RestrictMapResultSetHandler() {
+            super();
+        }
+
+        protected void handleNotSingleResult() {
+            throw new NotSingleResultRuntimeException();
+        }
+
     }
 }

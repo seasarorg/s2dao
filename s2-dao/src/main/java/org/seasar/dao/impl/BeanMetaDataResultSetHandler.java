@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.NotSingleResultRuntimeException;
 import org.seasar.dao.RelationPropertyType;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.RowCreator;
@@ -90,7 +91,7 @@ public class BeanMetaDataResultSetHandler extends
             }
             postCreateRow(row);
             if (resultSet.next()) {
-                logger.log("WDAO0003", null);
+                handleNotSingleResult();
             }
             return row;
         } else {
@@ -98,4 +99,34 @@ public class BeanMetaDataResultSetHandler extends
         }
     }
 
+    /**
+     * 結果が1件でない場合の処理を行います。
+     * デフォルトでは警告ログを出力します。
+     */
+    protected void handleNotSingleResult() {
+        logger.log("WDAO0003", null);
+    }
+
+    /**
+     * 結果が2件以上のときに例外をスローする{@link BeanMetaDataResultSetHandler}です
+     * @author azusa
+     *
+     */
+    public static class RestrictBeanMetaDataResultSetHandler extends BeanMetaDataResultSetHandler{
+
+        /**
+         * @param beanMetaData  BeanMetaData
+         * @param rowCreator RowCreator
+         * @param relationRowCreator RelationRowCreator
+         */
+        public RestrictBeanMetaDataResultSetHandler(BeanMetaData beanMetaData,
+                RowCreator rowCreator, RelationRowCreator relationRowCreator) {
+            super(beanMetaData, rowCreator, relationRowCreator);
+        }
+
+        protected void handleNotSingleResult() {
+            throw new NotSingleResultRuntimeException();
+        }
+        
+    }
 }

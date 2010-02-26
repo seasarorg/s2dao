@@ -20,6 +20,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Map;
 
+import org.seasar.dao.NotSingleResultRuntimeException;
+import org.seasar.dao.impl.MapResultSetHandler.RestrictMapResultSetHandler;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.ResultSetHandler;
 
@@ -45,6 +47,31 @@ public class MapResultSetHandlerTest extends S2DaoTestCase {
         assertEquals(new Integer(7369), ret.get("employeeId"));
         assertEquals("SMITH", ret.get("employeeName"));
     }
+    
+    public void testHandle_restrict() throws Exception {
+        ResultSetHandler handler = new RestrictMapResultSetHandler();
+        String sql = "select employee_id, employee_name from emp4";
+        Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
+        Map ret = null;
+        try {
+            ResultSet rs = ps.executeQuery();
+            try {
+                try {
+                    ret = (Map) handler.handle(rs);
+                    fail();
+                } catch(NotSingleResultRuntimeException e){
+                    assertTrue(true);
+                }
+            } finally {
+                rs.close();
+            }
+        } finally {
+            ps.close();
+        }
+        assertNull(ret);
+    }
+
 
     public void setUp() {
         include("j2ee.dicon");

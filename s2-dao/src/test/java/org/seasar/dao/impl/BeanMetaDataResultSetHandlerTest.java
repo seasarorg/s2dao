@@ -20,8 +20,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.seasar.dao.BeanMetaData;
+import org.seasar.dao.NotSingleResultRuntimeException;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.RowCreator;
+import org.seasar.dao.impl.BeanMetaDataResultSetHandler.RestrictBeanMetaDataResultSetHandler;
 import org.seasar.dao.unit.S2DaoTestCase;
 import org.seasar.extension.jdbc.ResultSetHandler;
 
@@ -128,6 +130,32 @@ public class BeanMetaDataResultSetHandlerTest extends S2DaoTestCase {
         assertNotNull(dept);
         assertEquals(10, dept.getDeptno());
         assertEquals("ACCOUNTING", dept.getDname());
+    }
+
+    public void testHandle_notSingleResult() throws Exception {
+        BeanMetaData beanMetaData = createBeanMetaData(Employee23.class);
+        ResultSetHandler handler = new RestrictBeanMetaDataResultSetHandler(
+                beanMetaData, createRowCreator(), createRelationRowCreator());
+        String sql = "select emp.empno, emp.ename, emp.deptno, department.deptno as deptno_0, department.dname as dname_0 from EMP5 emp LEFT OUTER JOIN DEPT department on emp.deptno = department.deptno";
+        Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
+        Employee23 ret = null;
+        try {
+            ResultSet rs = ps.executeQuery();
+            try {
+                try {
+                    ret = (Employee23) handler.handle(rs);
+                    fail();
+                } catch (NotSingleResultRuntimeException e){
+                    assertTrue(true);
+                }
+            } finally {
+                rs.close();
+            }
+        } finally {
+            ps.close();
+        }
+        assertNull(ret);
     }
 
     protected RowCreator createRowCreator() {// [DAO-118] (2007/08/25)

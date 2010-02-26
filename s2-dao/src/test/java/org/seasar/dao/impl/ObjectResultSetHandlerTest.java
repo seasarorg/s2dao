@@ -19,8 +19,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.seasar.dao.NotSingleResultRuntimeException;
+import org.seasar.dao.impl.ObjectResultSetHandler.RestrictObjectResultSetHandler;
 import org.seasar.extension.jdbc.ResultSetHandler;
-import org.seasar.extension.jdbc.impl.ObjectResultSetHandler;
 import org.seasar.extension.unit.S2TestCase;
 
 /**
@@ -37,7 +38,7 @@ public class ObjectResultSetHandlerTest extends S2TestCase {
      * @throws Exception
      */
     public void testHandle() throws Exception {
-        ResultSetHandler handler = new ObjectResultSetHandler();
+        ResultSetHandler handler = new ObjectResultSetHandler(null);
         String sql = "select ename from emp where empno = 7788";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -53,6 +54,32 @@ public class ObjectResultSetHandlerTest extends S2TestCase {
             ps.close();
         }
         assertEquals("SCOTT", ret);
+    }
+    /**
+     * @throws Exception
+     */
+    public void testHandle_restrict() throws Exception {
+        ResultSetHandler handler = new RestrictObjectResultSetHandler(null);
+        String sql = "select ename from emp";
+        Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
+        String ret = null;
+        try {
+            ResultSet rs = ps.executeQuery();
+            try {
+                try{
+                    ret = (String) handler.handle(rs);
+                    fail();
+                } catch(NotSingleResultRuntimeException e){
+                    assertTrue(true);
+                }
+            } finally {
+                rs.close();
+            }
+        } finally {
+            ps.close();
+        }
+        assertNull(ret);
     }
 
 }

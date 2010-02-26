@@ -18,6 +18,7 @@ package org.seasar.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.seasar.dao.NotSingleResultRuntimeException;
 import org.seasar.extension.jdbc.ResultSetHandler;
 import org.seasar.framework.log.Logger;
 
@@ -32,7 +33,7 @@ public class ObjectResultSetHandler extends AbstractObjectResultSetHandler {
             .getLogger(ObjectResultSetHandler.class);
 
     /**
-     * {@link ObjectResultSetHandler}を生成します。
+     * {@link ObjectResultSetHandlear}を生成します。
      * 
      * @param clazz
      *            オブジェクトの型
@@ -45,11 +46,40 @@ public class ObjectResultSetHandler extends AbstractObjectResultSetHandler {
         if (rs.next()) {
             Object value = getValueType(rs).getValue(rs, 1);
             if (rs.next()) {
-                logger.log("WDAO0003", null);
+                handleNotSingleResult();
             }
             return value;
         }
         return null;
     }
 
+    /**
+     * 結果が1件でない場合の処理を行います。 デフォルトでは警告ログを出力します。
+     */
+    protected void handleNotSingleResult() {
+        logger.log("WDAO0003", null);
+    }
+
+    /**
+     * 結果が2件以上のときに例外をスローする{@link ObjectResultSetHandler}です。
+     * 
+     * @author azusa
+     * 
+     */
+    public static class RestrictObjectResultSetHandler extends
+            ObjectResultSetHandler {
+
+        /**
+         * @param clazz
+         *            返り値のクラス
+         */
+        public RestrictObjectResultSetHandler(Class clazz) {
+            super(clazz);
+        }
+
+        protected void handleNotSingleResult() {
+            throw new NotSingleResultRuntimeException();
+        }
+
+    }
 }

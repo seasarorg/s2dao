@@ -27,6 +27,10 @@ import org.seasar.dao.DtoMetaDataFactory;
 import org.seasar.dao.RelationRowCreator;
 import org.seasar.dao.ResultSetHandlerFactory;
 import org.seasar.dao.RowCreator;
+import org.seasar.dao.impl.BeanMetaDataResultSetHandler.RestrictBeanMetaDataResultSetHandler;
+import org.seasar.dao.impl.DtoMetaDataResultSetHandler.RestrictDtoMetaDataResultSetHandler;
+import org.seasar.dao.impl.MapResultSetHandler.RestrictMapResultSetHandler;
+import org.seasar.dao.impl.ObjectResultSetHandler.RestrictObjectResultSetHandler;
 import org.seasar.dao.util.TypeUtil;
 import org.seasar.extension.jdbc.ResultSetHandler;
 
@@ -39,6 +43,16 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
     public static final String dtoMetaDataFactory_BINDING = "bindingType=must";
 
     protected DtoMetaDataFactory dtoMetaDataFactory;
+
+    /**
+     * プロパティrestrictNotSingleResultに対するBINDINGアノテーションです。
+     */
+    public static final String restrictNotSingleResult_BINDING = "bindingType=may";
+
+    /**
+     * 返り値がBean、DTOやMapのメソッドで、結果が2件以上の時に例外を投げるかを設定します。
+     */
+    protected boolean restrictNotSingleResult = false;
 
     public ResultSetHandler getResultSetHandler(
             final DaoAnnotationReader daoAnnotationReader,
@@ -96,6 +110,9 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
 
     protected ResultSetHandler createDtoMetaDataResultSetHandler(
             final DtoMetaData dtoMetaData) {
+        if (restrictNotSingleResult){
+            return new RestrictDtoMetaDataResultSetHandler(dtoMetaData, createRowCreator());
+        }
         return new DtoMetaDataResultSetHandler(dtoMetaData, createRowCreator());
     }
 
@@ -110,6 +127,9 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
     }
 
     protected ResultSetHandler createMapResultSetHandler() {
+        if (restrictNotSingleResult){
+            return new RestrictMapResultSetHandler();
+        }
         return new MapResultSetHandler();
     }
 
@@ -125,6 +145,10 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
 
     protected ResultSetHandler createBeanMetaDataResultSetHandler(
             final BeanMetaData beanMetaData) {
+        if (restrictNotSingleResult) {
+            return new RestrictBeanMetaDataResultSetHandler(beanMetaData,
+                    createRowCreator(), createRelationRowCreator());
+        }
         return new BeanMetaDataResultSetHandler(beanMetaData,
                 createRowCreator(), createRelationRowCreator());
     }
@@ -140,6 +164,9 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
     }
 
     protected ResultSetHandler createObjectResultSetHandler(Class clazz) {
+        if (restrictNotSingleResult){
+            return new RestrictObjectResultSetHandler(clazz);
+        }
         return new ObjectResultSetHandler(clazz);
     }
 
@@ -164,6 +191,16 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
     public void setDtoMetaDataFactory(
             final DtoMetaDataFactory dtoMetaDataFactory) {
         this.dtoMetaDataFactory = dtoMetaDataFactory;
+    }
+
+    /**
+     * 返り値がBean、DTOやMapのメソッドで、結果が2件以上の時に例外を投げるかを設定します。
+     * 
+     * @param 例外を投げるときに
+     *            <code>true</code>
+     */
+    public void setRestrictNotSingleResult(boolean restrictNotSingleResult) {
+        this.restrictNotSingleResult = restrictNotSingleResult;
     }
 
 }

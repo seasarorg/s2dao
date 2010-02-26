@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.seasar.dao.DtoMetaData;
+import org.seasar.dao.NotSingleResultRuntimeException;
 import org.seasar.dao.RowCreator;
 import org.seasar.framework.log.Logger;
 
@@ -56,7 +57,7 @@ public class DtoMetaDataResultSetHandler extends
 
             final Object row = createRow(resultSet, propertyCache);
             if (resultSet.next()) {
-                logger.log("WDAO0003", null);
+                handleNotSingleResult();
             }
             return row;
         } else {
@@ -64,4 +65,31 @@ public class DtoMetaDataResultSetHandler extends
         }
     }
 
+    protected void handleNotSingleResult() {
+        logger.log("WDAO0003", null);
+    }
+
+    /**
+     * 結果が2件以上のときに例外をスローする{@link DtoMetaDataResultSetHandler}です
+     * @author azusa
+     *
+     */
+    public static class RestrictDtoMetaDataResultSetHandler extends DtoMetaDataResultSetHandler{
+
+        /**
+         * @param dtoMetaData DtoMetaData
+         * @param rowCreator RowCreator
+         */
+        public RestrictDtoMetaDataResultSetHandler(DtoMetaData dtoMetaData,
+                RowCreator rowCreator) {
+            super(dtoMetaData, rowCreator);
+            // TODO Auto-generated constructor stub
+        }
+
+        protected void handleNotSingleResult() {
+            throw new NotSingleResultRuntimeException();
+        }
+        
+    }
+    
 }
