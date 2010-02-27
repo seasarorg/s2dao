@@ -45,6 +45,11 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
     protected DtoMetaDataFactory dtoMetaDataFactory;
 
     /**
+     * プロパティrestrictNotSingleResultに対するBINDINGアノテーションです。
+     */
+    public static final String restrictNotSingleResult_BINDING = "bindingType=may";
+
+    /**
      * 返り値がBean、DTOやMapのメソッドで、結果が2件以上の時に例外を投げるかを設定します。
      */
     protected boolean restrictNotSingleResult = false;
