@@ -45,11 +45,6 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
     protected DtoMetaDataFactory dtoMetaDataFactory;
 
     /**
-     * プロパティrestrictNotSingleResultに対するBINDINGアノテーションです。
-     */
-    public static final String restrictNotSingleResult_BINDING = "bindingType=may";
-
-    /**
      * 返り値がBean、DTOやMapのメソッドで、結果が2件以上の時に例外を投げるかを設定します。
      */
     protected boolean restrictNotSingleResult = false;
@@ -110,8 +105,9 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
 
     protected ResultSetHandler createDtoMetaDataResultSetHandler(
             final DtoMetaData dtoMetaData) {
-        if (restrictNotSingleResult){
-            return new RestrictDtoMetaDataResultSetHandler(dtoMetaData, createRowCreator());
+        if (restrictNotSingleResult) {
+            return new RestrictDtoMetaDataResultSetHandler(dtoMetaData,
+                    createRowCreator());
         }
         return new DtoMetaDataResultSetHandler(dtoMetaData, createRowCreator());
     }
@@ -127,7 +123,7 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
     }
 
     protected ResultSetHandler createMapResultSetHandler() {
-        if (restrictNotSingleResult){
+        if (restrictNotSingleResult) {
             return new RestrictMapResultSetHandler();
         }
         return new MapResultSetHandler();
@@ -164,7 +160,7 @@ public class ResultSetHandlerFactoryImpl implements ResultSetHandlerFactory {
     }
 
     protected ResultSetHandler createObjectResultSetHandler(Class clazz) {
-        if (restrictNotSingleResult){
+        if (restrictNotSingleResult) {
             return new RestrictObjectResultSetHandler(clazz);
         }
         return new ObjectResultSetHandler(clazz);

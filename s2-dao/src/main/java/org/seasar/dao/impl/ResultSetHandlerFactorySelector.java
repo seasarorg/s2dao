@@ -41,6 +41,16 @@ public class ResultSetHandlerFactorySelector implements ResultSetHandlerFactory 
 
     protected DtoMetaDataFactory dtoMetaDataFactory;
 
+    /**
+     * プロパティrestrictNotSingleResultに対するBINDINGアノテーションです。
+     */
+    public static final String restrictNotSingleResult_BINDING = "bindingType=may";
+
+    /**
+     * 返り値がBean、DTOやMapのメソッドで、結果が2件以上の時に例外を投げるかを設定します。
+     */
+    protected boolean restrictNotSingleResult = false;
+
     public void init() {
         Class clazz = ResultSetHandlerFactoryImpl.class;
         try {
@@ -50,14 +60,17 @@ public class ResultSetHandlerFactorySelector implements ResultSetHandlerFactory 
         ResultSetHandlerFactoryImpl factory = (ResultSetHandlerFactoryImpl) ClassUtil
                 .newInstance(clazz);
         factory.setDtoMetaDataFactory(dtoMetaDataFactory);
+        factory.setRestrictNotSingleResult(restrictNotSingleResult);
         resultSetHandlerFactory = factory;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see org.seasar.dao.ResultSetHandlerFactory#getResultSetHandler(org.seasar.dao.DaoAnnotationReader,
-     *      org.seasar.dao.BeanMetaData, java.lang.reflect.Method)
+     * @see
+     * org.seasar.dao.ResultSetHandlerFactory#getResultSetHandler(org.seasar
+     * .dao.DaoAnnotationReader, org.seasar.dao.BeanMetaData,
+     * java.lang.reflect.Method)
      */
     public ResultSetHandler getResultSetHandler(
             DaoAnnotationReader daoAnnotationReader, BeanMetaData beanMetaData,
@@ -68,6 +81,16 @@ public class ResultSetHandlerFactorySelector implements ResultSetHandlerFactory 
 
     public void setDtoMetaDataFactory(DtoMetaDataFactory dtoMetaDataFactory) {
         this.dtoMetaDataFactory = dtoMetaDataFactory;
+    }
+
+    /**
+     * 返り値がBean、DTOやMapのメソッドで、結果が2件以上の時に例外を投げるかを設定します。
+     * 
+     * @param restrictNotSingleResult
+     *            例外を投げる時に<code>true</code>
+     */
+    public void setRestrictNotSingleResult(boolean restrictNotSingleResult) {
+        this.restrictNotSingleResult = restrictNotSingleResult;
     }
 
 }
