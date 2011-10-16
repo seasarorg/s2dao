@@ -38,7 +38,9 @@ public class MapResultSetHandler extends AbstractMapResultSetHandler {
             PropertyType[] propertyTypes = createPropertyTypes(resultSet
                     .getMetaData());
             Object row = createRow(resultSet, propertyTypes);
-            handleNotSingleResult();
+            if (resultSet.next()){
+                handleNotSingleResult();
+            }
             return row;
         }
         return null;

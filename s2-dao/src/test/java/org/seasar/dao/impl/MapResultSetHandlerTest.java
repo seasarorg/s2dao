@@ -28,7 +28,13 @@ import org.seasar.extension.jdbc.ResultSetHandler;
 public class MapResultSetHandlerTest extends S2DaoTestCase {
 
     public void testHandle() throws Exception {
-        ResultSetHandler handler = new MapResultSetHandler();
+        ResultSetHandler handler = new MapResultSetHandler(){
+
+            protected void handleNotSingleResult() {
+                throw new AssertionError("should not be called");
+            }
+            
+        };
         String sql = "select employee_id, employee_name from emp4 where employee_id = 7369";
         Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
@@ -48,6 +54,34 @@ public class MapResultSetHandlerTest extends S2DaoTestCase {
         assertEquals("SMITH", ret.get("employeeName"));
     }
     
+    public void testHandleNotSingleRecord() throws Exception {
+        final boolean[] calls = {false};
+        ResultSetHandler handler = new MapResultSetHandler(){
+
+            protected final void handleNotSingleResult() {
+                super.handleNotSingleResult();
+                calls[0] = true;
+            }
+            
+        };
+        String sql = "select employee_id, employee_name from emp4";
+        Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
+        Map ret = null;
+        try {
+            ResultSet rs = ps.executeQuery();
+            try {
+                ret = (Map) handler.handle(rs);
+            } finally {
+                rs.close();
+            }
+        } finally {
+            ps.close();
+        }
+        assertTrue(calls[0]);
+        assertNotNull(ret);
+    }
+
     public void testHandle_restrict() throws Exception {
         ResultSetHandler handler = new RestrictMapResultSetHandler();
         String sql = "select employee_id, employee_name from emp4";
